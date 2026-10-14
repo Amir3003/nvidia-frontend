@@ -51,7 +51,7 @@ Technical Alignment:
 3. Track Relevance: Direct application of our research toward ${opp.description}
 
 Proposed Deliverable:
-Production-ready containerized prototype with reproducible evaluation benchmarks and zero-leak client-side data sovereignty.
+Production-ready containerized prototype with reproducible evaluation benchmarks and zero-leak client-side privacy protection.
 
 Candidate Signature:
 [USER_NAME_1] (Verified Student Profile)`;
@@ -73,14 +73,14 @@ Candidate Signature:
       role="dialog"
       aria-modal="true"
       aria-labelledby="draft-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#09090b]/90 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md"
     >
-      <div className="w-full max-w-2xl bg-surface border border-border rounded-card shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+      <div className="w-full max-w-2xl bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl flex flex-col max-h-[90vh] overflow-hidden text-slate-900">
         {/* Header */}
-        <div className="px-5 py-3.5 border-b border-border flex items-center justify-between bg-sidebar">
+        <div className="px-5 py-3.5 border-b border-teal-200/60 flex items-center justify-between bg-teal-50/70">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-accent" />
-            <h3 id="draft-modal-title" className="text-subheading text-text">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <h3 id="draft-modal-title" className="text-subheading text-indigo-950 font-bold">
               Application Drafter · {opp.title}
             </h3>
           </div>
@@ -88,7 +88,7 @@ Candidate Signature:
             type="button"
             onClick={() => setSelectedOpportunityForDraft(null)}
             aria-label="Close dialog"
-            className="w-8 h-8 flex items-center justify-center text-muted hover:text-text rounded-btn"
+            className="w-8 h-8 flex items-center justify-center text-teal-800 hover:text-indigo-950 hover:bg-teal-100/60 rounded-btn cursor-pointer transition-colors"
           >
             <CloseIcon size={16} />
           </button>
@@ -97,29 +97,29 @@ Candidate Signature:
         {/* Content */}
         <div className="p-5 flex-1 overflow-y-auto space-y-4">
           {/* PII Masking Note Banner */}
-          <div className="p-3 bg-sidebar border border-accent-border rounded-btn flex items-start gap-3">
-            <ShieldIcon size={16} className="text-accent flex-shrink-0 mt-0.5" />
-            <div className="text-[12px] font-mono leading-relaxed">
-              <span className="text-accent font-semibold">PII Anonymization Active:</span> Candidate{' '}
-              <span className="text-text">{userProfile.name}</span>, contact phone, student ID, and email were tokenized locally into{' '}
-              <span className="text-text">[USER_NAME_1]</span>,{' '}
-              <span className="text-text">[EMAIL_MASKED]</span>, etc. prior to dispatching prompt to{' '}
-              <span className="text-text">nvidia/Nemotron-3.5-Lightning</span>.
+          <div className="p-3.5 bg-gradient-to-br from-emerald-50 to-teal-100/80 border border-emerald-300/60 rounded-btn flex items-start gap-3 shadow-2xs">
+            <ShieldIcon size={16} className="text-emerald-700 flex-shrink-0 mt-0.5" />
+            <div className="text-[12px] font-mono leading-relaxed text-teal-950">
+              <span className="text-emerald-900 font-bold">PII Anonymization Active:</span> Candidate{' '}
+              <span className="text-indigo-950 font-bold">{userProfile.name}</span>, contact phone, student ID, and email were tokenized locally into{' '}
+              <span className="text-indigo-950 font-bold">[USER_NAME_1]</span>,{' '}
+              <span className="text-indigo-950 font-bold">[EMAIL_MASKED]</span>, etc. prior to dispatching prompt to{' '}
+              <span className="text-indigo-950 font-bold">nvidia/Nemotron-3.5-Lightning</span>.
             </div>
           </div>
 
           {/* Generated Draft Container */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label htmlFor="draft-content" className="text-mini font-mono uppercase text-muted tracking-wider">
+              <label htmlFor="draft-content" className="text-mini font-mono uppercase text-teal-900 font-bold tracking-wider">
                 Tailored Proposal (Local OpenShell Workspace)
               </label>
               <button
                 type="button"
                 onClick={handleCopy}
-                className="text-mini font-mono text-accent hover:underline flex items-center gap-1.5"
+                className="text-mini font-mono text-teal-800 hover:text-indigo-950 hover:underline flex items-center gap-1.5 cursor-pointer font-bold"
               >
-                {copied ? <CheckIcon size={12} /> : null}
+                {copied ? <CheckIcon size={12} className="text-emerald-600" /> : null}
                 <span>{copied ? 'Copied' : 'Copy Text'}</span>
               </button>
             </div>
@@ -128,28 +128,28 @@ Candidate Signature:
               readOnly
               value={draftText}
               rows={12}
-              className="w-full p-3.5 bg-sidebar border border-border rounded-btn text-[12px] font-mono text-text-2 leading-relaxed resize-none focus:outline-none focus:border-border-strong select-text"
+              className="w-full p-3.5 bg-white/95 border border-teal-200/80 rounded-btn text-[12px] font-mono text-slate-900 leading-relaxed resize-none focus:outline-none focus:border-teal-500 select-text transition-colors shadow-2xs"
             />
           </div>
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-3.5 border-t border-border bg-sidebar flex items-center justify-between">
-          <span className="text-mini font-mono text-muted-2">
+        <div className="px-5 py-3.5 border-t border-teal-200/60 bg-teal-50/70 flex items-center justify-between">
+          <span className="text-mini font-mono text-slate-600 font-medium">
             Storage: /workspace/qadam/drafts/
           </span>
           <div className="flex items-center gap-2.5">
             <button
               type="button"
               onClick={() => setSelectedOpportunityForDraft(null)}
-              className="h-10 px-4 rounded-btn border border-zinc-700/80 bg-zinc-900/70 hover:bg-zinc-800 text-zinc-300 hover:text-zinc-100 text-[13px] font-medium transition-colors"
+              className="h-10 px-4 rounded-btn border border-teal-300/80 bg-white/90 hover:bg-white text-teal-900 text-[13px] font-semibold transition-colors shadow-2xs cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="button"
               onClick={handleSaveToSandbox}
-              className="h-10 px-5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-500 text-zinc-100 rounded-btn text-[13px] font-medium font-mono transition-colors shadow-sm"
+              className="h-10 px-5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white rounded-btn text-[13px] font-bold font-mono transition-all shadow-xs cursor-pointer"
             >
               Save to Sandbox
             </button>

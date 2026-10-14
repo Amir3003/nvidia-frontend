@@ -68,14 +68,14 @@ I am formally submitting our research architecture for the ${opp.title}. As an a
 ## 2. Theoretical Alignment & Technical Stack
 - **Prerequisite Stack Coverage:** Active verification in ${matchedSkillsString}.
 - **Scientific Methodology:** Empirical validation, ablation benchmarks, and deterministic reproducibility protocols across GPU compute nodes.
-- **Data Sovereignty:** Confinement of all intermediate token tensors and telemetry strictly to sovereign on-device sandbox boundaries.
+- **Data Privacy:** Confinement of all intermediate token tensors and telemetry strictly to on-device sandbox boundaries.
 
 ## 3. Targeted Contribution for ${opp.organization}
 Our project directly advances: "${opp.description}". We provide comprehensive baseline benchmarks and formal evaluation metrics.
 
 ## 4. Proposed Milestone Timeline
-- **Phase 1 (Week 1–2):** Dataset curation, embedding indexing, and baseline fine-tuning.
-- **Phase 2 (Week 3–4):** Containerized ablation experiments and latency profiling.
+- **Phase 1 (Week 1-2):** Dataset curation, embedding indexing, and baseline fine-tuning.
+- **Phase 2 (Week 3-4):** Containerized ablation experiments and latency profiling.
 - **Phase 3 (Submission):** Open-source artifact packaging with complete replication steps.
 
 **Respectfully submitted,**
@@ -92,44 +92,51 @@ We are building a production-grade vertical dev-tool for the ${opp.title}. Our m
 
 ## Why Our Architecture Wins
 1. **Unfair Advantage in ${matchedSkillsString}:** Proven execution capability with low-latency model inference and container orchestration.
-2. **Defensible Privacy Barrier:** Built from the ground up on sovereign directory confinement, zero unmasked cloud routing, and local tokenization.
+2. **Defensible Privacy Barrier:** Built from the ground up on sandboxed directory confinement, zero unmasked cloud routing, and local tokenization.
 3. **Product Vision:** Transforming ${opp.description} into an intuitive developer tool designed for rapid adoption.
 
 ## Target Deliverable for Award (${opp.award})
 - Live production web application and CLI agent.
 - Modular SDK for community developers.
-- Public benchmark evaluation and video demonstration.
+- Verification test suite demonstrating ATS alignment and sandbox safety.
 
-**Founder:** ${candidateName}`;
+**Applicant:** ${candidateName} (${candidateUni})`;
     }
 
-    // Default: Engineering Proposal
+    // Default: ENGINEERING
     return `# Technical Application Proposal: ${opp.title}
-**Target Opportunity:** ${opp.title} (${opp.organization})
-**Candidate:** [USER_NAME_1] (${candidateRole}, ${candidateUni})
-**Contact:** [EMAIL_MASKED] · [PHONE_MASKED]
-**Track:** ${opp.type} · Deadline: ${opp.deadline}
+**Host:** ${opp.organization} · Track: ${opp.type}
+**Award:** ${opp.award} · Deadline: ${opp.deadline}
+**Candidate:** ${candidateName} · ${candidateUni} (${userProfile.role || 'Software Engineer'})
 
-## Summary of Intent
-I am submitting our technical proposal for the ${opp.title}. My work focuses on building safe, high-throughput autonomous software systems and developer tooling.
+## 1. Technical Implementation Blueprint
+We propose an engineering framework tailored specifically for the criteria set forth in ${opp.title}. By leveraging ${matchedSkillsString}, our stack establishes deterministic pipelines designed for robust execution.
 
-## Technical Alignment & Stack Mastery
-1. **Core Competency:** Direct hands-on experience with ${matchedSkillsString}, incorporating clean architecture patterns and low-latency execution.
-2. **Safe Sandbox Containment:** Direct integration with OpenShell sandbox isolation to ensure zero unauthorized disk or network traversal during tool execution.
-3. **Track Focus:** Purpose-built implementation specifically addressing:
-   "${opp.description}"
+## 2. Architecture & Components
+- **Core Pipeline:** Built using ${matchedSkillsString} with asynchronous event streaming and low-overhead memory management.
+- **Sandbox Security:** Bound to local confinement directory \`/workspace/qadam\` with real-time file tree guardrails.
+- **Verified Competencies:** Active skill validation achieved through QADAM ATS benchmarks.
 
-## Proposed Deliverable
-- Production-ready containerized microservices with reproducible evaluation benchmarks.
-- Clean documentation and client-side data sovereignty verified via PII token masking.
+## 3. Problem Statement & Resolution
+Addressing: "${opp.description}"
+Our submission introduces a modular, scalable approach with complete unit test coverage, automated dockerized integration environments, and end-to-end telemetry.
 
-**Candidate Signature:**
-${candidateName} (Verified QADAM Student Profile)`;
+## 4. Engineering Deliverables
+1. Production container image ready for GPU cloud deployment.
+2. Complete documentation, OpenAPI specifications, and automated test runners.
+3. Live demonstration build validated against baseline specifications.
+
+**Signed:**
+${candidateName} (${userProfile.email || 'student@university.edu'})`;
   };
 
-  const [draftContent, setDraftContent] = useState<string>(() => generateProposalText('ENGINEERING'));
+  const [draftContent, setDraftContent] = useState(() => generateProposalText(tone));
 
-  // Update text when tone changes
+  // Sync draft if opportunity changes
+  useEffect(() => {
+    setDraftContent(generateProposalText(tone));
+  }, [currentOpp?.id, tone]);
+
   const handleToneChange = (newTone: 'RESEARCH' | 'ENGINEERING' | 'FOUNDER') => {
     setTone(newTone);
     setDraftContent(generateProposalText(newTone));
@@ -170,7 +177,7 @@ ${candidateName} (Verified QADAM Student Profile)`;
   };
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 bg-bg text-text">
+    <div className="flex-1 flex flex-col min-w-0 bg-transparent relative z-10 text-slate-100">
       {/* Top Header Bar */}
       <PageHeader
         title="Application Studio"
@@ -180,7 +187,7 @@ ${candidateName} (Verified QADAM Student Profile)`;
             <button
               type="button"
               onClick={() => navigate('/')}
-              className="h-10 px-4 rounded-btn border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-zinc-100 text-mini font-mono transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="h-10 px-4 rounded-btn border border-teal-500/30 bg-slate-900/80 hover:bg-slate-800/80 text-teal-100 hover:text-white text-mini font-mono transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
             >
               <span>← Back to Opportunity Radar</span>
             </button>
@@ -193,30 +200,30 @@ ${candidateName} (Verified QADAM Student Profile)`;
           {/* LEFT COLUMN: Opportunity Overview & Eligibility (4 Cols) */}
           <div className="lg:col-span-4 space-y-5">
             {/* Opportunity Card Summary */}
-            <div className="p-5 rounded-card bg-surface border border-border space-y-4">
+            <div className="p-5 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] space-y-4 text-slate-900">
               <div className="flex items-center justify-between">
-                <span className="text-mini font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-700 text-zinc-300">
+                <span className="text-mini font-mono px-2 py-0.5 rounded bg-white border border-teal-200 text-teal-900 font-bold">
                   {currentOpp.type}
                 </span>
-                <span className="text-mini font-mono text-accent font-medium">
+                <span className="text-mini font-mono text-emerald-700 font-bold">
                   {currentOpp.deadline}
                 </span>
               </div>
 
               <div>
-                <h3 className="text-[17px] font-semibold text-text leading-snug">
+                <h3 className="text-[17px] font-bold text-indigo-950 leading-snug">
                   {currentOpp.title}
                 </h3>
-                <div className="text-mini font-mono text-muted mt-1">{currentOpp.organization}</div>
+                <div className="text-mini font-mono text-teal-800 mt-1">{currentOpp.organization}</div>
               </div>
 
-              <p className="text-[13px] text-muted leading-relaxed">
+              <p className="text-[13px] text-teal-950 leading-relaxed">
                 {currentOpp.description}
               </p>
 
-              <div className="p-3 bg-zinc-900 rounded-btn border border-border flex items-center justify-between text-mini font-mono">
-                <span className="text-muted-2">Award / Grant:</span>
-                <span className="text-accent font-semibold">{currentOpp.award}</span>
+              <div className="p-3 bg-white/80 rounded-btn border border-teal-200 flex items-center justify-between text-mini font-mono">
+                <span className="text-teal-800">Award / Grant:</span>
+                <span className="text-emerald-800 font-bold">{currentOpp.award}</span>
               </div>
 
               {currentOpp.url && (
@@ -224,7 +231,7 @@ ${candidateName} (Verified QADAM Student Profile)`;
                   href={currentOpp.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full h-9 rounded-btn border border-zinc-700 hover:border-zinc-500 bg-surface-hover text-zinc-200 text-mini font-mono flex items-center justify-center gap-1.5 transition-colors"
+                  className="w-full h-9 rounded-btn border border-teal-200 hover:border-teal-300 bg-white text-teal-950 text-mini font-mono flex items-center justify-center gap-1.5 transition-colors shadow-xs font-semibold"
                 >
                   <span>Official Submission Portal</span>
                   <ExternalLinkIcon size={12} />
@@ -233,29 +240,29 @@ ${candidateName} (Verified QADAM Student Profile)`;
             </div>
 
             {/* Eligibility & Stack Match Verification */}
-            <div className="p-5 rounded-card bg-surface border border-border space-y-4">
-              <div className="text-mini font-mono uppercase text-muted-2 tracking-wider pb-2 border-b border-border flex items-center justify-between">
+            <div className="p-5 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] space-y-4 text-slate-900">
+              <div className="text-mini font-mono uppercase text-teal-800 tracking-wider pb-2 border-b border-teal-200/60 flex items-center justify-between font-bold">
                 <span>Eligibility Verification</span>
-                <span className="text-accent">{matchedSkills.length}/{currentOpp.skills.length} Stack Match</span>
+                <span className="text-emerald-700 font-bold">{matchedSkills.length}/{currentOpp.skills.length} Stack Match</span>
               </div>
 
               <div className="space-y-2.5 text-[13px]">
                 <div className="flex items-center justify-between">
-                  <span className="text-muted">Academic Enrollment:</span>
-                  <span className="text-text font-mono text-mini">{userProfile.university || 'Verified Student'}</span>
+                  <span className="text-teal-800">Academic Enrollment:</span>
+                  <span className="text-indigo-950 font-mono text-mini font-bold">{userProfile.university || 'Verified Student'}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-muted">Domain Track:</span>
-                  <span className="text-text font-mono text-mini">{userProfile.role}</span>
+                  <span className="text-teal-800">Domain Track:</span>
+                  <span className="text-indigo-950 font-mono text-mini font-bold">{userProfile.role}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-muted">Sandbox Confinement:</span>
-                  <span className="text-accent font-mono text-mini">ACTIVE (/workspace/qadam)</span>
+                  <span className="text-teal-800">Sandbox Confinement:</span>
+                  <span className="text-emerald-700 font-mono text-mini font-bold">ACTIVE (/workspace/qadam)</span>
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-border/60">
-                <div className="text-mini font-mono text-muted-2 uppercase mb-2">Required Skills</div>
+              <div className="pt-2 border-t border-teal-200/60">
+                <div className="text-mini font-mono text-teal-800 uppercase mb-2 font-semibold">Required Skills</div>
                 <div className="flex flex-wrap gap-1.5">
                   {currentOpp.skills.map((s) => {
                     const isMatched = userProfile.skills.some((us) => us.toLowerCase() === s.toLowerCase());
@@ -264,8 +271,8 @@ ${candidateName} (Verified QADAM Student Profile)`;
                         key={s}
                         className={`px-2 py-0.5 rounded text-mini font-mono border ${
                           isMatched
-                            ? 'bg-accent/15 border-accent text-accent font-medium'
-                            : 'bg-zinc-900 border-zinc-800 text-zinc-400'
+                            ? 'bg-emerald-100 border-emerald-300 text-emerald-800 font-bold'
+                            : 'bg-white border-teal-200 text-slate-600'
                         }`}
                       >
                         {isMatched ? '✓ ' : ''}{s}
@@ -277,18 +284,18 @@ ${candidateName} (Verified QADAM Student Profile)`;
             </div>
 
             {/* PII Shield Tokenization Status */}
-            <div className="p-5 rounded-card bg-surface border border-[#059669]/40 space-y-3">
+            <div className="p-5 rounded-card bg-gradient-to-br from-emerald-50 to-teal-100/80 border border-emerald-300/60 shadow-sm space-y-3 text-emerald-950">
               <div className="flex items-center gap-2">
-                <ShieldIcon size={16} className="text-accent" />
-                <span className="text-[14px] font-semibold text-text">Zero-Leak Tokenization</span>
+                <ShieldIcon size={16} className="text-emerald-700" />
+                <span className="text-[14px] font-bold text-emerald-950">Zero-Leak Tokenization</span>
               </div>
-              <p className="text-[12px] text-muted leading-relaxed">
+              <p className="text-[12px] text-emerald-900 leading-relaxed">
                 Before sending context to cloud LLM APIs, all student identifiers are masked with cryptographic tokens:
               </p>
-              <div className="space-y-1 font-mono text-[11px] text-zinc-300 bg-zinc-900 p-2.5 rounded border border-border">
-                <div>Name → <code>[CANDIDATE_NAME]</code></div>
-                <div>Email → <code>[EMAIL_MASKED]</code></div>
-                <div>Institution → <code>[UNIVERSITY_TOKEN]</code></div>
+              <div className="space-y-1 font-mono text-[11px] text-emerald-950 bg-white/80 p-2.5 rounded border border-emerald-200">
+                <div>Name → <code className="text-emerald-800 font-bold">[CANDIDATE_NAME]</code></div>
+                <div>Email → <code className="text-emerald-800 font-bold">[EMAIL_MASKED]</code></div>
+                <div>Institution → <code className="text-emerald-800 font-bold">[UNIVERSITY_TOKEN]</code></div>
               </div>
             </div>
           </div>
@@ -296,9 +303,9 @@ ${candidateName} (Verified QADAM Student Profile)`;
           {/* RIGHT COLUMN: Full-Height Proposal Editor Studio (8 Cols) */}
           <div className="lg:col-span-8 space-y-4">
             {/* Tone Selector & Control Bar */}
-            <div className="p-4 rounded-card bg-surface border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="p-4 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-slate-900">
               <div className="flex items-center gap-2">
-                <span className="text-mini font-mono uppercase text-muted-2 whitespace-nowrap">
+                <span className="text-mini font-mono uppercase text-teal-800 whitespace-nowrap font-bold">
                   Proposal Tone:
                 </span>
                 <div className="flex items-center gap-1.5">
@@ -307,10 +314,10 @@ ${candidateName} (Verified QADAM Student Profile)`;
                       key={t}
                       type="button"
                       onClick={() => handleToneChange(t)}
-                      className={`h-8 px-3 rounded-btn text-mini font-mono transition-colors cursor-pointer border ${
+                      className={`h-8 px-3 rounded-btn text-mini font-mono transition-all cursor-pointer border ${
                         tone === t
-                          ? 'bg-accent/15 border-accent text-accent font-semibold shadow-sm'
-                          : 'bg-zinc-900 border-zinc-800 text-muted hover:text-text'
+                          ? 'bg-gradient-to-r from-emerald-500 to-teal-600 border-emerald-600 text-white font-bold shadow-xs'
+                          : 'bg-white border-teal-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 shadow-xs'
                       }`}
                     >
                       {t === 'ENGINEERING' ? 'Engineering' : t === 'RESEARCH' ? 'Academic Research' : 'Startup Founder'}
@@ -324,52 +331,52 @@ ${candidateName} (Verified QADAM Student Profile)`;
                   type="button"
                   onClick={handleRegenerate}
                   disabled={isGenerating}
-                  className="h-8 px-3 rounded-btn border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 text-mini font-mono flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="h-8 px-3 rounded-btn border border-teal-200 bg-white hover:bg-slate-50 text-teal-950 text-mini font-mono flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs font-semibold"
                 >
-                  <FlaskIcon size={12} className="text-accent" />
+                  <FlaskIcon size={12} className="text-emerald-600" />
                   <span>{isGenerating ? 'Synthesizing...' : 'Re-Draft with LLM'}</span>
                 </button>
               </div>
             </div>
 
             {/* Main Full-Height Textarea */}
-            <div className="rounded-card bg-surface border border-border overflow-hidden flex flex-col">
-              <div className="px-4 py-2.5 border-b border-border bg-[#18181b] flex items-center justify-between text-mini font-mono">
-                <div className="flex items-center gap-2 text-zinc-300">
-                  <FileTextIcon size={14} className="text-accent" />
-                  <span>application_proposal.md</span>
+            <div className="rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] overflow-hidden flex flex-col text-slate-900">
+              <div className="px-4 py-2.5 border-b border-teal-200/60 bg-white/60 flex items-center justify-between text-mini font-mono">
+                <div className="flex items-center gap-2 text-indigo-950">
+                  <FileTextIcon size={14} className="text-emerald-600" />
+                  <span className="font-bold">application_proposal.md</span>
                 </div>
-                <span className="text-muted-2">Markdown Supported · Live Buffer</span>
+                <span className="text-teal-800">Markdown Supported · Live Buffer</span>
               </div>
 
               <textarea
                 value={draftContent}
                 onChange={(e) => setDraftContent(e.target.value)}
                 rows={22}
-                className="w-full p-5 bg-[#09090b] text-zinc-100 font-mono text-[13px] leading-relaxed focus:outline-none resize-y border-none select-text"
+                className="w-full p-5 bg-white/70 hover:bg-white focus:bg-white text-slate-900 font-mono text-[13px] leading-relaxed focus:outline-none resize-y border-none select-text transition-colors"
                 placeholder="Drafting application..."
               />
 
               {/* Bottom Action Footer */}
-              <div className="px-5 py-3.5 border-t border-border bg-[#121215] flex flex-wrap items-center justify-between gap-3">
-                <div className="text-mini font-mono text-muted-2">
-                  Sandbox Confinement: <code>/workspace/qadam/drafts/</code>
+              <div className="px-5 py-3.5 border-t border-teal-200/60 bg-white/60 flex flex-wrap items-center justify-between gap-3">
+                <div className="text-mini font-mono text-teal-800">
+                  Sandbox Confinement: <code className="text-indigo-950 font-bold">/workspace/qadam/drafts/</code>
                 </div>
 
                 <div className="flex items-center gap-2.5">
                   <button
                     type="button"
                     onClick={handleCopy}
-                    className="h-10 px-4 rounded-btn border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-zinc-100 text-mini font-mono flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="h-10 px-4 rounded-btn border border-teal-200 bg-white hover:bg-slate-50 text-slate-700 text-mini font-mono flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs font-semibold"
                   >
-                    {copied ? <CheckIcon size={14} className="text-accent" /> : <CopyIcon size={14} />}
+                    {copied ? <CheckIcon size={14} className="text-emerald-600" /> : <CopyIcon size={14} />}
                     <span>{copied ? 'Copied to Clipboard' : 'Copy Draft'}</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={handleExportMarkdown}
-                    className="h-10 px-4 rounded-btn border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-zinc-100 text-mini font-mono flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="h-10 px-4 rounded-btn border border-teal-200 bg-white hover:bg-slate-50 text-slate-700 text-mini font-mono flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs font-semibold"
                   >
                     <span>Export .md</span>
                   </button>
@@ -377,7 +384,7 @@ ${candidateName} (Verified QADAM Student Profile)`;
                   <button
                     type="button"
                     onClick={handleSaveToSandbox}
-                    className="h-10 px-5 rounded-btn bg-accent hover:bg-emerald-500 text-zinc-950 font-semibold text-mini font-mono flex items-center gap-2 transition-colors cursor-pointer shadow-sm"
+                    className="h-10 px-5 rounded-btn bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-mini font-mono flex items-center gap-2 transition-all cursor-pointer shadow-xs"
                   >
                     <CheckIcon size={14} />
                     <span>{isSaved ? 'Saved in /workspace/qadam ✓' : 'Save to Sandbox'}</span>
@@ -393,4 +400,3 @@ ${candidateName} (Verified QADAM Student Profile)`;
 };
 
 export default ApplicationStudioPage;
-

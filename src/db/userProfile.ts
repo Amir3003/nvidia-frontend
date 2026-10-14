@@ -25,6 +25,7 @@ export interface UserProfile {
   skills: string[];
   goals: string[];
   cvText?: string;
+  resumeFileName?: string;
   avatarUrl?: string;
   avatarPreset?: 'emerald' | 'indigo' | 'amber' | 'cyan' | 'purple' | 'rose';
   isPublic: boolean;

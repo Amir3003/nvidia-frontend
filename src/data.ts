@@ -84,7 +84,7 @@ export const DEFAULT_USER_PROFILE: UserProfile = {
   university: '',
   major: '',
   degree: 'B.S. in Computer Science',
-  years: '2023 — 2027',
+  years: '2023 - 2027',
   role: 'Undergraduate CS Student',
   skills: [],
   goals: [],
@@ -139,7 +139,7 @@ export const INITIAL_OPPORTUNITIES: Opportunity[] = [
   {
     id: 'mext-scholarship',
     type: 'GRANT',
-    title: 'MEXT Scholarship — Graduate Research in AI',
+    title: 'MEXT Scholarship: Graduate Research in AI',
     deadline: 'Due Nov 12',
     deadlineDate: '2026-11-12',
     match: 88,

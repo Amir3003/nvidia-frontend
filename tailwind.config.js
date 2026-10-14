@@ -7,39 +7,52 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Pure Carbon Palette (Vercel / Raycast / Linear Dark Standard)
-        bg: '#09090b', // Pure Carbon App Background
-        sidebar: '#09090b',
+        // Daylight Warm Pearl & Soft Ivory Palette (Stripe / Arc Inspired)
+        bg: '#F4F5F8', // Warm Alabaster / Soft Pearl Canvas
+        sidebar: '#FFFFFF', // Crisp White Sidebar
         surface: {
-          DEFAULT: '#121215', // Elevated Card / Surface Background
-          hover: '#18181b',   // Secondary / Interactive Hover Surface
+          DEFAULT: '#FFFFFF', // Crisp Warm White Card
+          hover: '#F8FAFC',   // Hover Surface
+          subtle: '#EAECEF',  // Secondary / Contrasting Tinted Stone
+          tint: '#E8F3EE',    // Soft Mint-Tinted Stone
         },
         border: {
-          DEFAULT: '#27272a', // Crisp 1px border-zinc-800
-          strong: '#3f3f46',  // Hover / focus border border-zinc-700
+          DEFAULT: '#E2E8F0', // Soft subtle border
+          strong: '#CBD5E1',  // Focus / highlight border
         },
         text: {
-          DEFAULT: '#fafafa', // Primary text-zinc-50
-          2: '#e4e4e7',       // Secondary text-zinc-200
-          muted: '#a1a1aa',   // Secondary text-zinc-400
-          'muted-2': '#71717a', // Muted text-zinc-500
+          DEFAULT: '#0F172A', // Deep Slate Navy Primary
+          2: '#334155',       // Rich Charcoal Slate Body
+          muted: '#64748B',   // Warm Slate Muted
+          'muted-2': '#94A3B8', // Deep Muted Slate
         },
         accent: {
-          DEFAULT: '#10b981', // Refined Emerald #10b981
-          border: '#059669',  // emerald-600
+          DEFAULT: '#0D9488', // Vibrant Emerald-Teal Primary
+          light: '#10B981',   // Warm Emerald
+          border: '#0D9488',  // Teal Accent Border
+          indigo: '#4F46E5',  // Electric Indigo Accent
+          sky: '#0284C7',     // Sky Blue
+          amber: '#D97706',   // Warm Amber
+          rose: '#E11D48',    // Coral Rose
         },
         warning: {
-          DEFAULT: '#f59e0b',
-          text: '#fbbf24',
+          DEFAULT: '#D97706',
+          text: '#B45309',
         },
+      },
+      boxShadow: {
+        card: '0 12px 40px -12px rgba(15, 23, 42, 0.08)',
+        elevated: '0 20px 48px -16px rgba(15, 23, 42, 0.12)',
+        subtle: '0 4px 20px -4px rgba(15, 23, 42, 0.04)',
       },
       fontFamily: {
         sans: ['Geist', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
       },
       borderRadius: {
-        btn: '6px',
-        card: '8px',
+        btn: '8px',
+        card: '16px',
+        '3xl': '24px',
       },
       fontSize: {
         pageTitle: ['18px', { lineHeight: '24px', fontWeight: '600' }],

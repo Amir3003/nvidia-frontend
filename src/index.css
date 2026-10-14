@@ -3,48 +3,50 @@
 @tailwind utilities;
 
 :root {
-  --bg: #09090b;
-  --sidebar: #09090b;
-  --surface: #121215;
-  --surface-hover: #18181b;
-  --border: #27272a;
-  --border-strong: #3f3f46;
-  --text: #fafafa;
-  --text-2: #e4e4e7;
-  --muted: #a1a1aa;
-  --muted-2: #71717a;
-  --accent: #10b981;
+  --bg: #0B101E;
+  --sidebar: #0F172A;
+  --surface: #1E293B;
+  --surface-hover: #334155;
+  --border: rgba(45, 212, 191, 0.2);
+  --border-strong: rgba(45, 212, 191, 0.4);
+  --text: #F8FAFC;
+  --text-2: #CBD5E1;
+  --muted: #94A3B8;
+  --muted-2: #64748B;
+  --accent: #10B981;
   --accent-border: #059669;
-  --warning: #f59e0b;
-  --warning-text: #fbbf24;
+  --accent-indigo: #6366F1;
+  --warning: #F59E0B;
+  --warning-text: #D97706;
 }
 
 body {
   margin: 0;
-  background-color: #09090b;
-  color: #fafafa;
+  background-color: #0B101E;
+  color: #F8FAFC;
   font-family: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Custom scrollbar for carbon developer aesthetic */
+/* Custom scrollbar for cosmic ambient aesthetic */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #09090b;
+  background: #0B101E;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
+  background: #1E293B;
   border-radius: 3px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: #334155;
 }
 
 /* Terminal blink animation */
@@ -64,6 +66,6 @@ select:focus-visible,
 textarea:focus-visible,
 a:focus-visible,
 div[tabindex="0"]:focus-visible {
-  outline: 2px solid #10b981;
+  outline: 2px solid #0D9488;
   outline-offset: 2px;
 }

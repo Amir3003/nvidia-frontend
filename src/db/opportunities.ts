@@ -51,7 +51,7 @@ export const OPPORTUNITIES_DATABASE: Opportunity[] = [
   {
     id: 'mext-scholarship',
     type: 'GRANT',
-    title: 'MEXT Scholarship — Graduate Research in AI',
+    title: 'MEXT Scholarship: Graduate Research in AI',
     organization: 'Ministry of Education, Japan',
     orgKey: 'mext',
     deadline: 'Due Nov 12',

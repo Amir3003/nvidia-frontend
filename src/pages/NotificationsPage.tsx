@@ -7,6 +7,9 @@ import {
   SendIcon,
   ShieldIcon,
   ExternalLinkIcon,
+  TelegramIcon,
+  DiscordIcon,
+  KakaoTalkIcon,
 } from '../components/Icons';
 
 export const NotificationsPage: React.FC = () => {
@@ -98,50 +101,51 @@ export const NotificationsPage: React.FC = () => {
   const triggerTestAlert = (channel: string) => {
     setTestAlertSent(channel);
     setTimeout(() => setTestAlertSent(null), 3000);
-    addLog(
-      'MODEL',
-      `[MESSENGER DISPATCH] Push notification triggered via ${channel}: "Nebius x NVIDIA Hackathon closes in 48 hours. 94% stack match."`
-    );
+    addLog('SYSTEM', `Test push notification dispatched to ${channel} via secure local proxy.`);
   };
 
   return (
-    <div className="flex-1 flex flex-col min-w-0">
+    <div className="flex-1 flex flex-col min-w-0 bg-transparent relative z-10 text-slate-100">
       <PageHeader
-        title="Mobile & Messenger Alerts"
-        subtitle="Receive Real-Time Opportunity Alerts on Your Phone · Multi-Channel Sovereign Delivery"
+        title="Notifications & Bots"
+        subtitle="multi-channel alert webhooks · zero PII leakage during dispatch"
       />
 
       <div className="p-6 space-y-6">
-        {/* Security Banner */}
-        <div className="p-4 rounded-card bg-surface border border-border flex items-start gap-3.5">
-          <ShieldIcon size={18} className="text-accent flex-shrink-0 mt-0.5" />
-          <div className="text-[13px] leading-relaxed">
-            <span className="font-semibold text-text">Zero-Leak Alert Routing: </span>
-            <span className="text-muted">
-              Notifications contain only verified opportunity metadata, eligibility checklist tags, and deadline countdowns. Your CV contents, private keys, and passwords remain strictly isolated inside your local device sandbox.
-            </span>
+        {/* Top Info Banner */}
+        <div className="p-5 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] flex items-start gap-4">
+          <div className="w-10 h-10 rounded-full bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-700 flex-shrink-0">
+            <ShieldIcon size={20} />
+          </div>
+          <div>
+            <h3 className="text-[15px] font-bold text-indigo-950">
+              Zero-PII Secure Webhook Architecture
+            </h3>
+            <p className="text-[13px] text-teal-950 mt-1 leading-relaxed">
+              When opportunity match criteria or application deadlines are reached, notifications are formatted locally. No personal identifiable information (PII) is transmitted outside your client sandbox.
+            </p>
           </div>
         </div>
 
-        {/* 3 Large, Symmetrical Vertical Feature Columns */}
+        {/* 3 Channel Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Column 1: Telegram Bot */}
-          <div className="p-6 rounded-card bg-surface border border-border flex flex-col justify-between space-y-6 hover:border-zinc-700 transition-colors">
+          <div className="p-6 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] flex flex-col justify-between space-y-6 hover:border-sky-400/80 transition-all">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-btn bg-[#0088cc]/10 border border-[#0088cc]/30 flex items-center justify-center text-[#0088cc]">
-                  <SendIcon size={18} />
+                <div className="w-11 h-11 rounded-btn bg-[#0088cc]/15 border border-[#0088cc]/30 flex items-center justify-center text-[#0088cc] shadow-xs">
+                  <TelegramIcon size={24} />
                 </div>
                 <span
-                  className={`text-mini font-mono px-2.5 py-1 rounded border flex items-center gap-1.5 ${
+                  className={`text-mini font-mono px-2.5 py-1 rounded border flex items-center gap-1.5 font-bold ${
                     telegramActive
-                      ? 'bg-accent/10 text-accent border-accent-border'
-                      : 'bg-zinc-900 text-zinc-500 border-zinc-800'
+                      ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                      : 'bg-white/80 text-teal-800 border-teal-200'
                   }`}
                 >
                   <span
                     className={`w-1.5 h-1.5 rounded-full ${
-                      telegramActive ? 'bg-accent animate-pulse' : 'bg-zinc-600'
+                      telegramActive ? 'bg-emerald-600 animate-pulse' : 'bg-slate-400'
                     }`}
                   />
                   <span>{telegramActive ? 'CONNECTED' : 'DISCONNECTED'}</span>
@@ -149,50 +153,50 @@ export const NotificationsPage: React.FC = () => {
               </div>
 
               <div>
-                <h3 className="text-[17px] font-semibold text-text">Telegram Bot</h3>
-                <div className="text-mini font-mono text-accent mt-0.5">@QadamAgentBot</div>
-                <p className="text-[13px] text-muted mt-2 leading-relaxed">
+                <h3 className="text-[17px] font-bold text-indigo-950">Telegram Bot</h3>
+                <div className="text-mini font-mono text-emerald-700 font-bold mt-0.5">@QadamAgentBot</div>
+                <p className="text-[13px] text-teal-950 mt-2 leading-relaxed">
                   Official Telegram bot integration for instant opportunity pings, eligibility status checks, and 24-hour deadline countdown reminders.
                 </p>
               </div>
 
-              <div className="space-y-2 pt-2 border-t border-border/60 text-mini font-mono text-zinc-300">
+              <div className="space-y-2 pt-2 border-t border-teal-200/60 text-mini font-mono text-teal-900">
                 <div className="flex items-center gap-2">
-                  <CheckIcon size={12} className="text-accent flex-shrink-0" />
+                  <CheckIcon size={12} className="text-emerald-600 flex-shrink-0" />
                   <span>Real-time hackathon radar pings</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckIcon size={12} className="text-accent flex-shrink-0" />
+                  <CheckIcon size={12} className="text-emerald-600 flex-shrink-0" />
                   <span>Instant ATS skill gap alerts</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckIcon size={12} className="text-accent flex-shrink-0" />
+                  <CheckIcon size={12} className="text-emerald-600 flex-shrink-0" />
                   <span>Interactive reply commands</span>
                 </div>
               </div>
 
               {telegramActive && (
-                <div className="p-2.5 rounded bg-zinc-900 border border-zinc-800 text-mini font-mono text-muted">
-                  Linked Handle: <span className="text-zinc-100">{telegramHandle}</span>
+                <div className="p-2.5 rounded bg-gradient-to-br from-sky-50 to-cyan-100/80 border border-sky-300/60 text-mini font-mono text-sky-950">
+                  Linked Handle: <span className="text-indigo-950 font-bold">{telegramHandle}</span>
                 </div>
               )}
             </div>
 
-            <div className="space-y-2 pt-4 border-t border-border">
+            <div className="space-y-2 pt-4 border-t border-teal-200/60">
               {telegramActive ? (
                 <>
                   <button
                     type="button"
                     onClick={() => triggerTestAlert('Telegram')}
-                    className="w-full h-10 rounded-btn bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 text-zinc-200 text-mini font-mono flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                    className="w-full h-10 rounded-btn bg-white hover:bg-slate-50 border border-teal-200 text-teal-950 text-mini font-mono flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs font-semibold"
                   >
-                    <BellIcon size={14} className="text-accent" />
+                    <BellIcon size={14} className="text-emerald-600" />
                     <span>{testAlertSent === 'Telegram' ? 'Ping Dispatched ✓' : 'Send Test Opportunity Ping'}</span>
                   </button>
                   <button
                     type="button"
                     onClick={handleDisconnectTelegram}
-                    className="w-full h-9 rounded-btn border border-red-500/30 text-red-400 hover:bg-red-500/10 text-mini font-mono transition-colors cursor-pointer"
+                    className="w-full h-9 rounded-btn border border-rose-200 bg-white hover:bg-rose-50 text-rose-600 text-mini font-mono transition-colors cursor-pointer"
                   >
                     Disconnect Telegram
                   </button>
@@ -201,7 +205,7 @@ export const NotificationsPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsTelegramModal(true)}
-                  className="w-full h-11 rounded-btn bg-accent hover:bg-emerald-500 text-zinc-950 font-semibold text-[13px] font-mono transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                  className="w-full h-11 rounded-btn bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-semibold text-[13px] font-mono transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-emerald-900/20"
                 >
                   <span>Authorize with Telegram</span>
                   <ExternalLinkIcon size={14} />
@@ -211,22 +215,22 @@ export const NotificationsPage: React.FC = () => {
           </div>
 
           {/* Column 2: KakaoTalk Channel */}
-          <div className="p-6 rounded-card bg-surface border border-border flex flex-col justify-between space-y-6 hover:border-zinc-700 transition-colors">
+          <div className="p-6 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] flex flex-col justify-between space-y-6 hover:border-amber-400/80 transition-all">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-btn bg-[#fee500]/10 border border-[#fee500]/30 flex items-center justify-center text-[#fee500]">
-                  <span className="font-bold font-sans text-[18px]">talk</span>
+                <div className="w-11 h-11 rounded-btn bg-[#fee500]/25 border border-[#fee500]/60 flex items-center justify-center text-amber-900 shadow-xs">
+                  <KakaoTalkIcon size={24} />
                 </div>
                 <span
-                  className={`text-mini font-mono px-2.5 py-1 rounded border flex items-center gap-1.5 ${
+                  className={`text-mini font-mono px-2.5 py-1 rounded border flex items-center gap-1.5 font-bold ${
                     kakaoActive
-                      ? 'bg-accent/10 text-accent border-accent-border'
-                      : 'bg-zinc-900 text-zinc-500 border-zinc-800'
+                      ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                      : 'bg-white/80 text-teal-800 border-teal-200'
                   }`}
                 >
                   <span
                     className={`w-1.5 h-1.5 rounded-full ${
-                      kakaoActive ? 'bg-accent animate-pulse' : 'bg-zinc-600'
+                      kakaoActive ? 'bg-emerald-600 animate-pulse' : 'bg-slate-400'
                     }`}
                   />
                   <span>{kakaoActive ? 'CONNECTED' : 'DISCONNECTED'}</span>
@@ -234,50 +238,50 @@ export const NotificationsPage: React.FC = () => {
               </div>
 
               <div>
-                <h3 className="text-[17px] font-semibold text-text">KakaoTalk Channel</h3>
-                <div className="text-mini font-mono text-[#fee500] mt-0.5">카카오 i OpenBuilder</div>
-                <p className="text-[13px] text-muted mt-2 leading-relaxed">
+                <h3 className="text-[17px] font-bold text-indigo-950">KakaoTalk Channel</h3>
+                <div className="text-mini font-mono text-amber-700 font-bold mt-0.5">카카오 i OpenBuilder</div>
+                <p className="text-[13px] text-teal-950 mt-2 leading-relaxed">
                   Dedicated Korean academic and tech alert integration via Kakao i OpenBuilder skill channel for East Asian opportunities and MEXT grants.
                 </p>
               </div>
 
-              <div className="space-y-2 pt-2 border-t border-border/60 text-mini font-mono text-zinc-300">
+              <div className="space-y-2 pt-2 border-t border-teal-200/60 text-mini font-mono text-teal-900">
                 <div className="flex items-center gap-2">
-                  <CheckIcon size={12} className="text-accent flex-shrink-0" />
+                  <CheckIcon size={12} className="text-emerald-600 flex-shrink-0" />
                   <span>MEXT & Asian research grants</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckIcon size={12} className="text-accent flex-shrink-0" />
+                  <CheckIcon size={12} className="text-emerald-600 flex-shrink-0" />
                   <span>KakaoTalk 알림톡 official alerts</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckIcon size={12} className="text-accent flex-shrink-0" />
+                  <CheckIcon size={12} className="text-emerald-600 flex-shrink-0" />
                   <span>Korean / English bilingual cards</span>
                 </div>
               </div>
 
               {kakaoActive && (
-                <div className="p-2.5 rounded bg-zinc-900 border border-zinc-800 text-mini font-mono text-muted">
-                  Linked ID: <span className="text-zinc-100">{kakaoHandle}</span>
+                <div className="p-2.5 rounded bg-gradient-to-br from-amber-50 to-orange-100/80 border border-amber-300/60 text-mini font-mono text-amber-950">
+                  Linked ID: <span className="text-indigo-950 font-bold">{kakaoHandle}</span>
                 </div>
               )}
             </div>
 
-            <div className="space-y-2 pt-4 border-t border-border">
+            <div className="space-y-2 pt-4 border-t border-teal-200/60">
               {kakaoActive ? (
                 <>
                   <button
                     type="button"
                     onClick={() => triggerTestAlert('KakaoTalk')}
-                    className="w-full h-10 rounded-btn bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 text-zinc-200 text-mini font-mono flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                    className="w-full h-10 rounded-btn bg-white hover:bg-slate-50 border border-teal-200 text-teal-950 text-mini font-mono flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs font-semibold"
                   >
-                    <BellIcon size={14} className="text-accent" />
+                    <BellIcon size={14} className="text-emerald-600" />
                     <span>{testAlertSent === 'KakaoTalk' ? '알림톡 Dispatched ✓' : 'Send Test Opportunity Ping'}</span>
                   </button>
                   <button
                     type="button"
                     onClick={handleDisconnectKakao}
-                    className="w-full h-9 rounded-btn border border-red-500/30 text-red-400 hover:bg-red-500/10 text-mini font-mono transition-colors cursor-pointer"
+                    className="w-full h-9 rounded-btn border border-rose-200 bg-white hover:bg-rose-50 text-rose-600 text-mini font-mono transition-colors cursor-pointer"
                   >
                     Disconnect KakaoTalk
                   </button>
@@ -286,7 +290,7 @@ export const NotificationsPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsKakaoModal(true)}
-                  className="w-full h-11 rounded-btn bg-[#fee500] hover:bg-[#ebd400] text-zinc-950 font-semibold text-[13px] font-mono transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                  className="w-full h-11 rounded-btn bg-[#fee500] hover:bg-[#ebd400] text-amber-950 font-bold text-[13px] font-mono transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-amber-900/15"
                 >
                   <span>Authorize with KakaoTalk</span>
                   <ExternalLinkIcon size={14} />
@@ -296,22 +300,22 @@ export const NotificationsPage: React.FC = () => {
           </div>
 
           {/* Column 3: Discord Bot */}
-          <div className="p-6 rounded-card bg-surface border border-border flex flex-col justify-between space-y-6 hover:border-zinc-700 transition-colors">
+          <div className="p-6 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] flex flex-col justify-between space-y-6 hover:border-indigo-400/80 transition-all">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-btn bg-[#5865f2]/10 border border-[#5865f2]/30 flex items-center justify-center text-[#5865f2]">
-                  <span className="font-bold font-mono text-[16px]">DC</span>
+                <div className="w-11 h-11 rounded-btn bg-[#5865f2]/15 border border-[#5865f2]/30 flex items-center justify-center text-[#5865f2] shadow-xs">
+                  <DiscordIcon size={24} />
                 </div>
                 <span
-                  className={`text-mini font-mono px-2.5 py-1 rounded border flex items-center gap-1.5 ${
+                  className={`text-mini font-mono px-2.5 py-1 rounded border flex items-center gap-1.5 font-bold ${
                     discordActive
-                      ? 'bg-accent/10 text-accent border-accent-border'
-                      : 'bg-zinc-900 text-zinc-500 border-zinc-800'
+                      ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                      : 'bg-white/80 text-teal-800 border-teal-200'
                   }`}
                 >
                   <span
                     className={`w-1.5 h-1.5 rounded-full ${
-                      discordActive ? 'bg-accent animate-pulse' : 'bg-zinc-600'
+                      discordActive ? 'bg-emerald-600 animate-pulse' : 'bg-slate-400'
                     }`}
                   />
                   <span>{discordActive ? 'CONNECTED' : 'DISCONNECTED'}</span>
@@ -319,50 +323,50 @@ export const NotificationsPage: React.FC = () => {
               </div>
 
               <div>
-                <h3 className="text-[17px] font-semibold text-text">Discord Bot</h3>
-                <div className="text-mini font-mono text-[#5865f2] mt-0.5">Webhook & Squad Bot</div>
-                <p className="text-[13px] text-muted mt-2 leading-relaxed">
+                <h3 className="text-[17px] font-bold text-indigo-950">Discord Bot</h3>
+                <div className="text-mini font-mono text-[#5865f2] font-bold mt-0.5">Webhook & Squad Bot</div>
+                <p className="text-[13px] text-teal-950 mt-2 leading-relaxed">
                   Direct webhook & DM bot for hackathon team servers, developer communities, and automated squad recruiting notifications.
                 </p>
               </div>
 
-              <div className="space-y-2 pt-2 border-t border-border/60 text-mini font-mono text-zinc-300">
+              <div className="space-y-2 pt-2 border-t border-teal-200/60 text-mini font-mono text-teal-900">
                 <div className="flex items-center gap-2">
-                  <CheckIcon size={12} className="text-accent flex-shrink-0" />
+                  <CheckIcon size={12} className="text-emerald-600 flex-shrink-0" />
                   <span>Private squad channel webhooks</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckIcon size={12} className="text-accent flex-shrink-0" />
+                  <CheckIcon size={12} className="text-emerald-600 flex-shrink-0" />
                   <span>Teammate recruit pings & invites</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckIcon size={12} className="text-accent flex-shrink-0" />
+                  <CheckIcon size={12} className="text-emerald-600 flex-shrink-0" />
                   <span>Rich embed formatting & links</span>
                 </div>
               </div>
 
               {discordActive && (
-                <div className="p-2.5 rounded bg-zinc-900 border border-zinc-800 text-mini font-mono text-muted truncate">
-                  Webhook: <span className="text-zinc-100">{discordWebhook}</span>
+                <div className="p-2.5 rounded bg-gradient-to-br from-indigo-50 to-violet-100/80 border border-indigo-300/60 text-mini font-mono text-indigo-950 truncate">
+                  Webhook: <span className="text-indigo-950 font-bold">{discordWebhook}</span>
                 </div>
               )}
             </div>
 
-            <div className="space-y-2 pt-4 border-t border-border">
+            <div className="space-y-2 pt-4 border-t border-teal-200/60">
               {discordActive ? (
                 <>
                   <button
                     type="button"
                     onClick={() => triggerTestAlert('Discord')}
-                    className="w-full h-10 rounded-btn bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 text-zinc-200 text-mini font-mono flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                    className="w-full h-10 rounded-btn bg-white hover:bg-slate-50 border border-teal-200 text-teal-950 text-mini font-mono flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs font-semibold"
                   >
-                    <BellIcon size={14} className="text-accent" />
+                    <BellIcon size={14} className="text-emerald-600" />
                     <span>{testAlertSent === 'Discord' ? 'Webhook Dispatched ✓' : 'Send Test Opportunity Ping'}</span>
                   </button>
                   <button
                     type="button"
                     onClick={handleDisconnectDiscord}
-                    className="w-full h-9 rounded-btn border border-red-500/30 text-red-400 hover:bg-red-500/10 text-mini font-mono transition-colors cursor-pointer"
+                    className="w-full h-9 rounded-btn border border-rose-200 bg-white hover:bg-rose-50 text-rose-600 text-mini font-mono transition-colors cursor-pointer"
                   >
                     Disconnect Discord
                   </button>
@@ -371,7 +375,7 @@ export const NotificationsPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsDiscordModal(true)}
-                  className="w-full h-11 rounded-btn bg-[#5865f2] hover:bg-[#4752c4] text-white font-semibold text-[13px] font-mono transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                  className="w-full h-11 rounded-btn bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold text-[13px] font-mono transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-indigo-900/20"
                 >
                   <span>Authorize with Discord</span>
                   <ExternalLinkIcon size={14} />
@@ -384,14 +388,14 @@ export const NotificationsPage: React.FC = () => {
 
       {/* Modal: Authorize Telegram */}
       {isTelegramModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#09090b]/90 backdrop-blur-sm">
-          <div className="w-full max-w-md bg-surface border border-zinc-700 rounded-card shadow-2xl p-6 space-y-4">
-            <h3 className="text-[17px] font-semibold text-text">Link Telegram Account</h3>
-            <p className="text-[13px] text-muted leading-relaxed">
-              Open Telegram and search for <strong className="text-accent">@QadamAgentBot</strong> or enter your Telegram username below to enable instant opportunity pings.
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md">
+          <div className="w-full max-w-md bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-6 space-y-4 text-slate-900">
+            <h3 className="text-[17px] font-bold text-indigo-950">Link Telegram Account</h3>
+            <p className="text-[13px] text-teal-950 leading-relaxed">
+              Open Telegram and search for <strong className="text-emerald-700">@QadamAgentBot</strong> or enter your Telegram username below to enable instant opportunity pings.
             </p>
             <div>
-              <label className="block text-mini font-mono uppercase text-muted-2 mb-1">
+              <label className="block text-mini font-mono uppercase text-teal-900 font-semibold mb-1">
                 Telegram Username or Chat ID
               </label>
               <input
@@ -399,21 +403,21 @@ export const NotificationsPage: React.FC = () => {
                 value={telegramHandle}
                 onChange={(e) => setTelegramHandle(e.target.value)}
                 placeholder="@username"
-                className="w-full h-11 px-3.5 bg-sidebar border border-border rounded-btn text-[13px] text-text font-mono focus:border-accent focus:outline-none"
+                className="w-full h-11 px-3.5 bg-white border border-teal-200 rounded-btn text-[13px] text-slate-900 font-mono focus:border-emerald-600 focus:outline-none transition-colors shadow-xs"
               />
             </div>
             <div className="pt-2 flex items-center justify-end gap-3">
               <button
                 type="button"
                 onClick={() => setIsTelegramModal(false)}
-                className="h-10 px-4 rounded-btn border border-border text-muted hover:text-text text-mini font-mono cursor-pointer"
+                className="h-10 px-4 rounded-btn border border-teal-200 text-slate-700 hover:text-slate-900 hover:bg-white text-mini font-mono cursor-pointer transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleConnectTelegram}
-                className="h-10 px-5 bg-accent hover:bg-emerald-500 text-zinc-950 font-semibold rounded-btn text-mini font-mono cursor-pointer"
+                className="h-10 px-5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-semibold rounded-btn text-mini font-mono cursor-pointer transition-colors shadow-xs"
               >
                 Confirm Connection
               </button>
@@ -424,14 +428,14 @@ export const NotificationsPage: React.FC = () => {
 
       {/* Modal: Authorize KakaoTalk */}
       {isKakaoModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#09090b]/90 backdrop-blur-sm">
-          <div className="w-full max-w-md bg-surface border border-zinc-700 rounded-card shadow-2xl p-6 space-y-4">
-            <h3 className="text-[17px] font-semibold text-text">Link KakaoTalk Channel</h3>
-            <p className="text-[13px] text-muted leading-relaxed">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md">
+          <div className="w-full max-w-md bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-6 space-y-4 text-slate-900">
+            <h3 className="text-[17px] font-bold text-indigo-950">Link KakaoTalk Channel</h3>
+            <p className="text-[13px] text-teal-950 leading-relaxed">
               Connect via Kakao i OpenBuilder channel to receive official 알림톡 notifications for Asian grants and scholarships.
             </p>
             <div>
-              <label className="block text-mini font-mono uppercase text-muted-2 mb-1">
+              <label className="block text-mini font-mono uppercase text-teal-900 font-semibold mb-1">
                 Kakao ID or Phone Number
               </label>
               <input
@@ -439,21 +443,21 @@ export const NotificationsPage: React.FC = () => {
                 value={kakaoHandle}
                 onChange={(e) => setKakaoHandle(e.target.value)}
                 placeholder="kakao_id or +82 10-xxxx-xxxx"
-                className="w-full h-11 px-3.5 bg-sidebar border border-border rounded-btn text-[13px] text-text font-mono focus:border-accent focus:outline-none"
+                className="w-full h-11 px-3.5 bg-white border border-teal-200 rounded-btn text-[13px] text-slate-900 font-mono focus:border-emerald-600 focus:outline-none transition-colors shadow-xs"
               />
             </div>
             <div className="pt-2 flex items-center justify-end gap-3">
               <button
                 type="button"
                 onClick={() => setIsKakaoModal(false)}
-                className="h-10 px-4 rounded-btn border border-border text-muted hover:text-text text-mini font-mono cursor-pointer"
+                className="h-10 px-4 rounded-btn border border-teal-200 text-slate-700 hover:text-slate-900 hover:bg-white text-mini font-mono cursor-pointer transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleConnectKakao}
-                className="h-10 px-5 bg-[#fee500] hover:bg-[#ebd400] text-zinc-950 font-semibold rounded-btn text-mini font-mono cursor-pointer"
+                className="h-10 px-5 bg-[#fee500] hover:bg-[#ebd400] text-amber-950 font-bold rounded-btn text-mini font-mono cursor-pointer transition-colors shadow-xs"
               >
                 Confirm Connection
               </button>
@@ -464,14 +468,14 @@ export const NotificationsPage: React.FC = () => {
 
       {/* Modal: Authorize Discord */}
       {isDiscordModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#09090b]/90 backdrop-blur-sm">
-          <div className="w-full max-w-md bg-surface border border-zinc-700 rounded-card shadow-2xl p-6 space-y-4">
-            <h3 className="text-[17px] font-semibold text-text">Link Discord Webhook</h3>
-            <p className="text-[13px] text-muted leading-relaxed">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md">
+          <div className="w-full max-w-md bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-6 space-y-4 text-slate-900">
+            <h3 className="text-[17px] font-bold text-indigo-950">Link Discord Webhook</h3>
+            <p className="text-[13px] text-teal-950 leading-relaxed">
               Enter a Discord incoming webhook URL from your server or squad channel to stream real-time opportunity alerts and team requests.
             </p>
             <div>
-              <label className="block text-mini font-mono uppercase text-muted-2 mb-1">
+              <label className="block text-mini font-mono uppercase text-teal-900 font-semibold mb-1">
                 Discord Incoming Webhook URL
               </label>
               <input
@@ -479,21 +483,21 @@ export const NotificationsPage: React.FC = () => {
                 value={discordWebhook}
                 onChange={(e) => setDiscordWebhook(e.target.value)}
                 placeholder="https://discord.com/api/webhooks/..."
-                className="w-full h-11 px-3.5 bg-sidebar border border-border rounded-btn text-[12px] text-text font-mono focus:border-accent focus:outline-none"
+                className="w-full h-11 px-3.5 bg-white border border-teal-200 rounded-btn text-[12px] text-slate-900 font-mono focus:border-emerald-600 focus:outline-none transition-colors shadow-xs"
               />
             </div>
             <div className="pt-2 flex items-center justify-end gap-3">
               <button
                 type="button"
                 onClick={() => setIsDiscordModal(false)}
-                className="h-10 px-4 rounded-btn border border-border text-muted hover:text-text text-mini font-mono cursor-pointer"
+                className="h-10 px-4 rounded-btn border border-teal-200 text-slate-700 hover:text-slate-900 hover:bg-white text-mini font-mono cursor-pointer transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleConnectDiscord}
-                className="h-10 px-5 bg-[#5865f2] hover:bg-[#4752c4] text-white font-semibold rounded-btn text-mini font-mono cursor-pointer"
+                className="h-10 px-5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold rounded-btn text-mini font-mono cursor-pointer transition-colors shadow-xs"
               >
                 Confirm Connection
               </button>
@@ -506,4 +510,3 @@ export const NotificationsPage: React.FC = () => {
 };
 
 export default NotificationsPage;
-

@@ -1,20 +1,18 @@
 import React from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { Sidebar } from './components/Sidebar';
+import { AmbientBackground } from './components/AmbientBackground';
 import { RadarPage } from './pages/RadarPage';
 import { MemoryPage } from './pages/MemoryPage';
 import { CvLabPage } from './pages/CvLabPage';
-import { PrivacyPage } from './pages/PrivacyPage';
-import { LogsPage } from './pages/LogsPage';
-import { ProfilePage } from './pages/ProfilePage';
 import { NetworkPage } from './pages/NetworkPage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { ApplicationStudioPage } from './pages/ApplicationStudioPage';
+import { AccountPortalPage } from './pages/AccountPortalPage';
 import { WelcomePage } from './pages/WelcomePage';
 import { OnboardingWizard } from './components/OnboardingWizard';
 import { CvGapsModal } from './components/CvGapsModal';
 import { QuizModal } from './components/QuizModal';
-import { DraftApplicationModal } from './components/DraftApplicationModal';
 import { OpportunityDetailsModal } from './components/OpportunityDetailsModal';
 import { useApp } from './context/AppContext';
 import { isProfileValid } from './db/userProfile';
@@ -29,34 +27,51 @@ export const App: React.FC = () => {
     return <Navigate to="/welcome" replace />;
   }
 
-  // Standalone Welcome landing page
+  // Standalone Welcome landing page with zero blocking overlay on fresh entry
   if (location.pathname === '/welcome') {
     return (
-      <div className="min-h-screen bg-bg text-text antialiased selection:bg-accent/20 selection:text-text font-sans">
+      <div className="min-h-screen bg-transparent text-slate-100 antialiased selection:bg-accent/20 selection:text-white font-sans relative">
+        <AmbientBackground />
         <WelcomePage />
         <OnboardingWizard />
       </div>
     );
   }
 
+  // Dedicated Full-Page Account Portal Layout (Hides standard workspace sidebar)
+  if (
+    location.pathname.startsWith('/account') ||
+    location.pathname === '/profile' ||
+    location.pathname === '/settings' ||
+    location.pathname === '/support'
+  ) {
+    return (
+      <div className="min-h-screen bg-transparent text-slate-100 antialiased selection:bg-accent/20 selection:text-white font-sans relative">
+        <AmbientBackground />
+        <AccountPortalPage />
+        <OnboardingWizard />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-bg text-text flex flex-col lg:flex-row antialiased selection:bg-accent/20 selection:text-text font-sans">
+    <div className="min-h-screen bg-transparent text-slate-100 flex flex-col lg:flex-row antialiased selection:bg-accent/20 selection:text-white font-sans relative">
+      <AmbientBackground />
+
       {/* 248px Left Sidebar Navigation */}
       <Sidebar />
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col min-w-0 bg-bg overflow-x-hidden">
+      <main className="flex-1 flex flex-col min-w-0 bg-transparent overflow-x-hidden relative z-10">
         <Routes>
           <Route path="/" element={<RadarPage />} />
-          <Route path="/onboarding" element={<Navigate to="/welcome" replace />} />
-          <Route path="/memory" element={<MemoryPage />} />
           <Route path="/cv" element={<CvLabPage />} />
+          <Route path="/memory" element={<MemoryPage />} />
           <Route path="/network" element={<NetworkPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/application-studio" element={<ApplicationStudioPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/logs" element={<LogsPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/privacy" element={<Navigate to="/account?tab=settings" replace />} />
+          <Route path="/logs" element={<Navigate to="/account?tab=settings" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
@@ -65,11 +80,9 @@ export const App: React.FC = () => {
       <OnboardingWizard />
       <CvGapsModal />
       <QuizModal />
-      <DraftApplicationModal />
       <OpportunityDetailsModal />
     </div>
   );
 };
 
 export default App;
-

@@ -139,23 +139,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return loadUserProfile();
   });
 
-  const [isOnboardingOpen, setIsOnboardingOpenState] = useState<boolean>(() => {
-    const profile = loadUserProfile();
-    return !isProfileValid(profile);
-  });
-
-  // Strict guard: if user profile is invalid, force onboarding wizard open unconditionally
-  useEffect(() => {
-    if (!isProfileValid(userProfile)) {
-      setIsOnboardingOpenState(true);
-    }
-  }, [userProfile]);
+  const [isOnboardingOpen, setIsOnboardingOpenState] = useState<boolean>(false);
 
   const setIsOnboardingOpen = (open: boolean) => {
-    if (!open && !isProfileValid(userProfile)) {
-      setIsOnboardingOpenState(true);
-      return;
-    }
     setIsOnboardingOpenState(open);
   };
   const [skills, setSkills] = useState<SkillItem[]>(() => {

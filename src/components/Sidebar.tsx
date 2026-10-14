@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { NavLink, useLocation, Link } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { NavLink, useLocation, useNavigate, Link } from 'react-router-dom';
 import {
   RadarIcon,
   MemoryIcon,
@@ -9,22 +9,52 @@ import {
   UsersIcon,
   UserIcon,
   BellIcon,
+  HelpCircleIcon,
+  LogOutIcon,
 } from './Icons';
 import { useApp } from '../context/AppContext';
 
 export const Sidebar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { userProfile } = useApp();
-  const location = useLocation();
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const gearBtnRef = useRef<HTMLButtonElement>(null);
+  const userCardRef = useRef<HTMLDivElement>(null);
 
+  const { userProfile, resetToDefaultProfile } = useApp();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Exactly 5 core workspace navigation modules
   const navItems = [
     { to: '/', label: 'Opportunity Radar', icon: RadarIcon },
     { to: '/cv', label: 'CV & Skill Lab', icon: CvIcon },
     { to: '/memory', label: 'Agent Memory', icon: MemoryIcon },
     { to: '/network', label: 'Teammates & Network', icon: UsersIcon },
     { to: '/notifications', label: 'Notifications & Bots', icon: BellIcon },
-    { to: '/profile', label: 'Settings & Profile', icon: UserIcon },
   ];
+
+  // Close popover on click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        popoverRef.current &&
+        !popoverRef.current.contains(event.target as Node) &&
+        gearBtnRef.current &&
+        !gearBtnRef.current.contains(event.target as Node) &&
+        userCardRef.current &&
+        !userCardRef.current.contains(event.target as Node)
+      ) {
+        setIsPopoverOpen(false);
+      }
+    };
+    if (isPopoverOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isPopoverOpen]);
 
   // Derive initials from name
   const initials = [userProfile.name?.[0], userProfile.surname?.[0]]
@@ -36,23 +66,35 @@ export const Sidebar: React.FC = () => {
     ? `${userProfile.name} ${userProfile.surname || ''}`.trim()
     : 'New Candidate';
 
+  const handleNavigatePortal = (tab: 'profile' | 'settings' | 'support') => {
+    setIsPopoverOpen(false);
+    setIsMobileMenuOpen(false);
+    navigate(`/account?tab=${tab}`);
+  };
+
+  const handleLogOut = () => {
+    setIsPopoverOpen(false);
+    setIsMobileMenuOpen(false);
+    resetToDefaultProfile();
+    navigate('/welcome');
+  };
+
   return (
     <>
-      {/* Mobile Header Bar */}
-      <div className="lg:hidden flex items-center justify-between px-4 py-3 bg-bg border-b border-border sticky top-0 z-30">
+      {/* Mobile Top Header */}
+      <div className="lg:hidden flex items-center justify-between px-4 py-3 bg-slate-900/80 backdrop-blur-md border-b border-teal-500/20 sticky top-0 z-30 shadow-md">
         <Link to="/welcome" className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-sm bg-accent rotate-45 inline-block" />
-          <span className="font-semibold text-text tracking-tight text-[15px]">QADAM</span>
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-mono bg-accent/10 text-accent border border-accent-border">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-            SOVEREIGN
+          <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500 rotate-45 inline-block" />
+          <span className="font-semibold text-white tracking-tight text-[15px] font-mono">QADAM</span>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-500/10 text-teal-300 border border-teal-500/30 font-medium">
+            «Қадам»
           </span>
         </Link>
         <button
           type="button"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-          className="h-10 w-10 flex items-center justify-center rounded-btn border border-border text-muted hover:text-text hover:bg-surface-hover cursor-pointer"
+          className="h-9 w-9 flex items-center justify-center rounded-btn bg-white/10 text-teal-100 hover:text-white cursor-pointer transition-colors"
         >
           {isMobileMenuOpen ? <CloseIcon size={16} /> : <span className="text-sm font-mono">☰</span>}
         </button>
@@ -62,28 +104,28 @@ export const Sidebar: React.FC = () => {
       <aside
         className={`
           ${isMobileMenuOpen ? 'block' : 'hidden'}
-          lg:flex flex-col w-full lg:w-[248px] lg:min-w-[248px] bg-bg border-r border-border min-h-screen lg:sticky lg:top-0 lg:h-screen z-20 select-none
+          lg:flex flex-col w-full lg:w-[248px] lg:min-w-[248px] bg-gradient-to-b from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl min-h-screen lg:sticky lg:top-0 lg:h-screen z-20 select-none border-r border-teal-300/40 shadow-[4px_0_24px_rgba(6,182,212,0.12)]
         `}
       >
         {/* Top Brand Header */}
-        <div className="p-4 border-b border-border flex items-center justify-between">
+        <div className="p-4 border-b border-teal-200/80 flex items-center justify-between bg-white/50">
           <Link
             to="/welcome"
-            title="QADAM — Return to Welcome Page"
+            title="QADAM: Return to Welcome Page"
             className="flex items-center gap-2.5 hover:opacity-85 transition-opacity"
           >
-            <span className="w-2.5 h-2.5 rounded-sm bg-accent rotate-45 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-sm bg-emerald-600 rotate-45 inline-block shadow-xs" />
             <div className="flex items-baseline gap-1.5">
-              <h1 className="text-[16px] font-bold text-text tracking-tight font-sans">QADAM</h1>
-              <span className="text-[11px] font-mono text-muted-2">«Қадам»</span>
+              <h1 className="text-[16px] font-bold text-indigo-950 tracking-tight font-sans">QADAM</h1>
+              <span className="text-[11px] font-mono text-teal-800">«Қадам»</span>
             </div>
           </Link>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-border text-zinc-400">
-            SOVEREIGN
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300/60 font-semibold">
+            ACTIVE
           </span>
         </div>
 
-        {/* Clean, Focused 6 Navigation Items */}
+        {/* Clean, Focused 5 Core Navigation Modules */}
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto" aria-label="Main Navigation">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -98,54 +140,142 @@ export const Sidebar: React.FC = () => {
                 to={item.to}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={`
-                  flex items-center gap-3 px-3 h-10 rounded-btn text-[13px] font-medium transition-colors
+                  flex items-center gap-3 px-3 h-10 rounded-btn text-[13px] font-medium transition-all cursor-pointer group
                   ${
                     isActive
-                      ? 'bg-surface text-text border border-zinc-700 font-semibold shadow-sm'
-                      : 'text-muted hover:text-text hover:bg-surface/60'
+                      ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/15 text-teal-950 font-bold border border-teal-300/70 shadow-xs'
+                      : 'text-slate-700 hover:text-slate-950 hover:bg-white/70'
                   }
                 `}
               >
-                <Icon size={16} className={isActive ? 'text-accent' : 'text-muted-2'} />
+                <Icon size={16} className={isActive ? 'text-emerald-700' : 'text-teal-700/70 group-hover:text-emerald-700'} />
                 <span>{item.label}</span>
               </NavLink>
             );
           })}
         </nav>
 
-        {/* User Profile & Settings Footer -> Navigates directly to /profile */}
-        <div className="p-3 border-t border-border flex items-center justify-between bg-surface/20">
-          <NavLink
-            to="/profile"
-            title="Settings & Profile"
-            className="flex items-center gap-2.5 min-w-0 text-left hover:opacity-85 transition-opacity flex-1"
-          >
-            {userProfile.avatarUrl ? (
-              <img
-                src={userProfile.avatarUrl}
-                alt={displayName}
-                className="w-7 h-7 rounded-full object-cover border border-zinc-700 flex-shrink-0"
-              />
-            ) : (
-              <div className="w-7 h-7 rounded-full bg-zinc-900 border border-zinc-700 flex items-center justify-center text-[11px] font-mono font-medium text-zinc-200 flex-shrink-0">
-                {initials}
+        {/* Bottom Gear & Profile Trigger Section */}
+        <div className="p-3 border-t border-teal-200/80 bg-white/40 relative">
+          {/* Popover Menu (Appears directly above the footer card) */}
+          {isPopoverOpen && (
+            <div
+              ref={popoverRef}
+              role="menu"
+              aria-orientation="vertical"
+              className="absolute bottom-[calc(100%+8px)] left-3 right-3 bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] rounded-card shadow-2xl p-1.5 z-50 animate-fadeIn space-y-0.5 border border-teal-200/90"
+            >
+              <div className="px-3 py-2 border-b border-teal-200/60 text-[11px] font-mono text-teal-800 font-semibold">
+                ACCOUNT & PREFERENCES
               </div>
-            )}
-            <div className="min-w-0 flex-1">
-              <div className="text-[13px] font-medium text-text truncate">{displayName}</div>
-              <div className="text-[11px] font-mono text-muted-2 truncate">
-                {userProfile.university || 'Settings & Profile'}
+
+              {/* 1. Profile */}
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => handleNavigatePortal('profile')}
+                className="w-full px-3 py-2.5 rounded-btn flex items-center gap-3 text-left hover:bg-white/80 transition-colors cursor-pointer group"
+              >
+                <div className="w-7 h-7 rounded-btn bg-white flex items-center justify-center text-teal-700 group-hover:text-emerald-700 group-hover:bg-emerald-50 border border-teal-200/60">
+                  <UserIcon size={14} />
+                </div>
+                <div>
+                  <div className="text-[13px] font-semibold text-indigo-950">Profile</div>
+                  <div className="text-[11px] font-mono text-teal-800">Identity, stack, CV</div>
+                </div>
+              </button>
+
+              {/* 2. Settings */}
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => handleNavigatePortal('settings')}
+                className="w-full px-3 py-2.5 rounded-btn flex items-center gap-3 text-left hover:bg-white/80 transition-colors cursor-pointer group"
+              >
+                <div className="w-7 h-7 rounded-btn bg-white flex items-center justify-center text-teal-700 group-hover:text-emerald-700 group-hover:bg-emerald-50 border border-teal-200/60">
+                  <SettingsIcon size={14} />
+                </div>
+                <div>
+                  <div className="text-[13px] font-semibold text-indigo-950">Settings</div>
+                  <div className="text-[11px] font-mono text-teal-800">Privacy, OpenShell logs</div>
+                </div>
+              </button>
+
+              {/* 3. Tech Support */}
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => handleNavigatePortal('support')}
+                className="w-full px-3 py-2.5 rounded-btn flex items-center gap-3 text-left hover:bg-white/80 transition-colors cursor-pointer group"
+              >
+                <div className="w-7 h-7 rounded-btn bg-white flex items-center justify-center text-teal-700 group-hover:text-emerald-700 group-hover:bg-emerald-50 border border-teal-200/60">
+                  <HelpCircleIcon size={14} />
+                </div>
+                <div>
+                  <div className="text-[13px] font-semibold text-indigo-950">Tech Support</div>
+                  <div className="text-[11px] font-mono text-teal-800">Guides, bug report, FAQ</div>
+                </div>
+              </button>
+
+              <div className="pt-1 border-t border-teal-200/60">
+                {/* 4. Log Out */}
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={handleLogOut}
+                  className="w-full px-3 py-2 rounded-btn flex items-center gap-3 text-left hover:bg-rose-50 text-slate-700 hover:text-rose-600 transition-colors cursor-pointer group"
+                >
+                  <div className="w-7 h-7 rounded-btn bg-white flex items-center justify-center text-rose-500 group-hover:bg-rose-100 border border-rose-200/60">
+                    <LogOutIcon size={14} />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-semibold">Log Out</div>
+                    <div className="text-[11px] font-mono text-rose-700">End session & lock</div>
+                  </div>
+                </button>
               </div>
             </div>
-          </NavLink>
+          )}
 
-          <NavLink
-            to="/profile"
-            aria-label="Settings"
-            className="w-8 h-8 flex items-center justify-center rounded-btn border border-transparent hover:border-border text-muted hover:text-text transition-colors"
-          >
-            <SettingsIcon size={15} />
-          </NavLink>
+          {/* Trigger User Card + Gear Button */}
+          <div className="flex items-center justify-between gap-2 p-1.5 rounded-card bg-white/80 hover:bg-white transition-colors border border-teal-200/80 shadow-xs">
+            <div
+              ref={userCardRef}
+              onClick={() => setIsPopoverOpen(!isPopoverOpen)}
+              className="flex items-center gap-2.5 min-w-0 text-left cursor-pointer flex-1"
+            >
+              {userProfile.avatarUrl ? (
+                <img
+                  src={userProfile.avatarUrl}
+                  alt={displayName}
+                  className="w-7 h-7 rounded-full object-cover border border-emerald-500/60 flex-shrink-0"
+                />
+              ) : (
+                <div className="w-7 h-7 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-[11px] font-mono font-bold text-emerald-800 flex-shrink-0">
+                  {initials}
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <div className="text-[13px] font-semibold text-indigo-950 truncate">{displayName}</div>
+                <div className="text-[11px] font-mono text-teal-800 truncate">
+                  {userProfile.university || 'Account Portal'}
+                </div>
+              </div>
+            </div>
+
+            <button
+              ref={gearBtnRef}
+              type="button"
+              aria-label="Account Settings Menu"
+              onClick={() => setIsPopoverOpen(!isPopoverOpen)}
+              className={`
+                w-8 h-8 flex items-center justify-center rounded-btn transition-colors cursor-pointer
+                ${isPopoverOpen ? 'bg-emerald-50 text-emerald-700' : 'text-teal-700 hover:text-emerald-700 hover:bg-white'}
+              `}
+            >
+              <SettingsIcon size={15} />
+            </button>
+          </div>
         </div>
       </aside>
     </>

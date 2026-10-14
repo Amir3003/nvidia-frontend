@@ -1,8 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { CloseIcon, CheckIcon, AlertTriangleIcon, FlaskIcon } from './Icons';
 
 export const CvGapsModal: React.FC = () => {
+  const navigate = useNavigate();
   const {
     selectedOpportunityForGaps,
     setSelectedOpportunityForGaps,
@@ -54,16 +56,16 @@ export const CvGapsModal: React.FC = () => {
       role="dialog"
       aria-modal="true"
       aria-labelledby="gaps-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#09090b]/90 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md"
     >
-      <div className="w-full max-w-xl bg-surface border border-border rounded-card shadow-2xl flex flex-col overflow-hidden">
+      <div className="w-full max-w-xl bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl flex flex-col overflow-hidden text-slate-900">
         {/* Header */}
-        <div className="px-5 py-4 border-b border-border flex items-center justify-between bg-sidebar">
+        <div className="px-5 py-4 border-b border-teal-200/60 flex items-center justify-between bg-teal-50/70">
           <div>
-            <div className="text-mini font-mono uppercase text-muted-2 tracking-wider">
+            <div className="text-mini font-mono uppercase text-teal-900 font-bold tracking-wider">
               ATS Gap Analysis & Verification
             </div>
-            <h3 id="gaps-modal-title" className="text-subheading text-text font-semibold mt-0.5">
+            <h3 id="gaps-modal-title" className="text-subheading text-indigo-950 font-bold mt-0.5">
               {opp.title}
             </h3>
           </div>
@@ -71,7 +73,7 @@ export const CvGapsModal: React.FC = () => {
             type="button"
             onClick={() => setSelectedOpportunityForGaps(null)}
             aria-label="Close dialog"
-            className="w-8 h-8 flex items-center justify-center text-muted hover:text-text rounded-btn"
+            className="w-8 h-8 flex items-center justify-center text-teal-800 hover:text-indigo-950 hover:bg-teal-100/60 rounded-btn cursor-pointer transition-colors"
           >
             <CloseIcon size={16} />
           </button>
@@ -80,15 +82,15 @@ export const CvGapsModal: React.FC = () => {
         {/* Content */}
         <div className="p-5 space-y-5 overflow-y-auto max-h-[75vh]">
           {/* Compatibility Banner */}
-          <div className="p-4 bg-sidebar rounded-card border border-border flex items-center justify-between">
+          <div className="p-4 bg-white/90 rounded-card border border-teal-200/80 flex items-center justify-between shadow-2xs">
             <div>
-              <div className="text-mini font-mono text-muted uppercase">Match Alignment</div>
-              <div className="text-[20px] font-mono font-bold text-accent mt-0.5">
+              <div className="text-mini font-mono text-teal-900 uppercase font-bold">Match Alignment</div>
+              <div className="text-[22px] font-mono font-black text-emerald-700 mt-0.5">
                 {opp.match}% match
               </div>
             </div>
-            <div className="text-right text-mini font-mono text-muted">
-              <div>Candidate: <strong className="text-text">{userProfile.name}</strong></div>
+            <div className="text-right text-mini font-mono text-slate-700">
+              <div>Candidate: <strong className="text-indigo-950 font-bold">{userProfile.name}</strong></div>
               <div>ATS Benchmark: {opp.type}</div>
             </div>
           </div>
@@ -96,8 +98,8 @@ export const CvGapsModal: React.FC = () => {
           {/* 1. Verified Matched Skills */}
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="w-2 h-2 rounded-full bg-accent" />
-              <h4 className="text-mini font-mono uppercase text-accent font-semibold tracking-wider">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <h4 className="text-mini font-mono uppercase text-teal-900 font-bold tracking-wider">
                 Verified Tech Stack ({matchedSkills.length})
               </h4>
             </div>
@@ -106,15 +108,15 @@ export const CvGapsModal: React.FC = () => {
                 {matchedSkills.map((s) => (
                   <span
                     key={s}
-                    className="px-2.5 py-1 rounded-btn text-mini font-mono border border-accent/40 bg-accent/10 text-text flex items-center gap-1.5"
+                    className="px-2.5 py-1 rounded-btn text-mini font-mono border border-emerald-300 bg-emerald-500/10 text-emerald-950 flex items-center gap-1.5 font-bold shadow-2xs"
                   >
-                    <CheckIcon size={12} className="text-accent" />
+                    <CheckIcon size={12} className="text-emerald-700" />
                     <span>{s} (Verified)</span>
                   </span>
                 ))}
               </div>
             ) : (
-              <p className="text-[12px] font-mono text-muted">No verified skills matching this role yet.</p>
+              <p className="text-[12px] font-mono text-slate-600">No verified skills matching this role yet.</p>
             )}
           </div>
 
@@ -122,8 +124,8 @@ export const CvGapsModal: React.FC = () => {
           {unverifiedSkills.length > 0 && (
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-warning" />
-                <h4 className="text-mini font-mono uppercase text-warning-text font-semibold tracking-wider">
+                <span className="w-2 h-2 rounded-full bg-amber-500" />
+                <h4 className="text-mini font-mono uppercase text-amber-900 font-bold tracking-wider">
                   Unverified Skills in Profile ({unverifiedSkills.length})
                 </h4>
               </div>
@@ -131,20 +133,20 @@ export const CvGapsModal: React.FC = () => {
                 {unverifiedSkills.map(({ name: sName, skillItem }) => (
                   <div
                     key={sName}
-                    className="p-3 rounded-btn bg-sidebar border border-warning/30 flex items-center justify-between gap-3"
+                    className="p-3 rounded-btn bg-gradient-to-br from-amber-50 to-orange-100/80 border border-amber-300/60 flex items-center justify-between gap-3 shadow-2xs"
                   >
                     <div>
-                      <div className="text-[13px] font-medium text-text">{sName}</div>
-                      <div className="text-mini font-mono text-muted">
+                      <div className="text-[13px] font-bold text-amber-950">{sName}</div>
+                      <div className="text-mini font-mono text-amber-800 font-medium">
                         Present on resume, needs benchmark score &gt;70%
                       </div>
                     </div>
                     <button
                       type="button"
                       onClick={() => handleLaunchQuiz(sName, skillItem)}
-                      className="h-9 px-3 bg-surface-hover hover:bg-border-strong border border-border-strong text-text rounded-btn text-mini font-mono font-medium flex items-center gap-1.5 flex-shrink-0 transition-colors"
+                      className="h-9 px-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white rounded-btn text-mini font-mono font-bold flex items-center gap-1.5 flex-shrink-0 transition-all shadow-xs cursor-pointer"
                     >
-                      <FlaskIcon size={13} className="text-accent" />
+                      <FlaskIcon size={13} className="text-white" />
                       <span>Take Quiz</span>
                     </button>
                   </div>
@@ -157,8 +159,8 @@ export const CvGapsModal: React.FC = () => {
           {missingSkills.length > 0 && (
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-muted-2" />
-                <h4 className="text-mini font-mono uppercase text-muted-2 font-semibold tracking-wider">
+                <span className="w-2 h-2 rounded-full bg-slate-400" />
+                <h4 className="text-mini font-mono uppercase text-teal-900 font-bold tracking-wider">
                   Missing Requirements ({missingSkills.length})
                 </h4>
               </div>
@@ -166,11 +168,11 @@ export const CvGapsModal: React.FC = () => {
                 {missingSkills.map(({ name: sName, skillItem }) => (
                   <div
                     key={sName}
-                    className="p-3 rounded-btn bg-sidebar border border-border flex items-center justify-between gap-3"
+                    className="p-3 rounded-btn bg-white/90 border border-teal-200/80 flex items-center justify-between gap-3 shadow-2xs"
                   >
                     <div>
-                      <div className="text-[13px] font-medium text-text-2">{sName}</div>
-                      <div className="text-mini font-mono text-muted-2">
+                      <div className="text-[13px] font-bold text-indigo-950">{sName}</div>
+                      <div className="text-mini font-mono text-slate-600">
                         Required for top quartile ATS ranking
                       </div>
                     </div>
@@ -178,13 +180,13 @@ export const CvGapsModal: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => handleLaunchQuiz(sName, skillItem)}
-                        className="h-9 px-3 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-500 text-zinc-100 text-mini font-mono font-medium rounded-btn flex items-center gap-1.5 flex-shrink-0 transition-colors"
+                        className="h-9 px-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-mini font-mono font-bold rounded-btn flex items-center gap-1.5 flex-shrink-0 transition-all shadow-xs cursor-pointer"
                       >
-                        <FlaskIcon size={13} className="text-accent" />
+                        <FlaskIcon size={13} className="text-white" />
                         <span>Verify & Add</span>
                       </button>
                     ) : (
-                      <span className="text-mini font-mono text-muted px-2 py-1 bg-surface rounded border border-border">
+                      <span className="text-mini font-mono text-slate-600 px-2 py-1 bg-teal-50 rounded border border-teal-200">
                         Required Skill
                       </span>
                     )}
@@ -196,17 +198,30 @@ export const CvGapsModal: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-3.5 border-t border-border bg-sidebar flex items-center justify-between">
-          <span className="text-mini font-mono text-muted-2">
+        <div className="px-5 py-3.5 border-t border-teal-200/60 bg-teal-50/70 flex items-center justify-between">
+          <span className="text-mini font-mono text-slate-600 font-medium">
             Verification directly upgrades radar match %
           </span>
-          <button
-            type="button"
-            onClick={() => setSelectedOpportunityForGaps(null)}
-            className="h-10 px-4 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-500 text-zinc-100 rounded-btn text-[13px] font-medium transition-colors"
-          >
-            Close Gap Analysis
-          </button>
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => setSelectedOpportunityForGaps(null)}
+              className="h-10 px-4 bg-white/90 hover:bg-white border border-teal-300/80 text-teal-900 rounded-btn text-[13px] font-semibold transition-colors shadow-2xs cursor-pointer"
+            >
+              Close Gap Analysis
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                const oppId = opp.id;
+                setSelectedOpportunityForGaps(null);
+                navigate(`/application-studio?id=${oppId}`);
+              }}
+              className="h-10 px-5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white rounded-btn text-[13px] font-bold transition-all shadow-xs cursor-pointer"
+            >
+              Draft Application
+            </button>
+          </div>
         </div>
       </div>
     </div>

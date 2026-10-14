@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { USER_ROLES, POPULAR_TECH_STACK, CAREER_OBJECTIVES } from '../db/userProfile';
 import {
@@ -9,9 +10,12 @@ import {
   RadarIcon,
   EyeIcon,
   EyeOffIcon,
+  CloseIcon,
+  UserIcon,
 } from './Icons';
 
 export const OnboardingWizard: React.FC = () => {
+  const navigate = useNavigate();
   const { userProfile, updateUserProfile, isOnboardingOpen, setIsOnboardingOpen, addLog } =
     useApp();
 
@@ -36,7 +40,7 @@ export const OnboardingWizard: React.FC = () => {
   const [cvText, setCvText] = useState(userProfile.cvText || '');
 
   // Keep state in sync if profile is reset or reopened
-  React.useEffect(() => {
+  useEffect(() => {
     if (isOnboardingOpen) {
       setName(userProfile.name || '');
       setSurname(userProfile.surname || '');
@@ -53,6 +57,17 @@ export const OnboardingWizard: React.FC = () => {
       setStep(1);
     }
   }, [isOnboardingOpen, userProfile]);
+
+  // Handle Escape key to close modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOnboardingOpen) {
+        setIsOnboardingOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOnboardingOpen, setIsOnboardingOpen]);
 
   if (!isOnboardingOpen) return null;
 
@@ -127,25 +142,37 @@ export const OnboardingWizard: React.FC = () => {
     );
     addLog('SANDBOX', 'User credentials secured locally · Directory sandbox confinement confirmed to /workspace/qadam');
     setIsOnboardingOpen(false);
+    navigate('/');
   };
+
+  const handleEnterAsExisting = () => {
+    setIsOnboardingOpen(false);
+    navigate('/');
+  };
+
+  const isAlreadyOnboarded = userProfile.isOnboarded && Boolean(userProfile.name?.trim());
 
   return (
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="registration-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#09090b]/95 backdrop-blur-md"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) setIsOnboardingOpen(false);
+      }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md"
     >
-      <div className="w-full max-w-2xl bg-surface border border-border-strong rounded-card shadow-2xl flex flex-col overflow-hidden">
-        {/* Wizard Header */}
-        <div className="px-6 py-4 border-b border-border bg-[#121215] flex items-center justify-between">
+      <div className="w-full max-w-2xl bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-[0_24px_60px_-15px_rgba(6,182,212,0.3)] flex flex-col overflow-hidden text-slate-900">
+        
+        {/* Wizard Header with Visible Close Button */}
+        <div className="px-6 py-4 border-b border-teal-200/80 bg-white/75 backdrop-blur-md flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="w-2.5 h-2.5 rounded-sm bg-accent rotate-45 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-sm bg-emerald-600 rotate-45 inline-block" />
             <div>
-              <h2 id="registration-title" className="text-subheading text-text font-semibold">
+              <h2 id="registration-title" className="text-subheading text-indigo-950 font-bold">
                 Create Your QADAM Account
               </h2>
-              <div className="text-mini font-mono text-muted-2">
+              <div className="text-mini font-mono text-teal-800 font-medium">
                 Step {step} of 4:{' '}
                 {step === 1
                   ? 'Personal Identity'
@@ -158,89 +185,109 @@ export const OnboardingWizard: React.FC = () => {
             </div>
           </div>
 
-          {/* Step Progress indicators */}
-          <div className="flex items-center gap-1.5 font-mono text-mini">
-            {[1, 2, 3, 4].map((s) => (
-              <span
-                key={s}
-                className={`w-6 h-6 rounded-btn flex items-center justify-center border text-[11px] font-semibold ${
-                  step === s
-                    ? 'border-accent bg-accent/15 text-accent shadow-sm'
-                    : step > s
-                    ? 'border-accent/40 bg-accent/5 text-accent'
-                    : 'border-border bg-sidebar text-muted-2'
-                }`}
-              >
-                {step > s ? '✓' : s}
-              </span>
-            ))}
+          <div className="flex items-center gap-3">
+            {/* Step Progress indicators */}
+            <div className="flex items-center gap-1.5 font-mono text-mini">
+              {[1, 2, 3, 4].map((s) => (
+                <span
+                  key={s}
+                  className={`w-6 h-6 rounded-btn flex items-center justify-center border text-[11px] font-semibold ${
+                    step === s
+                      ? 'border-emerald-600 bg-emerald-500 text-white shadow-xs'
+                      : step > s
+                      ? 'border-emerald-400 bg-emerald-100 text-emerald-800'
+                      : 'border-teal-200 bg-white/80 text-teal-700'
+                  }`}
+                >
+                  {step > s ? '✓' : s}
+                </span>
+              ))}
+            </div>
+
+            {/* Close [ ✕ ] Button */}
+            <button
+              type="button"
+              onClick={() => setIsOnboardingOpen(false)}
+              aria-label="Close Registration Modal"
+              className="w-8 h-8 rounded-btn bg-white/80 hover:bg-white text-slate-500 hover:text-slate-900 border border-teal-200 flex items-center justify-center transition-colors cursor-pointer shadow-xs ml-1"
+            >
+              <CloseIcon size={14} />
+            </button>
           </div>
         </div>
 
+        {/* Existing Member Shortcut Banner if already onboarded */}
+        {isAlreadyOnboarded && (
+          <div className="px-6 py-2.5 bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-indigo-500/15 border-b border-teal-200 flex items-center justify-between gap-3 text-mini font-mono">
+            <div className="flex items-center gap-2 text-teal-950">
+              <UserIcon size={14} className="text-emerald-700" />
+              <span>Signed in as <strong>{userProfile.name} {userProfile.surname || ''}</strong></span>
+            </div>
+            <button
+              type="button"
+              onClick={handleEnterAsExisting}
+              className="px-3 py-1 rounded-btn bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold cursor-pointer shadow-xs flex items-center gap-1.5"
+            >
+              <span>Enter Workspace as {userProfile.name} →</span>
+            </button>
+          </div>
+        )}
+
         {/* Wizard Form Content */}
-        <div className="p-6 overflow-y-auto max-h-[72vh] space-y-4">
+        <div className="p-6 overflow-y-auto max-h-[70vh] space-y-4">
           {/* STEP 1: Personal Identity */}
           {step === 1 && (
             <div className="space-y-4">
               <div>
-                <h3 className="text-[17px] font-semibold text-text">Personal Identity</h3>
-                <p className="text-[13px] text-muted mt-1 leading-relaxed">
+                <h3 className="text-[17px] font-bold text-indigo-950">Personal Identity</h3>
+                <p className="text-[13px] text-teal-900 mt-1 leading-relaxed">
                   Enter your legal or professional name. Real letters only (minimum 2 characters).
                 </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-mini font-mono uppercase text-muted-2 mb-1">
-                    First Name <span className="text-accent">*</span>
+                  <label className="block text-mini font-mono uppercase text-teal-900 font-semibold mb-1">
+                    First Name <span className="text-emerald-600">*</span>
                   </label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="First name"
-                    autoFocus
-                    className={`w-full h-11 px-3.5 bg-sidebar border rounded-btn text-[13px] text-text placeholder:text-muted-2/60 focus:outline-none transition-colors ${
-                      name && !isNameValid
-                        ? 'border-red-500/80 focus:border-red-500'
-                        : 'border-border focus:border-accent'
-                    }`}
+                    className="w-full h-11 px-3.5 bg-white border border-teal-200/90 rounded-btn text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
                   />
-                  {name && !isNameValid && (
-                    <span className="text-[11px] font-mono text-red-400 mt-1 block">
-                      Must be at least 2 letters (no numbers or special characters).
-                    </span>
+                  {!isNameValid && name.length > 0 && (
+                    <div className="text-[11px] font-mono text-rose-600 mt-1">
+                      Minimum 2 characters, letters only (no generic names).
+                    </div>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-mini font-mono uppercase text-muted-2 mb-1">
-                    Last Name <span className="text-accent">*</span>
+                  <label className="block text-mini font-mono uppercase text-teal-900 font-semibold mb-1">
+                    Last Name <span className="text-emerald-600">*</span>
                   </label>
                   <input
                     type="text"
                     value={surname}
                     onChange={(e) => setSurname(e.target.value)}
                     placeholder="Last name"
-                    className={`w-full h-11 px-3.5 bg-sidebar border rounded-btn text-[13px] text-text placeholder:text-muted-2/60 focus:outline-none transition-colors ${
-                      surname && !isSurnameValid
-                        ? 'border-red-500/80 focus:border-red-500'
-                        : 'border-border focus:border-accent'
-                    }`}
+                    className="w-full h-11 px-3.5 bg-white border border-teal-200/90 rounded-btn text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
                   />
-                  {surname && !isSurnameValid && (
-                    <span className="text-[11px] font-mono text-red-400 mt-1 block">
-                      Must be at least 2 letters (no numbers or special characters).
-                    </span>
+                  {!isSurnameValid && surname.length > 0 && (
+                    <div className="text-[11px] font-mono text-rose-600 mt-1">
+                      Minimum 2 characters, letters only.
+                    </div>
                   )}
                 </div>
               </div>
 
-              <div className="p-3.5 bg-surface border border-border rounded-btn flex items-center gap-3 text-mini font-mono text-muted">
-                <ShieldIcon size={16} className="text-accent flex-shrink-0" />
-                <span>
-                  QADAM uses client-side PII masking. Your real name is never sent unmasked to external LLM APIs.
-                </span>
+              <div className="p-3.5 rounded-card bg-white/70 border border-teal-200/80 flex items-start gap-3 text-mini font-mono text-teal-950">
+                <ShieldIcon size={16} className="text-emerald-600 flex-shrink-0 mt-0.5" />
+                <p className="leading-relaxed">
+                  Your identity is tokenized client-side via local encryption. External AI models only see anonymized identifiers like [USER_NAME_1].
+                </p>
               </div>
             </div>
           )}
@@ -249,207 +296,171 @@ export const OnboardingWizard: React.FC = () => {
           {step === 2 && (
             <div className="space-y-4">
               <div>
-                <h3 className="text-[17px] font-semibold text-text">Academic & Professional Profile</h3>
-                <p className="text-[13px] text-muted mt-1 leading-relaxed">
-                  Provide your institution and domain background for opportunity eligibility verification.
+                <h3 className="text-[17px] font-bold text-indigo-950">Academic & Professional Profile</h3>
+                <p className="text-[13px] text-teal-900 mt-1 leading-relaxed">
+                  Provide your institution, discipline, and location to match eligibility requirements.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="sm:col-span-2">
-                  <label className="block text-mini font-mono uppercase text-muted-2 mb-1">
-                    Academic / Professional Email <span className="text-accent">*</span>
+                <div>
+                  <label className="block text-mini font-mono uppercase text-teal-900 font-semibold mb-1">
+                    Email Address <span className="text-emerald-600">*</span>
                   </label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="user@university.edu or student@institution.org"
-                    className={`w-full h-11 px-3.5 bg-sidebar border rounded-btn text-[13px] text-text placeholder:text-muted-2/60 focus:outline-none transition-colors ${
-                      email && !isEmailValid
-                        ? 'border-red-500/80 focus:border-red-500'
-                        : 'border-border focus:border-accent'
-                    }`}
+                    placeholder="student@university.edu"
+                    className="w-full h-11 px-3.5 bg-white border border-teal-200/90 rounded-btn text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
                   />
-                  {email && !isEmailValid && (
-                    <span className="text-[11px] font-mono text-red-400 mt-1 block">
-                      Please enter a valid academic/professional email address.
-                    </span>
-                  )}
                 </div>
 
                 <div>
-                  <label className="block text-mini font-mono uppercase text-muted-2 mb-1">
-                    University / Institution <span className="text-accent">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={university}
-                    onChange={(e) => setUniversity(e.target.value)}
-                    placeholder="e.g. Stanford University, MIT, Nazarbayev University"
-                    className={`w-full h-11 px-3.5 bg-sidebar border rounded-btn text-[13px] text-text placeholder:text-muted-2/60 focus:outline-none transition-colors ${
-                      university && !isUniversityValid
-                        ? 'border-red-500/80 focus:border-red-500'
-                        : 'border-border focus:border-accent'
-                    }`}
-                  />
-                  {university && !isUniversityValid && (
-                    <span className="text-[11px] font-mono text-red-400 mt-1 block">
-                      Minimum 3 characters required.
-                    </span>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-mini font-mono uppercase text-muted-2 mb-1">
-                    Department / Major <span className="text-accent">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={major}
-                    onChange={(e) => setMajor(e.target.value)}
-                    placeholder="e.g. Computer Science, Robotics, Data Science"
-                    className={`w-full h-11 px-3.5 bg-sidebar border rounded-btn text-[13px] text-text placeholder:text-muted-2/60 focus:outline-none transition-colors ${
-                      major && !isMajorValid
-                        ? 'border-red-500/80 focus:border-red-500'
-                        : 'border-border focus:border-accent'
-                    }`}
-                  />
-                  {major && !isMajorValid && (
-                    <span className="text-[11px] font-mono text-red-400 mt-1 block">
-                      Minimum 2 characters required.
-                    </span>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-mini font-mono uppercase text-muted-2 mb-1">
-                    Current Location / City <span className="text-accent">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    placeholder="e.g. Almaty, Tokyo, San Francisco"
-                    className={`w-full h-11 px-3.5 bg-sidebar border rounded-btn text-[13px] text-text placeholder:text-muted-2/60 focus:outline-none transition-colors ${
-                      location && !isLocationValid
-                        ? 'border-red-500/80 focus:border-red-500'
-                        : 'border-border focus:border-accent'
-                    }`}
-                  />
-                  {location && !isLocationValid && (
-                    <span className="text-[11px] font-mono text-red-400 mt-1 block">
-                      Minimum 2 characters required.
-                    </span>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-mini font-mono uppercase text-muted-2 mb-1">
-                    Primary Academic / Tech Role <span className="text-accent">*</span>
+                  <label className="block text-mini font-mono uppercase text-teal-900 font-semibold mb-1">
+                    Target Academic Role <span className="text-emerald-600">*</span>
                   </label>
                   <select
                     value={role}
                     onChange={(e) => setRole(e.target.value)}
-                    className="w-full h-11 px-3 bg-sidebar border border-border rounded-btn text-[13px] text-text font-mono focus:border-accent focus:outline-none cursor-pointer"
+                    className="w-full h-11 px-3.5 bg-white border border-teal-200/90 rounded-btn text-[13px] text-slate-900 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors cursor-pointer"
                   >
                     {USER_ROLES.map((r) => (
-                      <option key={r} value={r} className="bg-zinc-950 text-text">
+                      <option key={r} value={r}>
                         {r}
                       </option>
                     ))}
                   </select>
                 </div>
+
+                <div>
+                  <label className="block text-mini font-mono uppercase text-teal-900 font-semibold mb-1">
+                    University / Institute <span className="text-emerald-600">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={university}
+                    onChange={(e) => setUniversity(e.target.value)}
+                    placeholder="University Name"
+                    className="w-full h-11 px-3.5 bg-white border border-teal-200/90 rounded-btn text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-mini font-mono uppercase text-teal-900 font-semibold mb-1">
+                    Major / Field of Study <span className="text-emerald-600">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={major}
+                    onChange={(e) => setMajor(e.target.value)}
+                    placeholder="Computer Science"
+                    className="w-full h-11 px-3.5 bg-white border border-teal-200/90 rounded-btn text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-mini font-mono uppercase text-teal-900 font-semibold mb-1">
+                  Location / Country <span className="text-emerald-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="Almaty, Kazakhstan"
+                  className="w-full h-11 px-3.5 bg-white border border-teal-200/90 rounded-btn text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
+                />
               </div>
             </div>
           )}
 
-          {/* STEP 3: Account Security (Double Password Entry) */}
+          {/* STEP 3: Account Security */}
           {step === 3 && (
             <div className="space-y-4">
               <div>
-                <h3 className="text-[17px] font-semibold text-text">Account Security</h3>
-                <p className="text-[13px] text-muted mt-1 leading-relaxed">
-                  Establish sovereign password protection for your local browser sandbox.
+                <h3 className="text-[17px] font-bold text-indigo-950">Account Security</h3>
+                <p className="text-[13px] text-teal-900 mt-1 leading-relaxed">
+                  Create a secure password with at least 8 characters, letters, and numbers/symbols.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-mini font-mono uppercase text-muted-2 mb-1">
-                    Create Password <span className="text-accent">*</span>
+                  <label className="block text-mini font-mono uppercase text-teal-900 font-semibold mb-1">
+                    Create Password <span className="text-emerald-600">*</span>
                   </label>
                   <div className="relative">
                     <input
                       type={showPassword ? 'text' : 'password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Minimum 8 characters"
-                      className="w-full h-11 pl-3.5 pr-10 bg-sidebar border border-border rounded-btn text-[13px] text-text placeholder:text-muted-2/60 focus:border-accent focus:outline-none"
+                      placeholder="••••••••••••"
+                      className="w-full h-11 pl-3.5 pr-10 bg-white border border-teal-200/90 rounded-btn text-[13px] text-slate-900 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-text cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer"
                     >
-                      {showPassword ? <EyeOffIcon size={15} /> : <EyeIcon size={15} />}
+                      {showPassword ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />}
                     </button>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-mini font-mono uppercase text-muted-2 mb-1">
-                    Confirm Password <span className="text-accent">*</span>
+                  <label className="block text-mini font-mono uppercase text-teal-900 font-semibold mb-1">
+                    Confirm Password <span className="text-emerald-600">*</span>
                   </label>
                   <div className="relative">
                     <input
                       type={showConfirmPassword ? 'text' : 'password'}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="Re-enter password"
-                      className="w-full h-11 pl-3.5 pr-10 bg-sidebar border border-border rounded-btn text-[13px] text-text placeholder:text-muted-2/60 focus:border-accent focus:outline-none"
+                      placeholder="••••••••••••"
+                      className="w-full h-11 pl-3.5 pr-10 bg-white border border-teal-200/90 rounded-btn text-[13px] text-slate-900 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-text cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer"
                     >
-                      {showConfirmPassword ? <EyeOffIcon size={15} /> : <EyeIcon size={15} />}
+                      {showConfirmPassword ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />}
                     </button>
                   </div>
+                  {!isPasswordMatchValid && confirmPassword.length > 0 && (
+                    <div className="text-[11px] font-mono text-rose-600 mt-1">
+                      Passwords do not match.
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Real-time Password Validation Feedback */}
-              <div className="p-3.5 bg-sidebar rounded-btn border border-border space-y-2">
-                <div className="text-mini font-mono uppercase text-muted-2">Security Criteria</div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-mini font-mono">
-                  <div
-                    className={`flex items-center gap-1.5 ${
-                      isPasswordLengthValid ? 'text-accent' : 'text-zinc-500'
-                    }`}
-                  >
-                    <span>{isPasswordLengthValid ? '✓' : '○'}</span>
-                    <span>8+ characters</span>
-                  </div>
-
-                  <div
-                    className={`flex items-center gap-1.5 ${
-                      isPasswordComplexValid ? 'text-accent' : 'text-zinc-500'
-                    }`}
-                  >
-                    <span>{isPasswordComplexValid ? '✓' : '○'}</span>
-                    <span>Letters & numbers/symbols</span>
-                  </div>
-
-                  <div
-                    className={`flex items-center gap-1.5 ${
-                      isPasswordMatchValid ? 'text-accent' : 'text-zinc-500'
-                    }`}
-                  >
-                    <span>{isPasswordMatchValid ? '✓' : '○'}</span>
-                    <span>Passwords match</span>
-                  </div>
+              {/* Password Requirements Checklist */}
+              <div className="p-3.5 rounded-card bg-white/70 border border-teal-200/80 space-y-2 text-mini font-mono">
+                <div className="flex items-center gap-2">
+                  <span className={isPasswordLengthValid ? 'text-emerald-600 font-bold' : 'text-slate-400'}>
+                    {isPasswordLengthValid ? '✓' : '○'}
+                  </span>
+                  <span className={isPasswordLengthValid ? 'text-teal-950 font-medium' : 'text-slate-500'}>
+                    At least 8 characters
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={isPasswordComplexValid ? 'text-emerald-600 font-bold' : 'text-slate-400'}>
+                    {isPasswordComplexValid ? '✓' : '○'}
+                  </span>
+                  <span className={isPasswordComplexValid ? 'text-teal-950 font-medium' : 'text-slate-500'}>
+                    Includes letters and numbers or symbols
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={isPasswordMatchValid ? 'text-emerald-600 font-bold' : 'text-slate-400'}>
+                    {isPasswordMatchValid ? '✓' : '○'}
+                  </span>
+                  <span className={isPasswordMatchValid ? 'text-teal-950 font-medium' : 'text-slate-500'}>
+                    Both password fields match
+                  </span>
                 </div>
               </div>
             </div>
@@ -459,56 +470,44 @@ export const OnboardingWizard: React.FC = () => {
           {step === 4 && (
             <div className="space-y-4">
               <div>
-                <h3 className="text-[17px] font-semibold text-text">Technical Stack & Target Tracks</h3>
-                <p className="text-[13px] text-muted mt-1 leading-relaxed">
-                  Select your core competencies and focus tracks. QADAM calculates real-time opportunity fit from these inputs.
+                <h3 className="text-[17px] font-bold text-indigo-950">Technical Stack & Target Tracks</h3>
+                <p className="text-[13px] text-teal-900 mt-1 leading-relaxed">
+                  Select your core technologies and career objectives to index your personalized Radar.
                 </p>
               </div>
 
-              {/* Skills */}
+              {/* Tech Stack Chips */}
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-mini font-mono uppercase text-muted-2">
-                    Active Tech Stack ({selectedSkills.length} selected) <span className="text-accent">*</span>
-                  </label>
-                  {selectedSkills.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => setSelectedSkills([])}
-                      className="text-mini font-mono text-muted hover:text-text underline cursor-pointer"
-                    >
-                      Clear
-                    </button>
-                  )}
-                </div>
-                <div className="flex flex-wrap gap-2 max-h-36 overflow-y-auto p-1">
-                  {POPULAR_TECH_STACK.map((skill) => {
-                    const isSelected = selectedSkills.includes(skill);
+                <label className="block text-mini font-mono uppercase text-teal-900 font-semibold mb-2">
+                  Core Technical Skills <span className="text-emerald-600">*</span>
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {POPULAR_TECH_STACK.map((tech) => {
+                    const isSelected = selectedSkills.includes(tech);
                     return (
                       <button
-                        key={skill}
+                        key={tech}
                         type="button"
-                        onClick={() => toggleSkill(skill)}
-                        className={`h-9 px-3 rounded-btn text-mini font-mono border transition-all flex items-center gap-1.5 cursor-pointer ${
+                        onClick={() => toggleSkill(tech)}
+                        className={`px-3 py-1.5 rounded-btn text-[12px] font-mono transition-all cursor-pointer ${
                           isSelected
-                            ? 'bg-accent/15 border-accent text-zinc-100 font-semibold shadow-sm'
-                            : 'bg-sidebar border-border text-muted hover:border-zinc-700 hover:text-text'
+                            ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold shadow-xs'
+                            : 'bg-white border border-teal-200/90 text-slate-700 hover:border-teal-400'
                         }`}
                       >
-                        {isSelected && <CheckIcon size={12} className="text-accent" />}
-                        <span>{skill}</span>
+                        {isSelected ? `✓ ${tech}` : `+ ${tech}`}
                       </button>
                     );
                   })}
                 </div>
               </div>
 
-              {/* Objectives */}
+              {/* Career Goals */}
               <div>
-                <label className="block text-mini font-mono uppercase text-muted-2 mb-2">
-                  Target Opportunity Tracks ({selectedGoals.length} selected) <span className="text-accent">*</span>
+                <label className="block text-mini font-mono uppercase text-teal-900 font-semibold mb-2">
+                  Primary Objectives <span className="text-emerald-600">*</span>
                 </label>
-                <div className="flex flex-wrap gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {CAREER_OBJECTIVES.map((goal) => {
                     const isSelected = selectedGoals.includes(goal);
                     return (
@@ -516,23 +515,22 @@ export const OnboardingWizard: React.FC = () => {
                         key={goal}
                         type="button"
                         onClick={() => toggleGoal(goal)}
-                        className={`h-9 px-3 rounded-btn text-mini font-mono border transition-all flex items-center gap-1.5 cursor-pointer ${
+                        className={`p-2.5 rounded-btn text-left text-[12px] font-mono transition-all cursor-pointer border ${
                           isSelected
-                            ? 'bg-accent/15 border-accent text-zinc-100 font-semibold shadow-sm'
-                            : 'bg-sidebar border-border text-muted hover:border-zinc-700 hover:text-text'
+                            ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold border-indigo-600 shadow-xs'
+                            : 'bg-white border-teal-200/90 text-slate-700 hover:border-indigo-400'
                         }`}
                       >
-                        {isSelected && <CheckIcon size={12} className="text-accent" />}
-                        <span>{goal}</span>
+                        {isSelected ? `✓ ${goal}` : `○ ${goal}`}
                       </button>
                     );
                   })}
                 </div>
               </div>
 
-              {/* Optional Highlights */}
+              {/* Optional CV Summary */}
               <div>
-                <label className="block text-mini font-mono uppercase text-muted-2 mb-1.5">
+                <label className="block text-mini font-mono uppercase text-teal-900 font-semibold mb-1">
                   Resume Highlights / Project Summary (Optional)
                 </label>
                 <textarea
@@ -540,7 +538,7 @@ export const OnboardingWizard: React.FC = () => {
                   onChange={(e) => setCvText(e.target.value)}
                   rows={3}
                   placeholder="Paste brief bullet points or bio for ATS keyword analysis..."
-                  className="w-full p-3 bg-sidebar border border-border rounded-btn text-[12px] font-mono text-text placeholder:text-muted-2/60 focus:border-accent focus:outline-none leading-relaxed"
+                  className="w-full p-3 bg-white border border-teal-200/90 rounded-btn text-[12px] font-mono text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none leading-relaxed transition-colors"
                 />
               </div>
             </div>
@@ -548,19 +546,19 @@ export const OnboardingWizard: React.FC = () => {
         </div>
 
         {/* Wizard Footer Controls */}
-        <div className="px-6 py-4 border-t border-border bg-[#121215] flex items-center justify-between">
+        <div className="px-6 py-4 border-t border-teal-200/80 bg-white/75 backdrop-blur-md flex items-center justify-between">
           <div>
             {step > 1 ? (
               <button
                 type="button"
                 onClick={() => setStep((s) => (s - 1) as 1 | 2 | 3 | 4)}
-                className="h-10 px-4 rounded-btn border border-zinc-700/80 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-zinc-100 text-[13px] font-medium transition-colors cursor-pointer"
+                className="h-10 px-4 rounded-btn border border-teal-200 bg-white hover:bg-slate-50 text-slate-700 text-[13px] font-medium transition-colors cursor-pointer shadow-xs"
               >
                 Back
               </button>
             ) : (
-              <span className="text-mini font-mono text-muted-2">
-                QADAM Sovereign Client-Side Shield
+              <span className="text-mini font-mono text-teal-800 font-medium">
+                QADAM Privacy Guard Active
               </span>
             )}
           </div>
@@ -571,10 +569,10 @@ export const OnboardingWizard: React.FC = () => {
                 type="button"
                 disabled={!isCurrentStepValid}
                 onClick={() => isCurrentStepValid && setStep((s) => (s + 1) as 2 | 3 | 4)}
-                className={`h-10 px-5 rounded-btn text-[13px] font-medium transition-colors flex items-center gap-1.5 font-mono shadow-sm ${
+                className={`h-10 px-5 rounded-btn text-[13px] font-semibold transition-all flex items-center gap-1.5 font-mono shadow-xs ${
                   isCurrentStepValid
-                    ? 'bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-500 text-zinc-100 cursor-pointer'
-                    : 'bg-zinc-900/40 border border-zinc-800 text-zinc-500 opacity-50 cursor-not-allowed'
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white cursor-pointer shadow-emerald-900/20'
+                    : 'bg-white/60 border border-teal-200 text-slate-400 opacity-60 cursor-not-allowed'
                 }`}
               >
                 <span>Continue</span>
@@ -585,10 +583,10 @@ export const OnboardingWizard: React.FC = () => {
                 type="button"
                 disabled={!isCurrentStepValid}
                 onClick={handleFinish}
-                className={`h-10 px-5 font-semibold rounded-btn text-[13px] transition-colors flex items-center gap-2 font-mono shadow-sm ${
+                className={`h-11 px-6 font-bold rounded-btn text-[13px] transition-all flex items-center gap-2 font-mono shadow-md ${
                   isCurrentStepValid
-                    ? 'bg-accent hover:bg-emerald-500 text-zinc-950 cursor-pointer'
-                    : 'bg-zinc-900/40 border border-zinc-800 text-zinc-500 opacity-50 cursor-not-allowed'
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white cursor-pointer shadow-emerald-600/30'
+                    : 'bg-white/60 border border-teal-200 text-slate-400 opacity-60 cursor-not-allowed'
                 }`}
               >
                 <RadarIcon size={16} />
