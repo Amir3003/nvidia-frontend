@@ -322,7 +322,7 @@ export const MemoryPage: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="add-memory-title"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#070d1f]/90 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#09090b]/90 backdrop-blur-sm"
         >
           <div className="w-full max-w-md bg-surface border border-border rounded-card shadow-2xl p-5 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-border">
@@ -433,7 +433,7 @@ export const MemoryPage: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="raw-md-title"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#070d1f]/90 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#09090b]/90 backdrop-blur-sm"
         >
           <div className="w-full max-w-xl bg-surface border border-border rounded-card shadow-2xl p-5 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-border">

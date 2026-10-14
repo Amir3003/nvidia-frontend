@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { PageHeader } from '../components/PageHeader';
 import {
@@ -14,6 +14,7 @@ import {
 } from '../components/Icons';
 
 export const RadarPage: React.FC = () => {
+  const navigate = useNavigate();
   const {
     opportunities,
     runTavilySearch,
@@ -60,8 +61,8 @@ export const RadarPage: React.FC = () => {
         title="Opportunity Radar"
         subtitle={
           isProfileReady
-            ? `last scan 06:00 · ${opportunities.length} opportunities indexed · candidate: ${userProfile.name || 'Anonymous'}`
-            : 'last scan 06:00 · profile uninitialized · matches pending configuration'
+            ? `${opportunities.length} opportunities indexed · candidate: ${userProfile.name || 'Anonymous'}`
+            : 'profile uninitialized · matches pending configuration'
         }
         actions={
           <button
@@ -237,8 +238,11 @@ export const RadarPage: React.FC = () => {
                       <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
                         <button
                           type="button"
-                          onClick={() => setSelectedOpportunityForDraft(opp)}
-                          className="h-10 px-3.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-500 text-zinc-100 rounded-btn text-[13px] font-medium transition-colors flex items-center gap-1.5 shadow-sm"
+                          onClick={() => {
+                            setSelectedOpportunityForDraft(opp);
+                            navigate(`/application-studio?id=${opp.id}`);
+                          }}
+                          className="h-10 px-3.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-500 text-zinc-100 rounded-btn text-[13px] font-medium transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer"
                         >
                           <FileTextIcon size={14} className="text-accent" />
                           <span>Draft Application</span>

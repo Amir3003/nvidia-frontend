@@ -54,7 +54,7 @@ export const CvGapsModal: React.FC = () => {
       role="dialog"
       aria-modal="true"
       aria-labelledby="gaps-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#070d1f]/90 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#09090b]/90 backdrop-blur-sm"
     >
       <div className="w-full max-w-xl bg-surface border border-border rounded-card shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}

@@ -1,3 +1,12 @@
+export interface NotificationSettings {
+  telegram: boolean;
+  telegramHandle: string;
+  kakao: boolean;
+  kakaoHandle: string;
+  discord: boolean;
+  discordWebhook: string;
+}
+
 export interface UserProfile {
   name: string;
   surname: string;
@@ -20,6 +29,7 @@ export interface UserProfile {
   avatarPreset?: 'emerald' | 'indigo' | 'amber' | 'cyan' | 'purple' | 'rose';
   isPublic: boolean;
   isOnboarded: boolean;
+  notifications?: NotificationSettings;
 }
 
 export const USER_ROLES = [
@@ -92,15 +102,24 @@ export const EMPTY_USER_PROFILE: UserProfile = {
   avatarPreset: 'emerald',
   isPublic: false,
   isOnboarded: false,
+  notifications: {
+    telegram: false,
+    telegramHandle: '',
+    kakao: false,
+    kakaoHandle: '',
+    discord: false,
+    discordWebhook: '',
+  },
 };
 
-export const STORAGE_KEY = 'pathfinder_user';
-export const LEGACY_STORAGE_KEY = 'user_profile';
+export const STORAGE_KEY = 'qadam_user';
+export const LEGACY_STORAGE_KEY = 'pathfinder_user';
+export const ORIGINAL_LEGACY_KEY = 'user_profile';
 
 export function isProfileValid(profile: Partial<UserProfile> | null | undefined): boolean {
   if (!profile) return false;
   const firstName = (profile.name || '').trim();
-  if (!firstName) return false;
+  if (!firstName || firstName.length < 2) return false;
   if (firstName.toLowerCase() === 'candidate' || firstName.toLowerCase() === 'new candidate') return false;
   if (!profile.isOnboarded) return false;
   return true;
@@ -108,13 +127,20 @@ export function isProfileValid(profile: Partial<UserProfile> | null | undefined)
 
 export function loadUserProfile(): UserProfile {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
+    const raw =
+      localStorage.getItem(STORAGE_KEY) ||
+      localStorage.getItem(LEGACY_STORAGE_KEY) ||
+      localStorage.getItem(ORIGINAL_LEGACY_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
       if (parsed && typeof parsed === 'object') {
         const candidateProfile: UserProfile = {
           ...EMPTY_USER_PROFILE,
           ...parsed,
+          notifications: {
+            ...EMPTY_USER_PROFILE.notifications,
+            ...(parsed.notifications || {}),
+          },
         };
         if (isProfileValid(candidateProfile)) {
           return candidateProfile;
@@ -141,11 +167,16 @@ export function clearUserProfile(): void {
   try {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(LEGACY_STORAGE_KEY);
+    localStorage.removeItem(ORIGINAL_LEGACY_KEY);
+    localStorage.removeItem('qadam_memory_entries');
     localStorage.removeItem('pathfinder_memory_entries');
+    localStorage.removeItem('qadam_teammates');
     localStorage.removeItem('pathfinder_teammates');
+    localStorage.removeItem('qadam_teams');
     localStorage.removeItem('pathfinder_teams');
+    localStorage.removeItem('qadam_network_chats');
+    localStorage.removeItem('pathfinder_network_chats');
   } catch (err) {
     console.warn('Failed to clear user profile:', err);
   }
 }
-

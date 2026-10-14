@@ -63,7 +63,7 @@ Candidate Signature:
   };
 
   const handleSaveToSandbox = () => {
-    addLog('SANDBOX', `Draft saved to /workspace/pathfinder/drafts/${opp.id}.txt`);
+    addLog('SANDBOX', `Draft saved to /workspace/qadam/drafts/${opp.id}.txt`);
     incrementMaskedCount(4);
     setSelectedOpportunityForDraft(null);
   };
@@ -73,7 +73,7 @@ Candidate Signature:
       role="dialog"
       aria-modal="true"
       aria-labelledby="draft-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#070d1f]/90 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#09090b]/90 backdrop-blur-sm"
     >
       <div className="w-full max-w-2xl bg-surface border border-border rounded-card shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
         {/* Header */}
@@ -136,7 +136,7 @@ Candidate Signature:
         {/* Footer */}
         <div className="px-5 py-3.5 border-t border-border bg-sidebar flex items-center justify-between">
           <span className="text-mini font-mono text-muted-2">
-            Storage: /workspace/pathfinder/drafts/
+            Storage: /workspace/qadam/drafts/
           </span>
           <div className="flex items-center gap-2.5">
             <button

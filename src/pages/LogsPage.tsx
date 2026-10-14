@@ -39,7 +39,7 @@ export const LogsPage: React.FC = () => {
     } else if (lower.includes('access /root') || lower.includes('/root/system')) {
       triggerBlockedSandboxAction();
     } else if (lower.includes('status')) {
-      addLog('SANDBOX', 'OpenShell Status: ACTIVE · Directory Jail: /workspace/pathfinder · Confinement: 100%');
+      addLog('SANDBOX', 'OpenShell Status: ACTIVE · Directory Jail: /workspace/qadam · Confinement: 100%');
     } else if (lower.includes('tavily')) {
       runTavilySearch();
     } else if (lower.includes('memory') || lower.includes('cat')) {
@@ -90,7 +90,7 @@ export const LogsPage: React.FC = () => {
             <div>
               <div className="text-mini font-mono text-muted uppercase">Allowed Directory</div>
               <div className="text-[13px] font-mono text-text-2 mt-1 truncate max-w-[200px]">
-                /workspace/pathfinder
+                /workspace/qadam
               </div>
             </div>
             <span className="text-mini font-mono text-muted-2">r/w</span>
@@ -135,9 +135,9 @@ export const LogsPage: React.FC = () => {
         </div>
 
         {/* Terminal panel */}
-        <div className="rounded-card bg-sidebar border border-border overflow-hidden shadow-2xl flex flex-col h-[520px]">
+        <div className="rounded-card bg-surface border border-border overflow-hidden shadow-2xl flex flex-col h-[520px]">
           {/* Terminal Header */}
-          <div className="px-4 py-3 border-b border-border bg-[#070d1f] flex items-center justify-between select-none">
+          <div className="px-4 py-3 border-b border-border bg-[#121215] flex items-center justify-between select-none">
             <div className="flex items-center gap-2.5">
               <span className="w-2 h-2 rounded-full bg-accent" />
               <span className="text-mini font-mono text-text font-semibold">Live stream</span>
@@ -151,7 +151,7 @@ export const LogsPage: React.FC = () => {
           </div>
 
           {/* Terminal Log Output (Horizontal scroll without wrap) */}
-          <div className="p-4 flex-1 overflow-y-auto overflow-x-auto font-mono text-[12px] leading-relaxed space-y-1 bg-[#0a1128]">
+          <div className="p-4 flex-1 overflow-y-auto overflow-x-auto font-mono text-[12px] leading-relaxed space-y-1 bg-[#09090b]">
             {filteredLogs.map((log) => {
               const isWarning = log.tag === 'SANDBOX WARNING' || log.isWarning;
               const isSandbox = log.tag === 'SANDBOX';
@@ -189,7 +189,7 @@ export const LogsPage: React.FC = () => {
             {/* Prompt with blinking cursor */}
             <div className="flex items-center px-2 pt-2 text-text font-mono">
               <span className="text-accent mr-2">$</span>
-              <span className="text-muted mr-1">/workspace/pathfinder</span>
+              <span className="text-muted mr-1">/workspace/qadam</span>
               <span className="w-2 h-4 bg-text inline-block animate-cursor-blink ml-1" />
             </div>
 
@@ -199,7 +199,7 @@ export const LogsPage: React.FC = () => {
           {/* Terminal Input Bar */}
           <form
             onSubmit={handleCommandSubmit}
-            className="p-3 border-t border-border bg-[#070d1f] flex items-center gap-3"
+            className="p-3 border-t border-border bg-[#121215] flex items-center gap-3"
           >
             <span className="text-accent font-mono text-[13px]">$</span>
             <input

@@ -209,7 +209,7 @@ export const PrivacyPage: React.FC = () => {
                       <span className="text-muted-2 uppercase">Local · unmasked</span>
                       <span className="text-warning text-[11px]">contains sensitive PII</span>
                     </div>
-                    <div className="p-4 rounded-btn bg-[#070d1f] border border-border font-mono text-[12px] leading-relaxed overflow-x-auto text-text-2">
+                    <div className="p-4 rounded-btn bg-[#09090b] border border-border font-mono text-[12px] leading-relaxed overflow-x-auto text-text-2">
                       <pre>
                         {`{
   "name": `}
@@ -247,7 +247,7 @@ export const PrivacyPage: React.FC = () => {
                       </span>
                       <span className="text-accent text-[11px]">zero PII exposure</span>
                     </div>
-                    <div className="p-4 rounded-btn bg-[#070d1f] border border-border font-mono text-[12px] leading-relaxed overflow-x-auto text-text-2">
+                    <div className="p-4 rounded-btn bg-[#09090b] border border-border font-mono text-[12px] leading-relaxed overflow-x-auto text-text-2">
                       <pre>
                         {`{
   "name": `}

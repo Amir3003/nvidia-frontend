@@ -36,13 +36,13 @@ export interface ChatMessage {
   timestamp: string;
 }
 
-const TEAMMATES_STORAGE_KEY = 'pathfinder_teammates';
-const TEAMS_STORAGE_KEY = 'pathfinder_teams';
-const CHAT_STORAGE_KEY = 'pathfinder_network_chats';
+const TEAMMATES_STORAGE_KEY = 'qadam_teammates';
+const TEAMS_STORAGE_KEY = 'qadam_teams';
+const CHAT_STORAGE_KEY = 'qadam_network_chats';
 
 export function loadPeers(): Peer[] {
   try {
-    const raw = localStorage.getItem(TEAMMATES_STORAGE_KEY);
+    const raw = localStorage.getItem(TEAMMATES_STORAGE_KEY) || localStorage.getItem('pathfinder_teammates');
     if (raw) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) {
@@ -52,7 +52,6 @@ export function loadPeers(): Peer[] {
   } catch (err) {
     console.warn('Failed to parse peers from storage:', err);
   }
-  // Strict zero fake data: return clean empty array by default
   return [];
 }
 
@@ -66,7 +65,7 @@ export function savePeers(peers: Peer[]): void {
 
 export function loadTeams(): HackathonTeam[] {
   try {
-    const raw = localStorage.getItem(TEAMS_STORAGE_KEY);
+    const raw = localStorage.getItem(TEAMS_STORAGE_KEY) || localStorage.getItem('pathfinder_teams');
     if (raw) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) {
@@ -89,7 +88,7 @@ export function saveTeams(teams: HackathonTeam[]): void {
 
 export function loadChatHistory(channelKey: string): ChatMessage[] {
   try {
-    const raw = localStorage.getItem(`${CHAT_STORAGE_KEY}_${channelKey}`);
+    const raw = localStorage.getItem(`${CHAT_STORAGE_KEY}_${channelKey}`) || localStorage.getItem(`pathfinder_network_chats_${channelKey}`);
     if (raw) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) return parsed;

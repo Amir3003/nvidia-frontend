@@ -74,10 +74,11 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-const MEMORY_STORAGE_KEY = 'pathfinder_memory_md';
+const MEMORY_STORAGE_KEY = 'qadam_memory_md';
+const LEGACY_MEMORY_STORAGE_KEY = 'pathfinder_memory_md';
 
 function serializeMemoryToMarkdown(entries: MemoryEntry[]): string {
-  let md = '# Pathfinder Local Agent Memory (MEMORY.md)\n\n';
+  let md = '# QADAM Local Agent Memory (MEMORY.md)\n\n';
   const categories = ['PREFERENCES', 'CONSTRAINTS', 'SKILLS', 'GOALS'] as const;
 
   categories.forEach((cat) => {
@@ -203,7 +204,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Load agent memory from localStorage (100% empty on fresh state)
   const [memoryEntries, setMemoryEntries] = useState<MemoryEntry[]>(() => {
     try {
-      const saved = localStorage.getItem(MEMORY_STORAGE_KEY);
+      const saved = localStorage.getItem(MEMORY_STORAGE_KEY) || localStorage.getItem(LEGACY_MEMORY_STORAGE_KEY);
       if (saved) {
         return parseMemoryFromMarkdown(saved);
       }
@@ -290,11 +291,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const resetToDefaultProfile = () => {
     clearUserProfile();
     localStorage.removeItem(MEMORY_STORAGE_KEY);
+    localStorage.removeItem(LEGACY_MEMORY_STORAGE_KEY);
+    localStorage.removeItem('qadam_user');
     localStorage.removeItem('pathfinder_user');
     localStorage.removeItem('user_profile');
+    localStorage.removeItem('qadam_memory_entries');
     localStorage.removeItem('pathfinder_memory_entries');
+    localStorage.removeItem('qadam_teammates');
     localStorage.removeItem('pathfinder_teammates');
+    localStorage.removeItem('qadam_teams');
     localStorage.removeItem('pathfinder_teams');
+    localStorage.removeItem('qadam_network_chats');
+    localStorage.removeItem('pathfinder_network_chats');
     setMemoryEntries([]);
     setActiveHoveredMemoryId('');
     setUserProfileState(EMPTY_USER_PROFILE);

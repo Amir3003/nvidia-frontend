@@ -934,4 +934,154 @@ export const CompanyBadgeIcon: React.FC<IconProps & { orgKey?: string }> = ({
   }
 };
 
+export const BellIcon: React.FC<IconProps> = ({ className = '', size = 16 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.7"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+    aria-hidden="true"
+  >
+    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+  </svg>
+);
+
+export const TechIcon: React.FC<IconProps & { name: string }> = ({ name, className = '', size = 20 }) => {
+  const norm = name.toLowerCase();
+
+  if (norm.includes('docker')) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}>
+        <rect x="2" y="11" width="20" height="8" rx="2" stroke="#38bdf8" fill="rgba(56,189,248,0.1)" />
+        <rect x="4" y="6" width="3" height="3" rx="0.5" stroke="#38bdf8" />
+        <rect x="8.5" y="6" width="3" height="3" rx="0.5" stroke="#38bdf8" />
+        <rect x="13" y="6" width="3" height="3" rx="0.5" stroke="#38bdf8" />
+        <rect x="8.5" y="2" width="3" height="3" rx="0.5" stroke="#38bdf8" />
+      </svg>
+    );
+  }
+
+  if (norm.includes('pytorch')) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}>
+        <path d="M13 3L8 14h5l-2 7 7-11h-5l2-7z" stroke="#f97316" fill="rgba(249,115,22,0.15)" strokeLinejoin="round" />
+        <circle cx="17.5" cy="4.5" r="1.5" fill="#f97316" stroke="none" />
+      </svg>
+    );
+  }
+
+  if (norm.includes('python')) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}>
+        <path d="M12 2C7 2 7 4 7 5.5V8h5v1.5H5.5C4 9.5 2 9.5 2 14.5s2 5 3.5 5H7v-2.5c0-1.5 1-2.5 2.5-2.5h5c1.5 0 2.5-1 2.5-2.5V8c0-1.5-1-6-5-6z" stroke="#38bdf8" />
+        <path d="M12 22c5 0 5-2 5-3.5V16h-5v-1.5h6.5c1.5 0 3.5 0 3.5-5s-2-5-3.5-5H17v2.5c0 1.5-1 2.5-2.5 2.5h-5c-1.5 0-2.5 1-2.5 2.5V16c0 1.5 1 6 5 6z" stroke="#facc15" />
+      </svg>
+    );
+  }
+
+  if (norm.includes('vector') || norm.includes('rag') || norm.includes('hnsw')) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}>
+        <circle cx="12" cy="12" r="3" stroke="#a855f7" fill="rgba(168,85,247,0.2)" />
+        <circle cx="5" cy="6" r="2" stroke="#a855f7" />
+        <circle cx="19" cy="6" r="2" stroke="#a855f7" />
+        <circle cx="5" cy="18" r="2" stroke="#a855f7" />
+        <circle cx="19" cy="18" r="2" stroke="#a855f7" />
+        <line x1="6.8" y1="7.4" x2="9.8" y2="10.2" stroke="#71717a" strokeDasharray="2 2" />
+        <line x1="17.2" y1="7.4" x2="14.2" y2="10.2" stroke="#71717a" strokeDasharray="2 2" />
+        <line x1="6.8" y1="16.6" x2="9.8" y2="13.8" stroke="#71717a" strokeDasharray="2 2" />
+        <line x1="17.2" y1="16.6" x2="14.2" y2="13.8" stroke="#71717a" strokeDasharray="2 2" />
+      </svg>
+    );
+  }
+
+  if (norm.includes('llm') || norm.includes('agent')) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}>
+        <rect x="3" y="4" width="18" height="14" rx="3" stroke="#10b981" fill="rgba(16,185,129,0.1)" />
+        <circle cx="8" cy="11" r="1.5" fill="#10b981" />
+        <circle cx="16" cy="11" r="1.5" fill="#10b981" />
+        <path d="M10 14h4" stroke="#10b981" strokeLinecap="round" />
+        <line x1="12" y1="1" x2="12" y2="4" stroke="#10b981" />
+        <circle cx="12" cy="1" r="1" fill="#10b981" />
+      </svg>
+    );
+  }
+
+  if (norm.includes('go')) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className={className}>
+        <circle cx="7" cy="12" r="5" stroke="#00add8" />
+        <circle cx="17" cy="12" r="5" stroke="#00add8" />
+        <path d="M17 12h-3" stroke="#00add8" />
+        <path d="M7 10a2 2 0 0 0-2 2" stroke="#00add8" />
+      </svg>
+    );
+  }
+
+  if (norm.includes('linux')) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}>
+        <ellipse cx="12" cy="13" rx="6" ry="8" stroke="#e4e4e7" fill="rgba(228,228,231,0.08)" />
+        <circle cx="10" cy="9" r="1" fill="#e4e4e7" />
+        <circle cx="14" cy="9" r="1" fill="#e4e4e7" />
+        <polygon points="12,11 10,13 14,13" fill="#facc15" stroke="none" />
+        <path d="M8 21c-2 0-3-1-3-2s2-2 3-2" stroke="#facc15" />
+        <path d="M16 21c2 0 3-1 3-2s-2-2-3-2" stroke="#facc15" />
+      </svg>
+    );
+  }
+
+  if (norm.includes('ros') || norm.includes('robot')) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}>
+        <circle cx="12" cy="12" r="9" stroke="#f43f5e" fill="rgba(244,63,94,0.1)" />
+        <circle cx="12" cy="7" r="2" fill="#f43f5e" />
+        <circle cx="7" cy="15" r="2" fill="#f43f5e" />
+        <circle cx="17" cy="15" r="2" fill="#f43f5e" />
+        <line x1="12" y1="9" x2="12" y2="12" stroke="#f43f5e" />
+        <line x1="12" y1="12" x2="8.5" y2="13.5" stroke="#f43f5e" />
+        <line x1="12" y1="12" x2="15.5" y2="13.5" stroke="#f43f5e" />
+      </svg>
+    );
+  }
+
+  if (norm.includes('sql') || norm.includes('data') || norm.includes('postgres')) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}>
+        <ellipse cx="12" cy="5" rx="8" ry="3" stroke="#3b82f6" fill="rgba(59,130,246,0.15)" />
+        <path d="M4 5v7c0 1.66 3.58 3 8 3s8-1.34 8-3V5" stroke="#3b82f6" />
+        <path d="M4 12v7c0 1.66 3.58 3 8 3s8-1.34 8-3v-7" stroke="#3b82f6" />
+      </svg>
+    );
+  }
+
+  if (norm.includes('rust')) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}>
+        <circle cx="12" cy="12" r="8" stroke="#ea580c" />
+        <path d="M8 8h5a2.5 2.5 0 0 1 0 5H8z" stroke="#ea580c" />
+        <line x1="8" y1="8" x2="8" y2="16" stroke="#ea580c" />
+        <line x1="11" y1="13" x2="15" y2="16" stroke="#ea580c" />
+      </svg>
+    );
+  }
+
+  // Default tech/terminal badge
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}>
+      <rect x="3" y="3" width="18" height="18" rx="3" stroke="#71717a" />
+      <polyline points="8 9 12 13 8 17" stroke="#10b981" />
+      <line x1="13" y1="17" x2="16" y2="17" stroke="#71717a" />
+    </svg>
+  );
+};
+
+
 

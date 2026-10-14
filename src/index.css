@@ -3,48 +3,48 @@
 @tailwind utilities;
 
 :root {
-  --bg: #070d1f;
-  --sidebar: #0a1128;
-  --surface: #0d1631;
-  --surface-hover: #16213f;
-  --border: #1f2c52;
-  --border-strong: #2e3d6b;
-  --text: #f1ede8;
-  --text-2: #dfe4f2;
-  --muted: #aab4d3;
-  --muted-2: #8f9bc0;
+  --bg: #09090b;
+  --sidebar: #09090b;
+  --surface: #121215;
+  --surface-hover: #18181b;
+  --border: #27272a;
+  --border-strong: #3f3f46;
+  --text: #fafafa;
+  --text-2: #e4e4e7;
+  --muted: #a1a1aa;
+  --muted-2: #71717a;
   --accent: #10b981;
-  --accent-border: #065f46;
+  --accent-border: #059669;
   --warning: #f59e0b;
-  --warning-text: #fcd34d;
+  --warning-text: #fbbf24;
 }
 
 body {
   margin: 0;
-  background-color: #070d1f;
-  color: #f1ede8;
+  background-color: #09090b;
+  color: #fafafa;
   font-family: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Custom scrollbar for technical developer aesthetic */
+/* Custom scrollbar for carbon developer aesthetic */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #070d1f;
+  background: #09090b;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1f2c52;
+  background: #27272a;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #2e3d6b;
+  background: #3f3f46;
 }
 
 /* Terminal blink animation */
@@ -60,9 +60,10 @@ body {
 /* Focus styles for accessibility */
 button:focus-visible,
 input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
 a:focus-visible,
 div[tabindex="0"]:focus-visible {
   outline: 2px solid #10b981;
   outline-offset: 2px;
 }
-

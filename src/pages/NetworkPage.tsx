@@ -261,7 +261,7 @@ export const NetworkPage: React.FC = () => {
     }
   };
 
-  const inviteLink = `https://pathfinder.local/join?pool=${userProfile.name ? encodeURIComponent(userProfile.name) : 'sandbox'}`;
+  const inviteLink = `https://qadam.local/join?pool=${userProfile.name ? encodeURIComponent(userProfile.name) : 'sandbox'}`;
 
   const handleCopyInvite = () => {
     navigator.clipboard.writeText(inviteLink);
@@ -783,7 +783,7 @@ export const NetworkPage: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="invite-modal-title"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#070d1f]/90 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#09090b]/90 backdrop-blur-sm"
         >
           <div className="w-full max-w-md bg-surface border border-border rounded-card shadow-2xl p-5 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-border">
@@ -845,7 +845,7 @@ export const NetworkPage: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="add-peer-modal-title"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#070d1f]/90 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#09090b]/90 backdrop-blur-sm"
         >
           <div className="w-full max-w-lg bg-surface border border-border rounded-card shadow-2xl flex flex-col overflow-hidden">
             <div className="p-5 border-b border-border flex items-center justify-between bg-sidebar">
@@ -990,7 +990,7 @@ export const NetworkPage: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="create-team-title"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#070d1f]/90 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#09090b]/90 backdrop-blur-sm"
         >
           <div className="w-full max-w-lg bg-surface border border-border rounded-card shadow-2xl flex flex-col overflow-hidden">
             <div className="p-5 border-b border-border flex items-center justify-between bg-sidebar">
