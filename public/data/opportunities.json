@@ -1,1 +1,167 @@
-[]
+[
+  {
+    "id": "scan-aHR0cHM6Ly93d3cu",
+    "type": "HACKATHON",
+    "title": "AI NextGen Challenge™ 2026",
+    "organization": "United States Artificial Intelligence Institute",
+    "url": "https://www.youtube.com/watch?v=EUH0XVHeTPE",
+    "deadline": null,
+    "deadlineEvidence": null,
+    "eligibility": "check source",
+    "skills": []
+  },
+  {
+    "id": "scan-aHR0cHM6Ly9uZXdz",
+    "type": "HACKATHON",
+    "title": "USAII® Global AI Hackathon 2026",
+    "organization": "United States Artificial Intelligence Institute",
+    "url": "https://newsletter.interninsider.me/p/just-dropped-45-new-internships-usa-ai-hackathon",
+    "deadline": null,
+    "deadlineEvidence": null,
+    "eligibility": "check source",
+    "skills": []
+  },
+  {
+    "id": "scan-aHR0cHM6Ly9kZXZw",
+    "type": "HACKATHON",
+    "title": "ML Empowerment Build Challenge 3.0",
+    "organization": "Devpost",
+    "url": "https://devpost.com/c/artificial-intelligence",
+    "deadline": null,
+    "deadlineEvidence": null,
+    "eligibility": "check source",
+    "skills": []
+  },
+  {
+    "id": "scan-aHR0cHM6Ly9kZXZw",
+    "type": "HACKATHON",
+    "title": "ForgeHacks Online 2026",
+    "organization": "Devpost",
+    "url": "https://devpost.com/c/artificial-intelligence",
+    "deadline": null,
+    "deadlineEvidence": null,
+    "eligibility": "check source",
+    "skills": []
+  },
+  {
+    "id": "scan-aHR0cHM6Ly9kZXZw",
+    "type": "HACKATHON",
+    "title": "EvoHacks2026",
+    "organization": "Devpost",
+    "url": "https://devpost.com/c/artificial-intelligence",
+    "deadline": null,
+    "deadlineEvidence": null,
+    "eligibility": "check source",
+    "skills": []
+  },
+  {
+    "id": "scan-aHR0cHM6Ly9kZXZw",
+    "type": "HACKATHON",
+    "title": "AIC Internal Competition -2026 (Agentic AI)",
+    "organization": "Devpost",
+    "url": "https://devpost.com/c/artificial-intelligence",
+    "deadline": null,
+    "deadlineEvidence": null,
+    "eligibility": "check source",
+    "skills": []
+  },
+  {
+    "id": "scan-aHR0cHM6Ly9kZXZw",
+    "type": "HACKATHON",
+    "title": "Banana Hacks",
+    "organization": "Devpost",
+    "url": "https://devpost.com/c/artificial-intelligence",
+    "deadline": null,
+    "deadlineEvidence": null,
+    "eligibility": "check source",
+    "skills": []
+  },
+  {
+    "id": "scan-aHR0cHM6Ly9kZXZw",
+    "type": "HACKATHON",
+    "title": "United Hackathons V1",
+    "organization": "Devpost",
+    "url": "https://devpost.com/c/artificial-intelligence",
+    "deadline": null,
+    "deadlineEvidence": null,
+    "eligibility": "check source",
+    "skills": []
+  },
+  {
+    "id": "scan-aHR0cHM6Ly9kZXZw",
+    "type": "HACKATHON",
+    "title": "WarriorHacks 2.0",
+    "organization": "Devpost",
+    "url": "https://devpost.com/c/artificial-intelligence",
+    "deadline": null,
+    "deadlineEvidence": null,
+    "eligibility": "check source",
+    "skills": []
+  },
+  {
+    "id": "scan-aHR0cHM6Ly9kZXZw",
+    "type": "HACKATHON",
+    "title": "Multimodal AI Hackathon 2026",
+    "organization": "Devpost",
+    "url": "https://devpost.com/c/artificial-intelligence",
+    "deadline": null,
+    "deadlineEvidence": null,
+    "eligibility": "check source",
+    "skills": []
+  },
+  {
+    "id": "scan-aHR0cHM6Ly9kZXZw",
+    "type": "HACKATHON",
+    "title": "Neeley AI Forward: AI Innovation Competition",
+    "organization": "Devpost",
+    "url": "https://devpost.com/c/artificial-intelligence",
+    "deadline": "2026-10-18",
+    "deadlineEvidence": "Deadline: Oct 18, 2026",
+    "eligibility": "check source",
+    "skills": []
+  },
+  {
+    "id": "scan-aHR0cHM6Ly9kZXZw",
+    "type": "HACKATHON",
+    "title": "Build, Ship, Shape: Amazon Developer Hackathon",
+    "organization": "Devpost",
+    "url": "https://devpost.com/c/artificial-intelligence",
+    "deadline": "2026-10-23",
+    "deadlineEvidence": "Deadline: Oct 23, 2026",
+    "eligibility": "check source",
+    "skills": []
+  },
+  {
+    "id": "scan-aHR0cHM6Ly9kZXZw",
+    "type": "HACKATHON",
+    "title": "IEEE ClimateChain Global Hackathon",
+    "organization": "Devpost",
+    "url": "https://devpost.com/c/artificial-intelligence",
+    "deadline": "2026-10-25",
+    "deadlineEvidence": "Deadline: Oct 25, 2026",
+    "eligibility": "check source",
+    "skills": []
+  },
+  {
+    "id": "scan-aHR0cHM6Ly9kZXZw",
+    "type": "HACKATHON",
+    "title": "Build With AI: Basics",
+    "organization": "Devpost",
+    "url": "https://devpost.com/c/artificial-intelligence",
+    "deadline": "2026-10-26",
+    "deadlineEvidence": "Deadline: Oct 26, 2026",
+    "eligibility": "check source",
+    "skills": []
+  },
+  {
+    "id": "scan-aHR0cHM6Ly9kZXZw",
+    "type": "HACKATHON",
+    "title": "OpenCV AI Competition 2026, powered by AWS",
+    "organization": "Devpost",
+    "url": "https://devpost.com/c/artificial-intelligence",
+    "deadline": "2026-10-27",
+    "deadlineEvidence": "Deadline: Oct 27, 2026",
+    "eligibility": "check source",
+    "skills": []
+  }
+]
