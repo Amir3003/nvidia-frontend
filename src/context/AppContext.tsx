@@ -18,7 +18,6 @@ import {
   LogEntry,
   INITIAL_SKILLS,
   INITIAL_MEMORY,
-  INITIAL_LOGS,
 } from '../data';
 
 interface PrivacySettings {
@@ -153,19 +152,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return { ...item, status: 'MISSING' as const };
     });
   });
-  const [logs, setLogs] = useState<LogEntry[]>(INITIAL_LOGS);
+  const [logs, setLogs] = useState<LogEntry[]>([]);
   const [activeHoveredMemoryId, setActiveHoveredMemoryId] = useState<string>('');
   const [isTavilyScanning, setIsTavilyScanning] = useState<boolean>(false);
   const [activeQuizSkill, setActiveQuizSkill] = useState<SkillItem | null>(null);
   const [selectedOpportunityForDraft, setSelectedOpportunityForDraft] = useState<Opportunity | null>(null);
   const [selectedOpportunityForDetails, setSelectedOpportunityForDetails] = useState<Opportunity | null>(null);
   const [selectedOpportunityForGaps, setSelectedOpportunityForGaps] = useState<Opportunity | null>(null);
-  const [maskedCountThisSession, setMaskedCountThisSession] = useState<number>(48);
-  const fieldsMaskedPerRequest = 4;
+  const [maskedCountThisSession, setMaskedCountThisSession] = useState<number>(0);
+  const fieldsMaskedPerRequest = 0;
 
   // Backend simulation status decoupling
-  const [openShellStatus, setOpenShellStatus] = useState<'ACTIVE' | 'PAUSED'>('ACTIVE');
-  const [nebiusApiStatus, setNebiusApiStatus] = useState<'CONNECTED' | 'STANDBY'>('CONNECTED');
+  const [openShellStatus, setOpenShellStatus] = useState<'ACTIVE' | 'PAUSED'>('PAUSED');
+  const [nebiusApiStatus, setNebiusApiStatus] = useState<'CONNECTED' | 'STANDBY'>('STANDBY');
 
   const [privacySettings, setPrivacySettings] = useState<PrivacySettings>({
     storeMemoryLocal: true,
@@ -179,13 +178,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Load opportunities from dedicated DB service
   const [opportunities, setOpportunities] = useState<Opportunity[]>(() => {
-    return fetchAllOpportunities(userProfile.skills, []);
+    return import.meta.env.VITE_QADAM_API_URL ? [] : fetchAllOpportunities(userProfile.skills, []);
   });
+  const [serverOpportunities, setServerOpportunities] = useState<Opportunity[] | null>(null);
 
   // Re-rank opportunities whenever user skills or verified skills change
   useEffect(() => {
-    setOpportunities(fetchAllOpportunities(userProfile.skills, verifiedSkillNames));
-  }, [userProfile.skills, verifiedSkillNames]);
+    const entries = serverOpportunities ?? (import.meta.env.VITE_QADAM_API_URL
+      ? [] : fetchAllOpportunities(userProfile.skills, verifiedSkillNames));
+    setOpportunities(entries.map((opp) => ({
+      ...opp,
+      match: opp.skills.length ? calculateOpportunityMatch(opp.skills, userProfile.skills, verifiedSkillNames) : 0,
+    })));
+  }, [userProfile.skills, verifiedSkillNames, serverOpportunities]);
 
   // Load agent memory from localStorage (100% empty on fresh state)
   const [memoryEntries, setMemoryEntries] = useState<MemoryEntry[]>(() => {
@@ -303,30 +308,53 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setMaskedCountThisSession((prev) => prev + count);
   };
 
-  const runTavilySearch = () => {
+  const runTavilySearch = async () => {
     if (isTavilyScanning) return;
     setIsTavilyScanning(true);
-
-    addLog('SYSTEM', 'Initiating live Tavily web search agent for track-relevant AI events…');
-    incrementMaskedCount(4);
-
-    setTimeout(() => {
-      addLog('SANDBOX', 'PII anonymizer masked candidate query metadata → TOKENS_DISPATCHED');
-    }, 450);
-
-    setTimeout(() => {
-      addLog('SYSTEM', `Tavily web crawler retrieved ${opportunities.length} live opportunities from database`);
-    }, 900);
-
-    setTimeout(() => {
-      addLog('MODEL', 'Routing candidate ranking to nvidia/Nemotron-3.5-Lightning via Nebius Token Factory…');
-    }, 1400);
-
-    setTimeout(() => {
-      addLog('MODEL', 'Match scoring updated · Top match: Nebius x NVIDIA Global AI Hackathon (94%)');
+    try {
+      const base = import.meta.env.VITE_QADAM_API_URL?.replace(/\/$/, '');
+      if (!base) throw new Error('Backend URL is not configured');
+      const response = await fetch(`${base}/api/opportunities`);
+      if (!response.ok) throw new Error(`Backend responded ${response.status}`);
+      const data = await response.json() as { results?: Array<{
+        id: string; type: Opportunity['type']; title: string; organization: string;
+        deadline: string | null; url: string; eligibility: string; skills: string[];
+      }> };
+      const results = data.results ?? [];
+      if (results.length === 0) {
+        setServerOpportunities([]);
+        addLog('SYSTEM', 'Backend returned no cached opportunities. An admin scan is needed.');
+        return;
+      }
+      const mapped: Opportunity[] = results.map((item) => ({
+        id: item.id,
+        type: item.type,
+        title: item.title,
+        organization: item.organization,
+        orgKey: 'general',
+        deadline: item.deadline ? `Due ${item.deadline}` : 'Deadline unknown',
+        deadlineDate: item.deadline || '',
+        match: 0,
+        description: item.eligibility === 'check source'
+          ? 'Eligibility unknown; check the official source.'
+          : 'Eligibility evidence is available at the source.',
+        skills: item.skills || [],
+        url: item.url,
+        location: 'Check source',
+        award: 'Check source',
+      }));
+      setServerOpportunities(mapped);
+      addLog('SYSTEM', `Loaded ${mapped.length} sourced opportunities from the backend cache`);
+    } catch (err) {
+      addLog('SYSTEM', err instanceof Error ? `Radar unavailable: ${err.message}` : 'Radar unavailable');
+    } finally {
       setIsTavilyScanning(false);
-    }, 1900);
+    }
   };
+
+  useEffect(() => {
+    if (import.meta.env.VITE_QADAM_API_URL) void runTavilySearch();
+  }, []);
 
   const openSkillQuiz = (skill: SkillItem) => {
     setActiveQuizSkill(skill);

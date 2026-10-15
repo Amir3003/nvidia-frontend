@@ -71,7 +71,7 @@ export const RadarPage: React.FC = () => {
             className="h-10 px-4 rounded-btn border border-teal-500/30 bg-slate-900/80 hover:bg-slate-800/80 text-teal-100 hover:border-teal-400 transition-colors flex items-center gap-2 text-[13px] font-mono font-medium disabled:opacity-50 shadow-xs cursor-pointer"
           >
             <RefreshIcon size={14} className={isTavilyScanning ? 'animate-spin text-emerald-400' : 'text-emerald-400'} />
-            <span>{isTavilyScanning ? 'Scanning Live Radar…' : 'Run Radar Scan Now'}</span>
+            <span>{isTavilyScanning ? 'Loading Radar…' : 'Load Server Results'}</span>
           </button>
         }
       />

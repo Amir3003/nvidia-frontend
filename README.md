@@ -1,3 +1,5 @@
+> Local setup with private Nebius, Tavily, Telegram and Discord credentials: [LOCAL_SETUP.md](LOCAL_SETUP.md). `npm run scan` uses the paid APIs and saves a local cache; `npm run api` serves it to the local Vite app. The bot opportunity lists and CV messages are static examples, not synced with scan results. Rotate any bot token or webhook previously committed to this public repository.
+
 <p align="center">
   <img src="public/logo.png" width="120" alt="QADAM Logo" />
 </p>

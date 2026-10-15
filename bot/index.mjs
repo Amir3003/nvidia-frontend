@@ -1,34 +1,5 @@
-import fs from 'node:fs';
-import path from 'node:path';
-
-// 1. Fallback environment loader if not passed via --env-file
-function loadEnvFallback() {
-  if (process.env.TELEGRAM_BOT_TOKEN) return;
-  try {
-    const envPath = path.resolve(process.cwd(), '.env');
-    if (fs.existsSync(envPath)) {
-      const raw = fs.readFileSync(envPath, 'utf8');
-      for (const line of raw.split('\n')) {
-        const trimmed = line.trim();
-        if (!trimmed || trimmed.startsWith('#')) continue;
-        const eqIdx = trimmed.indexOf('=');
-        if (eqIdx !== -1) {
-          const key = trimmed.slice(0, eqIdx).trim();
-          const val = trimmed.slice(eqIdx + 1).trim();
-          if (!process.env[key]) {
-            process.env[key] = val;
-          }
-        }
-      }
-    }
-  } catch (err) {
-    // Ignore fallback load error
-  }
-}
-
-loadEnvFallback();
-
-const TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8629614483:AAGehIVcc-GpfRaOVsHISaLN3_gIMmp_XbY';
+const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+if (!TOKEN) { console.error('Missing TELEGRAM_BOT_TOKEN in .env'); process.exit(1); }
 const BOT_USERNAME = process.env.BOT_USERNAME || 'QadamAgentBot';
 const FALLBACK_PUBLIC_WEB_APP_URL = 'https://nvidia-pathfinder.vercel.app';
 const LOGO_URL = `${FALLBACK_PUBLIC_WEB_APP_URL}/logo.png`;

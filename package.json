@@ -8,6 +8,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "api": "node --env-file=.env backend/server.mjs serve",
+    "scan": "node --env-file=.env backend/server.mjs scan",
     "bot": "node --env-file=.env bot/index.mjs",
     "bot:discord": "node --env-file=.env bot/discord.mjs",
     "bot:all": "concurrently \"npm run bot\" \"npm run bot:discord\""
