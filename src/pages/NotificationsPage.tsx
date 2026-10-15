@@ -24,7 +24,7 @@ export const NotificationsPage: React.FC = () => {
     discordWebhook: '',
   };
 
-  const [telegramActive, setTelegramActive] = useState(initialNotifications.telegram);
+  const [telegramActive, setTelegramActive] = useState(false);
   const [telegramHandle, setTelegramHandle] = useState(initialNotifications.telegramHandle || '@');
   const [isTelegramModal, setIsTelegramModal] = useState(false);
 
@@ -32,8 +32,8 @@ export const NotificationsPage: React.FC = () => {
   const [kakaoHandle, setKakaoHandle] = useState(initialNotifications.kakaoHandle || '');
   const [isKakaoModal, setIsKakaoModal] = useState(false);
 
-  const [discordActive, setDiscordActive] = useState(initialNotifications.discord);
-  const [discordWebhook, setDiscordWebhook] = useState(initialNotifications.discordWebhook || '');
+  const [discordActive, setDiscordActive] = useState(false);
+  const [discordWebhook, setDiscordWebhook] = useState('');
   const [isDiscordModal, setIsDiscordModal] = useState(false);
 
   const [testAlertSent, setTestAlertSent] = useState<string | null>(null);
@@ -45,8 +45,8 @@ export const NotificationsPage: React.FC = () => {
       kakao: kakaoActive,
       kakaoHandle,
       discord: discordActive,
-      discordWebhook,
       ...updates,
+      discordWebhook: '',
     };
     updateUserProfile({
       notifications: updated,
@@ -56,23 +56,14 @@ export const NotificationsPage: React.FC = () => {
   const BOT_USERNAME = 'QadamAgentBot';
 
   const getTelegramDeepLink = () => {
-    const rawName = userProfile.name
-      ? userProfile.name.toLowerCase().replace(/[^a-z0-9]/g, '_')
-      : 'qadam';
-    return `https://t.me/${BOT_USERNAME}?start=connect_${encodeURIComponent(rawName)}`;
+    return `https://t.me/${BOT_USERNAME}?start=qadam`;
   };
 
   const handleAuthorizeTelegram = () => {
     const deepLink = getTelegramDeepLink();
     window.open(deepLink, '_blank', 'noopener,noreferrer');
-    const autoHandle = userProfile.name
-      ? `@${userProfile.name.toLowerCase().replace(/[^a-z0-9]/g, '_')}`
-      : '@qadam_user';
-    setTelegramActive(true);
-    setTelegramHandle(autoHandle);
-    saveNotifications({ telegram: true, telegramHandle: autoHandle });
     setIsTelegramModal(false);
-    addLog('SYSTEM', `Telegram Bot connected: @${BOT_USERNAME} linked via deep-link (${autoHandle})`);
+    addLog('SYSTEM', `Opened @${BOT_USERNAME}; account linking requires the bot backend.`);
   };
 
   const handleOpenBotDirectly = () => {
@@ -80,12 +71,10 @@ export const NotificationsPage: React.FC = () => {
   };
 
   const handleConnectTelegram = () => {
-    const handle = telegramHandle.trim() || '@qadam_user';
-    setTelegramActive(true);
-    setTelegramHandle(handle);
-    saveNotifications({ telegram: true, telegramHandle: handle });
+    setTelegramActive(false);
+    saveNotifications({ telegram: false });
     setIsTelegramModal(false);
-    addLog('SYSTEM', `Telegram Bot connected: @${BOT_USERNAME} linked to ${handle}`);
+    addLog('SYSTEM', 'Telegram account linking requires the bot backend.');
   };
 
   const handleDisconnectTelegram = () => {
@@ -110,76 +99,29 @@ export const NotificationsPage: React.FC = () => {
   };
 
   const DISCORD_INVITE_URL = 'https://discord.gg/A4rxRGx4Vt';
-  const OFFICIAL_DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1560164638769807383/Axnrp2TI1awXo_tPnIO4OstFmVQzEWIUgESIdRCcd6EFEQqC0E9Q7ATYMqj-5He7cePA';
-
   const handleAuthorizeDiscord = () => {
     window.open(DISCORD_INVITE_URL, '_blank', 'noopener,noreferrer');
-    const webhookToUse = discordWebhook && discordWebhook.includes('discord.com/api/webhooks')
-      ? discordWebhook
-      : OFFICIAL_DISCORD_WEBHOOK;
-    setDiscordActive(true);
-    setDiscordWebhook(webhookToUse);
-    saveNotifications({ discord: true, discordWebhook: webhookToUse });
     setIsDiscordModal(false);
-    addLog('SYSTEM', 'Discord Bot authorized: Joined official QADAM server and activated webhook channel.');
+    addLog('SYSTEM', 'Opened the QADAM Discord invite. Server notifications require backend configuration.');
   };
 
-  const handleOpenDiscordServer = () => {
-    window.open(DISCORD_INVITE_URL, '_blank', 'noopener,noreferrer');
-  };
+  const handleOpenDiscordServer = handleAuthorizeDiscord;
 
   const handleConnectDiscord = () => {
-    const webhook = discordWebhook.trim() || OFFICIAL_DISCORD_WEBHOOK;
-    setDiscordActive(true);
-    setDiscordWebhook(webhook);
-    saveNotifications({ discord: true, discordWebhook: webhook });
+    setDiscordActive(false);
+    setDiscordWebhook('');
+    saveNotifications({ discord: false, discordWebhook: '' });
     setIsDiscordModal(false);
-    addLog('SYSTEM', 'Discord Webhook bot active for squad notifications');
+    addLog('SYSTEM', 'Discord webhook configuration is server-side only.');
   };
 
   const handleDisconnectDiscord = () => {
     setDiscordActive(false);
-    saveNotifications({ discord: false });
-    addLog('SYSTEM', 'Discord Webhook integration disconnected');
+    saveNotifications({ discord: false, discordWebhook: '' });
   };
 
-  const triggerTestAlert = async (channel: string) => {
-    setTestAlertSent(channel);
-    setTimeout(() => setTestAlertSent(null), 3000);
-
-    if (channel === 'Discord') {
-      const targetWebhook = discordWebhook.trim() || OFFICIAL_DISCORD_WEBHOOK;
-      try {
-        await fetch(targetWebhook, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            username: 'QADAM Opportunity Radar',
-            avatar_url: 'https://raw.githubusercontent.com/nvidia/logos/main/nvidia.png',
-            embeds: [
-              {
-                title: '🎯 Nebius x NVIDIA Global AI Hackathon (94% Match)',
-                description: `⚡ **Live Opportunity Alert Dispatched for ${userProfile.name || 'Candidate'}**\nTrack: *GPU Compute & Multimodal Agents*`,
-                color: 1096065, // Emerald #10B981
-                fields: [
-                  { name: '🏆 Award / Pool', value: '$50,000 Compute Credits + Cash Pool', inline: true },
-                  { name: '⏳ Deadline', value: 'April 28, 2026', inline: true },
-                  { name: '🛡 Privacy Shield', value: 'Zero PII Leakage · Tokenized Prompt', inline: false },
-                ],
-                url: 'https://nvidia-pathfinder.vercel.app/application-studio?id=opp-1',
-                footer: { text: 'QADAM AI Platform · Verified Opportunity Ping' },
-                timestamp: new Date().toISOString(),
-              },
-            ],
-          }),
-        });
-        addLog('SYSTEM', 'Discord Webhook payload dispatched directly to server channel (HTTP 204).');
-      } catch (err) {
-        addLog('SYSTEM', 'Discord test ping dispatched via local proxy handler.');
-      }
-    } else {
-      addLog('SYSTEM', `Test push notification dispatched to ${channel} via secure local proxy.`);
-    }
+  const triggerTestAlert = (_channel: string) => {
+    addLog('SYSTEM', 'Test notifications need the backend to be deployed and configured.');
   };
 
   return (
@@ -421,7 +363,7 @@ export const NotificationsPage: React.FC = () => {
                 <h3 className="text-[17px] font-bold text-indigo-950">Discord Bot</h3>
                 <div className="text-mini font-mono text-[#5865f2] font-bold mt-0.5">Webhook & Squad Bot</div>
                 <p className="text-[13px] text-teal-950 mt-2 leading-relaxed">
-                  Direct webhook & DM bot for hackathon team servers, developer communities, and automated squad recruiting notifications.
+                  Join the team server. Alerts will be enabled after the backend is deployed and configured.
                 </p>
               </div>
 
@@ -442,7 +384,7 @@ export const NotificationsPage: React.FC = () => {
 
               {discordActive && (
                 <div className="p-2.5 rounded bg-gradient-to-br from-indigo-50 to-violet-100/80 border border-indigo-300/60 text-mini font-mono text-indigo-950 truncate">
-                  Webhook: <span className="text-indigo-950 font-bold">{discordWebhook}</span>
+                  Server notifications are configured by the backend operator.
                 </div>
               )}
             </div>
@@ -481,7 +423,7 @@ export const NotificationsPage: React.FC = () => {
                     onClick={handleAuthorizeDiscord}
                     className="w-full h-11 rounded-btn bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold text-[13px] font-mono transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-indigo-900/20"
                   >
-                    <span>Authorize with Discord</span>
+                    <span>Open Discord Server</span>
                     <ExternalLinkIcon size={14} />
                   </button>
                   <button
@@ -595,9 +537,9 @@ export const NotificationsPage: React.FC = () => {
       {isDiscordModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md">
           <div className="w-full max-w-md bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-6 space-y-4 text-slate-900">
-            <h3 className="text-[17px] font-bold text-indigo-950">Link Discord Server & Webhook</h3>
+            <h3 className="text-[17px] font-bold text-indigo-950">Discord Server</h3>
             <p className="text-[13px] text-teal-950 leading-relaxed">
-              Connect to the official QADAM developer community or link your custom squad webhook to stream real-time opportunity alerts.
+              Join the QADAM server. Webhook secrets belong in the backend environment, never in the browser.
             </p>
             <div className="p-3.5 bg-white/90 border border-teal-200/80 rounded-lg space-y-2">
               <span className="text-[11px] font-mono uppercase tracking-wider text-teal-800 font-bold block">
@@ -612,18 +554,6 @@ export const NotificationsPage: React.FC = () => {
                 <ExternalLinkIcon size={14} />
               </button>
             </div>
-            <div>
-              <label className="block text-mini font-mono uppercase text-teal-900 font-semibold mb-1">
-                Or Enter Custom Incoming Webhook URL
-              </label>
-              <input
-                type="url"
-                value={discordWebhook}
-                onChange={(e) => setDiscordWebhook(e.target.value)}
-                placeholder={OFFICIAL_DISCORD_WEBHOOK}
-                className="w-full h-11 px-3.5 bg-white border border-teal-200 rounded-btn text-[12px] text-slate-900 font-mono focus:border-emerald-600 focus:outline-none transition-colors shadow-xs"
-              />
-            </div>
             <div className="pt-2 flex items-center justify-end gap-3">
               <button
                 type="button"
@@ -637,7 +567,7 @@ export const NotificationsPage: React.FC = () => {
                 onClick={handleConnectDiscord}
                 className="h-10 px-5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold rounded-btn text-mini font-mono cursor-pointer transition-colors shadow-xs"
               >
-                Confirm Connection
+                Close
               </button>
             </div>
           </div>

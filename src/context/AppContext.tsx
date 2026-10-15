@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import {
   Opportunity,
-  fetchAllOpportunities,
   calculateOpportunityMatch,
 } from '../db/opportunities';
 import {
@@ -18,7 +17,6 @@ import {
   LogEntry,
   INITIAL_SKILLS,
   INITIAL_MEMORY,
-  INITIAL_LOGS,
 } from '../data';
 
 interface PrivacySettings {
@@ -153,19 +151,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return { ...item, status: 'MISSING' as const };
     });
   });
-  const [logs, setLogs] = useState<LogEntry[]>(INITIAL_LOGS);
+  const [logs, setLogs] = useState<LogEntry[]>([]);
   const [activeHoveredMemoryId, setActiveHoveredMemoryId] = useState<string>('');
   const [isTavilyScanning, setIsTavilyScanning] = useState<boolean>(false);
   const [activeQuizSkill, setActiveQuizSkill] = useState<SkillItem | null>(null);
   const [selectedOpportunityForDraft, setSelectedOpportunityForDraft] = useState<Opportunity | null>(null);
   const [selectedOpportunityForDetails, setSelectedOpportunityForDetails] = useState<Opportunity | null>(null);
   const [selectedOpportunityForGaps, setSelectedOpportunityForGaps] = useState<Opportunity | null>(null);
-  const [maskedCountThisSession, setMaskedCountThisSession] = useState<number>(48);
-  const fieldsMaskedPerRequest = 4;
+  const [maskedCountThisSession, setMaskedCountThisSession] = useState<number>(0);
+  const fieldsMaskedPerRequest = 0;
 
   // Backend simulation status decoupling
-  const [openShellStatus, setOpenShellStatus] = useState<'ACTIVE' | 'PAUSED'>('ACTIVE');
-  const [nebiusApiStatus, setNebiusApiStatus] = useState<'CONNECTED' | 'STANDBY'>('CONNECTED');
+  const [openShellStatus, setOpenShellStatus] = useState<'ACTIVE' | 'PAUSED'>('PAUSED');
+  const [nebiusApiStatus, setNebiusApiStatus] = useState<'CONNECTED' | 'STANDBY'>('STANDBY');
 
   const [privacySettings, setPrivacySettings] = useState<PrivacySettings>({
     storeMemoryLocal: true,
@@ -178,14 +176,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [skills]);
 
   // Load opportunities from dedicated DB service
-  const [opportunities, setOpportunities] = useState<Opportunity[]>(() => {
-    return fetchAllOpportunities(userProfile.skills, []);
-  });
+  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
+  const [serverOpportunities, setServerOpportunities] = useState<Opportunity[] | null>(null);
 
   // Re-rank opportunities whenever user skills or verified skills change
   useEffect(() => {
-    setOpportunities(fetchAllOpportunities(userProfile.skills, verifiedSkillNames));
-  }, [userProfile.skills, verifiedSkillNames]);
+    const entries = serverOpportunities ?? [];
+    setOpportunities(entries.map((opp) => ({
+      ...opp,
+      match: opp.skills.length ? calculateOpportunityMatch(opp.skills, userProfile.skills, verifiedSkillNames) : 0,
+    })));
+  }, [userProfile.skills, verifiedSkillNames, serverOpportunities]);
 
   // Load agent memory from localStorage (100% empty on fresh state)
   const [memoryEntries, setMemoryEntries] = useState<MemoryEntry[]>(() => {
@@ -303,30 +304,64 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setMaskedCountThisSession((prev) => prev + count);
   };
 
-  const runTavilySearch = () => {
+  const runTavilySearch = async () => {
     if (isTavilyScanning) return;
     setIsTavilyScanning(true);
-
-    addLog('SYSTEM', 'Initiating live Tavily web search agent for track-relevant AI events…');
-    incrementMaskedCount(4);
-
-    setTimeout(() => {
-      addLog('SANDBOX', 'PII anonymizer masked candidate query metadata → TOKENS_DISPATCHED');
-    }, 450);
-
-    setTimeout(() => {
-      addLog('SYSTEM', `Tavily web crawler retrieved ${opportunities.length} live opportunities from database`);
-    }, 900);
-
-    setTimeout(() => {
-      addLog('MODEL', 'Routing candidate ranking to nvidia/Nemotron-3.5-Lightning via Nebius Token Factory…');
-    }, 1400);
-
-    setTimeout(() => {
-      addLog('MODEL', 'Match scoring updated · Top match: Nebius x NVIDIA Global AI Hackathon (94%)');
+    try {
+      // Local development may use the read-only API. Production reads a static
+      // file published by the scheduled GitHub Actions scan.
+      const localApi = import.meta.env.DEV && import.meta.env.VITE_QADAM_API_URL;
+      const url = localApi
+        ? `${import.meta.env.VITE_QADAM_API_URL.replace(/\/$/, '')}/api/opportunities`
+        : '/data/opportunities.json';
+      const response = await fetch(url, { cache: 'no-store' });
+      if (!response.ok) throw new Error(`Radar data responded ${response.status}`);
+      const data = await response.json() as { results?: Array<{
+        id: string; type: Opportunity['type']; title: string; organization: string;
+        deadline: string | null; url: string; eligibility: string; skills: string[];
+      }> } | Array<{
+        id: string; type: Opportunity['type']; title: string; organization: string;
+        deadline: string | null; url: string; eligibility: string; skills: string[];
+      }>;
+      const results = Array.isArray(data) ? data : data.results;
+      if (!Array.isArray(results)) throw new Error('Radar data format is invalid');
+      if (results.length === 0) {
+        setServerOpportunities([]);
+        addLog('SYSTEM', 'No sourced opportunities have been published yet.');
+        return;
+      }
+      // A skipped or failed scheduled run must not show an expired deadline.
+      const today = new Date().toISOString().slice(0, 10);
+      const currentResults = results.filter((item) => !item.deadline || item.deadline >= today);
+      const mapped: Opportunity[] = currentResults.map((item) => ({
+        id: item.id,
+        type: item.type,
+        title: item.title,
+        organization: item.organization,
+        orgKey: 'general',
+        deadline: item.deadline ? `Due ${item.deadline}` : 'Deadline unknown',
+        deadlineDate: item.deadline || '',
+        match: 0,
+        description: item.eligibility === 'check source'
+          ? 'Eligibility unknown; check the official source.'
+          : 'Eligibility evidence is available at the source.',
+        skills: item.skills || [],
+        url: item.url,
+        location: 'Check source',
+        award: 'Check source',
+      }));
+      setServerOpportunities(mapped);
+      addLog('SYSTEM', `Loaded ${mapped.length} sourced opportunities`);
+    } catch (err) {
+      addLog('SYSTEM', err instanceof Error ? `Radar unavailable: ${err.message}` : 'Radar unavailable');
+    } finally {
       setIsTavilyScanning(false);
-    }, 1900);
+    }
   };
+
+  useEffect(() => {
+    void runTavilySearch();
+  }, []);
 
   const openSkillQuiz = (skill: SkillItem) => {
     setActiveQuizSkill(skill);

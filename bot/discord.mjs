@@ -1,36 +1,7 @@
-import fs from 'node:fs';
-import path from 'node:path';
-
-// 1. Fallback environment loader if not passed via --env-file
-function loadEnvFallback() {
-  if (process.env.DISCORD_BOT_TOKEN) return;
-  try {
-    const envPath = path.resolve(process.cwd(), '.env');
-    if (fs.existsSync(envPath)) {
-      const raw = fs.readFileSync(envPath, 'utf8');
-      for (const line of raw.split('\n')) {
-        const trimmed = line.trim();
-        if (!trimmed || trimmed.startsWith('#')) continue;
-        const eqIdx = trimmed.indexOf('=');
-        if (eqIdx !== -1) {
-          const key = trimmed.slice(0, eqIdx).trim();
-          const val = trimmed.slice(eqIdx + 1).trim();
-          if (!process.env[key]) {
-            process.env[key] = val;
-          }
-        }
-      }
-    }
-  } catch (err) {
-    // Ignore fallback load error
-  }
-}
-
-loadEnvFallback();
-
 const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
+const HAS_BOT_TOKEN = Boolean(DISCORD_BOT_TOKEN);
 const DISCORD_INVITE_URL = process.env.DISCORD_INVITE_URL || 'https://discord.gg/A4rxRGx4Vt';
-const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL || 'https://discord.com/api/webhooks/1560164638769807383/Axnrp2TI1awXo_tPnIO4OstFmVQzEWIUgESIdRCcd6EFEQqC0E9Q7ATYMqj-5He7cePA';
+const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 const FALLBACK_PUBLIC_WEB_APP_URL = 'https://nvidia-pathfinder.vercel.app';
 const LOGO_URL = `${FALLBACK_PUBLIC_WEB_APP_URL}/logo.png`;
 const OFFICIAL_SLOGAN = 'QADAM («Қадам») — derived from the Kazakh word for "step". Your confident step toward global opportunities, grants, and technologies. 🚀';
@@ -523,6 +494,9 @@ async function handleDiscordMessage(msg) {
 
   // 5. !broadcast
   if (lower.startsWith('!broadcast')) {
+    if (!process.env.DISCORD_BROADCAST_USER_ID || authorId !== process.env.DISCORD_BROADCAST_USER_ID) {
+      return sendChannelMessage(channelId, { content: 'Broadcast is restricted to the configured operator.' });
+    }
     const broadcastRes = await broadcastWebhook();
     if (broadcastRes.ok) {
       return sendChannelMessage(channelId, {
@@ -695,7 +669,7 @@ if (args.includes('--broadcast') || args.includes('-b')) {
     process.exit(0);
   });
 } else {
-  // Start gateway listener
+  if (!HAS_BOT_TOKEN) { console.error('Missing DISCORD_BOT_TOKEN in .env'); process.exit(1); }
   startDiscordGateway();
 }
 
