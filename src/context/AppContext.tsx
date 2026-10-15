@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import {
   Opportunity,
-  fetchAllOpportunities,
   calculateOpportunityMatch,
 } from '../db/opportunities';
 import {
@@ -177,15 +176,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [skills]);
 
   // Load opportunities from dedicated DB service
-  const [opportunities, setOpportunities] = useState<Opportunity[]>(() => {
-    return import.meta.env.VITE_QADAM_API_URL ? [] : fetchAllOpportunities(userProfile.skills, []);
-  });
+  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [serverOpportunities, setServerOpportunities] = useState<Opportunity[] | null>(null);
 
   // Re-rank opportunities whenever user skills or verified skills change
   useEffect(() => {
-    const entries = serverOpportunities ?? (import.meta.env.VITE_QADAM_API_URL
-      ? [] : fetchAllOpportunities(userProfile.skills, verifiedSkillNames));
+    const entries = serverOpportunities ?? [];
     setOpportunities(entries.map((opp) => ({
       ...opp,
       match: opp.skills.length ? calculateOpportunityMatch(opp.skills, userProfile.skills, verifiedSkillNames) : 0,
@@ -312,21 +308,32 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (isTavilyScanning) return;
     setIsTavilyScanning(true);
     try {
-      const base = import.meta.env.VITE_QADAM_API_URL?.replace(/\/$/, '');
-      if (!base) throw new Error('Backend URL is not configured');
-      const response = await fetch(`${base}/api/opportunities`);
-      if (!response.ok) throw new Error(`Backend responded ${response.status}`);
+      // Local development may use the read-only API. Production reads a static
+      // file published by the scheduled GitHub Actions scan.
+      const localApi = import.meta.env.DEV && import.meta.env.VITE_QADAM_API_URL;
+      const url = localApi
+        ? `${import.meta.env.VITE_QADAM_API_URL.replace(/\/$/, '')}/api/opportunities`
+        : '/data/opportunities.json';
+      const response = await fetch(url, { cache: 'no-store' });
+      if (!response.ok) throw new Error(`Radar data responded ${response.status}`);
       const data = await response.json() as { results?: Array<{
         id: string; type: Opportunity['type']; title: string; organization: string;
         deadline: string | null; url: string; eligibility: string; skills: string[];
-      }> };
-      const results = data.results ?? [];
+      }> } | Array<{
+        id: string; type: Opportunity['type']; title: string; organization: string;
+        deadline: string | null; url: string; eligibility: string; skills: string[];
+      }>;
+      const results = Array.isArray(data) ? data : data.results;
+      if (!Array.isArray(results)) throw new Error('Radar data format is invalid');
       if (results.length === 0) {
         setServerOpportunities([]);
-        addLog('SYSTEM', 'Backend returned no cached opportunities. An admin scan is needed.');
+        addLog('SYSTEM', 'No sourced opportunities have been published yet.');
         return;
       }
-      const mapped: Opportunity[] = results.map((item) => ({
+      // A skipped or failed scheduled run must not show an expired deadline.
+      const today = new Date().toISOString().slice(0, 10);
+      const currentResults = results.filter((item) => !item.deadline || item.deadline >= today);
+      const mapped: Opportunity[] = currentResults.map((item) => ({
         id: item.id,
         type: item.type,
         title: item.title,
@@ -344,7 +351,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         award: 'Check source',
       }));
       setServerOpportunities(mapped);
-      addLog('SYSTEM', `Loaded ${mapped.length} sourced opportunities from the backend cache`);
+      addLog('SYSTEM', `Loaded ${mapped.length} sourced opportunities`);
     } catch (err) {
       addLog('SYSTEM', err instanceof Error ? `Radar unavailable: ${err.message}` : 'Radar unavailable');
     } finally {
@@ -353,7 +360,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   useEffect(() => {
-    if (import.meta.env.VITE_QADAM_API_URL) void runTavilySearch();
+    void runTavilySearch();
   }, []);
 
   const openSkillQuiz = (skill: SkillItem) => {
