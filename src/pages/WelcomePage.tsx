@@ -87,7 +87,7 @@ export const WelcomePage: React.FC = () => {
       {/* Top Daylight Glass Navigation Bar */}
       <header className="fixed top-0 left-0 right-0 z-40 px-6 md:px-12 py-4 flex items-center justify-between bg-slate-900/60 backdrop-blur-md border-b border-teal-500/20 shadow-md">
         <div className="flex items-center gap-3">
-          <span className="w-3.5 h-3.5 rounded-sm bg-emerald-500 rotate-45 inline-block shadow-sm" />
+          <img src="/logo.png" alt="QADAM Logo" className="w-8 h-8 object-contain rounded-md drop-shadow-sm" />
           <span className="text-[19px] font-mono font-bold tracking-tight text-white">
             QADAM
           </span>
@@ -116,7 +116,7 @@ export const WelcomePage: React.FC = () => {
         <div className="space-y-7">
           <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-teal-500/10 border border-teal-400/30 text-teal-300 text-sm md:text-base font-semibold shadow-lg backdrop-blur-md">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400" />
-            <span>AI Career & Opportunity Platform</span>
+            <span>AI Opportunity Hub</span>
           </div>
 
           <h1 className="text-7xl sm:text-8xl md:text-[7.5rem] font-black tracking-tight text-white drop-shadow-[0_4px_28px_rgba(16,185,129,0.28)] font-sans leading-none">
@@ -124,7 +124,7 @@ export const WelcomePage: React.FC = () => {
           </h1>
 
           <p className="text-xl md:text-2xl text-teal-100/90 font-normal leading-relaxed max-w-2xl mx-auto">
-            From Kazakh <strong className="text-white font-semibold">«Қадам» (Step)</strong>. Your decisive step toward global hackathons, research grants, and engineering careers.
+            QADAM («Қадам») — derived from the Kazakh word for "step". Your confident step toward global opportunities, grants, and technologies. 🚀
           </p>
 
           <div className="pt-6 flex justify-center">
@@ -591,8 +591,9 @@ export const WelcomePage: React.FC = () => {
       <footer className="border-t border-teal-500/20 py-8 px-6 md:px-12 bg-slate-950/60 backdrop-blur-md relative z-20">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-mini font-mono text-teal-200/80">
           <div className="flex items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500 rotate-45 inline-block shadow-sm" />
-            <span className="text-white font-bold">QADAM</span>
+            <img src="/logo.png" alt="QADAM Logo" className="w-5 h-5 object-contain" />
+            <span className="text-white font-bold">QADAM («Қадам»)</span>
+            <span className="hidden md:inline text-teal-300/60">— Your confident step toward global opportunities 🚀</span>
             <span>© 2026. All rights reserved.</span>
           </div>
 

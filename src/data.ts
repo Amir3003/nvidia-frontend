@@ -665,7 +665,7 @@ export const INITIAL_LOGS: LogEntry[] = [
     id: 'log-8',
     time: '08:00:11',
     tag: 'SYSTEM',
-    message: 'Action denied · continuing inside /workspace/pathfinder',
+    message: 'Action denied · continuing inside /workspace/qadam',
   },
   {
     id: 'log-9',

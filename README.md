@@ -1,128 +1,217 @@
-# Pathfinder — Personal AI Assistant
-**Nebius x NVIDIA Global AI Hackathon (Track 3: Agentic Workflows & Developer Tools)**
+<p align="center">
+  <img src="public/logo.png" width="120" alt="QADAM Logo" />
+</p>
 
-Pathfinder is a production-grade, ultra-clean web dashboard for students and researchers. It operates as an autonomous agent interface that discovers hackathons and research grants via Tavily, performs ATS resume gap analysis against opportunity criteria, ensures client-side PII data sovereignty before cloud model routing, and provides strict OpenShell sandbox containment logs.
+<h1 align="center">QADAM («Қадам») — AI Opportunity & Career Hub</h1>
 
----
+<p align="center">
+  <strong>Autonomous Career Agent · Real-Time Opportunity Radar · Zero-Leak PII Privacy Shield · Multi-Channel Messenger Ecosystem</strong>
+</p>
 
-## 🛠️ Tech Stack & Architecture
-
-- **Framework:** React 19 + TypeScript + Vite
-- **Routing:** React Router v7 (`react-router-dom`) — 6 dedicated screens + Onboarding flow
-- **Styling:** Tailwind CSS with strict design tokens (Linear / Vercel developer tool aesthetic)
-- **Typography:** Geist (UI text) + JetBrains Mono (metrics, percentages, code, and logs) via Google Fonts
-- **Icons:** 100% inline SVG (linear, `strokeWidth="1.7"`, 16px), strictly zero emoji
-- **Data & State Management:** Modular mock DB services (`src/db/opportunities.ts`, `src/db/userProfile.ts`) and reactive `AppContext` store (`AppContext.tsx`) with separated `localStorage` persistence for `user_profile` and `pathfinder_memory_md`
-
----
-
-## 🎨 Design System & Developer Tool Aesthetics
-
-The visual language follows strict engineering tool guidelines:
-- **Background (`bg`):** `#070d1f` (deep dark blue-zinc foundation)
-- **Sidebar (`sidebar`):** `#0a1128` (248px fixed width on desktop, responsive drawer on mobile)
-- **Surface (`surface`):** `#0d1631` (cards and panels)
-- **Surface Hover / Active:** `#16213f`
-- **Borders:** Razor-sharp 1px lines (`#1f2c52`, strong `#2e3d6b`)
-- **Single Functional Accent:** Emerald `#10b981` (active sandbox, ATS verified status, >80% match, verified badge)
-- **Warning Accent:** Muted Amber `#f59e0b` / `#fcd34d` (security jail blocks, unverified skills)
-- **Buttons & Inputs:** Minimum 44px touch/click target height, accessible focus-visible rings
-- **Team Boundary Decoupling:** OpenShell (`ACTIVE` / `PAUSED`) and Nebius API (`CONNECTED` / `STANDBY`) status pills in the sidebar are interactive simulators, allowing judges and teammates to test decoupled backend behaviors.
+<p align="center">
+  <a href="https://nvidia-pathfinder.vercel.app"><img src="https://img.shields.io/badge/Live%20Demo-Vercel-10B981?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" /></a>
+  <a href="https://discord.gg/A4rxRGx4Vt"><img src="https://img.shields.io/badge/Discord-Community-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord Community" /></a>
+  <a href="https://t.me/QadamAgentBot"><img src="https://img.shields.io/badge/Telegram-@QadamAgentBot-0088cc?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram Bot" /></a>
+  <img src="https://img.shields.io/badge/React%2019-TypeScript-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 19" />
+  <img src="https://img.shields.io/badge/NVIDIA%20NIM-Nebius%20AI-76B900?style=for-the-badge&logo=nvidia&logoColor=white" alt="NVIDIA NIM" />
+</p>
 
 ---
 
-## 🧭 Screen-by-Screen Breakdown
-
-### 0. 🚀 Onboarding Wizard (`/onboarding` & First Launch)
-- Automatically checks `localStorage` for `user_profile`. If uninitialized or requested, presents a clean 3-step setup modal with **zero hardcoded defaults**:
-  1. **Account & Identity:** Clean empty inputs with ghost placeholders, secure password input with show/hide toggle, institution, major, location, and an expanded list of 9 academic/research roles.
-  2. **Technical Stack & Projects:** Interactive multi-select pills for active technologies (Python, Go, Docker, PyTorch, Vector DBs, LLMs, ROS2, etc.) and project resume highlights.
-  3. **Objectives & Local Boundary:** Streamlined career tracks (Hackathons, Graduate Grants, Internships) and local sovereign boundary confirmation.
-
-### 1. 🎯 Opportunity Radar (`/`)
-- Main feed of vetted opportunities gathered from `src/db/opportunities.ts`.
-- **Organization Logos:** Custom inline SVG brand marks for Nebius, NVIDIA, MEXT Japan, Anthropic, CERN, and Y Combinator.
-- **Dynamic Match Score Engine:** Opportunity match percentages recalculate in real-time based on the candidate's active and verified skills!
-- Subtitle: `last scan 06:00 · 10 matches · source: Tavily · profile: <Candidate Name>`.
-- Live trigger button: `[ Run Tavily Search Now ]` (dispatches agent simulation, tokenizes PII, routes to Nemotron, and logs events).
-- Real-time search bar & filter chips: `All`, `Hackathons`, `Grants`, `Internships`, `Match >80%`.
-- High-density cards with match percentage bars, tech stack pills (with candidate skill highlights), and actions:
-  - `Draft Application`: Opens modal showing tokenized prompt and custom statement dynamically personalized for the candidate.
-  - `Analyze CV Gaps`: Opens `CvGapsModal` showing matched, unverified, and missing skills with one-click verification quiz launch.
-  - `View Details`: High-density modal with criteria, prize, and official link.
-
-### 2. 📄 CV & Skill Lab (`/cv`)
-- Subtitle: `gap analysis against: Nebius x NVIDIA Global AI Hackathon`.
-- **CV Health Score:** Overall ATS score (`78/100`+) with breakdown for `structure 90`, `impact 72`, `keywords 68` (dynamically increments as skills are verified).
-- **Live Document Preview (`Candidate_CV.pdf`):** Rendered student resume with contact info and job-matched keywords highlighted in `rgba(16,185,129,0.14)`.
-- **Strengths & Gaps:** Side-by-side diagnosis cards.
-- **Recommended Skills to Learn:**
-  - Status badges (`VERIFIED`, `UNVERIFIED`, `MISSING`).
-  - Interactive quiz trigger: `[ Take Skill Quiz (>70% to verify) ]`.
-- **Quiz Modal:**
-  - Active countdown timer, progress bar, 4 technical questions.
-  - Scoring engine: achieving $\ge 70\%$ issues a verified badge, increases ATS score, and dynamically updates CV and radar match scores.
-
-### 3. 🛡️ Privacy Shield (`/privacy`)
-- Client-side data sovereignty dashboard.
-- **PII Anonymization Engine Banner:** Dark emerald border (`#065f46`), active indicators, token chips (`Name`, `Phone`, `ID`, `Email`), and live counters:
-  - `4 fields masked per request`
-  - `48 masked this session` (increments dynamically on all agent calls).
-- **Interactive Controls:**
-  - `[x] Store preferences in local MEMORY.md`
-  - `[x] Restrict agent execution to the OpenShell sandbox directory`
-  - `[ ] Send unmasked contact details to cloud APIs` (permanently disabled with `DISABLED` badge).
-- **Inspect Raw JSON Payload Accordion:** Side-by-side comparison of local unmasked payload vs. tokenized payload sent to Nebius Token Factory with candidate dynamic values.
-
-### 4. 🧠 Agent Memory (`/memory`)
-- Subtitle: `local MEMORY.md · N entries · agent behavioral context`.
-- **Pure Memory Focus:** Separated from personal profile management to keep agent instructions pristine.
-- **Context Flow Matrix:**
-  - Left column: 128px timestamped memory cards (`PREFERENCES`, `CONSTRAINTS`, `SKILLS`, `GOALS`) with inline Edit and Delete actions.
-  - Center column: 140px SVG with dynamic cubic Bezier curves (`M0 yl C70 yl 70 yr 140 yr`).
-  - Right column: 7 target nodes (Opportunities & Constraints).
-  - Hover or keyboard focus on a memory card dynamically illuminates connecting Bezier paths to emerald (`#10b981`) and highlights corresponding targets.
-  - Backed by `localStorage` in genuine `MEMORY.md` format.
-
-### 5. ⚙️ Logs & Terminal (`/logs`)
-- Dedicated security and agent event stream.
-- Status cards: `Sandbox: ACTIVE`, `Allowed directory: /workspace/pathfinder`, `Blocked this session`.
-- Filter chips: `All`, `System`, `Sandbox`, `Model`.
-- Terminal view with formatted columns: `time | [TAG] (132px) | message`.
-  - `[SANDBOX WARNING]` highlighted in amber with row tint.
-  - Blinking cursor prompt `$ /workspace/pathfinder █`.
-  - Interactive CLI: execute commands (`access /root/system` to trigger the OpenShell sandbox boundary alert!).
-
-### 6. 👤 Profile & Settings (`/profile`)
-- Dedicated candidate profile and privacy settings management.
-- **Candidate Identity & Security:** Update first name, surname, email, password, and contact numbers.
-- **Academic & Role Configuration:** Change university, major, location, and role.
-- **Technical Stack & Career Objectives:** Add or toggle programming languages, tools, frameworks, and target paths.
-- **Discovery Visibility Controls:** Sovereign toggle for local vs. external discovery indexing.
-- **Account Data Management:** Clear or reset profile to re-trigger the onboarding wizard.
+> ### *"QADAM («Қадам») — derived from the Kazakh word for 'step'. Your confident step toward global opportunities, grants, and technologies. 🚀"*
 
 ---
 
-## 🚀 Getting Started
+## 🌟 Executive Summary
 
-### 1. Install Dependencies
+**QADAM («Қадам»)** is a sovereign, production-grade AI platform and autonomous agent interface built for ambitious students, academic researchers, and developer squads. 
+
+It solves the fragmented discovery and high-stakes application problem for global tech competitions, academic research fellowships, and engineering grants. Through client-side identity tokenization, dynamic ATS resume benchmark analysis, and native multi-channel bots (Telegram, Discord, KakaoTalk), QADAM acts as an always-on personal career scout that keeps sensitive personal information strictly protected.
+
+---
+
+## 🏛️ Core Architecture & Pillars
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       QADAM CLIENT & AGENT RUNTIME                          │
+│                                                                             │
+│   ┌────────────────────┐   ┌─────────────────────┐   ┌───────────────────┐  │
+│   │ 🎯 Opportunity     │   │ 📄 ATS CV & Skill   │   │ 🧠 Agent Memory   │  │
+│   │    Radar           │   │    Benchmark Lab    │   │    (MEMORY.md)    │  │
+│   └─────────┬──────────┘   └──────────┬──────────┘   └─────────┬─────────┘  │
+│             │                         │                        │            │
+│             └─────────────────────────┼────────────────────────┘            │
+│                                       ▼                                     │
+│                     ┌───────────────────────────────────┐                   │
+│                     │ 🛡️ CLIENT-SIDE PII SHIELD          │                   │
+│                     │ Tokenizes: Name, Email, Phone, ID │                   │
+│                     │ Confined to: /workspace/qadam     │                   │
+│                     └─────────────────┬─────────────────┘                   │
+└───────────────────────────────────────┼─────────────────────────────────────┘
+                                        │ (Zero-PII Payload)
+                                        ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    CLOUD & AGENT MESSENGER PLATFORMS                        │
+│                                                                             │
+│  ┌─────────────────────────┐  ┌──────────────────────┐  ┌────────────────┐  │
+│  │ ⚡ Nebius Cloud /       │  │ 🤖 Telegram Bot      │  │ 🎮 Discord Bot │  │
+│  │    Nemotron 3.5 NIM     │  │    @QadamAgentBot    │  │    & Webhooks  │  │
+│  └─────────────────────────┘  └──────────────────────┘  └────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 1. 📡 Real-Time Opportunity Radar (`/`)
+- **Curated Global Opportunities:** Continuous index of vetted hackathons, graduate fellowships, and grants (including *Nebius x NVIDIA Global AI Hackathon*, *MEXT AI Research Fellowship (Japan)*, *Anthropic Safety Residency*, *CERN*, and *Y Combinator*).
+- **Dynamic Skill-Compatibility Engine:** Computes real-time match compatibility percentages based on candidate verified credentials and quiz badges.
+- **Deep Gap Diagnosis:** Direct integration with ATS criteria to detect missing requirements (e.g., Docker containerization or CUDA optimization) and trigger remediation.
+
+### 2. 🛡️ Zero-Leak PII Privacy Shield (`/account?tab=settings`)
+- **Client-Side Identity Tokenization:** Replaces student legal names, email addresses, phone numbers, and institutional IDs with cryptographically unlinkable placeholders (`[USER_NAME_1]`, `[EMAIL_MASKED]`, `[ID_MASKED]`) *before* prompt dispatch.
+- **Inference Model Protection:** Frontier models (`nvidia/Nemotron-3.5-Lightning` on Nebius Cloud) receive tokenized data only, eliminating PII training risks and metadata profiling.
+- **OpenShell Sandbox Confinement:** All agent tools and local file operations are strictly confined within `/workspace/qadam`. Unauthorized traversal attempts (such as accessing `/root/system`) are intercepted and logged by security boundaries.
+
+### 3. 📄 ATS CV & Skill Benchmark Lab (`/cv`)
+- **CV Health Index:** Holistic ATS score breakdown across technical stack alignment, structural clarity, and quantified impact.
+- **Interactive Verification Quizzes:** 5-question timed technical benchmarks (PyTorch, Docker, LLM Prompt Architecture, Linux Systems) that upgrade unverified CV claims to verified badges, instantly boosting matching probabilities.
+
+### 4. 🧠 Agent Memory Architecture (`/memory`)
+- **Genuine `MEMORY.md` Protocol:** Transparent persistence of candidate preferences, behavioral constraints, verified skills, and career goals.
+- **Interactive Context Flow Matrix:** Real-time SVG cubic Bezier curve visualizer that illuminates relationships between memory entries and target opportunities upon hover or focus.
+
+### 5. 👥 Squad Network & Teammate Match (`/network`)
+- **Collaborative Roster Construction:** Find co-builders with complementary skills for high-stakes team hackathons.
+- **Role-Based Filtering:** Match with ML Engineers, Distributed Systems Architects, and Technical Designers.
+
+---
+
+## 🤖 Multi-Channel Agent Ecosystem
+
+QADAM extends beyond the browser directly into developer daily communication workflows:
+
+### 1. Official Telegram Bot (`@QadamAgentBot`)
+- **Deep-Link Account Binding:** Clicking *Authorize with Telegram* in QADAM automatically binds the session via deep-link:
+  `https://t.me/QadamAgentBot?start=connect_<username>`
+- **Native Slash Commands:**
+  - `/radar` — Real-time stream of top opportunities with match percentages, prizes, and deadlines.
+  - `/gaps` — Diagnostic breakdown of resume gaps and missing credentials.
+  - `/privacy` — Verification of client-side PII masking and sandbox containment status.
+  - `/help` — Interactive commands index.
+- **Confidential Proposal Drafting:** Generates an ATS-tailored proposal outline with student identity tokenized and provides an instant one-click link to [Application Studio](https://nvidia-pathfinder.vercel.app/application-studio).
+
+### 2. Unified Discord Bot (`bot/discord.mjs`)
+- **Official Server Community:** [https://discord.gg/A4rxRGx4Vt](https://discord.gg/A4rxRGx4Vt)
+- **Rich Emerald & Indigo Embeds:** Interactive server commands (`!radar`, `!gaps`, `!privacy`, `!broadcast`, `!help`).
+- **Confidential DM Bridge (`!draft <1|2|3>`):** Dispatches confidential proposal drafts directly to student private DMs to ensure zero public leakage of personal application details.
+- **Squad Webhook Broadcaster:** Broadcasts real-time alerts into designated team channels via incoming webhooks.
+
+### 3. KakaoTalk OpenBuilder Integration
+- **Seoul & Korea University Delegation Readiness:** Official Kakao i OpenBuilder channel support with 알림톡 (AlimTalk) notification templates for Asian academic grants and regional student hackathons.
+
+---
+
+## 💻 Tech Stack & Engineering Standards
+
+- **Core Framework:** React 19, TypeScript, Vite
+- **Routing:** React Router v7 (`react-router-dom`)
+- **Styling:** Tailwind CSS with warm daylight and cosmic night palettes, 60fps GPU-accelerated interactive canvas (`AmbientBackground.tsx`)
+- **Typography:** Geist (UI text) + JetBrains Mono (metrics, telemetry, and terminal logs)
+- **State Management:** Reactive `AppContext` with multi-key `localStorage` resilience
+- **Bot Engine:** Zero-external-dependency Node.js 22 native `WebSocket` (Gateway v10) and `fetch` REST client
+
+---
+
+## 🚀 Quick Start Guide
+
+### Prerequisites
+- **Node.js:** v22.0.0 or higher
+- **npm:** v10.0.0 or higher
+
+### 1. Clone & Install
 ```bash
+git clone https://github.com/your-username/qadam-opportunity-hub.git
+cd qadam-opportunity-hub
 npm install
 ```
 
-### 2. Start Development Server
+### 2. Launch Development Server
 ```bash
 npm run dev
 ```
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-### 3. Production Build
+### 3. Run Autonomous Messenger Bots
+
+| Command | Description |
+| :--- | :--- |
+| `npm run bot` | Starts the Telegram Bot (`@QadamAgentBot`) via long-polling |
+| `npm run bot:discord` | Starts the Unified Discord Bot Gateway & REST API listener |
+| `npm run bot:all` | Concurrently runs both Telegram and Discord bot processes |
+
+### 4. Production Build & Verification
 ```bash
 npm run build
 ```
 
 ---
 
-## 🔐 OpenShell & Nebius Hackathon Alignment
-- **OpenShell Sandboxing:** Agent execution is confined to `/workspace/pathfinder`. Any attempt to access `/root/system` is blocked by kernel sandbox rules.
-- **Nebius Token Factory:** Client-side PII replacement ensures zero personal data is leaked to external LLM providers.
-- **NVIDIA NIM / Nemotron-3.5-Lightning:** Target model for intelligent match ranking and prompt completion.
+## 📂 Project Structure
+
+```
+├── bot/
+│   ├── index.mjs             # Zero-dependency Telegram Bot (Long Polling & API)
+│   └── discord.mjs           # Zero-dependency Discord Bot (Gateway v10 & Webhook)
+├── public/
+│   ├── logo.png              # Official QADAM Brand Logo (Footprint / Step Icon)
+│   ├── favicon.svg           # Vector Favicon
+│   └── assets/
+│       └── logo.png          # High-resolution asset clone
+├── src/
+│   ├── components/
+│   │   ├── AmbientBackground.tsx    # 60fps interactive particle constellation canvas
+│   │   ├── OnboardingWizard.tsx     # 4-step user identity & role registration modal
+│   │   ├── OpportunityDetailsModal.tsx # Full opportunity briefing modal
+│   │   ├── CvGapsModal.tsx          # ATS gap analysis & quiz launch modal
+│   │   ├── QuizModal.tsx            # Interactive skill verification quiz
+│   │   ├── Sidebar.tsx              # Brand header & 5 core navigation modules
+│   │   └── PageHeader.tsx           # Standardized workspace header
+│   ├── context/
+│   │   └── AppContext.tsx           # Central store (user profile, memory, logs, radar)
+│   ├── db/
+│   │   ├── opportunities.ts         # Verified opportunities database & logos
+│   │   ├── userProfile.ts           # Roles, tech stack, and user schema
+│   │   └── teammates.ts             # Teammate network & squad messaging storage
+│   ├── pages/
+│   │   ├── WelcomePage.tsx          # Scrollytelling showcase & onboarding portal
+│   │   ├── RadarPage.tsx            # Opportunity radar feed & match filters
+│   │   ├── CvLabPage.tsx            # ATS CV analyzer & skill lab
+│   │   ├── MemoryPage.tsx           # MEMORY.md context flow matrix
+│   │   ├── NetworkPage.tsx          # Teammates & squad network hub
+│   │   ├── NotificationsPage.tsx    # Multi-channel messenger bots & webhooks
+│   │   ├── ApplicationStudioPage.tsx# PII-masked proposal drafting studio
+│   │   └── AccountPortalPage.tsx    # Settings, terminal logs, and tech support
+│   ├── utils/
+│   │   └── anonymizer.ts            # Client-side PII tokenization regex engine
+│   ├── App.tsx                      # Root application & routing tree
+│   ├── index.css                    # Tailwind CSS configuration & custom utilities
+│   └── main.tsx                     # Vite React root mount
+├── .env                             # Bot credentials & domain targets (gitignored)
+├── .gitignore                       # Repository security exclusions
+├── index.html                       # SEO metadata, OpenGraph, and favicon tags
+├── package.json                     # Project manifest & bot scripts
+├── vercel.json                      # Single-page app routing rewrites for Vercel
+└── README.md                        # Documentation & architecture showcase
+```
+
+---
+
+## 🤝 Community & Support
+
+- **Live Production Platform:** [https://nvidia-pathfinder.vercel.app](https://nvidia-pathfinder.vercel.app)
+- **Discord Developer Community:** [https://discord.gg/A4rxRGx4Vt](https://discord.gg/A4rxRGx4Vt)
+- **Official Telegram Agent:** [@QadamAgentBot](https://t.me/QadamAgentBot)
+- **License:** MIT
+
+<p align="center">
+  <strong>QADAM («Қадам») • Your confident step toward global opportunities. 🚀</strong>
+</p>

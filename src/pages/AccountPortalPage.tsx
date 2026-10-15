@@ -319,10 +319,10 @@ export const AccountPortalPage: React.FC = () => {
           </button>
 
           <div className="hidden sm:flex items-center gap-2.5 pl-4 border-l border-teal-500/30">
-            <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500 rotate-45 inline-block" />
+            <img src="/logo.png" alt="QADAM Logo" className="w-6 h-6 object-contain rounded-md drop-shadow-xs" />
             <span className="text-[15px] font-bold tracking-tight text-white font-mono">QADAM</span>
             <span className="text-mini font-mono px-2 py-0.5 rounded bg-teal-500/10 text-teal-300 border border-teal-500/30 font-medium">
-              Account Portal
+              «Қадам»
             </span>
           </div>
         </div>
@@ -395,6 +395,14 @@ export const AccountPortalPage: React.FC = () => {
         {/* ========================================================= */}
         {activeTab === 'profile' && (
           <div className="space-y-8 animate-fadeIn">
+            {/* Slogan & Kazakh Backstory Banner */}
+            <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-indigo-500/15 border border-teal-300/40 text-mini text-teal-100 flex items-center gap-3 shadow-xs">
+              <img src="/logo.png" alt="QADAM" className="w-7 h-7 object-contain flex-shrink-0" />
+              <p className="leading-relaxed">
+                <strong className="text-emerald-300">QADAM («Қадам»)</strong> — derived from the Kazakh word for "step". Your confident step toward global opportunities, grants, and technologies. 🚀
+              </p>
+            </div>
+
             {/* Header / Intro */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200/80">
               <div>
@@ -987,7 +995,7 @@ export const AccountPortalPage: React.FC = () => {
             {/* 4 Direct Contact Channels */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               <a
-                href="https://discord.gg/"
+                href="https://discord.gg/A4rxRGx4Vt"
                 target="_blank"
                 rel="noreferrer"
                 className="p-5 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl hover:bg-white border border-teal-300/40 shadow-sm transition-all flex flex-col justify-between group text-slate-900"
@@ -1000,7 +1008,7 @@ export const AccountPortalPage: React.FC = () => {
                   <p className="text-[12px] text-slate-600 mt-1">Join developer sprints and real-time support channels.</p>
                 </div>
                 <span className="text-mini font-mono text-emerald-600 font-semibold mt-4 group-hover:underline">
-                  discord.gg/qadam →
+                  discord.gg/A4rxRGx4Vt →
                 </span>
               </a>
 

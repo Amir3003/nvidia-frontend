@@ -167,11 +167,14 @@ export const OnboardingWizard: React.FC = () => {
         {/* Wizard Header with Visible Close Button */}
         <div className="px-6 py-4 border-b border-teal-200/80 bg-white/75 backdrop-blur-md flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="w-2.5 h-2.5 rounded-sm bg-emerald-600 rotate-45 inline-block" />
+            <img src="/logo.png" alt="QADAM Logo" className="w-8 h-8 object-contain rounded-md drop-shadow-xs" />
             <div>
-              <h2 id="registration-title" className="text-subheading text-indigo-950 font-bold">
-                Create Your QADAM Account
-              </h2>
+              <div className="flex items-center gap-1.5">
+                <h2 id="registration-title" className="text-subheading text-indigo-950 font-bold">
+                  Create Your QADAM Account
+                </h2>
+                <span className="text-[11px] font-mono text-teal-800">«Қадам»</span>
+              </div>
               <div className="text-mini font-mono text-teal-800 font-medium">
                 Step {step} of 4:{' '}
                 {step === 1
@@ -238,6 +241,14 @@ export const OnboardingWizard: React.FC = () => {
           {/* STEP 1: Personal Identity */}
           {step === 1 && (
             <div className="space-y-4">
+              {/* Official Slogan & Translation Backstory */}
+              <div className="p-3.5 rounded-xl bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-indigo-500/10 border border-teal-300/40 text-mini text-teal-950 leading-relaxed flex items-center gap-3 shadow-xs">
+                <img src="/logo.png" alt="QADAM Step" className="w-6 h-6 object-contain flex-shrink-0" />
+                <p>
+                  <strong>QADAM («Қадам»)</strong> — derived from the Kazakh word for "step". Your confident step toward global opportunities, grants, and technologies. 🚀
+                </p>
+              </div>
+
               <div>
                 <h3 className="text-[17px] font-bold text-indigo-950">Personal Identity</h3>
                 <p className="text-[13px] text-teal-900 mt-1 leading-relaxed">
