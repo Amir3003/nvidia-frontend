@@ -1,3 +1,5 @@
+import { loadRadar } from './radar-data.mjs';
+
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 if (!TOKEN) { console.error('Missing TELEGRAM_BOT_TOKEN in .env'); process.exit(1); }
 const BOT_USERNAME = process.env.BOT_USERNAME || 'QadamAgentBot';
@@ -137,41 +139,25 @@ Use the menu below to scan verified hackathons, check CV gaps, or generate priva
   };
 }
 
-function renderRadar() {
-  let text = `🎯 <b>QADAM | AI Opportunity Hub — Opportunity Radar</b>
-<i>Real-time index of verified global student opportunities:</i>\n\n`;
+function escapeHtml(value) {
+  return String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+}
 
-  const keyboard = [];
-
-  OPPORTUNITIES.forEach((opp, idx) => {
-    text += `<b>${idx + 1}. ${opp.title}</b>\n`;
-    text += `🔥 Match Compatibility: <b>${opp.match}%</b>\n`;
-    text += `📍 Track: <i>${opp.track}</i>\n`;
-    text += `🏆 Award / Prize: <b>${opp.award}</b>\n`;
-    text += `⏳ Deadline: <code>${opp.deadline}</code>\n`;
-    text += `📋 Eligibility: ${opp.eligibility}\n`;
-    text += `⚡ Stack: <code>${opp.skills}</code>\n`;
-    text += `💡 Status: <i>${opp.gaps}</i>\n\n`;
-
-    keyboard.push([
-      {
-        text: `⚡ Draft Proposal: ${opp.title.split(' ')[0]} (${opp.match}%)`,
-        callback_data: `draft_${opp.key}`,
-      },
-    ]);
-  });
-
-  keyboard.push([
-    { text: '📊 Check CV Gap Details', callback_data: 'gaps' },
-    { text: '🔙 Main Menu', callback_data: 'menu' },
-  ]);
-
-  keyboard.push([
-    { text: '🌐 Open Radar on Web Platform', url: getWebUrl('/') },
-  ]);
-
-  text += `<i>${BRAND_FOOTER}</i>`;
-
+async function renderRadar() {
+  let items;
+  try {
+    items = await loadRadar();
+  } catch (error) {
+    console.error('[Radar Feed Error]', error.message);
+    items = [];
+  }
+  const text = items.length
+    ? `🎯 <b>QADAM Radar</b>\n\n${items.map((opp, index) =>
+      `${index + 1}. <b>${escapeHtml(opp.title)}</b>\n${escapeHtml(opp.type)} · Deadline: ${opp.deadline || 'not confirmed'}`
+    ).join('\n\n')}\n\nCheck each source before applying.`
+    : '🎯 No current radar results are available. Please check the website and try again later.';
+  const keyboard = items.map((opp, index) => [{ text: `Open source ${index + 1}`, url: opp.url }]);
+  keyboard.push([{ text: '🌐 Open QADAM website', url: getWebUrl('/') }]);
   return { text, reply_markup: { inline_keyboard: keyboard } };
 }
 
@@ -333,7 +319,7 @@ async function handleMessage(msg) {
 
   // 2. /radar command
   if (text === '/radar' || text.toLowerCase().includes('radar')) {
-    const view = renderRadar();
+    const view = await renderRadar();
     return sendMessage(chatId, view.text, view.reply_markup);
   }
 
@@ -406,7 +392,7 @@ async function handleCallbackQuery(cb) {
   }
 
   if (data === 'radar') {
-    const view = renderRadar();
+    const view = await renderRadar();
     return sendMessage(chatId, view.text, view.reply_markup);
   }
 
