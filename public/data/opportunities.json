@@ -2,9 +2,31 @@
   {
     "id": "scan-aHR0cHM6Ly93d3cu",
     "type": "HACKATHON",
-    "title": "National AI Hackathon 2026",
-    "organization": "USAII®",
+    "title": "AI NextGen Challenge 2026",
+    "organization": "USAII",
     "url": "https://www.usaii.org/about-united-states-artificial-intelligence-institute/ai-nextgen-challenge-2026",
+    "deadline": null,
+    "deadlineEvidence": null,
+    "eligibility": "check source",
+    "skills": []
+  },
+  {
+    "id": "scan-aHR0cHM6Ly93d3cu",
+    "type": "HACKATHON",
+    "title": "Meta Global AI Hackathon",
+    "organization": "Meta",
+    "url": "https://www.instagram.com/p/DefZPe4Eq0P",
+    "deadline": "2026-10-25",
+    "deadlineEvidence": "The application deadline is October 25th, 2026 or earlier if all 20,000 spots are filled.",
+    "eligibility": "check source",
+    "skills": []
+  },
+  {
+    "id": "scan-aHR0cHM6Ly9taXJy",
+    "type": "HACKATHON",
+    "title": "AI Robotics High School Hackathon",
+    "organization": "AI Futures / Applied Research Institute / U.S. Department of Defense",
+    "url": "https://mirrorindy.org/indy-teens-ai-futures-hackathon-artificial-intelligence-robotics",
     "deadline": null,
     "deadlineEvidence": null,
     "eligibility": "check source",
