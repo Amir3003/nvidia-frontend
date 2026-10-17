@@ -1,3 +1,5 @@
+import { loadRadar } from './radar-data.mjs';
+
 const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 const HAS_BOT_TOKEN = Boolean(DISCORD_BOT_TOKEN);
 const DISCORD_INVITE_URL = process.env.DISCORD_INVITE_URL || 'https://discord.gg/A4rxRGx4Vt';
@@ -174,53 +176,30 @@ export async function broadcastWebhook(payload = null) {
 // Discord Rich Embed Builders
 // -------------------------------------------------------------
 
-function buildRadarEmbeds() {
-  const embeds = [
-    {
-      title: '🎯 QADAM | AI Opportunity Hub — Opportunity Radar',
-      description: `**${OFFICIAL_SLOGAN}**\n\nReal-time index of verified global student opportunities, fellowships, and research grants. Filtered with zero PII leakage.\n\n*Type **!draft 1**, **!draft 2**, or **!draft 3** to receive a private ATS application proposal in your DMs!*`,
+async function buildRadarEmbeds() {
+  let items;
+  try {
+    items = await loadRadar();
+  } catch (error) {
+    console.error('[Radar Feed Error]', error.message);
+    items = [];
+  }
+  return {
+    embeds: [{
+      title: '🎯 QADAM Opportunity Radar',
+      description: items.length
+        ? 'Recent published results. Check each source before applying; missing deadlines are unconfirmed.'
+        : 'No current radar results are available. Please check the website and try again later.',
       color: COLOR_EMERALD,
-      thumbnail: { url: LOGO_URL },
-      fields: OPPORTUNITIES.map((opp) => ({
-        name: `${opp.num}. ${opp.title} — ${opp.match}% Match`,
-        value: `🏆 **Prize:** ${opp.award}\n⏳ **Deadline:** \`${opp.deadline}\`\n📍 **Track:** *${opp.track}*\n⚡ **Stack:** \`${opp.skills}\`\n💡 **Fit:** *${opp.gaps}*`,
+      fields: items.map((opp, index) => ({
+        name: `${index + 1}. ${opp.title}`.slice(0, 256),
+        value: `${opp.type} · Deadline: ${opp.deadline || 'not confirmed'}\n[Open source](${opp.url})`,
         inline: false,
       })),
-      footer: {
-        text: BRAND_FOOTER,
-        icon_url: LOGO_URL,
-      },
       timestamp: new Date().toISOString(),
-    },
-  ];
-
-  const components = [
-    {
-      type: 1, // Action Row
-      components: [
-        {
-          type: 2, // Button
-          style: 5, // Link Button
-          label: 'Open Radar in Web App',
-          url: getWebUrl('/'),
-        },
-        {
-          type: 2,
-          style: 5,
-          label: 'Application Studio',
-          url: getWebUrl('/application-studio?id=opp-1'),
-        },
-        {
-          type: 2,
-          style: 5,
-          label: 'Join Discord Server',
-          url: DISCORD_INVITE_URL,
-        },
-      ],
-    },
-  ];
-
-  return { embeds, components };
+    }],
+    allowed_mentions: { parse: [] },
+  };
 }
 
 function buildGapsEmbed(userName = 'Student') {
@@ -455,7 +434,7 @@ async function handleDiscordMessage(msg) {
 
   // 1. !radar
   if (lower.startsWith('!radar') || (isMention && lower.includes('radar'))) {
-    const payload = buildRadarEmbeds();
+    const payload = await buildRadarEmbeds();
     return sendChannelMessage(channelId, payload);
   }
 

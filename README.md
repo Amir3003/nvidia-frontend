@@ -1,4 +1,4 @@
-> Scheduled website radar: [GITHUB_RADAR_SETUP.md](GITHUB_RADAR_SETUP.md). Local setup with private Nebius, Tavily, Telegram and Discord credentials: [LOCAL_SETUP.md](LOCAL_SETUP.md). `npm run scan` uses the paid APIs and saves a local cache; `npm run api` serves it to the local Vite app. The bot opportunity lists and CV messages are static examples, not synced with scan results. Rotate any bot token or webhook previously committed to this public repository.
+> Scheduled website radar: [GITHUB_RADAR_SETUP.md](GITHUB_RADAR_SETUP.md). Oracle VM setup for Telegram and Discord: [ORACLE_BOTS_SETUP.md](ORACLE_BOTS_SETUP.md). Local setup: [LOCAL_SETUP.md](LOCAL_SETUP.md). The bots' radar commands read the published JSON; CV scores and draft messages are still static examples. Rotate any bot token or webhook previously committed to this public repository.
 
 <p align="center">
   <img src="public/logo.png" width="120" alt="QADAM Logo" />
