@@ -4,10 +4,12 @@ const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 const HAS_BOT_TOKEN = Boolean(DISCORD_BOT_TOKEN);
 const DISCORD_INVITE_URL = process.env.DISCORD_INVITE_URL || 'https://discord.gg/A4rxRGx4Vt';
 const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
+const DISCORD_APP_ID = process.env.DISCORD_APP_ID || '1560162295445979197';
 const FALLBACK_PUBLIC_WEB_APP_URL = 'https://nvidia-pathfinder.vercel.app';
-const LOGO_URL = `${FALLBACK_PUBLIC_WEB_APP_URL}/logo.png`;
-const OFFICIAL_SLOGAN = 'QADAM («Қадам») — derived from the Kazakh word for "step". Your confident step toward global opportunities, grants, and technologies. 🚀';
-const BRAND_FOOTER = 'QADAM (Қадам) • Your confident step toward global opportunities • https://nvidia-pathfinder.vercel.app';
+const LOGO_URL = `${FALLBACK_PUBLIC_WEB_APP_URL}/brand/qadam-avatar.png`;
+const AVATAR_FILE = 'public/brand/qadam-avatar.png';
+const OFFICIAL_SLOGAN = 'QADAM («Қадам») means "step" in Kazakh. Your next step toward global opportunities, grants, and technologies.';
+const BRAND_FOOTER = 'QADAM (Қадам) · nvidia-pathfinder.vercel.app';
 
 // Helper: Ensure all Discord URLs point to a valid public HTTPS target
 function getWebUrl(subpath = '') {
@@ -24,53 +26,24 @@ const REST_API_BASE = 'https://discord.com/api/v10';
 const GATEWAY_URL = 'wss://gateway.discord.gg/?v=10&encoding=json';
 
 // Embed Color Constants
-const COLOR_EMERALD = 0x10B981; // 1096065
-const COLOR_INDIGO = 0x4F46E5;  // 5195493
-const COLOR_CYAN = 0x06B6D4;    // 439956
-const COLOR_ROSE = 0xF43F5E;    // 16007006
+const COLOR_EMERALD = 0x10B981;
+const COLOR_INDIGO = 0x4F46E5;
+const COLOR_CYAN = 0x06B6D4;
 
-// Top Verified Opportunities Database
-const OPPORTUNITIES = [
-  {
-    id: 'opp-1',
-    key: 'nebius',
-    num: '1',
-    title: 'Nebius x NVIDIA Global AI Hackathon',
-    match: 94,
-    track: 'GPU Compute & Multimodal Agents (Virtual)',
-    award: '$50,000 Compute Credits + Cash Pool',
-    deadline: 'April 28, 2026',
-    eligibility: 'Active Student / Academic Researcher (Verified)',
-    skills: 'PyTorch, Docker, LLMs',
-    gaps: 'Verified alignment: Top quartile (No critical gaps)',
-  },
-  {
-    id: 'opp-2',
-    key: 'mext',
-    num: '2',
-    title: 'MEXT Scholarship: Graduate AI Research',
-    match: 88,
-    track: 'Ministry of Education, Culture & Science (Japan)',
-    award: 'Full Tuition Waiver + ¥145,000/mo Stipend',
-    deadline: 'May 15, 2026',
-    eligibility: 'Bachelor completed, Age under 35 (Verified)',
-    skills: 'Python, Linux, Research Methodology',
-    gaps: 'Benchmark fit: Take Docker & Linux quiz for +6% boost',
-  },
-  {
-    id: 'opp-3',
-    key: 'anthropic',
-    num: '3',
-    title: 'Anthropic AI Alignment & Safety Fellowship',
-    match: 91,
-    track: 'Frontier Safety & Interpretability (San Francisco / Hybrid)',
-    award: '$10,000/month Research Stipend + Mentorship',
-    deadline: 'June 01, 2026',
-    eligibility: 'Enrolled Graduate or Technical Student Builder',
-    skills: 'PyTorch, LLMs, Safety Eval',
-    gaps: 'Verified alignment: PyTorch verified (+6% ATS boost)',
-  },
-];
+const NO_MENTIONS = { parse: [] };
+
+async function loadRadarSafe() {
+  try {
+    return await loadRadar();
+  } catch (error) {
+    console.error('[Radar Feed Error]', error.message);
+    return [];
+  }
+}
+
+function describeOpportunity(opp) {
+  return `${opp.type}${opp.organization ? ` · ${opp.organization}` : ''} · Deadline: ${opp.deadline || 'not confirmed'}`;
+}
 
 // Helper: Make authenticated Discord REST API calls
 async function callDiscordRest(endpoint, method = 'GET', body = null) {
@@ -99,7 +72,7 @@ async function callDiscordRest(endpoint, method = 'GET', body = null) {
 
 // Helper: Send message to a Discord channel
 async function sendChannelMessage(channelId, payload) {
-  return callDiscordRest(`/channels/${channelId}/messages`, 'POST', payload);
+  return callDiscordRest(`/channels/${channelId}/messages`, 'POST', { allowed_mentions: NO_MENTIONS, ...payload });
 }
 
 // Helper: Open private DM channel and send direct message
@@ -119,55 +92,61 @@ async function sendDirectMessage(userId, payload) {
   return sendChannelMessage(dmChannelId, payload);
 }
 
-// Webhook Broadcaster Utility
+// Webhook Broadcaster Utility: posts the top live radar opportunity
 export async function broadcastWebhook(payload = null) {
   if (!DISCORD_WEBHOOK_URL) {
-    console.error('❌ DISCORD_WEBHOOK_URL is not set.');
+    console.error('DISCORD_WEBHOOK_URL is not set.');
     return { ok: false, error: 'Missing webhook URL' };
   }
 
-  const defaultPayload = {
-    username: 'QADAM | AI Opportunity Hub',
-    avatar_url: LOGO_URL,
-    embeds: [
-      {
-        title: '🎯 Nebius x NVIDIA Global AI Hackathon (94% Match)',
-        description: `⚡ **New High-Priority Grant & Hackathon Match Dispatched!**\nDirect student alignment detected for GPU Compute & Autonomous Multimodal Agents.\n\n*${OFFICIAL_SLOGAN}*`,
-        color: COLOR_EMERALD,
-        thumbnail: { url: LOGO_URL },
-        fields: [
-          { name: '🏆 Award / Pool', value: '$50,000 Compute Credits + Cash Pool', inline: true },
-          { name: '⏳ Deadline', value: 'April 28, 2026', inline: true },
-          { name: '📋 Eligibility', value: 'Active Student / Academic Researcher (Verified)', inline: false },
-          { name: '⚡ Core Stack', value: '`PyTorch` · `Docker` · `LLMs`', inline: true },
-          { name: '🛡 Privacy Shield', value: 'Zero-Leak Client-Side Masking', inline: true },
-        ],
-        url: getWebUrl('/application-studio?id=opp-1'),
-        footer: {
-          text: BRAND_FOOTER,
-          icon_url: LOGO_URL,
+  let body = payload;
+  if (!body) {
+    const [opp] = await loadRadarSafe();
+    if (!opp) {
+      console.error('Broadcast skipped: the radar feed has no current opportunities.');
+      return { ok: false, error: 'No current radar opportunities' };
+    }
+    body = {
+      username: 'QADAM | AI Opportunity Hub',
+      avatar_url: LOGO_URL,
+      allowed_mentions: NO_MENTIONS,
+      embeds: [
+        {
+          title: opp.title.slice(0, 256),
+          url: opp.url,
+          description: `New on the QADAM radar.\n${describeOpportunity(opp)}\n\nCheck eligibility and requirements in the source before applying.`,
+          color: COLOR_EMERALD,
+          thumbnail: { url: LOGO_URL },
+          fields: [
+            { name: 'Source', value: `[Open source](${opp.url})`, inline: true },
+            { name: 'Full radar', value: `[QADAM website](${getWebUrl('/')})`, inline: true },
+          ],
+          footer: {
+            text: BRAND_FOOTER,
+            icon_url: LOGO_URL,
+          },
+          timestamp: new Date().toISOString(),
         },
-        timestamp: new Date().toISOString(),
-      },
-    ],
-  };
+      ],
+    };
+  }
 
   try {
     const res = await fetch(DISCORD_WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload || defaultPayload),
+      body: JSON.stringify(body),
     });
 
     if (res.status === 204 || res.ok) {
-      console.log('✅ Discord Webhook alert successfully dispatched to channel!');
+      console.log('Discord webhook alert dispatched.');
       return { ok: true, status: res.status };
     }
     const errData = await res.json().catch(() => ({}));
-    console.error('❌ Discord Webhook dispatch failed:', res.status, errData);
+    console.error('Discord webhook dispatch failed:', res.status, errData);
     return { ok: false, status: res.status, error: errData };
   } catch (err) {
-    console.error('❌ Webhook fetch error:', err.message);
+    console.error('Webhook fetch error:', err.message);
     return { ok: false, error: err.message };
   }
 }
@@ -177,52 +156,35 @@ export async function broadcastWebhook(payload = null) {
 // -------------------------------------------------------------
 
 async function buildRadarEmbeds() {
-  let items;
-  try {
-    items = await loadRadar();
-  } catch (error) {
-    console.error('[Radar Feed Error]', error.message);
-    items = [];
-  }
+  const items = await loadRadarSafe();
   return {
     embeds: [{
-      title: '🎯 QADAM Opportunity Radar',
+      title: 'QADAM Opportunity Radar',
       description: items.length
-        ? 'Recent published results. Check each source before applying; missing deadlines are unconfirmed.'
+        ? 'Recent published results. Check each source before applying; missing deadlines are unconfirmed.\nUse `!draft <number>` for an application draft.'
         : 'No current radar results are available. Please check the website and try again later.',
       color: COLOR_EMERALD,
       fields: items.map((opp, index) => ({
         name: `${index + 1}. ${opp.title}`.slice(0, 256),
-        value: `${opp.type} · Deadline: ${opp.deadline || 'not confirmed'}\n[Open source](${opp.url})`,
+        value: `${describeOpportunity(opp)}\n[Open source](${opp.url})`,
         inline: false,
       })),
       timestamp: new Date().toISOString(),
     }],
-    allowed_mentions: { parse: [] },
   };
 }
 
-function buildGapsEmbed(userName = 'Student') {
+function buildGapsEmbed() {
   const embeds = [
     {
-      title: '📊 QADAM | AI Opportunity Hub — ATS Gap Analysis',
-      description: `Target Candidate: **${userName}**\n\n**${OFFICIAL_SLOGAN}**\n\nOverall CV Health Score: **89 / 100** *(Top Quartile)*\nTarget Benchmark: **Global AI Hackathons & Research Fellowships**`,
+      title: 'CV Gap Analysis',
+      description: 'The bot does not store your CV, so it cannot score it here. On the QADAM website, CV & Skill Lab compares your skills with a target opportunity you pick.',
       color: COLOR_INDIGO,
       thumbnail: { url: LOGO_URL },
       fields: [
         {
-          name: '✅ Verified Credentials (+18% ATS Match)',
-          value: '• **PyTorch:** 95% proficiency (Quiz Verified)\n• **LLMs & Prompt Architecture:** 92% (Quiz Verified)\n• **Linux Systems:** 88% (Quiz Verified)',
-          inline: false,
-        },
-        {
-          name: '⚠️ Unverified / Benchmark Gaps',
-          value: '• **Docker:** Listed on CV, requires verification score >70%\n• **CUDA / TensorRT:** Required for high-throughput Nebius GPU track',
-          inline: false,
-        },
-        {
-          name: '💡 Recommended Next Action',
-          value: 'Complete the interactive 5-question verification quiz on the QADAM platform to elevate your match score from **89% to 96%**!',
+          name: 'What you get',
+          value: '• An ATS health score for your profile\n• Required skills you already have\n• Missing or unverified skills\n• Short quizzes to verify a skill',
           inline: false,
         },
       ],
@@ -230,7 +192,6 @@ function buildGapsEmbed(userName = 'Student') {
         text: BRAND_FOOTER,
         icon_url: LOGO_URL,
       },
-      timestamp: new Date().toISOString(),
     },
   ];
 
@@ -241,14 +202,8 @@ function buildGapsEmbed(userName = 'Student') {
         {
           type: 2,
           style: 5,
-          label: 'Take Skill Verification Quiz',
+          label: 'Open CV & Skill Lab',
           url: getWebUrl('/cv'),
-        },
-        {
-          type: 2,
-          style: 5,
-          label: 'Open QADAM Workspace',
-          url: getWebUrl('/'),
         },
       ],
     },
@@ -260,29 +215,23 @@ function buildGapsEmbed(userName = 'Student') {
 function buildPrivacyEmbed() {
   const embeds = [
     {
-      title: '🛡 QADAM | AI Opportunity Hub — Zero-PII Shield Architecture',
-      description: `**${OFFICIAL_SLOGAN}**\n\nComplete privacy specification for student candidate data protection during model inference and radar dispatch.`,
+      title: 'How QADAM handles your data',
       color: COLOR_EMERALD,
       thumbnail: { url: LOGO_URL },
       fields: [
         {
-          name: '1. Client-Side Identity Tokenization',
-          value: 'Personal names, phone numbers, email addresses, and national IDs are tokenized into anonymized placeholders (`[USER_NAME_1]`, `[EMAIL_MASKED]`) locally before any network dispatch.',
+          name: '1. Profile stays in your browser',
+          value: "Your profile and CV on the website are saved in your browser's local storage.",
           inline: false,
         },
         {
-          name: '2. Frontier Model Isolation',
-          value: 'Inference models (`nvidia/Nemotron-3.5-Lightning`) only receive masked prompts, completely preventing third-party student profiling or data training.',
+          name: '2. Masking before AI requests',
+          value: 'Before text is sent to an AI model, names, email addresses, and phone numbers are replaced with placeholders such as `[USER_NAME_1]` and `[EMAIL_MASKED]`.',
           inline: false,
         },
         {
-          name: '3. OpenShell Sandbox Isolation',
-          value: 'All local tool runs and environment execution occur inside strictly confined container walls with zero unauthorized disk traversal.',
-          inline: false,
-        },
-        {
-          name: '4. Direct Webhook & DM Delivery',
-          value: 'Confidential proposals are delivered directly to the user private DMs with zero third-party broker logging.',
+          name: '3. What this bot keeps',
+          value: 'Nothing. Drafts are generated from the public radar and sent to your DMs; the bot never asks for your CV.',
           inline: false,
         },
       ],
@@ -290,46 +239,38 @@ function buildPrivacyEmbed() {
         text: BRAND_FOOTER,
         icon_url: LOGO_URL,
       },
-      timestamp: new Date().toISOString(),
     },
   ];
 
   return { embeds };
 }
 
-function buildDraftEmbed(oppKeyOrNum, userName = 'Candidate') {
-  const opp = OPPORTUNITIES.find(
-    (o) => o.num === oppKeyOrNum || o.key === oppKeyOrNum.toLowerCase() || o.id === oppKeyOrNum
-  ) || OPPORTUNITIES[0];
+async function buildDraftEmbed(index) {
+  const items = await loadRadarSafe();
+  const opp = items[index - 1] || items[0];
+  if (!opp) return null;
 
   const embeds = [
     {
-      title: `🔒 Confidential Application Proposal: ${opp.title}`,
-      description: `⚡ **PII Anonymization Layer Active**\n*All candidate identifiers tokenized prior to prompt dispatch.*\n\n*${OFFICIAL_SLOGAN}*`,
+      title: `Application Draft: ${opp.title}`.slice(0, 256),
+      url: opp.url,
+      description: `${describeOpportunity(opp)}\n\n*Template with placeholders. Replace the [brackets] with your own details, or open Application Studio on the website to fill it from your profile.*`,
       color: COLOR_EMERALD,
       thumbnail: { url: LOGO_URL },
       fields: [
-        { name: 'Target Opportunity', value: `**${opp.title}**`, inline: true },
-        { name: 'Candidate Identifier', value: '`[USER_NAME_1]` (Verified)', inline: true },
-        { name: 'Target Track', value: `*${opp.track}*`, inline: true },
         {
-          name: '📄 Summary of Intent',
-          value: `I am submitting this application for the ${opp.title}. As an active student researcher specializing in AI and High-Performance Systems, my work focuses on building safe, low-latency autonomous workflows.`,
+          name: 'Summary of Intent',
+          value: `I am applying for ${opp.title}. I am a [year] student in [major] at [university], and my work focuses on [your focus area].`.slice(0, 1024),
           inline: false,
         },
         {
-          name: '⚡ Technical Alignment',
-          value: `1. **Core Stack Mastery:** Hands-on experience with ${opp.skills}, incorporating clean modular design patterns and high-throughput execution.\n2. **Safe Agent Containment:** Direct integration with OpenShell sandbox isolation to ensure zero unauthorized disk or network traversal.\n3. **Track Relevance:** Direct application of our research toward ${opp.track}.`,
+          name: 'Relevant Experience',
+          value: '1. [Project or role]: [what you built and the measurable result].\n2. [Skills]: [tools and methods that match the requirements in the source].\n3. [Why this opportunity]: [how it fits your goals].',
           inline: false,
         },
         {
-          name: '🏆 Proposed Deliverable',
-          value: 'Production-ready containerized prototype with reproducible evaluation benchmarks and zero-leak client-side privacy protection.',
-          inline: false,
-        },
-        {
-          name: '📂 Local Workspace Path',
-          value: `\`/workspace/qadam/drafts/${opp.id}.txt\` (Encrypted)`,
+          name: 'Proposed Contribution',
+          value: '[What you plan to deliver or learn, in two or three sentences.]',
           inline: false,
         },
       ],
@@ -337,7 +278,6 @@ function buildDraftEmbed(oppKeyOrNum, userName = 'Candidate') {
         text: BRAND_FOOTER,
         icon_url: LOGO_URL,
       },
-      timestamp: new Date().toISOString(),
     },
   ];
 
@@ -348,14 +288,14 @@ function buildDraftEmbed(oppKeyOrNum, userName = 'Candidate') {
         {
           type: 2,
           style: 5,
-          label: '🚀 Open in Application Studio',
-          url: getWebUrl(`/application-studio?id=${opp.id}`),
+          label: 'Open Source',
+          url: opp.url,
         },
         {
           type: 2,
           style: 5,
-          label: '🌐 View Radar',
-          url: getWebUrl('/'),
+          label: 'Application Studio',
+          url: getWebUrl('/application-studio'),
         },
       ],
     },
@@ -367,23 +307,22 @@ function buildDraftEmbed(oppKeyOrNum, userName = 'Candidate') {
 function buildHelpEmbed() {
   const embeds = [
     {
-      title: '📖 QADAM | AI Opportunity Hub — Commands Guide',
-      description: `**${OFFICIAL_SLOGAN}**\n\nOfficial commands to interact with the QADAM Career & Opportunity Agent directly on Discord:`,
+      title: 'QADAM Bot Commands',
+      description: OFFICIAL_SLOGAN,
       color: COLOR_CYAN,
       thumbnail: { url: LOGO_URL },
       fields: [
-        { name: '!radar', value: 'Browse top verified student opportunities, hackathons & research grants with match scores.', inline: false },
-        { name: '!gaps', value: 'Inspect your ATS resume gap analysis, verified skills, and recommended benchmark tasks.', inline: false },
-        { name: '!privacy', value: 'Review the zero-leak client-side privacy shield and sandbox specifications.', inline: false },
-        { name: '!draft <1|2|3>', value: 'Generate a confidential, PII-masked application proposal sent securely to your private DMs.', inline: false },
-        { name: '!broadcast', value: 'Dispatch a live opportunity alert to the server announcement channel via webhook.', inline: false },
-        { name: '!help', value: 'Display this command guide and quick web links.', inline: false },
+        { name: '!radar', value: 'Current hackathons, grants, and internships from the QADAM radar.', inline: false },
+        { name: '!draft <number>', value: 'Application draft for a radar opportunity, sent to your DMs.', inline: false },
+        { name: '!gaps', value: 'How CV gap analysis works on the website.', inline: false },
+        { name: '!privacy', value: 'How QADAM handles your data.', inline: false },
+        { name: '!broadcast', value: 'Post the top radar opportunity to the announcement channel (operator only).', inline: false },
+        { name: '!help', value: 'Show this list.', inline: false },
       ],
       footer: {
         text: BRAND_FOOTER,
         icon_url: LOGO_URL,
       },
-      timestamp: new Date().toISOString(),
     },
   ];
 
@@ -394,13 +333,13 @@ function buildHelpEmbed() {
         {
           type: 2,
           style: 5,
-          label: 'Open QADAM Platform',
+          label: 'Open QADAM Website',
           url: getWebUrl('/'),
         },
         {
           type: 2,
           style: 5,
-          label: 'Official Discord Invite',
+          label: 'Discord Invite',
           url: DISCORD_INVITE_URL,
         },
       ],
@@ -420,13 +359,13 @@ async function handleDiscordMessage(msg) {
 
   const rawContent = (msg.content || '').trim();
   const lower = rawContent.toLowerCase();
-  const authorName = msg.author?.global_name || msg.author?.username || 'Student Builder';
+  const authorName = msg.author?.global_name || msg.author?.username || 'Student';
   const authorId = msg.author?.id;
   const channelId = msg.channel_id;
 
-  // Check if message is a command or mention
+  // Check if message is a command or a mention of this bot
   const isCommand = rawContent.startsWith('!');
-  const isMention = rawContent.includes('1560162295445979197'); // Bot client ID
+  const isMention = Array.isArray(msg.mentions) && msg.mentions.some((m) => m.id === DISCORD_APP_ID);
 
   if (!isCommand && !isMention) return;
 
@@ -434,41 +373,44 @@ async function handleDiscordMessage(msg) {
 
   // 1. !radar
   if (lower.startsWith('!radar') || (isMention && lower.includes('radar'))) {
-    const payload = await buildRadarEmbeds();
-    return sendChannelMessage(channelId, payload);
+    return sendChannelMessage(channelId, await buildRadarEmbeds());
   }
 
   // 2. !gaps
   if (lower.startsWith('!gaps') || (isMention && (lower.includes('gap') || lower.includes('cv')))) {
-    const payload = buildGapsEmbed(authorName);
-    return sendChannelMessage(channelId, payload);
+    return sendChannelMessage(channelId, buildGapsEmbed());
   }
 
   // 3. !privacy
   if (lower.startsWith('!privacy') || (isMention && lower.includes('privacy'))) {
-    const payload = buildPrivacyEmbed();
-    return sendChannelMessage(channelId, payload);
+    return sendChannelMessage(channelId, buildPrivacyEmbed());
   }
 
-  // 4. !draft <1|2|3|key> -> DM Bridge
+  // 4. !draft <number> -> DM Bridge
   if (lower.startsWith('!draft')) {
-    const parts = rawContent.split(/\s+/);
-    const targetKey = parts[1] || '1';
-    const draftPayload = buildDraftEmbed(targetKey, authorName);
+    const index = Number(rawContent.split(/\s+/)[1]) || 1;
+    const draftPayload = await buildDraftEmbed(index);
 
-    // Send the confidential proposal directly to the student's private DM
-    const dmResult = await sendDirectMessage(authorId, draftPayload);
+    if (!draftPayload) {
+      return sendChannelMessage(channelId, {
+        content: 'No radar opportunities are available right now, so there is nothing to draft. Please try again later.',
+      });
+    }
+
+    const { opp, ...dmPayload } = draftPayload;
+    const dmResult = await sendDirectMessage(authorId, dmPayload);
 
     if (dmResult.ok) {
       return sendChannelMessage(channelId, {
-        content: `🔒 **Confidential Proposal Dispatched!** <@${authorId}>, your zero-leak proposal draft for **${draftPayload.opp.title}** has been delivered directly to your private DMs.`,
-      });
-    } else {
-      // In case user has DMs closed for server members
-      return sendChannelMessage(channelId, {
-        content: `⚠️ <@${authorId}>, I tried sending your confidential proposal to your DMs, but your Discord privacy settings block DMs from server members. Please enable Direct Messages or open the proposal directly: ${getWebUrl(`/application-studio?id=${draftPayload.opp.id}`)}`,
+        content: `<@${authorId}>, your application draft for **${opp.title}** is in your DMs.`,
+        allowed_mentions: { users: [authorId] },
       });
     }
+    // In case user has DMs closed for server members
+    return sendChannelMessage(channelId, {
+      content: `<@${authorId}>, I could not send you a DM. Your Discord privacy settings block DMs from server members. Enable Direct Messages, or open Application Studio: ${getWebUrl('/application-studio')}`,
+      allowed_mentions: { users: [authorId] },
+    });
   }
 
   // 5. !broadcast
@@ -479,19 +421,17 @@ async function handleDiscordMessage(msg) {
     const broadcastRes = await broadcastWebhook();
     if (broadcastRes.ok) {
       return sendChannelMessage(channelId, {
-        content: `📡 **Radar Alert Dispatched!** Rich opportunity embed has been broadcast to the designated channel via webhook.`,
-      });
-    } else {
-      return sendChannelMessage(channelId, {
-        content: `❌ **Broadcast Error:** Unable to reach webhook endpoint. (${broadcastRes.error?.message || broadcastRes.status})`,
+        content: '**Radar alert sent.** The top radar opportunity was posted to the announcement channel.',
       });
     }
+    return sendChannelMessage(channelId, {
+      content: `**Broadcast failed:** ${broadcastRes.error?.message || broadcastRes.error || broadcastRes.status}`,
+    });
   }
 
   // 6. !help or default mention
   if (lower.startsWith('!help') || isMention) {
-    const payload = buildHelpEmbed();
-    return sendChannelMessage(channelId, payload);
+    return sendChannelMessage(channelId, buildHelpEmbed());
   }
 }
 
@@ -501,16 +441,13 @@ async function handleDiscordMessage(msg) {
 
 function startDiscordGateway() {
   console.log(`\n======================================================`);
-  console.log(`🎮 QADAM | AI Opportunity Hub — Discord Bot Starting...`);
-  console.log(`📡 Gateway: ${GATEWAY_URL}`);
-  console.log(`🌐 Web App Target: ${getWebUrl()}`);
-  console.log(`🖼 Brand Logo Asset: ${LOGO_URL}`);
-  console.log(`🔗 Invite: ${DISCORD_INVITE_URL}`);
-  console.log(`💬 Official Slogan: ${OFFICIAL_SLOGAN}`);
+  console.log(`QADAM | AI Opportunity Hub: Discord Bot starting`);
+  console.log(`Gateway: ${GATEWAY_URL}`);
+  console.log(`Web App Target: ${getWebUrl()}`);
+  console.log(`Invite: ${DISCORD_INVITE_URL}`);
   console.log(`------------------------------------------------------`);
-  console.log(`💡 AVATAR SETUP: To set official bot avatar in Discord Portal:`);
-  console.log(`   Upload 'public/logo.png' as App Icon & Bot Avatar at:`);
-  console.log(`   https://discord.com/developers/applications/1560162295445979197/bot`);
+  console.log(`AVATAR SETUP: upload '${AVATAR_FILE}' as App Icon & Bot Avatar at:`);
+  console.log(`https://discord.com/developers/applications/${DISCORD_APP_ID}/bot`);
   console.log(`======================================================\n`);
 
   let ws = null;
@@ -522,7 +459,7 @@ function startDiscordGateway() {
     ws = new WebSocket(GATEWAY_URL);
 
     ws.onopen = () => {
-      console.log('⚡ Gateway WebSocket connected to Discord.');
+      console.log('Gateway WebSocket connected to Discord.');
     };
 
     ws.onmessage = async (event) => {
@@ -537,7 +474,7 @@ function startDiscordGateway() {
         // Opcode 10: HELLO -> Start Heartbeat & Identify
         if (op === 10) {
           const heartbeatInterval = d.heartbeat_interval;
-          console.log(`💓 Heartbeat interval set to: ${heartbeatInterval}ms`);
+          console.log(`Heartbeat interval set to: ${heartbeatInterval}ms`);
 
           if (heartbeatTimer) clearInterval(heartbeatTimer);
           heartbeatTimer = setInterval(() => {
@@ -570,8 +507,8 @@ function startDiscordGateway() {
         // Opcode 0: DISPATCH EVENT
         if (op === 0) {
           if (t === 'READY') {
-            console.log(`✅ Authenticated with Discord as: ${d.user.username}#${d.user.discriminator} (ID: ${d.user.id})`);
-            console.log(`🛡 Bot is listening for server commands (!radar, !gaps, !privacy, !draft, !broadcast, !help)`);
+            console.log(`Authenticated with Discord as: ${d.user.username} (ID: ${d.user.id})`);
+            console.log(`Listening for server commands (!radar, !gaps, !privacy, !draft, !broadcast, !help)`);
           }
 
           if (t === 'MESSAGE_CREATE') {
@@ -581,13 +518,13 @@ function startDiscordGateway() {
 
         // Opcode 9: Invalid Session -> Re-identify
         if (op === 9) {
-          console.warn('⚠️ Invalid session from Discord. Reconnecting in 3s...');
+          console.warn('Invalid session from Discord. Reconnecting in 3s...');
           setTimeout(reconnect, 3000);
         }
 
         // Opcode 7: Reconnect request
         if (op === 7) {
-          console.log('🔄 Reconnect requested by Discord. Reconnecting...');
+          console.log('Reconnect requested by Discord. Reconnecting...');
           reconnect();
         }
       } catch (err) {
@@ -596,7 +533,7 @@ function startDiscordGateway() {
     };
 
     ws.onclose = (event) => {
-      console.warn(`🔌 Discord Gateway disconnected (Code: ${event.code}, Reason: ${event.reason || 'None'}).`);
+      console.warn(`Discord Gateway disconnected (Code: ${event.code}, Reason: ${event.reason || 'None'}).`);
       if (heartbeatTimer) clearInterval(heartbeatTimer);
       // Automatically reconnect unless process is terminating
       if (!isReconnecting) {
@@ -626,14 +563,14 @@ function startDiscordGateway() {
   connect();
 
   process.on('SIGINT', () => {
-    console.log('\n🛑 QADAM Discord Bot shutting down...');
+    console.log('\nQADAM Discord Bot shutting down...');
     if (heartbeatTimer) clearInterval(heartbeatTimer);
     if (ws) ws.close(1000, 'Process interrupted');
     process.exit(0);
   });
 
   process.on('SIGTERM', () => {
-    console.log('\n🛑 QADAM Discord Bot terminating...');
+    console.log('\nQADAM Discord Bot terminating...');
     if (heartbeatTimer) clearInterval(heartbeatTimer);
     if (ws) ws.close(1000, 'Process terminated');
     process.exit(0);
@@ -643,7 +580,7 @@ function startDiscordGateway() {
 // Check for standalone CLI flags (e.g. node bot/discord.mjs --broadcast)
 const args = process.argv.slice(2);
 if (args.includes('--broadcast') || args.includes('-b')) {
-  console.log('🚀 Running standalone Webhook broadcast...');
+  console.log('Running standalone Webhook broadcast...');
   broadcastWebhook().then(() => {
     process.exit(0);
   });

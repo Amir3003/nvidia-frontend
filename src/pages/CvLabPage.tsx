@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { PageHeader } from '../components/PageHeader';
@@ -21,20 +22,63 @@ export const CvLabPage: React.FC = () => {
   // Benchmark target selection state
   const [targetOppId, setTargetOppId] = useState<string>('nebius-nvidia-hackathon');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   const selectedOpp = OPPORTUNITIES_DATABASE.find((o) => o.id === targetOppId) || OPPORTUNITIES_DATABASE[0];
 
-  // Close dropdown on outside click
+  // Anchor the popover to the trigger in viewport coordinates. On desktop it opens below
+  // (or above, when space below is tight) aligned to the trigger's right edge; on mobile it
+  // becomes a full-width sheet. The menu is portaled to <body>, so no ancestor
+  // overflow, backdrop-filter or stacking context can clip or cover it.
+  const updateMenuPosition = useCallback(() => {
+    const trigger = triggerRef.current;
+    if (!trigger) return;
+    const rect = trigger.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const gap = 8;
+    const margin = 16;
+
+    if (vw < 640) {
+      setMenuStyle({ left: margin, right: margin, top: 80, maxHeight: vh - 80 - 112 });
+      return;
+    }
+
+    const spaceBelow = vh - rect.bottom - gap - margin;
+    const spaceAbove = rect.top - gap - margin;
+    const openUp = spaceBelow < 240 && spaceAbove > spaceBelow;
+    const right = Math.max(margin, vw - rect.right);
+    setMenuStyle(
+      openUp
+        ? { right, bottom: vh - rect.top + gap, maxHeight: Math.min(320, spaceAbove) }
+        : { right, top: rect.bottom + gap, maxHeight: Math.min(320, Math.max(160, spaceBelow)) }
+    );
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!isDropdownOpen) return;
+    updateMenuPosition();
+    window.addEventListener('resize', updateMenuPosition);
+    window.addEventListener('scroll', updateMenuPosition, true);
+    return () => {
+      window.removeEventListener('resize', updateMenuPosition);
+      window.removeEventListener('scroll', updateMenuPosition, true);
+    };
+  }, [isDropdownOpen, updateMenuPosition]);
+
+  // Close on Escape and return focus to the trigger
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+    if (!isDropdownOpen) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
         setIsDropdownOpen(false);
+        triggerRef.current?.focus();
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isDropdownOpen]);
 
   // Check if user has initialized their profile
   const isProfileReady =
@@ -139,10 +183,13 @@ export const CvLabPage: React.FC = () => {
             : 'gap analysis uninitialized · complete candidate profile in Settings'
         }
         actions={
-          <div className="relative" ref={dropdownRef}>
+          <div className="relative">
             <button
+              ref={triggerRef}
               type="button"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              aria-haspopup="listbox"
+              aria-expanded={isDropdownOpen}
+              onClick={() => setIsDropdownOpen((open) => !open)}
               className="h-10 px-3.5 bg-slate-900/80 hover:bg-slate-800/80 border border-teal-500/30 hover:border-teal-400 rounded-btn text-mini font-mono text-teal-100 flex items-center gap-2.5 transition-colors cursor-pointer shadow-sm"
             >
               <CompanyBadgeIcon orgKey={selectedOpp.orgKey} size={15} />
@@ -157,46 +204,69 @@ export const CvLabPage: React.FC = () => {
               <ChevronDownIcon size={14} className={`text-teal-300 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
 
-            {/* Custom Sleek Dropdown Menu */}
-            {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-card bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300 shadow-2xl py-1 z-40 max-h-80 overflow-y-auto text-slate-900">
-                <div className="px-3 py-2 border-b border-teal-200/60 text-[11px] font-mono uppercase text-teal-800 font-semibold">
-                  Select Benchmark Target Opportunity
-                </div>
-                {OPPORTUNITIES_DATABASE.map((opp) => {
-                  const isSelected = opp.id === targetOppId;
-                  return (
-                    <button
-                      key={opp.id}
-                      type="button"
-                      onClick={() => {
-                        setTargetOppId(opp.id);
-                        setIsDropdownOpen(false);
-                      }}
-                      className={`w-full px-3 py-2.5 flex items-center justify-between text-left transition-colors cursor-pointer ${
-                        isSelected
-                          ? 'bg-emerald-100/70 text-indigo-950 font-bold'
-                          : 'hover:bg-white/80 text-slate-700 hover:text-slate-900'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <CompanyBadgeIcon orgKey={opp.orgKey} size={16} className="flex-shrink-0" />
-                        <div className="min-w-0">
-                          <div className="text-[13px] font-semibold truncate">{opp.title}</div>
-                          <div className="text-mini font-mono text-teal-800 truncate">{opp.organization} · {opp.type}</div>
-                        </div>
-                      </div>
-                      {isSelected && <CheckIcon size={14} className="text-emerald-600 flex-shrink-0 ml-2" />}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+            {/* Target Benchmark popover, portaled to <body> with a click-to-close backdrop */}
+            {isDropdownOpen &&
+              createPortal(
+                <>
+                  <div
+                    className="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-sm sm:bg-transparent sm:backdrop-blur-none"
+                    onClick={() => setIsDropdownOpen(false)}
+                    aria-hidden="true"
+                  />
+                  <div
+                    role="listbox"
+                    aria-label="Select Benchmark Target Opportunity"
+                    style={menuStyle}
+                    className="fixed z-50 w-auto sm:w-96 rounded-card bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300 shadow-2xl pb-1 overflow-y-auto overscroll-contain text-slate-900"
+                  >
+                    <div className="px-3 py-2 border-b border-teal-200/60 text-[11px] font-mono uppercase text-teal-800 font-semibold sticky top-0 z-10 bg-[#EDF7F6] flex items-center justify-between">
+                      <span>Select Benchmark Target Opportunity</span>
+                      <button
+                        type="button"
+                        onClick={() => setIsDropdownOpen(false)}
+                        className="sm:hidden text-teal-800 hover:text-slate-900 text-mini font-mono px-1.5 py-0.5 rounded border border-teal-200 bg-white"
+                      >
+                        Close
+                      </button>
+                    </div>
+                    {OPPORTUNITIES_DATABASE.map((opp) => {
+                      const isSelected = opp.id === targetOppId;
+                      return (
+                        <button
+                          key={opp.id}
+                          type="button"
+                          role="option"
+                          aria-selected={isSelected}
+                          onClick={() => {
+                            setTargetOppId(opp.id);
+                            setIsDropdownOpen(false);
+                          }}
+                          className={`w-full px-3 py-2.5 flex items-center justify-between text-left transition-colors cursor-pointer ${
+                            isSelected
+                              ? 'bg-emerald-100/70 text-indigo-950 font-bold'
+                              : 'hover:bg-white/80 text-slate-700 hover:text-slate-900'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <CompanyBadgeIcon orgKey={opp.orgKey} size={16} className="flex-shrink-0" />
+                            <div className="min-w-0">
+                              <div className="text-[13px] font-semibold truncate">{opp.title}</div>
+                              <div className="text-mini font-mono text-teal-800 truncate">{opp.organization} · {opp.type}</div>
+                            </div>
+                          </div>
+                          {isSelected && <CheckIcon size={14} className="text-emerald-600 flex-shrink-0 ml-2" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>,
+                document.body
+              )}
           </div>
         }
       />
 
-      <div className="p-6 space-y-6">
+      <div className="p-4 sm:p-6 pb-28 lg:pb-8 space-y-6">
         {/* ROW 1 (100% Full Width): CV Health Score Card */}
         <div className="p-6 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

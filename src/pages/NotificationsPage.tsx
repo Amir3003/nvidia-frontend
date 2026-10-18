@@ -155,7 +155,7 @@ export const NotificationsPage: React.FC = () => {
         subtitle="multi-channel alert webhooks · zero PII leakage during dispatch"
       />
 
-      <div className="p-6 space-y-6">
+      <div className="p-4 sm:p-6 pb-28 lg:pb-8 space-y-6">
         {/* Top Info Banner */}
         <div className="p-5 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] flex items-start gap-4">
           <div className="w-10 h-10 rounded-full bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-700 flex-shrink-0">
@@ -460,8 +460,15 @@ export const NotificationsPage: React.FC = () => {
 
       {/* Modal: Authorize Telegram */}
       {isTelegramModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md">
-          <div className="w-full max-w-md bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-6 space-y-4 text-slate-900">
+        <div
+          role="dialog"
+          aria-modal="true"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsTelegramModal(false);
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto"
+        >
+          <div className="w-full max-w-md max-h-[85vh] my-auto overflow-y-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-6 space-y-4 text-slate-900">
             <h3 className="text-[17px] font-bold text-indigo-950">Link Telegram Account</h3>
             <p className="text-[13px] text-teal-950 leading-relaxed">
               Connect to <strong className="text-emerald-700">@QadamAgentBot</strong> to receive real-time opportunity radar notifications, ATS skill gap analysis, and interactive application proposals directly in Telegram.
@@ -513,8 +520,15 @@ export const NotificationsPage: React.FC = () => {
 
       {/* Modal: Authorize KakaoTalk */}
       {isKakaoModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md">
-          <div className="w-full max-w-md bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-6 space-y-4 text-slate-900">
+        <div
+          role="dialog"
+          aria-modal="true"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsKakaoModal(false);
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto"
+        >
+          <div className="w-full max-w-md max-h-[85vh] my-auto overflow-y-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-6 space-y-4 text-slate-900">
             <h3 className="text-[17px] font-bold text-indigo-950">Link KakaoTalk Channel</h3>
             <p className="text-[13px] text-teal-950 leading-relaxed">
               Connect via Kakao i OpenBuilder channel to receive official 알림톡 notifications for Asian grants and scholarships.
@@ -553,8 +567,15 @@ export const NotificationsPage: React.FC = () => {
 
       {/* Modal: Authorize Discord */}
       {isDiscordModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md">
-          <div className="w-full max-w-md bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-6 space-y-4 text-slate-900">
+        <div
+          role="dialog"
+          aria-modal="true"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsDiscordModal(false);
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto"
+        >
+          <div className="w-full max-w-md max-h-[85vh] my-auto overflow-y-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-6 space-y-4 text-slate-900">
             <h3 className="text-[17px] font-bold text-indigo-950">Discord Server</h3>
             <p className="text-[13px] text-teal-950 leading-relaxed">
               Join the QADAM server. Webhook secrets belong in the backend environment, never in the browser.

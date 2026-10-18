@@ -309,32 +309,33 @@ export const AccountPortalPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-transparent text-slate-100 flex flex-col antialiased selection:bg-accent/20 selection:text-white font-sans relative z-10">
       {/* Top Dedicated Portal Header */}
-      <header className="px-6 md:px-12 py-4 border-b border-teal-500/20 bg-slate-900/60 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between shadow-xs">
-        <div className="flex items-center gap-4">
+      <header className="px-4 md:px-12 py-3 border-b border-teal-500/20 bg-slate-900/90 backdrop-blur-md sticky top-0 z-30 flex flex-col md:flex-row md:items-center md:justify-between gap-3 shadow-xs">
+        <div className="flex items-center justify-between gap-3">
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="h-9 px-3.5 rounded-btn bg-slate-800/80 hover:bg-slate-700/80 text-teal-100 hover:text-white text-mini font-mono flex items-center gap-2 transition-colors cursor-pointer border border-teal-500/30 shadow-xs"
+            className="h-9 px-3 rounded-btn bg-slate-800/80 hover:bg-slate-700/80 text-teal-100 hover:text-white text-mini font-mono flex items-center gap-1.5 transition-colors cursor-pointer border border-teal-500/30 shadow-xs flex-shrink-0"
           >
-            <span>← Back to QADAM Workspace</span>
+            <span>← Back</span>
+            <span className="hidden sm:inline">to QADAM Workspace</span>
           </button>
 
-          <div className="hidden sm:flex items-center gap-2.5 pl-4 border-l border-teal-500/30">
-            <img src="/logo.png" alt="QADAM Logo" className="w-6 h-6 object-contain rounded-md drop-shadow-xs" />
-            <span className="text-[15px] font-bold tracking-tight text-white font-mono">QADAM</span>
-            <span className="text-mini font-mono px-2 py-0.5 rounded bg-teal-500/10 text-teal-300 border border-teal-500/30 font-medium">
+          <div className="flex items-center gap-2 pl-2">
+            <img src="/brand/qadam-icon.png" alt="QADAM Logo" className="w-5 h-5 object-contain rounded-md drop-shadow-xs" />
+            <span className="text-[14px] font-bold tracking-tight text-white font-mono">QADAM</span>
+            <span className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-teal-500/10 text-teal-300 border border-teal-500/30 font-medium">
               «Қадам»
             </span>
           </div>
         </div>
 
-        {/* 4-Item Tab Switcher */}
-        <nav className="flex items-center gap-1.5 p-1 rounded-btn bg-slate-800/80 border border-teal-500/30" aria-label="Portal Navigation">
+        {/* Tab Switcher: horizontally scrollable container on mobile viewports */}
+        <nav className="flex items-center gap-1.5 p-1 rounded-btn bg-slate-800/80 border border-teal-500/30 overflow-x-auto no-scrollbar max-w-full" aria-label="Portal Navigation">
           <button
             type="button"
             onClick={() => handleSelectTab('profile')}
             className={`
-              h-8 px-3.5 rounded-btn text-mini font-mono font-medium transition-all flex items-center gap-1.5 cursor-pointer
+              h-9 sm:h-8 px-3.5 rounded-btn text-mini font-mono font-medium transition-all flex items-center gap-1.5 cursor-pointer flex-shrink-0
               ${
                 activeTab === 'profile'
                   ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold shadow-xs'
@@ -350,7 +351,7 @@ export const AccountPortalPage: React.FC = () => {
             type="button"
             onClick={() => handleSelectTab('settings')}
             className={`
-              h-8 px-3.5 rounded-btn text-mini font-mono font-medium transition-all flex items-center gap-1.5 cursor-pointer
+              h-9 sm:h-8 px-3.5 rounded-btn text-mini font-mono font-medium transition-all flex items-center gap-1.5 cursor-pointer flex-shrink-0
               ${
                 activeTab === 'settings'
                   ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold shadow-xs'
@@ -366,7 +367,7 @@ export const AccountPortalPage: React.FC = () => {
             type="button"
             onClick={() => handleSelectTab('support')}
             className={`
-              h-8 px-3.5 rounded-btn text-mini font-mono font-medium transition-all flex items-center gap-1.5 cursor-pointer
+              h-9 sm:h-8 px-3.5 rounded-btn text-mini font-mono font-medium transition-all flex items-center gap-1.5 cursor-pointer flex-shrink-0
               ${
                 activeTab === 'support'
                   ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold shadow-xs'
@@ -381,16 +382,16 @@ export const AccountPortalPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsLogoutModalOpen(true)}
-            className="h-8 px-3 rounded-btn text-mini font-mono text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 transition-colors flex items-center gap-1.5 cursor-pointer"
+            className="h-9 sm:h-8 px-3 rounded-btn text-mini font-mono text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 transition-colors flex items-center gap-1.5 cursor-pointer flex-shrink-0 ml-auto"
           >
             <LogOutIcon size={13} />
-            <span className="hidden sm:inline">Log Out</span>
+            <span>Log Out</span>
           </button>
         </nav>
       </header>
 
       {/* Main Full-Page Content Area */}
-      <main className="max-w-6xl w-full mx-auto px-6 md:px-12 py-8 flex-1 flex flex-col">
+      <main className="max-w-6xl w-full mx-auto px-4 sm:px-6 md:px-12 py-6 sm:py-8 flex-1 flex flex-col pb-28">
         {/* ========================================================= */}
         {/* TAB 1: PROFILE MANAGEMENT */}
         {/* ========================================================= */}
@@ -398,7 +399,7 @@ export const AccountPortalPage: React.FC = () => {
           <div className="space-y-8 animate-fadeIn">
             {/* Slogan & Kazakh Backstory Banner */}
             <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-indigo-500/15 border border-teal-300/40 text-mini text-teal-100 flex items-center gap-3 shadow-xs">
-              <img src="/logo.png" alt="QADAM" className="w-7 h-7 object-contain flex-shrink-0" />
+              <img src="/brand/qadam-icon.png" alt="QADAM" className="w-7 h-7 object-contain flex-shrink-0" />
               <p className="leading-relaxed">
                 <strong className="text-emerald-300">QADAM («Қадам»)</strong> means "step" in Kazakh. Your direct platform for global academic grants, internships, and AI opportunities.
               </p>
@@ -852,7 +853,7 @@ export const AccountPortalPage: React.FC = () => {
 
             {/* Interactive Live PII Sanitizer Simulator */}
             <div className="p-6 md:p-8 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] text-slate-900 space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h3 className="text-subheading text-slate-900 font-semibold">Live PII Tokenizer Verification</h3>
                   <p className="text-[13px] text-slate-600 mt-0.5">
@@ -863,7 +864,7 @@ export const AccountPortalPage: React.FC = () => {
                   type="button"
                   onClick={handleSimulateDispatch}
                   disabled={activeDispatching}
-                  className="h-9 px-4 rounded-btn bg-slate-100 hover:bg-slate-200 text-slate-800 text-mini font-mono transition-colors cursor-pointer flex items-center gap-2 border border-slate-200"
+                  className="h-9 px-4 rounded-btn bg-slate-100 hover:bg-slate-200 text-slate-800 text-mini font-mono transition-colors cursor-pointer flex items-center justify-center gap-2 border border-slate-200 self-start sm:self-auto"
                 >
                   <SendIcon size={12} className="text-emerald-600" />
                   <span>{activeDispatching ? 'Anonymizing...' : 'Test Anonymization'}</span>
@@ -1200,9 +1201,12 @@ export const AccountPortalPage: React.FC = () => {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsResetConfirmOpen(false);
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
         >
-          <div className="w-full max-w-md bg-white p-6 rounded-card space-y-4 shadow-2xl border border-rose-200">
+          <div className="w-full max-w-md max-h-[85vh] my-auto overflow-y-auto bg-white p-6 rounded-card space-y-4 shadow-2xl border border-rose-200">
             <h3 className="text-lg font-bold text-rose-800">Wipe Local Storage Data?</h3>
             <p className="text-[13px] text-slate-600 leading-relaxed">
               This action will permanently delete your local candidate profile, agent memory, verified quiz credentials, and reset the platform to an initial state.
@@ -1236,9 +1240,12 @@ export const AccountPortalPage: React.FC = () => {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsLogoutModalOpen(false);
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
         >
-          <div className="w-full max-w-md bg-white p-6 rounded-card space-y-4 shadow-2xl border border-slate-200/80">
+          <div className="w-full max-w-md max-h-[85vh] my-auto overflow-y-auto bg-white p-6 rounded-card space-y-4 shadow-2xl border border-slate-200/80">
             <h3 className="text-lg font-bold text-slate-900">Log Out of QADAM?</h3>
             <p className="text-[13px] text-slate-600 leading-relaxed">
               Your active workspace session will be closed and you will be redirected to the Welcome page. Your local profile settings will remain saved for your next session.

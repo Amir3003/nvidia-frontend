@@ -76,7 +76,7 @@ export const RadarPage: React.FC = () => {
         }
       />
 
-      <div className="p-4 sm:p-6 space-y-6">
+      <div className="p-4 sm:p-6 pb-28 lg:pb-8 space-y-6">
         {/* Subtle, non-blocking onboarding notification banner if profile has no verified skills yet */}
         {!isProfileReady && (
           <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-indigo-500/15 border border-teal-300/40 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-slate-900 shadow-sm">

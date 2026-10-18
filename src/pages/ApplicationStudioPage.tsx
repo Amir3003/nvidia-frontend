@@ -195,7 +195,7 @@ ${candidateName} (${userProfile.email || 'student@university.edu'})`;
         }
       />
 
-      <div className="p-6">
+      <div className="p-4 sm:p-6 pb-28 lg:pb-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* LEFT COLUMN: Opportunity Overview & Eligibility (4 Cols) */}
           <div className="lg:col-span-4 space-y-5">

@@ -31,7 +31,7 @@ export const App: React.FC = () => {
   // Standalone Welcome landing page with zero blocking overlay on fresh entry
   if (location.pathname === '/welcome') {
     return (
-      <div className="min-h-[100dvh] flex flex-col bg-transparent text-slate-100 antialiased selection:bg-accent/20 selection:text-white font-sans relative overflow-x-hidden max-w-[100vw]">
+      <div className="min-h-[100dvh] flex flex-col bg-transparent text-slate-100 antialiased selection:bg-accent/20 selection:text-white font-sans relative">
         <ScrollToTop />
         <AmbientBackground />
         <WelcomePage />
@@ -48,7 +48,7 @@ export const App: React.FC = () => {
     location.pathname === '/support'
   ) {
     return (
-      <div className="min-h-[100dvh] flex flex-col bg-transparent text-slate-100 antialiased selection:bg-accent/20 selection:text-white font-sans relative overflow-x-hidden max-w-[100vw]">
+      <div className="min-h-[100dvh] flex flex-col bg-transparent text-slate-100 antialiased selection:bg-accent/20 selection:text-white font-sans relative">
         <ScrollToTop />
         <AmbientBackground />
         <AccountPortalPage />
@@ -58,15 +58,15 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-transparent text-slate-100 flex flex-col lg:flex-row antialiased selection:bg-accent/20 selection:text-white font-sans relative overflow-x-hidden max-w-[100vw]">
+    <div className="min-h-[100dvh] bg-transparent text-slate-100 flex flex-col lg:flex-row antialiased selection:bg-accent/20 selection:text-white font-sans relative">
       <ScrollToTop />
       <AmbientBackground />
 
       {/* 248px Left Sidebar Navigation */}
       <Sidebar />
 
-      {/* Main Content Area: pb-28 provides clearance for mobile bottom bar */}
-      <main className="flex-1 flex flex-col min-w-0 bg-transparent overflow-x-hidden relative z-10 pb-28 lg:pb-0">
+      {/* Main Content Area: each view applies its own pb-28 clearance for the mobile bottom bar */}
+      <main className="flex-1 flex flex-col min-w-0 bg-transparent relative z-10">
         <Routes>
           <Route path="/" element={<RadarPage />} />
           <Route path="/dashboard" element={<RadarPage />} />

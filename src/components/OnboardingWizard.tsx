@@ -209,14 +209,14 @@ export const OnboardingWizard: React.FC = () => {
       onClick={(e) => {
         if (e.target === e.currentTarget) setIsOnboardingOpen(false);
       }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto"
     >
-      <div className="w-full max-w-2xl bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-[0_24px_60px_-15px_rgba(6,182,212,0.3)] flex flex-col overflow-hidden text-slate-900">
+      <div className="w-full max-w-2xl max-h-[85vh] my-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-[0_24px_60px_-15px_rgba(6,182,212,0.3)] flex flex-col overflow-hidden text-slate-900">
         
         {/* Wizard Header with Visible Close Button */}
-        <div className="px-6 py-4 border-b border-teal-200/80 bg-white/75 backdrop-blur-md flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-teal-200/80 bg-white/75 backdrop-blur-md flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="QADAM Logo" className="w-8 h-8 object-contain rounded-md drop-shadow-xs" />
+            <img src="/brand/qadam-icon.png" alt="QADAM Logo" className="w-8 h-8 object-contain rounded-md drop-shadow-xs" />
             <div>
               <div className="flex items-center gap-1.5">
                 <h2 id="registration-title" className="text-subheading text-indigo-950 font-bold">
@@ -286,13 +286,13 @@ export const OnboardingWizard: React.FC = () => {
         )}
 
         {/* Wizard Form Content */}
-        <div className="p-6 overflow-y-auto max-h-[70vh] space-y-4">
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4">
           {/* STEP 1: Personal Identity */}
           {step === 1 && (
             <div className="space-y-4">
               {/* Official Slogan & Translation Backstory */}
               <div className="p-3.5 rounded-xl bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-indigo-500/10 border border-teal-300/40 text-mini text-teal-950 leading-relaxed flex items-center gap-3 shadow-xs">
-                <img src="/logo.png" alt="QADAM Step" className="w-6 h-6 object-contain flex-shrink-0" />
+                <img src="/brand/qadam-icon.png" alt="QADAM Step" className="w-6 h-6 object-contain flex-shrink-0" />
                 <p>
                   <strong>QADAM («Қадам»)</strong> means "step" in Kazakh. Your direct platform for global academic grants, internships, and AI opportunities.
                 </p>
@@ -639,7 +639,7 @@ export const OnboardingWizard: React.FC = () => {
         </div>
 
         {/* Wizard Footer Controls */}
-        <div className="px-6 py-4 border-t border-teal-200/80 bg-white/75 backdrop-blur-md flex items-center justify-between">
+        <div className="px-6 py-4 border-t border-teal-200/80 bg-white/75 backdrop-blur-md flex items-center justify-between flex-shrink-0">
           <div>
             {step > 1 ? (
               <button

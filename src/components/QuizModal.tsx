@@ -85,11 +85,14 @@ export const QuizModal: React.FC = () => {
       role="dialog"
       aria-modal="true"
       aria-labelledby="quiz-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) closeSkillQuiz();
+      }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
     >
-      <div className="w-full max-w-[560px] bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl flex flex-col overflow-hidden text-slate-900">
+      <div className="w-full max-w-[560px] max-h-[85vh] my-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl flex flex-col overflow-hidden text-slate-900">
         {/* Header Bar */}
-        <div className="px-5 py-3.5 border-b border-teal-200/60 flex items-center justify-between bg-teal-50/70">
+        <div className="px-5 py-3.5 border-b border-teal-200/60 flex items-center justify-between bg-teal-50/70 flex-shrink-0">
           <div className="flex items-center gap-2">
             <span className="text-mini font-mono uppercase tracking-wider text-teal-900 font-bold">
               {activeQuizSkill.name} · question {Math.min(currentQuestionIndex + 1, totalQuestions)} of {totalQuestions}
@@ -114,7 +117,7 @@ export const QuizModal: React.FC = () => {
         </div>
 
         {/* 3px Progress Bar */}
-        <div className="w-full h-[3px] bg-teal-100/60">
+        <div className="w-full h-[3px] bg-teal-100/60 flex-shrink-0">
           <div
             className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-300"
             style={{ width: `${progressPercent}%` }}
@@ -122,7 +125,7 @@ export const QuizModal: React.FC = () => {
         </div>
 
         {/* Content Body */}
-        <div className="p-5 flex-1 space-y-5">
+        <div className="p-4 sm:p-5 flex-1 overflow-y-auto space-y-4 sm:space-y-5">
           {!isCompleted ? (
             <>
               <div>

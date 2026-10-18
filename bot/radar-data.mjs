@@ -19,6 +19,12 @@ export async function loadRadar(limit = 5) {
     const key = `${title.toLowerCase()}|${url}`;
     if (seen.has(key)) return [];
     seen.add(key);
-    return [{ title: title.slice(0, 160), url, deadline, type: String(item.type || 'Opportunity').slice(0, 40) }];
+    return [{
+      title: title.slice(0, 160),
+      url,
+      deadline,
+      type: String(item.type || 'Opportunity').slice(0, 40),
+      organization: String(item.organization || '').trim().slice(0, 80),
+    }];
   }).slice(0, limit);
 }

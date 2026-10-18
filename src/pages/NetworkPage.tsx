@@ -345,7 +345,7 @@ export const NetworkPage: React.FC = () => {
         </button>
       </div>
 
-      <div className="p-6 space-y-6">
+      <div className="p-4 sm:p-6 pb-28 lg:pb-8 space-y-6">
         {/* TAB 1: PEERS DIRECTORY */}
         {activeTab === 'peers' && (
           <div className="space-y-6">
@@ -566,7 +566,7 @@ export const NetworkPage: React.FC = () => {
 
         {/* TAB 2: SQUAD GROUP CHAT */}
         {activeTab === 'group-chat' && (
-          <div className="max-w-4xl mx-auto rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] flex flex-col h-[600px] overflow-hidden text-slate-900">
+          <div className="max-w-4xl mx-auto rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] flex flex-col h-[520px] sm:h-[600px] overflow-hidden text-slate-900">
             <div className="p-4 border-b border-teal-200/60 bg-teal-50/70 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -647,9 +647,9 @@ export const NetworkPage: React.FC = () => {
 
         {/* TAB 3: DIRECT MESSAGES */}
         {activeTab === 'dm' && (
-          <div className="max-w-5xl mx-auto rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] grid grid-cols-1 md:grid-cols-3 h-[600px] overflow-hidden text-slate-900">
+          <div className="max-w-5xl mx-auto rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] flex flex-col md:grid md:grid-cols-3 h-[580px] sm:h-[600px] overflow-hidden text-slate-900">
             {/* Sidebar Peer List */}
-            <div className="border-r border-teal-200/60 bg-teal-50/40 flex flex-col">
+            <div className="border-b md:border-b-0 md:border-r border-teal-200/60 bg-teal-50/40 flex flex-col max-h-44 md:max-h-none md:h-full">
               <div className="p-3.5 border-b border-teal-200/60 text-mini font-mono uppercase text-teal-900 font-bold tracking-wider">
                 Direct Conversations
               </div>
@@ -696,7 +696,7 @@ export const NetworkPage: React.FC = () => {
             </div>
 
             {/* DM Conversation Area */}
-            <div className="md:col-span-2 flex flex-col h-full bg-slate-50/40">
+            <div className="md:col-span-2 flex flex-col flex-1 min-h-0 bg-slate-50/40">
               {activeDmPeer ? (
                 <>
                   <div className="p-3.5 border-b border-teal-200/60 bg-teal-50/70 flex items-center justify-between">
@@ -847,10 +847,13 @@ export const NetworkPage: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="add-peer-modal-title"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsAddPeerModalOpen(false);
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
         >
-          <div className="w-full max-w-lg bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl flex flex-col overflow-hidden text-slate-900">
-            <div className="p-5 border-b border-teal-200/60 flex items-center justify-between bg-teal-50/70">
+          <div className="w-full max-w-lg max-h-[85vh] my-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl flex flex-col overflow-hidden text-slate-900">
+            <div className="p-5 border-b border-teal-200/60 flex items-center justify-between bg-teal-50/70 flex-shrink-0">
               <h3 id="add-peer-modal-title" className="text-subheading text-indigo-950 font-bold">
                 Add Collaborator to Pool
               </h3>
@@ -863,7 +866,7 @@ export const NetworkPage: React.FC = () => {
               </button>
             </div>
 
-            <form onSubmit={handleAddManualPeer} className="p-5 space-y-4">
+            <form onSubmit={handleAddManualPeer} className="p-4 sm:p-5 space-y-4 overflow-y-auto flex-1">
               <div>
                 <label className="block text-mini font-mono uppercase text-teal-900 font-bold mb-1">
                   Collaborator Name
@@ -992,10 +995,13 @@ export const NetworkPage: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="create-team-title"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsTeamModalOpen(false);
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
         >
-          <div className="w-full max-w-lg bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl flex flex-col overflow-hidden text-slate-900">
-            <div className="p-5 border-b border-teal-200/60 flex items-center justify-between bg-teal-50/70">
+          <div className="w-full max-w-lg max-h-[85vh] my-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl flex flex-col overflow-hidden text-slate-900">
+            <div className="p-5 border-b border-teal-200/60 flex items-center justify-between bg-teal-50/70 flex-shrink-0">
               <div className="flex items-center gap-2">
                 <UsersIcon size={16} className="text-teal-600" />
                 <h3 id="create-team-title" className="text-subheading text-indigo-950 font-bold">
@@ -1011,7 +1017,7 @@ export const NetworkPage: React.FC = () => {
               </button>
             </div>
 
-            <form onSubmit={handleCreateTeam} className="p-5 space-y-4">
+            <form onSubmit={handleCreateTeam} className="p-4 sm:p-5 space-y-4 overflow-y-auto flex-1">
               <div>
                 <label className="block text-mini font-mono uppercase text-teal-900 font-bold mb-1">
                   Team Name

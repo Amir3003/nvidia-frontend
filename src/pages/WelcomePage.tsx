@@ -87,7 +87,7 @@ export const WelcomePage: React.FC = () => {
       {/* Top Daylight Glass Navigation Bar */}
       <header className="fixed top-0 left-0 right-0 z-40 px-6 md:px-12 py-4 flex items-center justify-between bg-slate-900/60 backdrop-blur-md border-b border-teal-500/20 shadow-md">
         <div className="flex items-center gap-3">
-          <img src="/logo.png" alt="QADAM Logo" className="w-8 h-8 object-contain rounded-md drop-shadow-sm" />
+          <img src="/brand/qadam-icon.png" alt="QADAM Logo" className="w-8 h-8 object-contain rounded-md drop-shadow-sm" />
           <span className="text-[19px] font-mono font-bold tracking-tight text-white">
             QADAM
           </span>
@@ -807,10 +807,10 @@ export const WelcomePage: React.FC = () => {
       {/* ========================================================= */}
       {/* MINIMAL COSMIC FOOTER */}
       {/* ========================================================= */}
-      <footer className="border-t border-teal-500/20 py-8 px-6 md:px-12 bg-slate-950/60 backdrop-blur-md relative z-10 mt-auto">
+      <footer className="border-t border-teal-500/20 pt-8 pb-24 sm:pb-8 px-6 md:px-12 bg-slate-950/60 backdrop-blur-md relative z-10 mt-auto">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-mini font-mono text-teal-200/80">
           <div className="flex items-center gap-2.5">
-            <img src="/logo.png" alt="QADAM Logo" className="w-5 h-5 object-contain" />
+            <img src="/brand/qadam-icon.png" alt="QADAM Logo" className="w-5 h-5 object-contain" />
             <span className="text-white font-bold">QADAM («Қадам»)</span>
             <span className="hidden md:inline text-teal-300/60">. Your direct platform for global academic grants and AI opportunities.</span>
             <span>© 2026. All rights reserved.</span>

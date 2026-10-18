@@ -56,11 +56,14 @@ export const CvGapsModal: React.FC = () => {
       role="dialog"
       aria-modal="true"
       aria-labelledby="gaps-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) setSelectedOpportunityForGaps(null);
+      }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
     >
-      <div className="w-full max-w-xl bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl flex flex-col overflow-hidden text-slate-900">
+      <div className="w-full max-w-xl max-h-[85vh] my-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl flex flex-col overflow-hidden text-slate-900">
         {/* Header */}
-        <div className="px-5 py-4 border-b border-teal-200/60 flex items-center justify-between bg-teal-50/70">
+        <div className="px-5 py-4 border-b border-teal-200/60 flex items-center justify-between bg-teal-50/70 flex-shrink-0">
           <div>
             <div className="text-mini font-mono uppercase text-teal-900 font-bold tracking-wider">
               ATS Gap Analysis & Verification
@@ -80,7 +83,7 @@ export const CvGapsModal: React.FC = () => {
         </div>
 
         {/* Content */}
-        <div className="p-5 space-y-5 overflow-y-auto max-h-[75vh]">
+        <div className="p-4 sm:p-5 space-y-4 sm:space-y-5 overflow-y-auto flex-1">
           {/* Compatibility Banner */}
           <div className="p-4 bg-white/90 rounded-card border border-teal-200/80 flex items-center justify-between shadow-2xs">
             <div>

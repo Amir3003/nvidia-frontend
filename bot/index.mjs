@@ -4,9 +4,9 @@ const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 if (!TOKEN) { console.error('Missing TELEGRAM_BOT_TOKEN in .env'); process.exit(1); }
 const BOT_USERNAME = process.env.BOT_USERNAME || 'QadamAgentBot';
 const FALLBACK_PUBLIC_WEB_APP_URL = 'https://nvidia-pathfinder.vercel.app';
-const LOGO_URL = `${FALLBACK_PUBLIC_WEB_APP_URL}/logo.png`;
-const OFFICIAL_SLOGAN = 'QADAM («Қадам») — derived from the Kazakh word for "step". Your confident step toward global opportunities, grants, and technologies. 🚀';
-const BRAND_FOOTER = 'QADAM (Қадам) • Your confident step toward global opportunities • https://nvidia-pathfinder.vercel.app';
+const AVATAR_FILE = 'public/brand/qadam-avatar.png';
+const OFFICIAL_SLOGAN = 'QADAM («Қадам») means "step" in Kazakh. Your next step toward global opportunities, grants, and technologies.';
+const BRAND_FOOTER = 'QADAM (Қадам) · nvidia-pathfinder.vercel.app';
 
 // Helper: Ensure all Telegram inline keyboard buttons strictly receive a valid public HTTPS URL
 function getWebUrl(subpath = '') {
@@ -21,7 +21,7 @@ function getWebUrl(subpath = '') {
 
 const BASE_URL = `https://api.telegram.org/bot${TOKEN}`;
 
-// In-memory student link registry (Chat ID -> Student Data)
+// In-memory student link registry (Chat ID -> Student Data), cleared on restart
 const studentRegistry = new Map();
 
 // Helper: Make Telegram API requests
@@ -67,129 +67,83 @@ async function answerCallback(callbackQueryId, text = null, showAlert = false) {
   });
 }
 
-// Top opportunities database
-const OPPORTUNITIES = [
-  {
-    id: 'opp-1',
-    key: 'nebius_nvidia',
-    title: 'Nebius x NVIDIA Global AI Hackathon',
-    match: 94,
-    track: 'GPU Compute & Multimodal Agents (Virtual)',
-    award: '$50,000 Compute Credits + Cash Pool',
-    deadline: 'April 28, 2026',
-    eligibility: 'Active Student / Academic Researcher (Verified)',
-    skills: 'PyTorch, Docker, LLMs',
-    gaps: 'Verified alignment: Top quartile (No critical gaps)',
-  },
-  {
-    id: 'opp-2',
-    key: 'mext_ai',
-    title: 'MEXT Scholarship: Graduate AI Research',
-    match: 88,
-    track: 'Ministry of Education, Culture & Science (Japan)',
-    award: 'Full Tuition Waiver + ¥145,000/mo Stipend',
-    deadline: 'May 15, 2026',
-    eligibility: 'Bachelor completed, Age under 35 (Verified)',
-    skills: 'Python, Linux, Research Methodology',
-    gaps: 'Benchmark fit: Take Docker & Linux quiz for +6% boost',
-  },
-  {
-    id: 'opp-3',
-    key: 'anthropic',
-    title: 'Anthropic AI Alignment & Safety Fellowship',
-    match: 91,
-    track: 'Frontier Safety & Interpretability (San Francisco / Hybrid)',
-    award: '$10,000/month Research Stipend + Mentorship',
-    deadline: 'June 01, 2026',
-    eligibility: 'Enrolled Graduate or Technical Student Builder',
-    skills: 'PyTorch, LLMs, Safety Eval',
-    gaps: 'Verified alignment: PyTorch verified (+6% ATS boost)',
-  },
-];
-
 // Content Renderers
+function escapeHtml(value) {
+  return String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+}
+
+async function loadRadarSafe() {
+  try {
+    return await loadRadar();
+  } catch (error) {
+    console.error('[Radar Feed Error]', error.message);
+    return [];
+  }
+}
+
 function renderMainMenu(userName = 'Student') {
   return {
-    text: `🦅 <b>Welcome to QADAM («Қадам») | AI Opportunity Hub</b>
-<i>${OFFICIAL_SLOGAN}</i>
+    text: `<b>QADAM («Қадам») | AI Opportunity Hub</b>
+<i>${escapeHtml(OFFICIAL_SLOGAN)}</i>
 
-✅ <b>Account Status:</b> Linked to QADAM Workspace
-👤 <b>Candidate:</b> <code>${userName}</code>
-🛡 <b>Privacy Shield:</b> <code>ACTIVE</code> (Client-Side PII Tokenization)
-⚡ <b>Confinement:</b> Local OpenShell Sandbox
+Hello, <b>${escapeHtml(userName)}</b>.
 
-Use the menu below to scan verified hackathons, check CV gaps, or generate privacy-preserving application proposals:
+Here you can browse current hackathons, grants, and internships from the QADAM radar and get an application draft for any of them. CV analysis and skill verification run on the website, where your profile stays in your browser.
 
 <code>${BRAND_FOOTER}</code>`,
     reply_markup: {
       inline_keyboard: [
         [
-          { text: '🎯 Opportunity Radar', callback_data: 'radar' },
-          { text: '📊 Check CV Gaps', callback_data: 'gaps' },
+          { text: 'Opportunity Radar', callback_data: 'radar' },
+          { text: 'CV Gap Analysis', callback_data: 'gaps' },
         ],
         [
-          { text: '🛡 Privacy Shield Status', callback_data: 'privacy' },
-          { text: '⚡ Quick Proposal', callback_data: 'draft_nebius_nvidia' },
+          { text: 'Privacy', callback_data: 'privacy' },
+          { text: 'Application Draft', callback_data: 'draft_1' },
         ],
         [
-          { text: '🌐 Open QADAM Web Workspace', url: getWebUrl() },
+          { text: 'Open QADAM Website', url: getWebUrl() },
         ],
       ],
     },
   };
 }
 
-function escapeHtml(value) {
-  return String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
-}
-
 async function renderRadar() {
-  let items;
-  try {
-    items = await loadRadar();
-  } catch (error) {
-    console.error('[Radar Feed Error]', error.message);
-    items = [];
-  }
+  const items = await loadRadarSafe();
   const text = items.length
-    ? `🎯 <b>QADAM Radar</b>\n\n${items.map((opp, index) =>
-      `${index + 1}. <b>${escapeHtml(opp.title)}</b>\n${escapeHtml(opp.type)} · Deadline: ${opp.deadline || 'not confirmed'}`
+    ? `<b>QADAM Radar</b>\n\n${items.map((opp, index) =>
+      `${index + 1}. <b>${escapeHtml(opp.title)}</b>\n${escapeHtml(opp.type)}${opp.organization ? ` · ${escapeHtml(opp.organization)}` : ''} · Deadline: ${escapeHtml(opp.deadline || 'not confirmed')}`
     ).join('\n\n')}\n\nCheck each source before applying.`
-    : '🎯 No current radar results are available. Please check the website and try again later.';
-  const keyboard = items.map((opp, index) => [{ text: `Open source ${index + 1}`, url: opp.url }]);
-  keyboard.push([{ text: '🌐 Open QADAM website', url: getWebUrl('/') }]);
+    : 'No current radar results are available. Please check the website and try again later.';
+  const keyboard = items.map((opp, index) => [
+    { text: `Source ${index + 1}`, url: opp.url },
+    { text: `Draft ${index + 1}`, callback_data: `draft_${index + 1}` },
+  ]);
+  keyboard.push([{ text: 'Open QADAM Website', url: getWebUrl('/') }]);
   return { text, reply_markup: { inline_keyboard: keyboard } };
 }
 
-function renderGaps(userName = 'Student') {
+function renderGaps() {
   return {
-    text: `📊 <b>ATS Gap Analysis & Skill Benchmark Matrix</b>
-Candidate: <code>${userName}</code>
-<i>${OFFICIAL_SLOGAN}</i>
+    text: `<b>CV Gap Analysis</b>
 
-<b>Overall CV Health Score:</b> 89 / 100 <i>(Top Quartile)</i>
-<b>Target Benchmark:</b> Global AI Hackathons & Research Fellowships
+The bot does not store your CV, so it cannot score it here. On the QADAM website, CV & Skill Lab compares your skills with a target opportunity you pick and shows:
 
-✅ <b>Verified Credentials (+18% ATS Match):</b>
-• <b>PyTorch:</b> 95% proficiency (Quiz Verified)
-• <b>LLMs & Prompt Architecture:</b> 92% (Quiz Verified)
-• <b>Linux Systems:</b> 88% (Quiz Verified)
-
-⚠️ <b>Unverified / Gap Items:</b>
-• <b>Docker:</b> Listed on resume, needs benchmark score &gt;70%
-• <b>CUDA / TensorRT:</b> Required for high-throughput Nebius GPU track
-
-💡 <i>Verify your missing Docker and CUDA credentials with the interactive 5-question quiz on the QADAM platform to boost your radar matches up to 96%!</i>
+• an ATS health score for your profile
+• which required skills you already have
+• which skills are missing or not yet verified
+• short quizzes to verify a skill
 
 <i>${BRAND_FOOTER}</i>`,
     reply_markup: {
       inline_keyboard: [
         [
-          { text: '📝 Take Skill Verification Quiz', url: getWebUrl('/cv') },
+          { text: 'Open CV & Skill Lab', url: getWebUrl('/cv') },
         ],
         [
-          { text: '🎯 Opportunity Radar', callback_data: 'radar' },
-          { text: '🔙 Main Menu', callback_data: 'menu' },
+          { text: 'Opportunity Radar', callback_data: 'radar' },
+          { text: 'Main Menu', callback_data: 'menu' },
         ],
       ],
     },
@@ -198,66 +152,58 @@ Candidate: <code>${userName}</code>
 
 function renderPrivacy() {
   return {
-    text: `🛡 <b>QADAM | AI Opportunity Hub — Privacy Shield Architecture</b>
-<i>${OFFICIAL_SLOGAN}</i>
+    text: `<b>How QADAM handles your data</b>
 
-1. <b>Client-Side Identity Tokenization:</b>
-Personal names, phone numbers, email addresses, and national IDs are tokenized into anonymized placeholders (e.g. <code>[USER_NAME_1]</code>, <code>[EMAIL_MASKED]</code>) locally before any request is dispatched to cloud inference models.
+1. <b>Profile stays in your browser.</b>
+Your profile and CV on the website are saved in your browser's local storage.
 
-2. <b>Frontier LLM Protection:</b>
-Cloud LLMs (such as <code>nvidia/Nemotron-3.5-Lightning</code>) only receive masked representations, eliminating third-party tracking or PII leakage risks.
+2. <b>Masking before AI requests.</b>
+Before text is sent to an AI model, names, email addresses, and phone numbers are replaced with placeholders such as <code>[USER_NAME_1]</code> and <code>[EMAIL_MASKED]</code>.
 
-3. <b>OpenShell Sandbox Isolation:</b>
-All tool executions and code sandboxing occur in strictly confined containers without unauthorized disk traversal.
-
-4. <b>Encrypted Telegram Integration:</b>
-Bot notifications communicate directly via official Telegram MTProto endpoints with zero metadata broker intermediaries.
+3. <b>What this bot keeps.</b>
+Only your Telegram display name, in memory, while the bot is running. It is cleared on restart. The bot never asks for your CV.
 
 <i>${BRAND_FOOTER}</i>`,
     reply_markup: {
       inline_keyboard: [
         [
-          { text: '🎯 Back to Opportunity Radar', callback_data: 'radar' },
-          { text: '🔙 Main Menu', callback_data: 'menu' },
+          { text: 'Opportunity Radar', callback_data: 'radar' },
+          { text: 'Main Menu', callback_data: 'menu' },
         ],
       ],
     },
   };
 }
 
-function renderDraft(key, userName = 'Candidate') {
-  const opp = OPPORTUNITIES.find((o) => o.key === key) || OPPORTUNITIES[0];
+async function renderDraft(index) {
+  const items = await loadRadarSafe();
+  const opp = items[index - 1] || items[0];
 
-  const text = `🛡 <b>[PII Anonymization Layer Active]</b>
-<i>${OFFICIAL_SLOGAN}</i>
+  if (!opp) {
+    return {
+      text: 'No radar opportunities are available right now, so there is nothing to draft. Please try again later.',
+      reply_markup: { inline_keyboard: [[{ text: 'Main Menu', callback_data: 'menu' }]] },
+    };
+  }
 
-<i>Tokenizing sensitive candidate identity prior to model dispatch:</i>
-• Candidate Name: <code>[USER_NAME_1]</code>
-• Phone: <code>[PHONE_MASKED]</code>
-• Student ID: <code>[ID_MASKED]</code>
-• University: <code>[INSTITUTION_VERIFIED]</code>
+  const title = escapeHtml(opp.title);
+  const text = `<b>Application Draft: ${title}</b>
+${escapeHtml(opp.type)}${opp.organization ? ` · ${escapeHtml(opp.organization)}` : ''} · Deadline: ${escapeHtml(opp.deadline || 'not confirmed')}
 
-⚡ <i>Prompt dispatched to: nvidia/Nemotron-3.5-Lightning on Nebius Cloud...</i>
-━━━━━━━━━━━━━━━━━━━━━━━━━━
-📄 <b>Application Proposal: ${opp.title}</b>
-<b>Candidate:</b> [USER_NAME_1] (Student Researcher)
-<b>Target Track:</b> ${opp.track}
-<b>Deadline:</b> ${opp.deadline}
+<i>Template with placeholders. Replace the [brackets] with your own details, or open Application Studio on the website to fill it from your profile.</i>
 
-<b>Summary of Intent:</b>
-I am submitting this application for the ${opp.title}. As an active student researcher specializing in AI and High-Performance Systems, my work focuses on building safe, low-latency autonomous workflows.
+<b>Summary of Intent</b>
+I am applying for ${title}. I am a [year] student in [major] at [university], and my work focuses on [your focus area].
 
-<b>Technical Alignment:</b>
-1. <b>Core Stack Mastery:</b> Hands-on experience with ${opp.skills}, incorporating clean modular design patterns and high-throughput execution.
-2. <b>Safe Agent Containment:</b> Direct integration with OpenShell sandbox isolation to ensure zero unauthorized disk or network traversal.
-3. <b>Track Relevance:</b> Direct application of our research toward ${opp.track}.
+<b>Relevant Experience</b>
+1. [Project or role]: [what you built and the measurable result].
+2. [Skills]: [tools and methods that match the requirements in the source].
+3. [Why this opportunity]: [how it fits your goals].
 
-<b>Proposed Deliverable:</b>
-Production-ready containerized prototype with reproducible evaluation benchmarks and zero-leak client-side privacy protection.
+<b>Proposed Contribution</b>
+[What you plan to deliver or learn, in two or three sentences.]
 
-✍️ <b>Candidate Signature:</b> <code>[USER_NAME_1]</code> (Verified Student Profile)
-━━━━━━━━━━━━━━━━━━━━━━━━━━
-📂 <i>Draft saved to local workspace: <code>/workspace/qadam/drafts/${opp.id}.txt</code></i>
+Check the eligibility and requirements in the source before applying.
 
 <i>${BRAND_FOOTER}</i>`;
 
@@ -266,14 +212,38 @@ Production-ready containerized prototype with reproducible evaluation benchmarks
     reply_markup: {
       inline_keyboard: [
         [
-          {
-            text: '🚀 Open in QADAM Application Studio',
-            url: getWebUrl(`/application-studio?id=${opp.id}`),
-          },
+          { text: 'Open Source', url: opp.url },
+          { text: 'Application Studio', url: getWebUrl('/application-studio') },
         ],
         [
-          { text: '🎯 View Other Opportunities', callback_data: 'radar' },
-          { text: '🔙 Main Menu', callback_data: 'menu' },
+          { text: 'Opportunity Radar', callback_data: 'radar' },
+          { text: 'Main Menu', callback_data: 'menu' },
+        ],
+      ],
+    },
+  };
+}
+
+function renderHelp() {
+  return {
+    text: `<b>QADAM Bot Commands</b>
+
+/start - Open the main menu
+/radar - Current opportunities from the QADAM radar
+/draft - Application draft for the top radar opportunity
+/gaps - How CV gap analysis works
+/privacy - How QADAM handles your data
+/help - Show this list
+
+<i>${BRAND_FOOTER}</i>`,
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: 'Opportunity Radar', callback_data: 'radar' },
+          { text: 'CV Gap Analysis', callback_data: 'gaps' },
+        ],
+        [
+          { text: 'Open QADAM Website', url: getWebUrl() },
         ],
       ],
     },
@@ -286,17 +256,24 @@ async function handleMessage(msg) {
   if (!chatId) return;
 
   const text = (msg.text || '').trim();
+  const command = text.split(/\s+/)[0].split('@')[0].toLowerCase();
   const from = msg.from || {};
   const defaultName = from.first_name
     ? `${from.first_name} ${from.last_name || ''}`.trim()
     : 'Student';
 
   // 1. /start command with deep-link account binding (e.g., /start connect_amir)
-  if (text.startsWith('/start')) {
+  if (command === '/start') {
     const parts = text.split(' ');
     let linkedName = defaultName;
     if (parts.length > 1 && parts[1].startsWith('connect_')) {
-      const paramName = decodeURIComponent(parts[1].replace('connect_', '')).trim();
+      let paramName = parts[1].replace('connect_', '');
+      try {
+        paramName = decodeURIComponent(paramName);
+      } catch {
+        // Keep the raw value when the deep-link payload is not valid percent-encoding
+      }
+      paramName = paramName.trim().slice(0, 64);
       if (paramName && paramName !== 'qadam') {
         linkedName = paramName.charAt(0).toUpperCase() + paramName.slice(1);
       }
@@ -317,56 +294,22 @@ async function handleMessage(msg) {
   // Retrieve current student profile
   const user = studentRegistry.get(chatId) || { name: defaultName };
 
-  // 2. /radar command
-  if (text === '/radar' || text.toLowerCase().includes('radar')) {
-    const view = await renderRadar();
+  let view;
+  if (command === '/radar') view = await renderRadar();
+  else if (command === '/draft') view = await renderDraft(1);
+  else if (command === '/gaps') view = renderGaps();
+  else if (command === '/privacy') view = renderPrivacy();
+  else if (command === '/help') view = renderHelp();
+
+  if (view) {
     return sendMessage(chatId, view.text, view.reply_markup);
-  }
-
-  // 3. /gaps command
-  if (text === '/gaps' || text.toLowerCase().includes('gap') || text.toLowerCase().includes('cv')) {
-    const view = renderGaps(user.name);
-    return sendMessage(chatId, view.text, view.reply_markup);
-  }
-
-  // 4. /privacy command
-  if (text === '/privacy' || text.toLowerCase().includes('privacy')) {
-    const view = renderPrivacy();
-    return sendMessage(chatId, view.text, view.reply_markup);
-  }
-
-  // 5. /help command
-  if (text === '/help') {
-    const helpText = `📖 <b>QADAM | AI Opportunity Hub — Bot Commands Guide:</b>
-<i>${OFFICIAL_SLOGAN}</i>
-
-/start - Open QADAM Assistant & Link Workspace
-/radar - Browse Top Verified Opportunities & Hackathons
-/gaps - View ATS Resume Gap Analysis & Benchmark
-/privacy - Check Zero-PII Shield Architecture
-/help - Show this commands guide
-
-<i>Tap any inline button in the chat to interact with real-time application drafting and sandbox features.</i>
-
-<i>${BRAND_FOOTER}</i>`;
-    return sendMessage(chatId, helpText, {
-      inline_keyboard: [
-        [
-          { text: '🎯 Opportunity Radar', callback_data: 'radar' },
-          { text: '📊 Check CV Gaps', callback_data: 'gaps' },
-        ],
-        [
-          { text: '🌐 Launch Web Workspace', url: getWebUrl() },
-        ],
-      ],
-    });
   }
 
   // Default Fallback: Prompt user with menu
   const fallbackView = renderMainMenu(user.name);
   return sendMessage(
     chatId,
-    `👋 Hello ${user.name}! I received your message: "<i>${text}</i>"\n\nHow can QADAM assist your career journey today?`,
+    `Hello, ${escapeHtml(user.name)}. I only understand commands and the buttons below. Send /help to see the full list.`,
     fallbackView.reply_markup
   );
 }
@@ -375,7 +318,7 @@ async function handleMessage(msg) {
 async function handleCallbackQuery(cb) {
   const cbId = cb.id;
   const chatId = cb.message?.chat?.id;
-  const data = cb.data;
+  const data = cb.data || '';
 
   if (!chatId) return;
 
@@ -386,29 +329,14 @@ async function handleCallbackQuery(cb) {
   // Acknowledge the callback immediately to remove loading spinner in Telegram client
   await answerCallback(cbId);
 
-  if (data === 'menu') {
-    const view = renderMainMenu(user.name);
-    return sendMessage(chatId, view.text, view.reply_markup);
-  }
+  let view;
+  if (data === 'menu') view = renderMainMenu(user.name);
+  else if (data === 'radar') view = await renderRadar();
+  else if (data === 'gaps') view = renderGaps();
+  else if (data === 'privacy') view = renderPrivacy();
+  else if (data.startsWith('draft_')) view = await renderDraft(Number(data.slice(6)) || 1);
 
-  if (data === 'radar') {
-    const view = await renderRadar();
-    return sendMessage(chatId, view.text, view.reply_markup);
-  }
-
-  if (data === 'gaps') {
-    const view = renderGaps(user.name);
-    return sendMessage(chatId, view.text, view.reply_markup);
-  }
-
-  if (data === 'privacy') {
-    const view = renderPrivacy();
-    return sendMessage(chatId, view.text, view.reply_markup);
-  }
-
-  if (data.startsWith('draft_')) {
-    const key = data.replace('draft_', '');
-    const view = renderDraft(key, user.name);
+  if (view) {
     return sendMessage(chatId, view.text, view.reply_markup);
   }
 }
@@ -416,43 +344,41 @@ async function handleCallbackQuery(cb) {
 // Register official Bot commands with Telegram
 async function registerBotCommands() {
   const commands = [
-    { command: 'start', description: 'Start QADAM Assistant & Link Workspace' },
-    { command: 'radar', description: 'View Top Verified Opportunities' },
-    { command: 'gaps', description: 'Check ATS Resume Gap Analysis' },
-    { command: 'privacy', description: 'View Privacy Shield Status' },
-    { command: 'help', description: 'Show Bot Help & Guide' },
+    { command: 'start', description: 'Open the main menu' },
+    { command: 'radar', description: 'Current opportunities from the QADAM radar' },
+    { command: 'draft', description: 'Application draft for the top opportunity' },
+    { command: 'gaps', description: 'How CV gap analysis works' },
+    { command: 'privacy', description: 'How QADAM handles your data' },
+    { command: 'help', description: 'Show all commands' },
   ];
 
   const res = await callApi('setMyCommands', { commands });
   if (res.ok) {
-    console.log('✅ Telegram bot commands registered successfully.');
+    console.log('Telegram bot commands registered.');
   }
 }
 
 // Main Long Polling Loop
 async function startPolling() {
   console.log(`\n======================================================`);
-  console.log(`🤖 QADAM | AI Opportunity Hub — Telegram Bot (@${BOT_USERNAME}) Starting...`);
-  console.log(`📡 Endpoint: ${BASE_URL.replace(TOKEN, 'TOKEN_REDACTED')}`);
-  console.log(`🌐 Web App Target: ${getWebUrl()}`);
-  console.log(`🖼 Brand Logo Asset: ${LOGO_URL}`);
-  console.log(`💬 Official Slogan: ${OFFICIAL_SLOGAN}`);
+  console.log(`QADAM | AI Opportunity Hub: Telegram Bot (@${BOT_USERNAME}) starting`);
+  console.log(`Endpoint: ${BASE_URL.replace(TOKEN, 'TOKEN_REDACTED')}`);
+  console.log(`Web App Target: ${getWebUrl()}`);
   console.log(`------------------------------------------------------`);
-  console.log(`💡 AVATAR SETUP: To set official bot avatar in Telegram:`);
-  console.log(`   Open @BotFather in Telegram, send /setuserpic, select`);
-  console.log(`   @${BOT_USERNAME}, and upload 'public/logo.png'`);
+  console.log(`AVATAR SETUP: open @BotFather in Telegram, send /setuserpic,`);
+  console.log(`select @${BOT_USERNAME}, and upload '${AVATAR_FILE}'`);
   console.log(`======================================================\n`);
 
   // Verify Bot identity
   const me = await callApi('getMe');
   if (!me.ok) {
-    console.error('❌ Failed to authenticate bot with Telegram API:', me.description);
+    console.error('Failed to authenticate bot with Telegram API:', me.description);
     process.exit(1);
   }
 
-  console.log(`✅ Authenticated as: ${me.result.first_name} (@${me.result.username})`);
+  console.log(`Authenticated as: ${me.result.first_name} (@${me.result.username})`);
   await registerBotCommands();
-  console.log(`⚡ Long Polling initialized. Waiting for student interactions...\n`);
+  console.log(`Long polling initialized. Waiting for messages...\n`);
 
   let offset = 0;
 
@@ -468,15 +394,19 @@ async function startPolling() {
         for (const update of updates.result) {
           offset = update.update_id + 1;
 
-          if (update.message) {
-            await handleMessage(update.message);
-          } else if (update.callback_query) {
-            await handleCallbackQuery(update.callback_query);
+          try {
+            if (update.message) {
+              await handleMessage(update.message);
+            } else if (update.callback_query) {
+              await handleCallbackQuery(update.callback_query);
+            }
+          } catch (err) {
+            console.error('[Update Handler Error]:', err.message);
           }
         }
       } else if (!updates.ok) {
         if (updates.description && updates.description.includes('Conflict')) {
-          console.warn('⚠️ Telegram 409 Conflict: another process called getUpdates. Retrying in 4s...');
+          console.warn('Telegram 409 Conflict: another process called getUpdates. Retrying in 4s...');
           await new Promise((r) => setTimeout(r, 4000));
         } else {
           await new Promise((r) => setTimeout(r, 2000));
@@ -492,15 +422,14 @@ async function startPolling() {
 
 // Handle graceful shutdown
 process.on('SIGINT', () => {
-  console.log('\n🛑 QADAM Telegram Bot shutting down gracefully...');
+  console.log('\nQADAM Telegram Bot shutting down...');
   process.exit(0);
 });
 
 process.on('SIGTERM', () => {
-  console.log('\n🛑 QADAM Telegram Bot terminating...');
+  console.log('\nQADAM Telegram Bot terminating...');
   process.exit(0);
 });
 
 // Start the bot
 startPolling();
-

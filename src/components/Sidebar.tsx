@@ -84,7 +84,7 @@ export const Sidebar: React.FC = () => {
       {/* Mobile Top Header */}
       <div className="lg:hidden flex items-center justify-between px-4 py-3 bg-slate-900/80 backdrop-blur-md border-b border-teal-500/20 sticky top-0 z-30 shadow-md">
         <Link to="/welcome" className="flex items-center gap-2">
-          <img src="/logo.png" alt="QADAM Logo" className="w-6 h-6 object-contain rounded-md" />
+          <img src="/brand/qadam-icon.png" alt="QADAM Logo" className="w-6 h-6 object-contain rounded-md" />
           <span className="font-semibold text-white tracking-tight text-[15px] font-mono">QADAM</span>
           <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-500/10 text-teal-300 border border-teal-500/30 font-medium">
             «Қадам»
@@ -114,7 +114,7 @@ export const Sidebar: React.FC = () => {
             title="QADAM: Return to Welcome Page"
             className="flex items-center gap-2.5 hover:opacity-85 transition-opacity"
           >
-            <img src="/logo.png" alt="QADAM Logo" className="w-7 h-7 object-contain rounded-md drop-shadow-xs" />
+            <img src="/brand/qadam-icon.png" alt="QADAM Logo" className="w-7 h-7 object-contain rounded-md drop-shadow-xs" />
             <div className="flex items-baseline gap-1.5">
               <h1 className="text-[16px] font-bold text-indigo-950 tracking-tight font-sans">QADAM</h1>
               <span className="text-[11px] font-mono text-teal-800">«Қадам»</span>

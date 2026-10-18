@@ -20,22 +20,36 @@
   --warning-text: #D97706;
 }
 
+/*
+ * Natural browser-level scrolling: the viewport is the only scroll container.
+ * Horizontal overflow uses `clip` (not `hidden`) on body and #root so they do not
+ * become scroll containers, which would break `position: sticky` and clip popovers.
+ */
 html {
+  height: auto;
   overflow-x: hidden;
-  max-width: 100vw;
-  overscroll-behavior-y: none;
+  overflow-y: auto;
 }
 
 body {
   margin: 0;
+  height: auto;
+  min-height: 100dvh;
   background-color: #0B101E;
   color: #F8FAFC;
   font-family: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  overflow-x: hidden;
-  max-width: 100vw;
-  overscroll-behavior-y: none;
-  -webkit-overflow-scrolling: touch;
+  overflow-x: clip;
+  overflow-y: visible;
   -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  height: auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 /* Prevent iOS Safari auto-zoom on input focus (< 768px) */
