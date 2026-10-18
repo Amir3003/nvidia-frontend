@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import {
   ChevronRightIcon,
@@ -825,9 +826,9 @@ export const WelcomePage: React.FC = () => {
               Platform Access
             </button>
             <span className="text-teal-500/40">·</span>
-            <span>Client Privacy Protection</span>
-            <span className="text-teal-500/40">·</span>
-            <span>Local OpenShell Confinement</span>
+            <Link to="/privacy" className="hover:text-white transition-colors">
+              Privacy & Your Data
+            </Link>
           </div>
         </div>
       </footer>

@@ -11,6 +11,7 @@ import { NotificationsPage } from './pages/NotificationsPage';
 import { ApplicationStudioPage } from './pages/ApplicationStudioPage';
 import { AccountPortalPage } from './pages/AccountPortalPage';
 import { WelcomePage } from './pages/WelcomePage';
+import { PrivacyPage } from './pages/PrivacyPage';
 import { OnboardingWizard } from './components/OnboardingWizard';
 import { CvGapsModal } from './components/CvGapsModal';
 import { QuizModal } from './components/QuizModal';
@@ -22,6 +23,17 @@ export const App: React.FC = () => {
   const { userProfile } = useApp();
   const location = useLocation();
   const hasValidProfile = isProfileValid(userProfile);
+
+  // Public privacy page, readable with or without an account
+  if (location.pathname === '/privacy') {
+    return (
+      <div className="min-h-[100dvh] flex flex-col bg-transparent text-slate-100 antialiased font-sans relative">
+        <ScrollToTop />
+        <AmbientBackground />
+        <PrivacyPage />
+      </div>
+    );
+  }
 
   // If user profile is not valid and not on /welcome, redirect to /welcome
   if (!hasValidProfile && location.pathname !== '/welcome') {
@@ -75,7 +87,6 @@ export const App: React.FC = () => {
           <Route path="/network" element={<NetworkPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/application-studio" element={<ApplicationStudioPage />} />
-          <Route path="/privacy" element={<Navigate to="/account?tab=settings" replace />} />
           <Route path="/logs" element={<Navigate to="/account?tab=settings" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

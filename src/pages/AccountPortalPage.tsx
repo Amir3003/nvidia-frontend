@@ -368,7 +368,7 @@ export const AccountPortalPage: React.FC = () => {
     },
     {
       q: 'Where is my data stored and how do I delete it?',
-      a: 'Your profile, CV text, memory and settings are stored in your browser\'s local storage on this device. Personal identifiers such as your name and email are replaced with placeholders before any request goes to an AI model. To erase everything, open Settings and use "Reset Local Data", or simply log out.',
+      a: 'Your profile, CV text, memory and settings are stored in your browser\'s local storage on this device. Your profile and CV are not sent to AI models or any server. See the Privacy & Your Data page (/privacy) for the full list. To erase everything, open Settings and use "Reset Local Data", or simply log out.',
     },
     {
       q: 'How do I get deadline reminders in Telegram or Discord?',
