@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { Sidebar } from './components/Sidebar';
 import { AmbientBackground } from './components/AmbientBackground';
+import { ScrollToTop } from './components/ScrollToTop';
 import { RadarPage } from './pages/RadarPage';
 import { MemoryPage } from './pages/MemoryPage';
 import { CvLabPage } from './pages/CvLabPage';
@@ -30,7 +31,8 @@ export const App: React.FC = () => {
   // Standalone Welcome landing page with zero blocking overlay on fresh entry
   if (location.pathname === '/welcome') {
     return (
-      <div className="min-h-screen bg-transparent text-slate-100 antialiased selection:bg-accent/20 selection:text-white font-sans relative">
+      <div className="min-h-[100dvh] flex flex-col bg-transparent text-slate-100 antialiased selection:bg-accent/20 selection:text-white font-sans relative overflow-x-hidden max-w-[100vw]">
+        <ScrollToTop />
         <AmbientBackground />
         <WelcomePage />
         <OnboardingWizard />
@@ -46,7 +48,8 @@ export const App: React.FC = () => {
     location.pathname === '/support'
   ) {
     return (
-      <div className="min-h-screen bg-transparent text-slate-100 antialiased selection:bg-accent/20 selection:text-white font-sans relative">
+      <div className="min-h-[100dvh] flex flex-col bg-transparent text-slate-100 antialiased selection:bg-accent/20 selection:text-white font-sans relative overflow-x-hidden max-w-[100vw]">
+        <ScrollToTop />
         <AmbientBackground />
         <AccountPortalPage />
         <OnboardingWizard />
@@ -55,16 +58,18 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-transparent text-slate-100 flex flex-col lg:flex-row antialiased selection:bg-accent/20 selection:text-white font-sans relative">
+    <div className="min-h-[100dvh] bg-transparent text-slate-100 flex flex-col lg:flex-row antialiased selection:bg-accent/20 selection:text-white font-sans relative overflow-x-hidden max-w-[100vw]">
+      <ScrollToTop />
       <AmbientBackground />
 
       {/* 248px Left Sidebar Navigation */}
       <Sidebar />
 
-      {/* Main Content Area */}
-      <main className="flex-1 flex flex-col min-w-0 bg-transparent overflow-x-hidden relative z-10">
+      {/* Main Content Area: pb-28 provides clearance for mobile bottom bar */}
+      <main className="flex-1 flex flex-col min-w-0 bg-transparent overflow-x-hidden relative z-10 pb-28 lg:pb-0">
         <Routes>
           <Route path="/" element={<RadarPage />} />
+          <Route path="/dashboard" element={<RadarPage />} />
           <Route path="/cv" element={<CvLabPage />} />
           <Route path="/memory" element={<MemoryPage />} />
           <Route path="/network" element={<NetworkPage />} />

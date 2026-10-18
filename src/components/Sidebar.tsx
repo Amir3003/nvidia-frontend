@@ -278,6 +278,66 @@ export const Sidebar: React.FC = () => {
           </div>
         </div>
       </aside>
+
+      {/* Mobile Fixed Bottom Navigation Bar (Anchored at Bottom with Safe Area Inset) */}
+      <nav
+        aria-label="Mobile Navigation"
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-slate-900/95 backdrop-blur-lg border-t border-teal-500/20 px-2 py-1 flex items-center justify-around pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-2xl"
+      >
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const isActive =
+            item.to === '/'
+              ? location.pathname === '/' || location.pathname === '/dashboard' || location.pathname === '/application-studio'
+              : location.pathname.startsWith(item.to);
+
+          return (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={`
+                min-h-[44px] min-w-[48px] px-2 py-1 flex flex-col items-center justify-center gap-0.5 rounded-xl transition-all active:scale-95
+                ${
+                  isActive
+                    ? 'text-emerald-400 font-bold bg-emerald-500/10'
+                    : 'text-slate-400 hover:text-slate-200'
+                }
+              `}
+            >
+              <Icon size={18} className={isActive ? 'text-emerald-400' : 'text-slate-400'} />
+              <span className="text-[10px] font-mono tracking-tight leading-none mt-0.5">
+                {item.label === 'Opportunity Radar'
+                  ? 'Radar'
+                  : item.label === 'CV & Skill Lab'
+                  ? 'CV Lab'
+                  : item.label === 'Agent Memory'
+                  ? 'Memory'
+                  : item.label === 'Teammates & Network'
+                  ? 'Network'
+                  : 'Alerts'}
+              </span>
+            </NavLink>
+          );
+        })}
+
+        {/* Profile / Account Nav Link */}
+        <NavLink
+          to="/account?tab=profile"
+          className={`
+            min-h-[44px] min-w-[48px] px-2 py-1 flex flex-col items-center justify-center gap-0.5 rounded-xl transition-all active:scale-95
+            ${
+              location.pathname.startsWith('/account')
+                ? 'text-emerald-400 font-bold bg-emerald-500/10'
+                : 'text-slate-400 hover:text-slate-200'
+            }
+          `}
+        >
+          <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-600 text-white flex items-center justify-center text-[10px] font-bold">
+            {initials}
+          </div>
+          <span className="text-[10px] font-mono tracking-tight leading-none mt-0.5">Profile</span>
+        </NavLink>
+      </nav>
     </>
   );
 };

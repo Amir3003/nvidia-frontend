@@ -6,6 +6,7 @@ import {
   POPULAR_TECH_STACK,
   CAREER_OBJECTIVES,
 } from '../db/userProfile';
+import { VALID_CITIES } from '../components/OnboardingWizard';
 import { anonymize } from '../utils/anonymizer';
 import {
   UserIcon,
@@ -399,7 +400,7 @@ export const AccountPortalPage: React.FC = () => {
             <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-indigo-500/15 border border-teal-300/40 text-mini text-teal-100 flex items-center gap-3 shadow-xs">
               <img src="/logo.png" alt="QADAM" className="w-7 h-7 object-contain flex-shrink-0" />
               <p className="leading-relaxed">
-                <strong className="text-emerald-300">QADAM («Қадам»)</strong> — derived from the Kazakh word for "step". Your confident step toward global opportunities, grants, and technologies. 🚀
+                <strong className="text-emerald-300">QADAM («Қадам»)</strong> means "step" in Kazakh. Your direct platform for global academic grants, internships, and AI opportunities.
               </p>
             </div>
 
@@ -617,11 +618,19 @@ export const AccountPortalPage: React.FC = () => {
                   </label>
                   <input
                     type="text"
+                    list="qadam-cities-portal"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    placeholder="Almaty, Kazakhstan"
-                    className="w-full h-11 px-3.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 rounded-btn text-[13px] text-slate-900 placeholder:text-slate-400 outline-none font-sans transition-colors"
+                    placeholder="e.g. Almaty, Kazakhstan"
+                    autoCapitalize="words"
+                    autoCorrect="off"
+                    className="w-full h-11 px-3.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 rounded-xl text-base md:text-[13px] text-slate-900 placeholder:text-slate-400 outline-none font-sans transition-colors"
                   />
+                  <datalist id="qadam-cities-portal">
+                    {VALID_CITIES.map((c) => (
+                      <option key={c} value={c} />
+                    ))}
+                  </datalist>
                 </div>
               </div>
             </div>

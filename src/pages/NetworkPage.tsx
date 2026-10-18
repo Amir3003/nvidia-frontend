@@ -21,6 +21,7 @@ import {
   CloseIcon,
   MessageSquareIcon,
   SendIcon,
+  RadarIcon,
 } from '../components/Icons';
 
 export const NetworkPage: React.FC = () => {
@@ -367,8 +368,9 @@ export const NetworkPage: React.FC = () => {
                           READY
                         </span>
                       </div>
-                      <div className="text-mini font-mono text-teal-900 truncate font-medium">
-                        🎯 {t.opportunityTitle}
+                      <div className="text-mini font-mono text-teal-900 truncate font-medium flex items-center gap-1.5">
+                        <RadarIcon size={13} className="text-emerald-700 flex-shrink-0" />
+                        <span className="truncate">{t.opportunityTitle}</span>
                       </div>
                       <div className="text-[12px] text-slate-700">
                         Members: <span className="text-indigo-950 font-semibold">{t.members.join(', ')}</span>
@@ -499,8 +501,8 @@ export const NetworkPage: React.FC = () => {
                           </span>
                         </div>
 
-                        <div className="text-[12px] font-mono text-slate-600">
-                          📍 {peer.university} · {peer.location}
+                        <div className="text-[12px] font-mono text-slate-600 truncate">
+                          {peer.university} · {peer.location}
                         </div>
 
                         <p className="text-[12px] text-slate-600 leading-relaxed line-clamp-2">

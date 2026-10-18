@@ -1,219 +1,268 @@
 > Scheduled website radar: [GITHUB_RADAR_SETUP.md](GITHUB_RADAR_SETUP.md). Oracle VM setup for Telegram and Discord: [ORACLE_BOTS_SETUP.md](ORACLE_BOTS_SETUP.md). Local setup: [LOCAL_SETUP.md](LOCAL_SETUP.md). The bots' radar commands read the published JSON; CV scores and draft messages are still static examples. Rotate any bot token or webhook previously committed to this public repository.
 
 <p align="center">
-  <img src="public/logo.png" width="120" alt="QADAM Logo" />
+  <img src="public/logo.png" width="100" alt="QADAM Logo" />
 </p>
 
-<h1 align="center">QADAM («Қадам») — AI Opportunity & Career Hub</h1>
+<h1 align="center">QADAM («Қадам»)</h1>
 
 <p align="center">
-  <strong>Autonomous Career Agent · Real-Time Opportunity Radar · Zero-Leak PII Privacy Shield · Multi-Channel Messenger Ecosystem</strong>
+  <strong>AI Opportunity Hub, CV Benchmark & Multi-Channel Career Agent</strong>
 </p>
 
 <p align="center">
-  <a href="https://nvidia-pathfinder.vercel.app"><img src="https://img.shields.io/badge/Live%20Demo-Vercel-10B981?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" /></a>
-  <a href="https://discord.gg/A4rxRGx4Vt"><img src="https://img.shields.io/badge/Discord-Community-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord Community" /></a>
-  <a href="https://t.me/QadamAgentBot"><img src="https://img.shields.io/badge/Telegram-@QadamAgentBot-0088cc?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram Bot" /></a>
-  <img src="https://img.shields.io/badge/React%2019-TypeScript-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 19" />
-  <img src="https://img.shields.io/badge/NVIDIA%20NIM-Nebius%20AI-76B900?style=for-the-badge&logo=nvidia&logoColor=white" alt="NVIDIA NIM" />
+  <a href="https://discord.gg/A4rxRGx4Vt"><img src="https://img.shields.io/badge/Discord-Community-5865F2?style=flat-square&logo=discord&logoColor=white" alt="Discord" /></a>
+  <a href="https://t.me/QadamAgentBot"><img src="https://img.shields.io/badge/Telegram-@QadamAgentBot-0088cc?style=flat-square&logo=telegram&logoColor=white" alt="Telegram Bot" /></a>
+  <img src="https://img.shields.io/badge/React_19-TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Vite-Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind" />
 </p>
 
 ---
 
-> ### *"QADAM («Қадам») — derived from the Kazakh word for 'step'. Your confident step toward global opportunities, grants, and technologies. 🚀"*
+## Overview
+
+**QADAM** (from Kazakh *«Қадам»* - "step") is a unified platform built for university students, researchers, and engineering teams to discover and apply for global academic grants, fellowships, internships, and tech hackathons.
+
+Instead of browsing dozens of scattered portals, students get a personalized feed matched to their actual technical stack, automated CV gap diagnostics, and instant notifications via Telegram and Discord.
 
 ---
 
-## 🌟 Executive Summary
+## Key Features
 
-**QADAM («Қадам»)** is a sovereign, production-grade AI platform and autonomous agent interface built for ambitious students, academic researchers, and developer squads. 
-
-It solves the fragmented discovery and high-stakes application problem for global tech competitions, academic research fellowships, and engineering grants. Through client-side identity tokenization, dynamic ATS resume benchmark analysis, and native multi-channel bots (Telegram, Discord, KakaoTalk), QADAM acts as an always-on personal career scout that keeps sensitive personal information strictly protected.
-
----
-
-## 🏛️ Core Architecture & Pillars
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                       QADAM CLIENT & AGENT RUNTIME                          │
-│                                                                             │
-│   ┌────────────────────┐   ┌─────────────────────┐   ┌───────────────────┐  │
-│   │ 🎯 Opportunity     │   │ 📄 ATS CV & Skill   │   │ 🧠 Agent Memory   │  │
-│   │    Radar           │   │    Benchmark Lab    │   │    (MEMORY.md)    │  │
-│   └─────────┬──────────┘   └──────────┬──────────┘   └─────────┬─────────┘  │
-│             │                         │                        │            │
-│             └─────────────────────────┼────────────────────────┘            │
-│                                       ▼                                     │
-│                     ┌───────────────────────────────────┐                   │
-│                     │ 🛡️ CLIENT-SIDE PII SHIELD          │                   │
-│                     │ Tokenizes: Name, Email, Phone, ID │                   │
-│                     │ Confined to: /workspace/qadam     │                   │
-│                     └─────────────────┬─────────────────┘                   │
-└───────────────────────────────────────┼─────────────────────────────────────┘
-                                        │ (Zero-PII Payload)
-                                        ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    CLOUD & AGENT MESSENGER PLATFORMS                        │
-│                                                                             │
-│  ┌─────────────────────────┐  ┌──────────────────────┐  ┌────────────────┐  │
-│  │ ⚡ Nebius Cloud /       │  │ 🤖 Telegram Bot      │  │ 🎮 Discord Bot │  │
-│  │    Nemotron 3.5 NIM     │  │    @QadamAgentBot    │  │    & Webhooks  │  │
-│  └─────────────────────────┘  └──────────────────────┘  └────────────────┘  │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-### 1. 📡 Real-Time Opportunity Radar (`/`)
-- **Curated Global Opportunities:** Continuous index of vetted hackathons, graduate fellowships, and grants (including *Nebius x NVIDIA Global AI Hackathon*, *MEXT AI Research Fellowship (Japan)*, *Anthropic Safety Residency*, *CERN*, and *Y Combinator*).
-- **Dynamic Skill-Compatibility Engine:** Computes real-time match compatibility percentages based on candidate verified credentials and quiz badges.
-- **Deep Gap Diagnosis:** Direct integration with ATS criteria to detect missing requirements (e.g., Docker containerization or CUDA optimization) and trigger remediation.
-
-### 2. 🛡️ Zero-Leak PII Privacy Shield (`/account?tab=settings`)
-- **Client-Side Identity Tokenization:** Replaces student legal names, email addresses, phone numbers, and institutional IDs with cryptographically unlinkable placeholders (`[USER_NAME_1]`, `[EMAIL_MASKED]`, `[ID_MASKED]`) *before* prompt dispatch.
-- **Inference Model Protection:** Frontier models (`nvidia/Nemotron-3.5-Lightning` on Nebius Cloud) receive tokenized data only, eliminating PII training risks and metadata profiling.
-- **OpenShell Sandbox Confinement:** All agent tools and local file operations are strictly confined within `/workspace/qadam`. Unauthorized traversal attempts (such as accessing `/root/system`) are intercepted and logged by security boundaries.
-
-### 3. 📄 ATS CV & Skill Benchmark Lab (`/cv`)
-- **CV Health Index:** Holistic ATS score breakdown across technical stack alignment, structural clarity, and quantified impact.
-- **Interactive Verification Quizzes:** 5-question timed technical benchmarks (PyTorch, Docker, LLM Prompt Architecture, Linux Systems) that upgrade unverified CV claims to verified badges, instantly boosting matching probabilities.
-
-### 4. 🧠 Agent Memory Architecture (`/memory`)
-- **Genuine `MEMORY.md` Protocol:** Transparent persistence of candidate preferences, behavioral constraints, verified skills, and career goals.
-- **Interactive Context Flow Matrix:** Real-time SVG cubic Bezier curve visualizer that illuminates relationships between memory entries and target opportunities upon hover or focus.
-
-### 5. 👥 Squad Network & Teammate Match (`/network`)
-- **Collaborative Roster Construction:** Find co-builders with complementary skills for high-stakes team hackathons.
-- **Role-Based Filtering:** Match with ML Engineers, Distributed Systems Architects, and Technical Designers.
+- **Opportunity Radar (`/dashboard`):** Curated database of global grants, research fellowships (e.g., MEXT, CERN, DAAD), and AI hackathons with real-time skill-match scoring.
+- **CV & Skill Benchmark Lab (`/cv`):** Evaluates resumes against target requirements, highlights missing technical skills, and provides short verification quizzes (PyTorch, Docker, Linux, LLM Engineering) to validate competencies.
+- **Client-Side Privacy Filter (`/account`):** Masks personal identifiers (full name, email, phone, student ID) on the client before sending resume text or application drafts to external LLM APIs.
+- **Squad & Teammate Finder (`/network`):** Connects students looking for co-builders (ML engineers, backend developers, designers) for upcoming competitions.
+- **Application Studio (`/application-studio`):** Workspace for drafting motivation letters and research proposals tailored to specific grant criteria.
 
 ---
 
-## 🤖 Multi-Channel Agent Ecosystem
+## Messenger Bots
 
-QADAM extends beyond the browser directly into developer daily communication workflows:
+QADAM integrates directly with Telegram and Discord so students can track deadlines and generate drafts without leaving their messenger.
 
-### 1. Official Telegram Bot (`@QadamAgentBot`)
-- **Deep-Link Account Binding:** Clicking *Authorize with Telegram* in QADAM automatically binds the session via deep-link:
-  `https://t.me/QadamAgentBot?start=connect_<username>`
-- **Native Slash Commands:**
-  - `/radar` — Real-time stream of top opportunities with match percentages, prizes, and deadlines.
-  - `/gaps` — Diagnostic breakdown of resume gaps and missing credentials.
-  - `/privacy` — Verification of client-side PII masking and sandbox containment status.
-  - `/help` — Interactive commands index.
-- **Confidential Proposal Drafting:** Generates an ATS-tailored proposal outline with student identity tokenized and provides an instant one-click link to [Application Studio](https://nvidia-pathfinder.vercel.app/application-studio).
+### Telegram (`@QadamAgentBot`)
+- Account linking via deep-link: `https://t.me/QadamAgentBot?start=connect_<username>`
+- Commands:
+  - `/radar` - Top matched opportunities and upcoming deadlines
+  - `/gaps` - Missing skills based on current profile
+  - `/privacy` - Status of PII masking
+  - `/help` - Command reference
 
-### 2. Unified Discord Bot (`bot/discord.mjs`)
-- **Official Server Community:** [https://discord.gg/A4rxRGx4Vt](https://discord.gg/A4rxRGx4Vt)
-- **Rich Emerald & Indigo Embeds:** Interactive server commands (`!radar`, `!gaps`, `!privacy`, `!broadcast`, `!help`).
-- **Confidential DM Bridge (`!draft <1|2|3>`):** Dispatches confidential proposal drafts directly to student private DMs to ensure zero public leakage of personal application details.
-- **Squad Webhook Broadcaster:** Broadcasts real-time alerts into designated team channels via incoming webhooks.
-
-### 3. KakaoTalk OpenBuilder Integration
-- **Seoul & Korea University Delegation Readiness:** Official Kakao i OpenBuilder channel support with 알림톡 (AlimTalk) notification templates for Asian academic grants and regional student hackathons.
+### Discord (`bot/discord.mjs`)
+- Server commands: `!radar`, `!gaps`, `!privacy`, `!broadcast`, `!help`
+- Direct Message drafting (`!draft <id>`): Sends application outlines directly to private DMs.
 
 ---
 
-## 💻 Tech Stack & Engineering Standards
+## Tech Stack
 
-- **Core Framework:** React 19, TypeScript, Vite
-- **Routing:** React Router v7 (`react-router-dom`)
-- **Styling:** Tailwind CSS with warm daylight and cosmic night palettes, 60fps GPU-accelerated interactive canvas (`AmbientBackground.tsx`)
-- **Typography:** Geist (UI text) + JetBrains Mono (metrics, telemetry, and terminal logs)
-- **State Management:** Reactive `AppContext` with multi-key `localStorage` resilience
-- **Bot Engine:** Zero-external-dependency Node.js 22 native `WebSocket` (Gateway v10) and `fetch` REST client
+- **Frontend:** React 19, TypeScript, Vite, React Router v7, Tailwind CSS
+- **State & Storage:** React Context API with local persistence
+- **Bots:** Node.js (native WebSocket Gateway v10 & REST APIs for Telegram and Discord)
 
 ---
 
-## 🚀 Quick Start Guide
+## Getting Started
 
 ### Prerequisites
-- **Node.js:** v22.0.0 or higher
-- **npm:** v10.0.0 or higher
+- Node.js 20+ and npm
 
-### 1. Clone & Install
+### 1. Installation
 ```bash
-git clone https://github.com/your-username/qadam-opportunity-hub.git
-cd qadam-opportunity-hub
+git clone https://github.com/Amir3003/qadam.git
+cd qadam
 npm install
 ```
 
-### 2. Launch Development Server
+### 2. Environment Setup
+Create a `.env` file in the root directory (never commit this file):
+```env
+# Production Domain
+WEB_APP_URL=https://nvidia-pathfinder.vercel.app
+
+# Telegram Bot Credentials
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
+BOT_USERNAME=QadamAgentBot
+
+# Discord Bot Credentials
+DISCORD_BOT_TOKEN=your_discord_bot_token_here
+DISCORD_INVITE_URL=https://discord.gg/A4rxRGx4Vt
+DISCORD_WEBHOOK_URL=your_discord_webhook_url_here
+```
+
+### 3. Run Locally
 ```bash
+# Start Vite development server
 npm run dev
+
+# Start Telegram Bot (optional)
+npm run bot
+
+# Start Discord Bot (optional)
+npm run bot:discord
+
+# Run both bots concurrently
+npm run bot:all
 ```
 Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-### 3. Run Autonomous Messenger Bots
-
-| Command | Description |
-| :--- | :--- |
-| `npm run bot` | Starts the Telegram Bot (`@QadamAgentBot`) via long-polling |
-| `npm run bot:discord` | Starts the Unified Discord Bot Gateway & REST API listener |
-| `npm run bot:all` | Concurrently runs both Telegram and Discord bot processes |
-
-### 4. Production Build & Verification
+### 4. Build for Production
 ```bash
 npm run build
+npm run preview
 ```
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
+qadam/
 ├── bot/
-│   ├── index.mjs             # Zero-dependency Telegram Bot (Long Polling & API)
-│   └── discord.mjs           # Zero-dependency Discord Bot (Gateway v10 & Webhook)
+│   ├── index.mjs             # Zero-dependency Telegram bot (Long polling & API)
+│   └── discord.mjs           # Zero-dependency Discord bot (Gateway v10 & Webhook)
 ├── public/
-│   ├── logo.png              # Official QADAM Brand Logo (Footprint / Step Icon)
-│   ├── favicon.svg           # Vector Favicon
+│   ├── logo.png              # Official QADAM brand logo
+│   ├── favicon.svg           # Vector favicon
 │   └── assets/
 │       └── logo.png          # High-resolution asset clone
 ├── src/
 │   ├── components/
-│   │   ├── AmbientBackground.tsx    # 60fps interactive particle constellation canvas
-│   │   ├── OnboardingWizard.tsx     # 4-step user identity & role registration modal
-│   │   ├── OpportunityDetailsModal.tsx # Full opportunity briefing modal
+│   │   ├── AmbientBackground.tsx    # Interactive constellation canvas
+│   │   ├── OnboardingWizard.tsx     # Student registration & identity modal
+│   │   ├── OpportunityDetailsModal.tsx # Opportunity briefing & application modal
 │   │   ├── CvGapsModal.tsx          # ATS gap analysis & quiz launch modal
-│   │   ├── QuizModal.tsx            # Interactive skill verification quiz
-│   │   ├── Sidebar.tsx              # Brand header & 5 core navigation modules
-│   │   └── PageHeader.tsx           # Standardized workspace header
+│   │   ├── QuizModal.tsx            # Technical skill verification quiz
+│   │   ├── Sidebar.tsx              # Navigation sidebar & mobile bottom bar
+│   │   └── ScrollToTop.tsx          # Route & auth scroll reset utility
 │   ├── context/
-│   │   └── AppContext.tsx           # Central store (user profile, memory, logs, radar)
+│   │   └── AppContext.tsx           # Global state (profile, memory, opportunities)
 │   ├── db/
-│   │   ├── opportunities.ts         # Verified opportunities database & logos
-│   │   ├── userProfile.ts           # Roles, tech stack, and user schema
-│   │   └── teammates.ts             # Teammate network & squad messaging storage
+│   │   ├── opportunities.ts         # Verified opportunities database
+│   │   ├── userProfile.ts           # Student profile, skills, and roles
+│   │   └── teammates.ts             # Teammate matchmaking network
 │   ├── pages/
-│   │   ├── WelcomePage.tsx          # Scrollytelling showcase & onboarding portal
+│   │   ├── WelcomePage.tsx          # Landing & onboarding portal
 │   │   ├── RadarPage.tsx            # Opportunity radar feed & match filters
 │   │   ├── CvLabPage.tsx            # ATS CV analyzer & skill lab
 │   │   ├── MemoryPage.tsx           # MEMORY.md context flow matrix
 │   │   ├── NetworkPage.tsx          # Teammates & squad network hub
-│   │   ├── NotificationsPage.tsx    # Multi-channel messenger bots & webhooks
+│   │   ├── NotificationsPage.tsx    # Multi-channel messenger notifications
 │   │   ├── ApplicationStudioPage.tsx# PII-masked proposal drafting studio
 │   │   └── AccountPortalPage.tsx    # Settings, terminal logs, and tech support
 │   ├── utils/
 │   │   └── anonymizer.ts            # Client-side PII tokenization regex engine
-│   ├── App.tsx                      # Root application & routing tree
+│   ├── App.tsx                      # Root application & routing
 │   ├── index.css                    # Tailwind CSS configuration & custom utilities
-│   └── main.tsx                     # Vite React root mount
-├── .env                             # Bot credentials & domain targets (gitignored)
-├── .gitignore                       # Repository security exclusions
+│   └── main.tsx                     # React root mount
+├── .env                             # Environment variables (gitignored)
+├── .gitignore                       # Git exclusion rules
 ├── index.html                       # SEO metadata, OpenGraph, and favicon tags
-├── package.json                     # Project manifest & bot scripts
+├── package.json                     # Project manifest & scripts
 ├── vercel.json                      # Single-page app routing rewrites for Vercel
-└── README.md                        # Documentation & architecture showcase
+└── README.md                        # Documentation
 ```
 
 ---
 
-## 🤝 Community & Support
+## License
 
-- **Live Production Platform:** [https://nvidia-pathfinder.vercel.app](https://nvidia-pathfinder.vercel.app)
-- **Discord Developer Community:** [https://discord.gg/A4rxRGx4Vt](https://discord.gg/A4rxRGx4Vt)
-- **Official Telegram Agent:** [@QadamAgentBot](https://t.me/QadamAgentBot)
-- **License:** MIT
+MIT
+```
 
-<p align="center">
-  <strong>QADAM («Қадам») • Your confident step toward global opportunities. 🚀</strong>
-</p>
+### 2. Environment Setup
+Create a `.env` file in the root directory (never commit this file):
+```env
+# Production Domain
+WEB_APP_URL=https://nvidia-pathfinder.vercel.app
+
+# Telegram Bot Credentials
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
+BOT_USERNAME=QadamAgentBot
+
+# Discord Bot Credentials
+DISCORD_BOT_TOKEN=your_discord_bot_token_here
+DISCORD_INVITE_URL=https://discord.gg/A4rxRGx4Vt
+DISCORD_WEBHOOK_URL=your_discord_webhook_url_here
+```
+
+### 3. Run Locally
+```bash
+# Start Vite development server
+npm run dev
+
+# Start Telegram Bot (optional)
+npm run bot
+
+# Start Discord Bot (optional)
+npm run bot:discord
+
+# Run both bots concurrently
+npm run bot:all
+```
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+### 4. Build for Production
+```bash
+npm run build
+npm run preview
+```
+
+---
+
+## Project Structure
+
+```
+qadam/
+├── bot/
+│   ├── index.mjs             # Zero-dependency Telegram bot (Long polling & API)
+│   └── discord.mjs           # Zero-dependency Discord bot (Gateway v10 & Webhook)
+├── public/
+│   ├── logo.png              # Official QADAM brand logo
+│   ├── favicon.svg           # Vector favicon
+│   └── assets/
+│       └── logo.png          # High-resolution asset clone
+├── src/
+│   ├── components/
+│   │   ├── AmbientBackground.tsx    # Interactive constellation canvas
+│   │   ├── OnboardingWizard.tsx     # Student registration & identity modal
+│   │   ├── OpportunityDetailsModal.tsx # Opportunity briefing & application modal
+│   │   ├── CvGapsModal.tsx          # ATS gap analysis & quiz launch modal
+│   │   ├── QuizModal.tsx            # Technical skill verification quiz
+│   │   ├── Sidebar.tsx              # Navigation sidebar & mobile bottom bar
+│   │   └── ScrollToTop.tsx          # Route & auth scroll reset utility
+│   ├── context/
+│   │   └── AppContext.tsx           # Global state (profile, memory, opportunities)
+│   ├── db/
+│   │   ├── opportunities.ts         # Verified opportunities database
+│   │   ├── userProfile.ts           # Student profile, skills, and roles
+│   │   └── teammates.ts             # Teammate matchmaking network
+│   ├── pages/
+│   │   ├── WelcomePage.tsx          # Landing & onboarding portal
+│   │   ├── RadarPage.tsx            # Opportunity radar feed & match filters
+│   │   ├── CvLabPage.tsx            # ATS CV analyzer & skill lab
+│   │   ├── MemoryPage.tsx           # MEMORY.md context flow matrix
+│   │   ├── NetworkPage.tsx          # Teammates & squad network hub
+│   │   ├── NotificationsPage.tsx    # Multi-channel messenger notifications
+│   │   ├── ApplicationStudioPage.tsx# PII-masked proposal drafting studio
+│   │   └── AccountPortalPage.tsx    # Settings, terminal logs, and tech support
+│   ├── utils/
+│   │   └── anonymizer.ts            # Client-side PII tokenization regex engine
+│   ├── App.tsx                      # Root application & routing
+│   ├── index.css                    # Tailwind CSS configuration & custom utilities
+│   └── main.tsx                     # React root mount
+├── .env                             # Environment variables (gitignored)
+├── .gitignore                       # Git exclusion rules
+├── index.html                       # SEO metadata, OpenGraph, and favicon tags
+├── package.json                     # Project manifest & scripts
+├── vercel.json                      # Single-page app routing rewrites for Vercel
+└── README.md                        # Documentation
+```
+
+---
+
+## License
+
+MIT
+npm install

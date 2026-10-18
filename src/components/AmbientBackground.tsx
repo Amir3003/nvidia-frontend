@@ -297,7 +297,7 @@ export const AmbientBackground: React.FC = () => {
     <canvas
       ref={canvasRef}
       aria-hidden="true"
-      className="fixed inset-0 pointer-events-none z-0 select-none block"
+      className="fixed inset-0 pointer-events-none -z-10 select-none block"
     />
   );
 };

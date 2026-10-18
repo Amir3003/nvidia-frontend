@@ -12,7 +12,44 @@ import {
   EyeOffIcon,
   CloseIcon,
   UserIcon,
+  RefreshIcon,
 } from './Icons';
+
+export const VALID_CITIES = [
+  'Astana, Kazakhstan',
+  'Almaty, Kazakhstan',
+  'Shymkent, Kazakhstan',
+  'Karaganda, Kazakhstan',
+  'Aktobe, Kazakhstan',
+  'Taraz, Kazakhstan',
+  'Pavlodar, Kazakhstan',
+  'Oskemen, Kazakhstan',
+  'Semey, Kazakhstan',
+  'Atyrau, Kazakhstan',
+  'Kostanay, Kazakhstan',
+  'Kyzylorda, Kazakhstan',
+  'Oral, Kazakhstan',
+  'Petropavl, Kazakhstan',
+  'Aktau, Kazakhstan',
+  'Turkistan, Kazakhstan',
+  'Temirtau, Kazakhstan',
+  'Kokshetau, Kazakhstan',
+  'Ekibastuz, Kazakhstan',
+  'San Francisco, USA',
+  'New York, USA',
+  'Boston, USA',
+  'London, UK',
+  'Berlin, Germany',
+  'Munich, Germany',
+  'Zurich, Switzerland',
+  'Tokyo, Japan',
+  'Seoul, South Korea',
+  'Singapore',
+  'Toronto, Canada',
+  'Paris, France',
+  'Amsterdam, Netherlands',
+  'Dubai, UAE',
+] as const;
 
 export const OnboardingWizard: React.FC = () => {
   const navigate = useNavigate();
@@ -20,6 +57,7 @@ export const OnboardingWizard: React.FC = () => {
     useApp();
 
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form State
   const [name, setName] = useState(userProfile.name || '');
@@ -55,6 +93,7 @@ export const OnboardingWizard: React.FC = () => {
       setSelectedGoals(userProfile.goals || []);
       setCvText(userProfile.cvText || '');
       setStep(1);
+      setIsSubmitting(false);
     }
   }, [isOnboardingOpen, userProfile]);
 
@@ -84,9 +123,11 @@ export const OnboardingWizard: React.FC = () => {
   };
 
   // --- Strict Validation Rules ---
-  const nameRegex = /^[a-zA-Z\s'-]+$/;
+  const nameRegex = /^[a-zA-Z\u0400-\u04FF\s'-]+$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
   const passwordHasCharAndSpecial = /(?=.*[a-zA-Z])(?=.*[0-9!@#$%^&*()_+=\-[\]{};':"\\|,.<>/?])/;
+  const cityRegex = /^[a-zA-Z\u0400-\u04FF\s,'.-]{2,60}$/;
+  const hasNoDigits = !/[0-9!@#$%^&*()_+=[\]{};:"\\|<>/?]/.test(location);
 
   // Step 1 Validation: Personal Identity (letters only, min 2 chars)
   const isNameValid = name.trim().length >= 2 && nameRegex.test(name.trim()) && name.trim().toLowerCase() !== 'candidate';
@@ -97,7 +138,7 @@ export const OnboardingWizard: React.FC = () => {
   const isEmailValid = emailRegex.test(email.trim());
   const isUniversityValid = university.trim().length >= 3;
   const isMajorValid = major.trim().length >= 2;
-  const isLocationValid = location.trim().length >= 2;
+  const isLocationValid = location.trim().length >= 2 && cityRegex.test(location.trim()) && hasNoDigits;
   const isStep2Valid = isEmailValid && isUniversityValid && isMajorValid && isLocationValid;
 
   // Step 3 Validation: Account Security (Double Password Entry)
@@ -113,13 +154,17 @@ export const OnboardingWizard: React.FC = () => {
     step === 1 ? isStep1Valid : step === 2 ? isStep2Valid : step === 3 ? isStep3Valid : isStep4Valid;
 
   const handleFinish = () => {
-    if (!isStep1Valid || !isStep2Valid || !isStep3Valid || !isStep4Valid) {
+    if (!isStep1Valid || !isStep2Valid || !isStep3Valid || !isStep4Valid || isSubmitting) {
       return;
     }
+
+    setIsSubmitting(true);
 
     const finalName = name.trim();
     const finalSurname = surname.trim();
     const finalFullName = `${finalName} ${finalSurname}`;
+    const finalSkills = selectedSkills.length > 0 ? selectedSkills : ['Python', 'Docker', 'LLMs', 'Research'];
+    const finalGoals = selectedGoals.length > 0 ? selectedGoals : ['Global Hackathons & Bounties'];
 
     updateUserProfile({
       name: finalName,
@@ -130,8 +175,8 @@ export const OnboardingWizard: React.FC = () => {
       major: major.trim(),
       location: location.trim(),
       role,
-      skills: selectedSkills,
-      goals: selectedGoals,
+      skills: finalSkills,
+      goals: finalGoals,
       cvText,
       isOnboarded: true,
     });
@@ -141,13 +186,17 @@ export const OnboardingWizard: React.FC = () => {
       `Account created: QADAM profile registered for ${finalFullName} (${role}, ${university.trim()})`
     );
     addLog('SANDBOX', 'User credentials secured locally · Directory sandbox confinement confirmed to /workspace/qadam');
-    setIsOnboardingOpen(false);
-    navigate('/');
+
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setIsOnboardingOpen(false);
+      navigate('/dashboard');
+    }, 300);
   };
 
   const handleEnterAsExisting = () => {
     setIsOnboardingOpen(false);
-    navigate('/');
+    navigate('/dashboard');
   };
 
   const isAlreadyOnboarded = userProfile.isOnboarded && Boolean(userProfile.name?.trim());
@@ -245,7 +294,7 @@ export const OnboardingWizard: React.FC = () => {
               <div className="p-3.5 rounded-xl bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-indigo-500/10 border border-teal-300/40 text-mini text-teal-950 leading-relaxed flex items-center gap-3 shadow-xs">
                 <img src="/logo.png" alt="QADAM Step" className="w-6 h-6 object-contain flex-shrink-0" />
                 <p>
-                  <strong>QADAM («Қадам»)</strong> — derived from the Kazakh word for "step". Your confident step toward global opportunities, grants, and technologies. 🚀
+                  <strong>QADAM («Қадам»)</strong> means "step" in Kazakh. Your direct platform for global academic grants, internships, and AI opportunities.
                 </p>
               </div>
 
@@ -266,7 +315,10 @@ export const OnboardingWizard: React.FC = () => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="First name"
-                    className="w-full h-11 px-3.5 bg-white border border-teal-200/90 rounded-btn text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
+                    autoCapitalize="words"
+                    autoCorrect="off"
+                    inputMode="text"
+                    className="w-full h-11 px-3.5 bg-white border border-teal-200/90 rounded-xl text-base md:text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
                   />
                   {!isNameValid && name.length > 0 && (
                     <div className="text-[11px] font-mono text-rose-600 mt-1">
@@ -284,7 +336,10 @@ export const OnboardingWizard: React.FC = () => {
                     value={surname}
                     onChange={(e) => setSurname(e.target.value)}
                     placeholder="Last name"
-                    className="w-full h-11 px-3.5 bg-white border border-teal-200/90 rounded-btn text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
+                    autoCapitalize="words"
+                    autoCorrect="off"
+                    inputMode="text"
+                    className="w-full h-11 px-3.5 bg-white border border-teal-200/90 rounded-xl text-base md:text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
                   />
                   {!isSurnameValid && surname.length > 0 && (
                     <div className="text-[11px] font-mono text-rose-600 mt-1">
@@ -309,7 +364,7 @@ export const OnboardingWizard: React.FC = () => {
               <div>
                 <h3 className="text-[17px] font-bold text-indigo-950">Academic & Professional Profile</h3>
                 <p className="text-[13px] text-teal-900 mt-1 leading-relaxed">
-                  Provide your institution, discipline, and location to match eligibility requirements.
+                  Provide your institution, discipline, and city to match eligibility requirements.
                 </p>
               </div>
 
@@ -323,7 +378,10 @@ export const OnboardingWizard: React.FC = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="student@university.edu"
-                    className="w-full h-11 px-3.5 bg-white border border-teal-200/90 rounded-btn text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    inputMode="email"
+                    className="w-full h-11 px-3.5 bg-white border border-teal-200/90 rounded-xl text-base md:text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
                   />
                 </div>
 
@@ -334,7 +392,7 @@ export const OnboardingWizard: React.FC = () => {
                   <select
                     value={role}
                     onChange={(e) => setRole(e.target.value)}
-                    className="w-full h-11 px-3.5 bg-white border border-teal-200/90 rounded-btn text-[13px] text-slate-900 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors cursor-pointer"
+                    className="w-full h-11 px-3.5 bg-white border border-teal-200/90 rounded-xl text-base md:text-[13px] text-slate-900 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors cursor-pointer"
                   >
                     {USER_ROLES.map((r) => (
                       <option key={r} value={r}>
@@ -353,7 +411,10 @@ export const OnboardingWizard: React.FC = () => {
                     value={university}
                     onChange={(e) => setUniversity(e.target.value)}
                     placeholder="University Name"
-                    className="w-full h-11 px-3.5 bg-white border border-teal-200/90 rounded-btn text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
+                    autoCapitalize="words"
+                    autoCorrect="off"
+                    inputMode="text"
+                    className="w-full h-11 px-3.5 bg-white border border-teal-200/90 rounded-xl text-base md:text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
                   />
                 </div>
 
@@ -366,22 +427,39 @@ export const OnboardingWizard: React.FC = () => {
                     value={major}
                     onChange={(e) => setMajor(e.target.value)}
                     placeholder="Computer Science"
-                    className="w-full h-11 px-3.5 bg-white border border-teal-200/90 rounded-btn text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
+                    autoCapitalize="words"
+                    autoCorrect="off"
+                    inputMode="text"
+                    className="w-full h-11 px-3.5 bg-white border border-teal-200/90 rounded-xl text-base md:text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block text-mini font-mono uppercase text-teal-900 font-semibold mb-1">
-                  Location / Country <span className="text-emerald-600">*</span>
+                  City / Location <span className="text-emerald-600">*</span>
                 </label>
                 <input
                   type="text"
+                  list="qadam-cities"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  placeholder="Almaty, Kazakhstan"
-                  className="w-full h-11 px-3.5 bg-white border border-teal-200/90 rounded-btn text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
+                  placeholder="e.g. Almaty, Kazakhstan"
+                  autoCapitalize="words"
+                  autoCorrect="off"
+                  inputMode="text"
+                  className="w-full h-11 px-3.5 bg-white border border-teal-200/90 rounded-xl text-base md:text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
                 />
+                <datalist id="qadam-cities">
+                  {VALID_CITIES.map((c) => (
+                    <option key={c} value={c} />
+                  ))}
+                </datalist>
+                {!isLocationValid && location.length > 0 && (
+                  <div className="text-[11px] font-mono text-rose-600 mt-1">
+                    Please select a valid city (e.g. Astana, Almaty, or major hub). Real letters only.
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -407,12 +485,14 @@ export const OnboardingWizard: React.FC = () => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••••••"
-                      className="w-full h-11 pl-3.5 pr-10 bg-white border border-teal-200/90 rounded-btn text-[13px] text-slate-900 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
+                      autoCapitalize="none"
+                      autoCorrect="off"
+                      className="w-full h-11 pl-3.5 pr-10 bg-white border border-teal-200/90 rounded-xl text-base md:text-[13px] text-slate-900 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer p-1"
                     >
                       {showPassword ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />}
                     </button>
@@ -429,12 +509,14 @@ export const OnboardingWizard: React.FC = () => {
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="••••••••••••"
-                      className="w-full h-11 pl-3.5 pr-10 bg-white border border-teal-200/90 rounded-btn text-[13px] text-slate-900 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
+                      autoCapitalize="none"
+                      autoCorrect="off"
+                      className="w-full h-11 pl-3.5 pr-10 bg-white border border-teal-200/90 rounded-xl text-base md:text-[13px] text-slate-900 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors"
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer p-1"
                     >
                       {showConfirmPassword ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />}
                     </button>
@@ -500,7 +582,7 @@ export const OnboardingWizard: React.FC = () => {
                         key={tech}
                         type="button"
                         onClick={() => toggleSkill(tech)}
-                        className={`px-3 py-1.5 rounded-btn text-[12px] font-mono transition-all cursor-pointer ${
+                        className={`min-h-[38px] px-3.5 py-1.5 rounded-xl text-[12px] font-mono transition-all cursor-pointer active:scale-95 ${
                           isSelected
                             ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold shadow-xs'
                             : 'bg-white border border-teal-200/90 text-slate-700 hover:border-teal-400'
@@ -526,7 +608,7 @@ export const OnboardingWizard: React.FC = () => {
                         key={goal}
                         type="button"
                         onClick={() => toggleGoal(goal)}
-                        className={`p-2.5 rounded-btn text-left text-[12px] font-mono transition-all cursor-pointer border ${
+                        className={`min-h-[44px] p-2.5 rounded-xl text-left text-[12px] font-mono transition-all cursor-pointer border active:scale-95 ${
                           isSelected
                             ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold border-indigo-600 shadow-xs'
                             : 'bg-white border-teal-200/90 text-slate-700 hover:border-indigo-400'
@@ -549,7 +631,7 @@ export const OnboardingWizard: React.FC = () => {
                   onChange={(e) => setCvText(e.target.value)}
                   rows={3}
                   placeholder="Paste brief bullet points or bio for ATS keyword analysis..."
-                  className="w-full p-3 bg-white border border-teal-200/90 rounded-btn text-[12px] font-mono text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none leading-relaxed transition-colors"
+                  className="w-full p-3 bg-white border border-teal-200/90 rounded-xl text-base md:text-[12px] font-mono text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none leading-relaxed transition-colors"
                 />
               </div>
             </div>
@@ -563,7 +645,7 @@ export const OnboardingWizard: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setStep((s) => (s - 1) as 1 | 2 | 3 | 4)}
-                className="h-10 px-4 rounded-btn border border-teal-200 bg-white hover:bg-slate-50 text-slate-700 text-[13px] font-medium transition-colors cursor-pointer shadow-xs"
+                className="min-h-[44px] h-10 px-4 rounded-xl border border-teal-200 bg-white hover:bg-slate-50 text-slate-700 text-[13px] font-medium transition-all active:scale-[0.98] cursor-pointer shadow-xs"
               >
                 Back
               </button>
@@ -580,7 +662,7 @@ export const OnboardingWizard: React.FC = () => {
                 type="button"
                 disabled={!isCurrentStepValid}
                 onClick={() => isCurrentStepValid && setStep((s) => (s + 1) as 2 | 3 | 4)}
-                className={`h-10 px-5 rounded-btn text-[13px] font-semibold transition-all flex items-center gap-1.5 font-mono shadow-xs ${
+                className={`min-h-[44px] h-10 px-5 rounded-xl text-[13px] font-semibold transition-all flex items-center gap-1.5 font-mono shadow-xs active:scale-[0.98] ${
                   isCurrentStepValid
                     ? 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white cursor-pointer shadow-emerald-900/20'
                     : 'bg-white/60 border border-teal-200 text-slate-400 opacity-60 cursor-not-allowed'
@@ -592,16 +674,16 @@ export const OnboardingWizard: React.FC = () => {
             ) : (
               <button
                 type="button"
-                disabled={!isCurrentStepValid}
+                disabled={!isCurrentStepValid || isSubmitting}
                 onClick={handleFinish}
-                className={`h-11 px-6 font-bold rounded-btn text-[13px] transition-all flex items-center gap-2 font-mono shadow-md ${
-                  isCurrentStepValid
+                className={`min-h-[44px] h-11 px-6 font-bold rounded-xl text-[13px] transition-all flex items-center gap-2 font-mono shadow-md active:scale-[0.98] ${
+                  isCurrentStepValid && !isSubmitting
                     ? 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white cursor-pointer shadow-emerald-600/30'
                     : 'bg-white/60 border border-teal-200 text-slate-400 opacity-60 cursor-not-allowed'
                 }`}
               >
-                <RadarIcon size={16} />
-                <span>Launch QADAM Dashboard</span>
+                {isSubmitting ? <RefreshIcon size={16} className="animate-spin text-white" /> : <RadarIcon size={16} />}
+                <span>{isSubmitting ? 'Launching Workspace...' : 'Launch QADAM Dashboard'}</span>
               </button>
             )}
           </div>
