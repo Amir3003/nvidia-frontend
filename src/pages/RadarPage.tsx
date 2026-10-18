@@ -237,7 +237,7 @@ export const RadarPage: React.FC = () => {
                       className="h-10 px-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white rounded-btn text-[13px] font-semibold transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
                     >
                       <FileTextIcon size={14} className="text-white" />
-                      <span>Draft Application</span>
+                      <span>Prepare &amp; Apply</span>
                     </button>
                     <button
                       type="button"

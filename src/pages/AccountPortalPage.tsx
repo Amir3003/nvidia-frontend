@@ -3,10 +3,10 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import {
   USER_ROLES,
-  POPULAR_TECH_STACK,
   CAREER_OBJECTIVES,
 } from '../db/userProfile';
 import { VALID_CITIES } from '../components/OnboardingWizard';
+import { SkillAutocomplete } from '../components/SkillAutocomplete';
 import { anonymize } from '../utils/anonymizer';
 import {
   UserIcon,
@@ -23,9 +23,13 @@ import {
   EyeOffIcon,
   MessageSquareIcon,
   SendIcon,
+  DiscordIcon,
 } from '../components/Icons';
 
 type AccountTab = 'profile' | 'settings' | 'support';
+
+const SUPPORT_EMAIL = 'a.nagiyev.dev@gmail.com';
+const SUPPORT_DISCORD_URL = 'https://discord.gg/A4rxRGx4Vt';
 
 const TogglePill: React.FC<{
   checked: boolean;
@@ -107,8 +111,6 @@ export const AccountPortalPage: React.FC = () => {
   const [selectedGoals, setSelectedGoals] = useState<string[]>(userProfile.goals || []);
   const [cvText, setCvText] = useState(userProfile.cvText || '');
   const [avatarUrl, setAvatarUrl] = useState(userProfile.avatarUrl || '');
-  const [password, setPassword] = useState(userProfile.password || '');
-  const [showPassword, setShowPassword] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
 
   // Sync state if userProfile changes
@@ -128,7 +130,6 @@ export const AccountPortalPage: React.FC = () => {
     setSelectedGoals(userProfile.goals || []);
     setCvText(userProfile.cvText || '');
     setAvatarUrl(userProfile.avatarUrl || '');
-    setPassword(userProfile.password || '');
   }, [userProfile]);
 
   const handleSaveProfile = (e?: React.FormEvent) => {
@@ -149,7 +150,6 @@ export const AccountPortalPage: React.FC = () => {
       goals: selectedGoals,
       cvText,
       avatarUrl,
-      password,
     });
     setProfileSaved(true);
     addLog('SYSTEM', `Account Profile updated for ${name.trim()} (${university.trim()})`);
@@ -167,16 +167,58 @@ export const AccountPortalPage: React.FC = () => {
     }
   };
 
-  const toggleSkill = (skill: string) => {
-    setSelectedSkills((prev) =>
-      prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill]
-    );
-  };
-
   const toggleGoal = (goal: string) => {
     setSelectedGoals((prev) =>
       prev.includes(goal) ? prev.filter((g) => g !== goal) : [...prev, goal]
     );
+  };
+
+  // -------------------------------------------------------------
+  // PASSWORD CHANGE FLOW (verify current password first)
+  // -------------------------------------------------------------
+  const [pwStage, setPwStage] = useState<'idle' | 'verify' | 'change' | 'done'>('idle');
+  const [currentPwInput, setCurrentPwInput] = useState('');
+  const [currentPwError, setCurrentPwError] = useState('');
+  const [newPw, setNewPw] = useState('');
+  const [confirmPw, setConfirmPw] = useState('');
+  const [showNewPw, setShowNewPw] = useState(false);
+
+  const newPwLengthOk = newPw.length >= 8;
+  const newPwComplexOk = /(?=.*[a-zA-Z])(?=.*[0-9!@#$%^&*()_+=\-[\]{};':"\\|,.<>/?])/.test(newPw);
+  const newPwDiffersOk = newPw.length > 0 && newPw !== (userProfile.password || '');
+  const newPwMatchOk = newPw.length > 0 && newPw === confirmPw;
+  const isNewPwValid = newPwLengthOk && newPwComplexOk && newPwDiffersOk && newPwMatchOk;
+
+  const resetPasswordFlow = () => {
+    setPwStage('idle');
+    setCurrentPwInput('');
+    setCurrentPwError('');
+    setNewPw('');
+    setConfirmPw('');
+    setShowNewPw(false);
+  };
+
+  const handleVerifyCurrentPassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (currentPwInput === (userProfile.password || '')) {
+      setCurrentPwError('');
+      setPwStage('change');
+      addLog('SYSTEM', 'Account ownership confirmed for password change');
+    } else {
+      setCurrentPwError('Incorrect password. Enter the password you use to sign in to QADAM.');
+    }
+  };
+
+  const handleSaveNewPassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isNewPwValid) return;
+    updateUserProfile({ password: newPw });
+    addLog('SYSTEM', 'Account password updated');
+    setCurrentPwInput('');
+    setNewPw('');
+    setConfirmPw('');
+    setPwStage('done');
+    setTimeout(() => setPwStage((st) => (st === 'done' ? 'idle' : st)), 3000);
   };
 
   // -------------------------------------------------------------
@@ -253,44 +295,92 @@ export const AccountPortalPage: React.FC = () => {
   // -------------------------------------------------------------
   // TECH SUPPORT & FAQ STATE
   // -------------------------------------------------------------
-  const [supportCategory, setSupportCategory] = useState<'Bug Report' | 'Feature Request' | 'Account Help' | 'Question'>('Bug Report');
+  const [supportCategory, setSupportCategory] = useState<
+    'Bug Report' | 'Broken Link' | 'Feature Request' | 'Account Help' | 'Question'
+  >('Bug Report');
   const [supportSubject, setSupportSubject] = useState('');
   const [supportMessage, setSupportMessage] = useState('');
   const [supportSubmitted, setSupportSubmitted] = useState(false);
+  const [ticketCopied, setTicketCopied] = useState(false);
   const [expandedFaqIndex, setExpandedFaqIndex] = useState<number | null>(0);
+
+  const buildTicketBody = () =>
+    [
+      `Category: ${supportCategory}`,
+      `From: ${[name, surname].filter(Boolean).join(' ') || 'QADAM user'}${email ? ` <${email}>` : ''}`,
+      '',
+      supportMessage.trim(),
+      '',
+      '---',
+      `Page: ${window.location.href}`,
+      `Browser: ${navigator.userAgent}`,
+      `Screen: ${window.innerWidth}x${window.innerHeight}`,
+      `Sent: ${new Date().toISOString()}`,
+    ].join('\n');
 
   const handleSendSupportTicket = (e: React.FormEvent) => {
     e.preventDefault();
     if (!supportSubject.trim() || !supportMessage.trim()) return;
+    const subject = `[QADAM ${supportCategory}] ${supportSubject.trim()}`;
+    window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(buildTicketBody())}`;
     setSupportSubmitted(true);
-    addLog('SYSTEM', `Support ticket generated: [${supportCategory}] ${supportSubject.trim()}`);
-    setTimeout(() => {
-      setSupportSubmitted(false);
-      setSupportSubject('');
-      setSupportMessage('');
-    }, 3000);
+    addLog('SYSTEM', `Support ticket drafted: [${supportCategory}] ${supportSubject.trim()}`);
+  };
+
+  const handleCopyTicket = async () => {
+    const text = `To: ${SUPPORT_EMAIL}\nSubject: [QADAM ${supportCategory}] ${supportSubject.trim()}\n\n${buildTicketBody()}`;
+    try {
+      await navigator.clipboard.writeText(text);
+      setTicketCopied(true);
+      setTimeout(() => setTicketCopied(false), 2000);
+    } catch {
+      setTicketCopied(false);
+    }
+  };
+
+  const handleResetSupportForm = () => {
+    setSupportSubmitted(false);
+    setSupportSubject('');
+    setSupportMessage('');
+    setTicketCopied(false);
   };
 
   const faqs = [
     {
-      q: 'How does QADAM protect my personal identity?',
-      a: 'All sensitive identifiers (full name, phone number, academic student ID, personal email) are tokenized locally on your machine before external model calls are made. External inference endpoints only receive cryptographic aliases like [USER_NAME_1] and [EMAIL_MASKED].',
+      q: 'How do I actually apply to a hackathon or grant through QADAM?',
+      a: 'QADAM does not submit applications for you. It finds the opportunity, checks your eligibility and skill match, and helps you prepare: a readiness checklist, missing skills, and the documents organizers usually ask for. When you are ready, the "Go to Official Site" button opens the organizer\'s page, where you register directly.',
     },
     {
-      q: 'How does the ATS CV Gap Analysis calculate compatibility?',
-      a: 'The engine parses required competencies from live hackathons, research grants, and job postings. It compares them directly against your verified Skill Lab credentials, academic standing, and resume keywords, outputting a clear percentage match and actionable quiz recommendations.',
+      q: 'An official link is broken or the opportunity looks outdated. What should I do?',
+      a: 'Organizers move pages often. Send a ticket above with the category "Broken / Outdated Opportunity" and the opportunity name. Until it is fixed, search the opportunity title on the organizer\'s main website; QADAM always links to the organizer\'s own domain, never to third-party mirrors.',
     },
     {
-      q: 'Can I use QADAM without leaking data to third parties?',
-      a: 'Yes. Agent directives, memory, CV text, and settings are preserved strictly inside your browser localStorage and the local OpenShell confinement workspace (/workspace/qadam). You can also completely purge this data at any time in Settings.',
+      q: 'How is my match score on the Opportunity Radar calculated?',
+      a: 'Each opportunity lists required skills. Your score shows how many of them appear in your profile, and skills you have verified with a quiz count for more than self-reported ones. Add skills in Profile and pass quizzes in CV & Skill Lab to raise it.',
     },
     {
-      q: 'How do multi-channel messenger notifications work?',
-      a: 'You can connect your Telegram handle, KakaoTalk channel, or Discord webhook in the Notifications & Bots section. When a new deadline or matching bounty arrives, QADAM pings you directly without tracking your browsing habits.',
+      q: 'How does skill verification work?',
+      a: 'In CV & Skill Lab, every skill card has a quiz of 15 questions with a time limit. Score 70% or more and the skill gets a Verified badge, which counts toward your ATS score and match percentage. If you fail, review the linked learning track and try again; questions are shuffled each attempt.',
     },
     {
-      q: 'What is OpenShell sandbox confinement?',
-      a: 'OpenShell enforces a directory jail restricting automated tooling and terminal operations to /workspace/qadam. Any attempt to traverse to system roots like /root or /etc is intercepted and blocked immediately.',
+      q: 'What is Agent Memory and what should I write there?',
+      a: 'Agent Memory is your list of standing instructions for the QADAM agent: preferences, limits and goals it should keep in mind for you. Good examples: "Only fully funded programs", "I can travel only in July and August", "Prefer remote hackathons". Directives are saved as MEMORY.md on this device. Open the Agent Memory page for a full guide.',
+    },
+    {
+      q: 'Where is my data stored and how do I delete it?',
+      a: 'Your profile, CV text, memory and settings are stored in your browser\'s local storage on this device. Personal identifiers such as your name and email are replaced with placeholders before any request goes to an AI model. To erase everything, open Settings and use "Reset Local Data", or simply log out.',
+    },
+    {
+      q: 'How do I get deadline reminders in Telegram or Discord?',
+      a: 'Open Notifications & Bots in the sidebar, enable a channel, and enter your Telegram handle or Discord webhook. QADAM then sends new matches and deadline reminders to that channel. You can turn each channel off at any time.',
+    },
+    {
+      q: 'How do I change my password or email?',
+      a: 'Go to Profile. Email and other details can be edited directly and saved. For the password, press "Change Password", confirm your current password first, then set a new one.',
+    },
+    {
+      q: 'Is QADAM free?',
+      a: 'Yes. QADAM is free for students. Applying to the opportunities themselves is up to each organizer, and most hackathons and grants listed here are free to enter.',
     },
   ];
 
@@ -642,7 +732,7 @@ export const AccountPortalPage: React.FC = () => {
                 <div>
                   <h3 className="text-subheading text-slate-900 font-semibold">Technical Stack Proficiency</h3>
                   <p className="text-[13px] text-slate-600 mt-0.5">
-                    Select technologies you actively use. These shape your match scoring in Opportunity Radar.
+                    Type to search the skill catalog. These shape your match scoring in Opportunity Radar.
                   </p>
                 </div>
                 <span className="text-mini font-mono text-emerald-600 font-semibold">
@@ -650,28 +740,8 @@ export const AccountPortalPage: React.FC = () => {
                 </span>
               </div>
 
-              <div className="flex flex-wrap gap-2 pt-2">
-                {POPULAR_TECH_STACK.map((skill) => {
-                  const isSelected = selectedSkills.includes(skill);
-                  return (
-                    <button
-                      key={skill}
-                      type="button"
-                      onClick={() => toggleSkill(skill)}
-                      className={`
-                        px-3.5 py-1.5 rounded-btn text-mini font-mono transition-colors flex items-center gap-1.5 cursor-pointer
-                        ${
-                          isSelected
-                            ? 'bg-teal-50 text-teal-800 border border-teal-300 font-semibold shadow-xs'
-                            : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200/80 border border-slate-200/60'
-                        }
-                      `}
-                    >
-                      {isSelected && <CheckIcon size={12} />}
-                      <span>{skill}</span>
-                    </button>
-                  );
-                })}
+              <div className="pt-2">
+                <SkillAutocomplete value={selectedSkills} onChange={setSelectedSkills} />
               </div>
             </div>
 
@@ -737,27 +807,144 @@ export const AccountPortalPage: React.FC = () => {
                 <span className="text-mini font-mono text-emerald-600 font-semibold">PROTECTED</span>
               </div>
 
-              <div className="max-w-md relative">
-                <label className="block text-mini font-mono uppercase text-slate-500 mb-1.5">
-                  Account Access Password
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••••••"
-                    className="w-full h-11 pl-3.5 pr-10 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 rounded-btn text-[13px] text-slate-900 placeholder:text-slate-400 outline-none font-mono transition-colors"
-                  />
+              {pwStage === 'idle' && (
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-btn bg-white/70 border border-slate-200/80">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-btn bg-emerald-50 border border-emerald-200 flex items-center justify-center flex-shrink-0">
+                      <ShieldIcon size={18} className="text-emerald-600" />
+                    </div>
+                    <div>
+                      <div className="text-[13px] font-semibold text-slate-900">Account password</div>
+                      <div className="text-mini font-mono text-slate-500 tracking-widest">••••••••••••</div>
+                    </div>
+                  </div>
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer"
+                    onClick={() => setPwStage('verify')}
+                    className="h-10 px-4 rounded-btn bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-mini font-mono font-semibold cursor-pointer shadow-xs"
                   >
-                    {showPassword ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />}
+                    Change Password
                   </button>
                 </div>
-              </div>
+              )}
+
+              {pwStage === 'verify' && (
+                <form onSubmit={handleVerifyCurrentPassword} className="max-w-md space-y-3">
+                  <div className="text-[13px] text-slate-700 leading-relaxed">
+                    <strong>Step 1 of 2.</strong> Confirm this is your account by entering your current password.
+                  </div>
+                  <div>
+                    <label className="block text-mini font-mono uppercase text-slate-500 mb-1.5">Current Password</label>
+                    <input
+                      type="password"
+                      value={currentPwInput}
+                      onChange={(e) => {
+                        setCurrentPwInput(e.target.value);
+                        setCurrentPwError('');
+                      }}
+                      autoFocus
+                      autoComplete="current-password"
+                      placeholder="Enter current password"
+                      className="w-full h-11 pl-3.5 pr-10 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 rounded-btn text-[13px] text-slate-900 placeholder:text-slate-400 outline-none font-mono transition-colors"
+                    />
+                    {currentPwError && (
+                      <div className="text-[11px] font-mono text-rose-600 mt-1.5">{currentPwError}</div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="submit"
+                      disabled={!currentPwInput}
+                      className="h-10 px-4 rounded-btn bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-mini font-mono font-semibold cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Verify
+                    </button>
+                    <button
+                      type="button"
+                      onClick={resetPasswordFlow}
+                      className="h-10 px-4 rounded-btn border border-slate-200 bg-white text-slate-700 text-mini font-mono cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {pwStage === 'change' && (
+                <form onSubmit={handleSaveNewPassword} className="max-w-md space-y-3">
+                  <div className="text-[13px] text-slate-700 leading-relaxed">
+                    <strong>Step 2 of 2.</strong> Identity confirmed. Choose a new password.
+                  </div>
+                  <div>
+                    <label className="block text-mini font-mono uppercase text-slate-500 mb-1.5">New Password</label>
+                    <div className="relative">
+                      <input
+                        type={showNewPw ? 'text' : 'password'}
+                        value={newPw}
+                        onChange={(e) => setNewPw(e.target.value)}
+                        autoFocus
+                        autoComplete="new-password"
+                        placeholder="New password"
+                        className="w-full h-11 pl-3.5 pr-10 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 rounded-btn text-[13px] text-slate-900 placeholder:text-slate-400 outline-none font-mono transition-colors"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPw(!showNewPw)}
+                        aria-label={showNewPw ? 'Hide password' : 'Show password'}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer"
+                      >
+                        {showNewPw ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />}
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-mini font-mono uppercase text-slate-500 mb-1.5">Confirm New Password</label>
+                    <input
+                      type={showNewPw ? 'text' : 'password'}
+                      value={confirmPw}
+                      onChange={(e) => setConfirmPw(e.target.value)}
+                      autoComplete="new-password"
+                      placeholder="Repeat new password"
+                      className="w-full h-11 pl-3.5 pr-10 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 rounded-btn text-[13px] text-slate-900 placeholder:text-slate-400 outline-none font-mono transition-colors"
+                    />
+                  </div>
+                  <ul className="space-y-1 text-mini font-mono">
+                    {([
+                      [newPwLengthOk, 'At least 8 characters'],
+                      [newPwComplexOk, 'Letters plus numbers or symbols'],
+                      [newPwDiffersOk, 'Different from current password'],
+                      [newPwMatchOk, 'Both fields match'],
+                    ] as [boolean, string][]).map(([ok, label]) => (
+                      <li key={label} className={ok ? 'text-emerald-700' : 'text-slate-500'}>
+                        {ok ? '✓' : '○'} {label}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="submit"
+                      disabled={!isNewPwValid}
+                      className="h-10 px-4 rounded-btn bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-mini font-mono font-semibold cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Save New Password
+                    </button>
+                    <button
+                      type="button"
+                      onClick={resetPasswordFlow}
+                      className="h-10 px-4 rounded-btn border border-slate-200 bg-white text-slate-700 text-mini font-mono cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {pwStage === 'done' && (
+                <div className="p-4 rounded-btn bg-emerald-50 border border-emerald-200 text-[13px] text-emerald-800 flex items-center gap-2">
+                  <CheckIcon size={16} />
+                  Password updated successfully.
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -996,82 +1183,56 @@ export const AccountPortalPage: React.FC = () => {
           <div className="space-y-8 animate-fadeIn">
             {/* Header / Intro */}
             <div className="pb-6 border-b border-teal-500/20">
-              <h2 className="text-2xl font-bold tracking-tight text-teal-50">Tech Support & Documentation Hub</h2>
+              <h2 className="text-2xl font-bold tracking-tight text-teal-50">Tech Support &amp; Help</h2>
               <p className="text-[14px] text-teal-200/80 mt-1 leading-relaxed">
-                Explore architecture documentation, submit bug reports, contact maintainers, or browse frequently asked questions.
+                Get help from the community, report a problem, or find answers to common questions.
               </p>
             </div>
 
-            {/* 4 Direct Contact Channels */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Direct Contact Channels */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <a
-                href="https://discord.gg/A4rxRGx4Vt"
+                href={SUPPORT_DISCORD_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="p-5 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl hover:bg-white border border-teal-300/40 shadow-sm transition-all flex flex-col justify-between group text-slate-900"
+                className="p-5 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl hover:bg-white border border-teal-300/40 shadow-sm transition-all flex items-start gap-4 group text-slate-900"
               >
-                <div>
-                  <div className="w-10 h-10 rounded-btn bg-teal-50 border border-teal-100 flex items-center justify-center text-emerald-600">
-                    <MessageSquareIcon size={18} />
-                  </div>
-                  <h4 className="text-[15px] font-semibold text-slate-900 mt-3">Discord Community</h4>
-                  <p className="text-[12px] text-slate-600 mt-1">Join developer sprints and real-time support channels.</p>
+                <div className="w-11 h-11 rounded-btn bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 flex-shrink-0">
+                  <DiscordIcon size={20} />
                 </div>
-                <span className="text-mini font-mono text-emerald-600 font-semibold mt-4 group-hover:underline">
-                  discord.gg/A4rxRGx4Vt →
-                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <h4 className="text-[15px] font-semibold text-slate-900">Discord Community</h4>
+                    <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">Fastest</span>
+                  </div>
+                  <p className="text-[12px] text-slate-600 mt-1 leading-relaxed">
+                    Ask quick questions, find teammates, and get help from other QADAM users and the maintainer.
+                  </p>
+                  <span className="inline-block text-mini font-mono text-emerald-600 font-semibold mt-3 group-hover:underline">
+                    Join the server →
+                  </span>
+                </div>
               </a>
 
               <a
-                href="https://github.com/"
-                target="_blank"
-                rel="noreferrer"
-                className="p-5 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl hover:bg-white border border-teal-300/40 shadow-sm transition-all flex flex-col justify-between group text-slate-900"
+                href={`mailto:${SUPPORT_EMAIL}`}
+                className="p-5 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl hover:bg-white border border-teal-300/40 shadow-sm transition-all flex items-start gap-4 group text-slate-900"
               >
-                <div>
-                  <div className="w-10 h-10 rounded-btn bg-teal-50 border border-teal-100 flex items-center justify-center text-emerald-600">
-                    <TerminalIcon size={18} />
-                  </div>
-                  <h4 className="text-[15px] font-semibold text-slate-900 mt-3">GitHub Repository</h4>
-                  <p className="text-[12px] text-slate-600 mt-1">Open source issues, pull requests, and benchmarks.</p>
+                <div className="w-11 h-11 rounded-btn bg-teal-50 border border-teal-100 flex items-center justify-center text-emerald-600 flex-shrink-0">
+                  <MessageSquareIcon size={20} />
                 </div>
-                <span className="text-mini font-mono text-emerald-600 font-semibold mt-4 group-hover:underline">
-                  github.com/qadam →
-                </span>
-              </a>
-
-              <a
-                href="https://t.me/QadamAgentBot"
-                target="_blank"
-                rel="noreferrer"
-                className="p-5 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl hover:bg-white border border-teal-300/40 shadow-sm transition-all flex flex-col justify-between group text-slate-900"
-              >
-                <div>
-                  <div className="w-10 h-10 rounded-btn bg-teal-50 border border-teal-100 flex items-center justify-center text-emerald-600">
-                    <SendIcon size={18} />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <h4 className="text-[15px] font-semibold text-slate-900">Email Support</h4>
+                    <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">Reply in 1 to 2 days</span>
                   </div>
-                  <h4 className="text-[15px] font-semibold text-slate-900 mt-3">Telegram Bot</h4>
-                  <p className="text-[12px] text-slate-600 mt-1">Direct inquiries and live notification webhook testing.</p>
+                  <p className="text-[12px] text-slate-600 mt-1 leading-relaxed">
+                    Account problems, broken opportunity links, or anything you prefer to discuss privately.
+                  </p>
+                  <span className="inline-block text-mini font-mono text-emerald-600 font-semibold mt-3 group-hover:underline break-all">
+                    {SUPPORT_EMAIL} →
+                  </span>
                 </div>
-                <span className="text-mini font-mono text-emerald-600 font-semibold mt-4 group-hover:underline">
-                  @QadamAgentBot →
-                </span>
-              </a>
-
-              <a
-                href="mailto:support@qadam.local"
-                className="p-5 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl hover:bg-white border border-teal-300/40 shadow-sm transition-all flex flex-col justify-between group text-slate-900"
-              >
-                <div>
-                  <div className="w-10 h-10 rounded-btn bg-teal-50 border border-teal-100 flex items-center justify-center text-emerald-600">
-                    <ShieldIcon size={18} />
-                  </div>
-                  <h4 className="text-[15px] font-semibold text-slate-900 mt-3">Email Support</h4>
-                  <p className="text-[12px] text-slate-600 mt-1">Direct inquiries to the platform maintainers team.</p>
-                </div>
-                <span className="text-mini font-mono text-emerald-600 font-semibold mt-4 group-hover:underline">
-                  support@qadam.local →
-                </span>
               </a>
             </div>
 
@@ -1080,18 +1241,37 @@ export const AccountPortalPage: React.FC = () => {
               <div>
                 <h3 className="text-subheading text-slate-900 font-semibold">Submit a Bug Report or Feature Request</h3>
                 <p className="text-[13px] text-slate-600 mt-0.5">
-                  Direct telemetry dispatch to QADAM engineering team.
+                  Fill in the form and QADAM opens your email app with a ready ticket addressed to {SUPPORT_EMAIL}. Just press Send.
                 </p>
               </div>
 
               {supportSubmitted ? (
-                <div className="p-6 rounded-btn bg-emerald-50 border border-emerald-200/60 text-emerald-800 flex items-center gap-3">
-                  <CheckIcon size={20} className="text-emerald-600" />
-                  <div>
-                    <div className="font-semibold text-[14px]">Support Ticket Dispatched Successfully</div>
-                    <div className="text-mini font-mono text-slate-600 mt-0.5">
-                      Our engineering team will review the issue within 24 hours.
+                <div className="p-5 rounded-btn bg-emerald-50 border border-emerald-200/60 text-emerald-800 space-y-3">
+                  <div className="flex items-start gap-3">
+                    <CheckIcon size={20} className="text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <div className="font-semibold text-[14px]">Ticket drafted in your email app</div>
+                      <div className="text-[12px] text-slate-600 mt-0.5 leading-relaxed">
+                        Send the email to finish. If no email app opened, copy the ticket and send it to {SUPPORT_EMAIL} manually.
+                      </div>
                     </div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleCopyTicket}
+                      className="h-9 px-4 rounded-btn bg-white border border-emerald-200 text-emerald-800 text-mini font-mono font-semibold cursor-pointer flex items-center gap-1.5"
+                    >
+                      <CopyIcon size={13} />
+                      {ticketCopied ? 'Copied' : 'Copy Ticket Text'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleResetSupportForm}
+                      className="h-9 px-4 rounded-btn bg-white border border-slate-200 text-slate-700 text-mini font-mono cursor-pointer"
+                    >
+                      New Ticket
+                    </button>
                   </div>
                 </div>
               ) : (
@@ -1103,10 +1283,11 @@ export const AccountPortalPage: React.FC = () => {
                       </label>
                       <select
                         value={supportCategory}
-                        onChange={(e) => setSupportCategory(e.target.value as any)}
+                        onChange={(e) => setSupportCategory(e.target.value as typeof supportCategory)}
                         className="w-full h-11 px-3 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 rounded-btn text-[13px] text-slate-900 font-mono outline-none cursor-pointer transition-colors"
                       >
                         <option value="Bug Report" className="bg-white text-slate-900">Bug Report</option>
+                        <option value="Broken Link" className="bg-white text-slate-900">Broken / Outdated Opportunity</option>
                         <option value="Feature Request" className="bg-white text-slate-900">Feature Request</option>
                         <option value="Account Help" className="bg-white text-slate-900">Account Help</option>
                         <option value="Question" className="bg-white text-slate-900">General Question</option>
@@ -1122,7 +1303,7 @@ export const AccountPortalPage: React.FC = () => {
                         required
                         value={supportSubject}
                         onChange={(e) => setSupportSubject(e.target.value)}
-                        placeholder="e.g. ATS health score discrepancy on grant application"
+                        placeholder="e.g. Official link for a hackathon returns 404"
                         className="w-full h-11 px-3.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 rounded-btn text-[13px] text-slate-900 placeholder:text-slate-400 outline-none font-sans transition-colors"
                       />
                     </div>
@@ -1137,20 +1318,21 @@ export const AccountPortalPage: React.FC = () => {
                       rows={4}
                       value={supportMessage}
                       onChange={(e) => setSupportMessage(e.target.value)}
-                      placeholder="Please describe the steps to reproduce or what feature you'd like to see..."
+                      placeholder={'1. What you did\n2. What you expected\n3. What happened instead'}
                       className="w-full p-3.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 rounded-btn text-[13px] text-slate-900 placeholder:text-slate-400 outline-none font-sans leading-relaxed transition-colors"
                     />
                   </div>
 
-                  <div className="flex items-center justify-between pt-2">
-                    <span className="text-mini font-mono text-slate-400">
-                      Client environment metadata automatically attached
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+                    <span className="text-mini font-mono text-slate-500">
+                      Page, browser and screen size are added to the ticket. No passwords or CV text.
                     </span>
                     <button
                       type="submit"
-                      className="h-10 px-6 rounded-btn bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-mini font-mono transition-colors shadow-sm cursor-pointer"
+                      className="h-10 px-6 rounded-btn bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-mini font-mono transition-colors shadow-sm cursor-pointer flex items-center justify-center gap-2"
                     >
-                      Dispatch Support Ticket
+                      <SendIcon size={13} />
+                      Open in Email App
                     </button>
                   </div>
                 </form>

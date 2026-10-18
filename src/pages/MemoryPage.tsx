@@ -10,6 +10,7 @@ import {
   EyeIcon,
 } from '../components/Icons';
 import { MATRIX_TARGETS, MemoryEntry } from '../data';
+import { MemoryGuide } from '../components/MemoryGuide';
 
 export const MemoryPage: React.FC = () => {
   const {
@@ -49,6 +50,12 @@ export const MemoryPage: React.FC = () => {
     addMemoryEntry(newCategory, newText.trim(), newSelectedTargets);
     setNewText('');
     setIsAddModalOpen(false);
+  };
+
+  const handleUseExample = (category: MemoryEntry['category'], text: string) => {
+    setNewCategory(category);
+    setNewText(text);
+    setIsAddModalOpen(true);
   };
 
   // Currently active memory entry
@@ -106,6 +113,8 @@ export const MemoryPage: React.FC = () => {
           </span>
         </div>
 
+        <MemoryGuide defaultOpen={memoryEntries.length === 0} onUseExample={handleUseExample} />
+
         {memoryEntries.length === 0 ? (
           <div className="p-10 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] text-center space-y-4 my-8 max-w-xl mx-auto text-slate-900">
             <div className="w-12 h-12 rounded-full bg-emerald-100 border border-emerald-300 mx-auto flex items-center justify-center text-emerald-700">
@@ -114,7 +123,7 @@ export const MemoryPage: React.FC = () => {
             <div className="space-y-1.5">
               <h3 className="text-subheading text-indigo-950 font-bold">0 Directives in MEMORY.md</h3>
               <p className="text-[13px] text-teal-950 max-w-md mx-auto leading-relaxed">
-                Agent memory is 100% clean and unpopulated. Directives will be appended as you configure rules, preferences, or as the agent learns from your explicit instructions.
+                No directives yet. Start with one of the examples above, or write your own rule about what you want and what to avoid.
               </p>
             </div>
             <button

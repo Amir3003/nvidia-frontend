@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { PageHeader } from '../components/PageHeader';
+import { SkillCard } from '../components/SkillCard';
 import { OPPORTUNITIES_DATABASE, Opportunity } from '../db/opportunities';
 import {
   ExternalLinkIcon,
@@ -594,7 +595,7 @@ export const CvLabPage: React.FC = () => {
           </div>
         </div>
 
-        {/* ROW 3 (Vertical Portrait Skill Cards Grid): RECOMMENDED SKILLS TO LEARN */}
+        {/* ROW 3: Skill cards grid, recommended skills to learn */}
         <div className="space-y-4 pt-2">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-2 border-b border-teal-200/60 gap-2">
             <div>
@@ -611,99 +612,23 @@ export const CvLabPage: React.FC = () => {
           </div>
 
           {/* Grid of Vertical Portrait Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
             {prioritizedSkills.map((skill) => {
-              const isVerified = skill.status === 'VERIFIED';
               const isMissingTarget = missingTargetSkills.some(
                 (m) => m.toLowerCase() === skill.name.toLowerCase()
               );
               const isMatchedTarget = matchedTargetSkills.some(
                 (m) => m.toLowerCase() === skill.name.toLowerCase()
               );
-
               return (
-                <div
+                <SkillCard
                   key={skill.id}
-                  className={`min-h-[410px] p-5 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border transition-all flex flex-col justify-between shadow-card hover:shadow-elevated ${
-                    isMissingTarget
-                      ? 'border-amber-300/90 bg-amber-50/30'
-                      : 'border-teal-300/40 hover:border-teal-400'
-                  }`}
-                >
-                  {/* Top: Vector Tech Icon + Title + Badge */}
-                  <div className="space-y-3">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="w-10 h-10 rounded-btn bg-white border border-teal-200 flex items-center justify-center flex-shrink-0 shadow-xs">
-                        <TechIcon name={skill.name} size={22} />
-                      </div>
-                      <div className="flex flex-col items-end gap-1">
-                        <span
-                          className={`text-[10px] font-mono px-2 py-0.5 rounded border uppercase font-bold ${
-                            isVerified
-                              ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
-                              : isMissingTarget
-                              ? 'bg-amber-100 text-amber-800 border-amber-300'
-                              : 'bg-white text-teal-900 border-teal-200'
-                          }`}
-                        >
-                          {skill.status} {skill.score ? `(${skill.score}%)` : ''}
-                        </span>
-                        {isMissingTarget && (
-                          <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-amber-200/80 text-amber-900 font-bold">
-                            GAP FOR TARGET
-                          </span>
-                        )}
-                        {isMatchedTarget && (
-                          <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-emerald-200/80 text-emerald-900 font-bold">
-                            BENCHMARK MATCH
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div>
-                      <h4 className="text-[16px] font-bold text-indigo-950 break-words">
-                        {skill.name}
-                      </h4>
-                    </div>
-
-                    {/* Middle: Clear explanation of target event & sub-topics */}
-                    <p className="text-[12px] text-teal-950 leading-relaxed">
-                      {isMissingTarget
-                        ? `Requested by ${selectedOpp.title} (${selectedOpp.organization}): Requires practical mastery in ${skill.name} internals and benchmark evaluation.`
-                        : skill.reason}
-                    </p>
-                  </div>
-
-                  {/* Bottom: Resource link & Full-width quiz button */}
-                  <div className="pt-4 border-t border-teal-200/60 space-y-3">
-                    <a
-                      href={skill.resourceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-mini font-mono text-teal-800 hover:text-indigo-950 flex items-center justify-between group font-medium"
-                    >
-                      <span className="truncate group-hover:underline">{skill.resourceTitle}</span>
-                      <ExternalLinkIcon size={12} className="flex-shrink-0 ml-1.5" />
-                    </a>
-
-                    {!isVerified ? (
-                      <button
-                        type="button"
-                        onClick={() => openSkillQuiz(skill)}
-                        className="w-full h-11 px-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white rounded-btn text-mini font-mono font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
-                      >
-                        <FlaskIcon size={14} className="text-white" />
-                        <span>Take Skill Quiz (&gt;70%)</span>
-                      </button>
-                    ) : (
-                      <div className="w-full h-11 px-3 bg-emerald-100 border border-emerald-300 text-emerald-800 rounded-btn text-mini font-mono font-bold flex items-center justify-center gap-1.5">
-                        <CheckIcon size={14} />
-                        <span>Verified in Profile</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                  skill={skill}
+                  isGap={isMissingTarget}
+                  isMatch={isMatchedTarget}
+                  gapReason={`Required by ${selectedOpp.title} (${selectedOpp.organization}). Verify it to close this gap.`}
+                  onStartQuiz={() => openSkillQuiz(skill)}
+                />
               );
             })}
           </div>

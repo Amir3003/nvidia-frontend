@@ -72,6 +72,48 @@ export const POPULAR_TECH_STACK = [
   'English',
 ];
 
+// Full searchable skill catalog for autocomplete inputs (popular stack first).
+export const SKILLS_DATABASE: string[] = Array.from(
+  new Set([
+    ...POPULAR_TECH_STACK,
+    // Languages
+    'JavaScript', 'Java', 'Kotlin', 'Swift', 'C', 'C#', 'Scala', 'Ruby', 'PHP', 'Dart',
+    'Julia', 'R', 'MATLAB', 'Haskell', 'Elixir', 'Lua', 'Zig', 'Solidity', 'Bash', 'PowerShell',
+    'Assembly', 'Fortran', 'OCaml', 'Perl', 'Objective-C', 'WebAssembly', 'Verilog', 'VHDL',
+    // ML / AI
+    'TensorFlow', 'Keras', 'scikit-learn', 'NumPy', 'Pandas', 'Polars', 'SciPy', 'Matplotlib',
+    'OpenCV', 'XGBoost', 'LightGBM', 'CatBoost', 'ONNX', 'Triton', 'vLLM', 'TGI', 'Ollama',
+    'llama.cpp', 'DeepSpeed', 'Megatron-LM', 'PyTorch Lightning', 'Transformers', 'Diffusers',
+    'PEFT / LoRA', 'RLHF', 'Reinforcement Learning', 'Computer Vision', 'NLP', 'Speech Recognition',
+    'Multimodal Models', 'RAG', 'Prompt Engineering', 'AI Agents', 'Fine-tuning', 'Quantization',
+    'MLOps', 'MLflow', 'Weights & Biases', 'DVC', 'Kubeflow', 'Ray', 'Dask', 'Spark', 'PySpark',
+    'NVIDIA NIM', 'NeMo', 'TensorRT-LLM', 'cuDNN', 'Numba', 'OpenAI API', 'Anthropic API',
+    'Gemini API', 'DSPy', 'CrewAI', 'AutoGen', 'LangGraph', 'Semantic Kernel', 'Haystack',
+    'Pinecone', 'Weaviate', 'Qdrant', 'Milvus', 'Chroma', 'FAISS', 'pgvector', 'Elasticsearch',
+    // Robotics / Physical AI
+    'ROS', 'Gazebo', 'MuJoCo', 'PyBullet', 'Omniverse', 'SLAM', 'Motion Planning', 'Embedded C',
+    'Arduino', 'Raspberry Pi', 'Jetson', 'FPGA', 'Control Theory', 'Sensor Fusion',
+    // Web / Mobile
+    'Next.js', 'Vue', 'Nuxt', 'Svelte', 'Angular', 'Tailwind CSS', 'HTML', 'CSS', 'Node.js',
+    'Express', 'NestJS', 'Deno', 'Bun', 'Django', 'Flask', 'Spring Boot', 'Ruby on Rails',
+    'Laravel', '.NET', 'GraphQL', 'REST APIs', 'WebSockets', 'React Native', 'Flutter',
+    'SwiftUI', 'Jetpack Compose', 'Electron', 'Tauri', 'Three.js', 'WebGL', 'Vite', 'Webpack',
+    // Data / Infra
+    'MySQL', 'SQLite', 'MongoDB', 'Cassandra', 'ClickHouse', 'DuckDB', 'Snowflake', 'BigQuery',
+    'Kafka', 'RabbitMQ', 'NATS', 'Airflow', 'dbt', 'Terraform', 'Ansible', 'Helm', 'Nginx',
+    'AWS', 'GCP', 'Azure', 'Nebius Cloud', 'Cloudflare', 'Vercel', 'Firebase', 'Supabase',
+    'CI/CD', 'GitHub Actions', 'GitLab CI', 'Jenkins', 'Prometheus', 'Grafana', 'OpenTelemetry',
+    'Distributed Systems', 'Microservices', 'System Design', 'Networking', 'Cybersecurity',
+    'Penetration Testing', 'Cryptography', 'Blockchain', 'Web3',
+    // Fundamentals / Soft
+    'Algorithms', 'Data Structures', 'Linear Algebra', 'Statistics', 'Probability',
+    'Calculus', 'Optimization', 'Competitive Programming', 'Unit Testing', 'Technical Writing',
+    'Public Speaking', 'Product Management', 'UI/UX Design', 'Figma', 'Data Analysis',
+    'Data Visualization', 'Excel', 'Tableau', 'Power BI', 'Kazakh', 'Russian', 'Korean',
+    'Japanese', 'German', 'Chinese', 'IELTS', 'TOEFL',
+  ])
+);
+
 export const CAREER_OBJECTIVES = [
   'Global Hackathons & Bounties',
   'Graduate Research Scholarships Abroad',
@@ -79,6 +121,14 @@ export const CAREER_OBJECTIVES = [
   'Physical AI & Humanoid Robotics',
   'Conference Travel Grants (NeurIPS/CVPR)',
   'Open-Source Developer Grants',
+  'Undergraduate Exchange Programs',
+  'Summer Schools & Research Camps',
+  'Startup Accelerators & Incubators',
+  'Big Tech Software Internships',
+  'Competitive Programming (ICPC, Olympiads)',
+  'AI Safety & Alignment Fellowships',
+  'Cloud & GPU Compute Credits',
+  'Remote Freelance & Paid Bounties',
 ];
 
 export const EMPTY_USER_PROFILE: UserProfile = {

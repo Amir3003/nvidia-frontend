@@ -1,395 +1,422 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { OPPORTUNITIES_DATABASE, Opportunity } from '../db/opportunities';
 import { PageHeader } from '../components/PageHeader';
 import {
-  ShieldIcon,
   CheckIcon,
   CopyIcon,
   ChevronRightIcon,
-  FileTextIcon,
-  FlaskIcon,
   ExternalLinkIcon,
+  AlertTriangleIcon,
 } from '../components/Icons';
-import { anonymize } from '../utils/anonymizer';
+
+interface PrepStep {
+  id: string;
+  title: string;
+  detail: string;
+  action?: { label: string; to?: string; href?: string };
+}
+
+// Materials organizers typically ask for, by opportunity type.
+const MATERIALS: Record<Opportunity['type'], { title: string; detail: string }[]> = {
+  HACKATHON: [
+    { title: 'Team (or solo decision)', detail: 'Most hackathons allow teams of 2 to 5. Decide early and register together.' },
+    { title: 'GitHub profile and a public repo', detail: 'Judges look at commit history. Create the repo on day one.' },
+    { title: 'Project idea in 2 to 3 sentences', detail: 'Problem, who it helps, and which sponsor technology you use.' },
+    { title: 'Demo video and pitch deck', detail: 'Usually a 2 to 3 minute video plus 5 to 8 slides at submission time.' },
+  ],
+  GRANT: [
+    { title: 'Motivation letter / statement of purpose', detail: 'Typically 1 to 2 pages. Tie your past work to the program goals.' },
+    { title: 'Research proposal', detail: 'Topic, methods, expected results and timeline. Check the page limit.' },
+    { title: 'Recommendation letters', detail: 'Ask professors at least 3 to 4 weeks before the deadline.' },
+    { title: 'Transcript, diploma and language certificate', detail: 'Official copies, often translated. IELTS / TOEFL scores may be required.' },
+  ],
+  INTERNSHIP: [
+    { title: 'One-page resume', detail: 'Lead with projects that use the required skills listed for this role.' },
+    { title: 'Cover letter (if requested)', detail: 'Short: why this team, what you built, what you want to learn.' },
+    { title: 'Portfolio or GitHub links', detail: 'Pin 2 to 3 repositories with clear READMEs.' },
+    { title: 'Interview preparation', detail: 'Expect coding rounds on algorithms and questions about your projects.' },
+  ],
+};
+
+function daysUntil(dateStr: string): number | null {
+  const target = new Date(`${dateStr}T23:59:59`);
+  if (Number.isNaN(target.getTime())) return null;
+  return Math.ceil((target.getTime() - Date.now()) / 86_400_000);
+}
+
+function loadChecked(oppId: string): string[] {
+  try {
+    const raw = localStorage.getItem(`qadam_prep_${oppId}`);
+    return raw ? (JSON.parse(raw) as string[]) : [];
+  } catch {
+    return [];
+  }
+}
 
 export const ApplicationStudioPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const {
-    selectedOpportunityForDraft,
-    setSelectedOpportunityForDraft,
-    userProfile,
-    skills,
-    addLog,
-    incrementMaskedCount,
-  } = useApp();
+  const { selectedOpportunityForDraft, userProfile, skills, addLog } = useApp();
 
   const oppId = searchParams.get('id');
-
-  // Determine active opportunity
-  const currentOpp: Opportunity | null =
+  const currentOpp: Opportunity =
+    (oppId ? OPPORTUNITIES_DATABASE.find((o) => o.id === oppId) : undefined) ||
     selectedOpportunityForDraft ||
-    (oppId ? OPPORTUNITIES_DATABASE.find((o) => o.id === oppId) || null : null) ||
     OPPORTUNITIES_DATABASE[0];
 
-  const [tone, setTone] = useState<'RESEARCH' | 'ENGINEERING' | 'FOUNDER'>('ENGINEERING');
-  const [copied, setCopied] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [checked, setChecked] = useState<string[]>(() => loadChecked(currentOpp.id));
+  const [copiedField, setCopiedField] = useState<string | null>(null);
 
-  const matchedSkills = currentOpp.skills.filter((s) =>
-    userProfile.skills.some((us) => us.toLowerCase() === s.toLowerCase())
-  );
-  const missingSkills = currentOpp.skills.filter(
-    (s) => !userProfile.skills.some((us) => us.toLowerCase() === s.toLowerCase())
-  );
-
-  const matchedSkillsString = matchedSkills.join(', ') || currentOpp.skills[0];
-
-  // Generator function based on tone and student background
-  const generateProposalText = (selectedTone: 'RESEARCH' | 'ENGINEERING' | 'FOUNDER') => {
-    const opp = currentOpp;
-    const candidateName = userProfile.name ? `${userProfile.name} ${userProfile.surname || ''}`.trim() : '[CANDIDATE_NAME]';
-    const candidateRole = userProfile.role || 'Student / Learner';
-    const candidateUni = userProfile.university || 'Academic Institution';
-
-    if (selectedTone === 'RESEARCH') {
-      return `# Research Fellowship Proposal: ${opp.title}
-**Target Opportunity:** ${opp.title} (${opp.organization})
-**Candidate:** [CANDIDATE_ANONYMIZED] · ${candidateRole}
-**Institution:** ${candidateUni}
-**Primary Track:** ${opp.type} · Deadline: ${opp.deadline}
-
-## 1. Abstract & Empirical Objective
-I am formally submitting our research architecture for the ${opp.title}. As an academic practitioner specializing in ${userProfile.major || 'Computer Science'} at ${candidateUni}, our methodology addresses systematic evaluation and reproducible experimentation in physical and multimodal agent workflows.
-
-## 2. Theoretical Alignment & Technical Stack
-- **Prerequisite Stack Coverage:** Active verification in ${matchedSkillsString}.
-- **Scientific Methodology:** Empirical validation, ablation benchmarks, and deterministic reproducibility protocols across GPU compute nodes.
-- **Data Privacy:** Confinement of all intermediate token tensors and telemetry strictly to on-device sandbox boundaries.
-
-## 3. Targeted Contribution for ${opp.organization}
-Our project directly advances: "${opp.description}". We provide comprehensive baseline benchmarks and formal evaluation metrics.
-
-## 4. Proposed Milestone Timeline
-- **Phase 1 (Week 1-2):** Dataset curation, embedding indexing, and baseline fine-tuning.
-- **Phase 2 (Week 3-4):** Containerized ablation experiments and latency profiling.
-- **Phase 3 (Submission):** Open-source artifact packaging with complete replication steps.
-
-**Respectfully submitted,**
-${candidateName} · ${candidateRole}`;
-    }
-
-    if (selectedTone === 'FOUNDER') {
-      return `# Product & Technical Architecture Proposal: ${opp.title}
-**Track:** ${opp.type} · ${opp.organization}
-**Applicant:** [FOUNDER_TOKEN_MASKED] · ${candidateRole}
-
-## Executive Summary
-We are building a production-grade vertical dev-tool for the ${opp.title}. Our mission is to accelerate autonomous developer workflows while maintaining 100% client-side privacy.
-
-## Why Our Architecture Wins
-1. **Unfair Advantage in ${matchedSkillsString}:** Proven execution capability with low-latency model inference and container orchestration.
-2. **Defensible Privacy Barrier:** Built from the ground up on sandboxed directory confinement, zero unmasked cloud routing, and local tokenization.
-3. **Product Vision:** Transforming ${opp.description} into an intuitive developer tool designed for rapid adoption.
-
-## Target Deliverable for Award (${opp.award})
-- Live production web application and CLI agent.
-- Modular SDK for community developers.
-- Verification test suite demonstrating ATS alignment and sandbox safety.
-
-**Applicant:** ${candidateName} (${candidateUni})`;
-    }
-
-    // Default: ENGINEERING
-    return `# Technical Application Proposal: ${opp.title}
-**Host:** ${opp.organization} · Track: ${opp.type}
-**Award:** ${opp.award} · Deadline: ${opp.deadline}
-**Candidate:** ${candidateName} · ${candidateUni} (${userProfile.role || 'Software Engineer'})
-
-## 1. Technical Implementation Blueprint
-We propose an engineering framework tailored specifically for the criteria set forth in ${opp.title}. By leveraging ${matchedSkillsString}, our stack establishes deterministic pipelines designed for robust execution.
-
-## 2. Architecture & Components
-- **Core Pipeline:** Built using ${matchedSkillsString} with asynchronous event streaming and low-overhead memory management.
-- **Sandbox Security:** Bound to local confinement directory \`/workspace/qadam\` with real-time file tree guardrails.
-- **Verified Competencies:** Active skill validation achieved through QADAM ATS benchmarks.
-
-## 3. Problem Statement & Resolution
-Addressing: "${opp.description}"
-Our submission introduces a modular, scalable approach with complete unit test coverage, automated dockerized integration environments, and end-to-end telemetry.
-
-## 4. Engineering Deliverables
-1. Production container image ready for GPU cloud deployment.
-2. Complete documentation, OpenAPI specifications, and automated test runners.
-3. Live demonstration build validated against baseline specifications.
-
-**Signed:**
-${candidateName} (${userProfile.email || 'student@university.edu'})`;
-  };
-
-  const [draftContent, setDraftContent] = useState(() => generateProposalText(tone));
-
-  // Sync draft if opportunity changes
   useEffect(() => {
-    setDraftContent(generateProposalText(tone));
-  }, [currentOpp?.id, tone]);
+    setChecked(loadChecked(currentOpp.id));
+  }, [currentOpp.id]);
 
-  const handleToneChange = (newTone: 'RESEARCH' | 'ENGINEERING' | 'FOUNDER') => {
-    setTone(newTone);
-    setDraftContent(generateProposalText(newTone));
+  const toggleStep = (id: string) => {
+    setChecked((prev) => {
+      const next = prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id];
+      try {
+        localStorage.setItem(`qadam_prep_${currentOpp.id}`, JSON.stringify(next));
+      } catch {
+        // Progress simply will not persist in this browser
+      }
+      return next;
+    });
   };
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(draftContent);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-    addLog('SYSTEM', 'Application draft copied to system clipboard');
+  const hasSkill = (s: string) => userProfile.skills.some((us) => us.toLowerCase() === s.toLowerCase());
+  const isVerified = (s: string) =>
+    skills.some((sk) => sk.status === 'VERIFIED' && sk.name.toLowerCase() === s.toLowerCase());
+
+  const matchedSkills = currentOpp.skills.filter(hasSkill);
+  const missingSkills = currentOpp.skills.filter((s) => !hasSkill(s));
+  const verifiedCount = currentOpp.skills.filter(isVerified).length;
+
+  const profileFields = [
+    { label: 'Full name', value: [userProfile.name, userProfile.surname].filter(Boolean).join(' ') },
+    { label: 'Email', value: userProfile.email },
+    { label: 'University', value: userProfile.university },
+    { label: 'Major', value: userProfile.major },
+    { label: 'Location', value: userProfile.location },
+    { label: 'Skills', value: userProfile.skills.join(', ') },
+    { label: 'Short bio', value: (userProfile.cvText || '').trim().slice(0, 600) },
+  ];
+  const filledProfile = profileFields.filter((f) => f.value).length;
+
+  const steps: PrepStep[] = useMemo(
+    () => [
+      {
+        id: 'rules',
+        title: 'Read the rules and eligibility on the official page',
+        detail: 'Check age, student status, country, team size and the exact deadline time zone.',
+        action: currentOpp.url ? { label: 'Open official page', href: currentOpp.url } : undefined,
+      },
+      {
+        id: 'skills',
+        title: missingSkills.length
+          ? `Close skill gaps: ${missingSkills.join(', ')}`
+          : 'Verify your matching skills',
+        detail: missingSkills.length
+          ? 'Add these skills to your profile or take the learning track and quiz in CV & Skill Lab.'
+          : 'Pass the skill quizzes so your profile shows verified, not just self-reported, skills.',
+        action: { label: 'Open CV & Skill Lab', to: '/cv' },
+      },
+      {
+        id: 'profile',
+        title: 'Complete your profile and CV text',
+        detail: 'Organizer forms ask for the same data. Fill it once here and copy it from the Quick Copy panel.',
+        action: { label: 'Edit profile', to: '/account?tab=profile' },
+      },
+      ...MATERIALS[currentOpp.type].map((m, i) => ({ id: `material-${i}`, title: m.title, detail: m.detail })),
+      ...(currentOpp.type === 'HACKATHON'
+        ? [
+            {
+              id: 'team',
+              title: 'Find teammates if you need them',
+              detail: 'Browse people with complementary skills and invite them.',
+              action: { label: 'Open Teammates', to: '/network' },
+            },
+          ]
+        : []),
+      {
+        id: 'reminder',
+        title: 'Turn on a deadline reminder',
+        detail: 'Get a Telegram or Discord ping a few days before the deadline.',
+        action: { label: 'Notification settings', to: '/notifications' },
+      },
+      {
+        id: 'register',
+        title: 'Register and submit on the organizer site',
+        detail: 'QADAM does not submit for you. Applications always go through the organizer.',
+        action: currentOpp.url ? { label: 'Go to official site', href: currentOpp.url } : undefined,
+      },
+    ],
+    [currentOpp.id, currentOpp.type, currentOpp.url, missingSkills.join('|')]
+  );
+
+  const doneCount = steps.filter((s) => checked.includes(s.id)).length;
+  const progress = Math.round((doneCount / steps.length) * 100);
+  const days = daysUntil(currentOpp.deadlineDate);
+
+  const handleCopy = async (label: string, value: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedField(label);
+      setTimeout(() => setCopiedField((f) => (f === label ? null : f)), 1500);
+    } catch {
+      setCopiedField(null);
+    }
   };
 
-  const handleExportMarkdown = () => {
-    const blob = new Blob([draftContent], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${currentOpp.id}_application_proposal.md`;
-    a.click();
-    URL.revokeObjectURL(url);
-    addLog('SYSTEM', `Exported application draft: ${currentOpp.id}_application_proposal.md`);
+  const handleGoToOfficial = () => {
+    addLog('SYSTEM', `Opened official page for ${currentOpp.title}`);
   };
 
-  const handleSaveToSandbox = () => {
-    setIsSaved(true);
-    setTimeout(() => setIsSaved(false), 2500);
-    addLog('SANDBOX', `Draft persisted to /workspace/qadam/drafts/${currentOpp.id}.md`);
-    incrementMaskedCount(4);
-  };
-
-  const handleRegenerate = () => {
-    setIsGenerating(true);
-    setTimeout(() => {
-      setDraftContent(generateProposalText(tone));
-      setIsGenerating(false);
-      addLog('MODEL', `Nebius LLM: regenerated tailored ${tone} application draft`);
-    }, 650);
-  };
+  const card =
+    'rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] text-slate-900';
 
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-transparent relative z-10 text-slate-100">
-      {/* Top Header Bar */}
       <PageHeader
-        title="Application Studio"
-        subtitle={`Full-Page Proposal Drafter · Target: ${currentOpp.title} (${currentOpp.organization})`}
+        title="Application Prep"
+        subtitle={`Get ready, then apply on the organizer site · ${currentOpp.title}`}
         actions={
-          <div className="flex items-center gap-2.5">
-            <button
-              type="button"
-              onClick={() => navigate('/')}
-              className="h-10 px-4 rounded-btn border border-teal-500/30 bg-slate-900/80 hover:bg-slate-800/80 text-teal-100 hover:text-white text-mini font-mono transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
-            >
-              <span>← Back to Opportunity Radar</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => navigate('/')}
+            className="h-10 px-4 rounded-btn border border-teal-500/30 bg-slate-900/80 hover:bg-slate-800/80 text-teal-100 hover:text-white text-mini font-mono transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+          >
+            <span>← Back to Opportunity Radar</span>
+          </button>
         }
       />
 
       <div className="p-4 sm:p-6 pb-28 lg:pb-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* LEFT COLUMN: Opportunity Overview & Eligibility (4 Cols) */}
-          <div className="lg:col-span-4 space-y-5">
-            {/* Opportunity Card Summary */}
-            <div className="p-5 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] space-y-4 text-slate-900">
+          {/* LEFT: Opportunity summary + readiness */}
+          <div className="lg:col-span-5 xl:col-span-4 space-y-5">
+            <div className={`p-5 space-y-4 ${card}`}>
               <div className="flex items-center justify-between">
                 <span className="text-mini font-mono px-2 py-0.5 rounded bg-white border border-teal-200 text-teal-900 font-bold">
                   {currentOpp.type}
                 </span>
-                <span className="text-mini font-mono text-emerald-700 font-bold">
-                  {currentOpp.deadline}
-                </span>
+                <span className="text-mini font-mono text-emerald-700 font-bold">{currentOpp.deadline}</span>
               </div>
 
               <div>
-                <h3 className="text-[17px] font-bold text-indigo-950 leading-snug">
-                  {currentOpp.title}
-                </h3>
-                <div className="text-mini font-mono text-teal-800 mt-1">{currentOpp.organization}</div>
+                <h3 className="text-[17px] font-bold text-indigo-950 leading-snug">{currentOpp.title}</h3>
+                <div className="text-mini font-mono text-teal-800 mt-1">
+                  {currentOpp.organization} · {currentOpp.location}
+                </div>
               </div>
 
-              <p className="text-[13px] text-teal-950 leading-relaxed">
-                {currentOpp.description}
-              </p>
+              <p className="text-[13px] text-teal-950 leading-relaxed">{currentOpp.description}</p>
 
-              <div className="p-3 bg-white/80 rounded-btn border border-teal-200 flex items-center justify-between text-mini font-mono">
-                <span className="text-teal-800">Award / Grant:</span>
-                <span className="text-emerald-800 font-bold">{currentOpp.award}</span>
+              <div className="grid grid-cols-2 gap-2 text-mini font-mono">
+                <div className="p-2.5 bg-white/80 rounded-btn border border-teal-200">
+                  <div className="text-teal-800">Award</div>
+                  <div className="text-emerald-800 font-bold mt-0.5 leading-snug">{currentOpp.award}</div>
+                </div>
+                <div className="p-2.5 bg-white/80 rounded-btn border border-teal-200">
+                  <div className="text-teal-800">Time left</div>
+                  <div className={`font-bold mt-0.5 ${days !== null && days <= 7 ? 'text-rose-700' : 'text-indigo-950'}`}>
+                    {days === null ? 'See site' : days < 0 ? 'Closed' : days === 0 ? 'Today' : `${days} days`}
+                  </div>
+                </div>
               </div>
 
-              {currentOpp.url && (
+              {currentOpp.url ? (
                 <a
                   href={currentOpp.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full h-9 rounded-btn border border-teal-200 hover:border-teal-300 bg-white text-teal-950 text-mini font-mono flex items-center justify-center gap-1.5 transition-colors shadow-xs font-semibold"
+                  onClick={handleGoToOfficial}
+                  className="w-full h-11 rounded-btn bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-[13px] font-mono font-bold flex items-center justify-center gap-2 transition-all shadow-xs"
                 >
-                  <span>Official Submission Portal</span>
-                  <ExternalLinkIcon size={12} />
+                  <span>Go to Official Site</span>
+                  <ExternalLinkIcon size={13} />
                 </a>
+              ) : (
+                <div className="p-3 rounded-btn bg-amber-50 border border-amber-200 text-[12px] text-amber-900 flex items-start gap-2">
+                  <AlertTriangleIcon size={14} className="flex-shrink-0 mt-0.5" />
+                  <span>The official link for this listing is not confirmed yet. Search the title on the organizer website.</span>
+                </div>
+              )}
+              {currentOpp.url && (
+                <div className="text-[11px] font-mono text-teal-800 text-center break-all">
+                  {new URL(currentOpp.url).hostname}
+                </div>
               )}
             </div>
 
-            {/* Eligibility & Stack Match Verification */}
-            <div className="p-5 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] space-y-4 text-slate-900">
-              <div className="text-mini font-mono uppercase text-teal-800 tracking-wider pb-2 border-b border-teal-200/60 flex items-center justify-between font-bold">
-                <span>Eligibility Verification</span>
-                <span className="text-emerald-700 font-bold">{matchedSkills.length}/{currentOpp.skills.length} Stack Match</span>
-              </div>
+            {/* Readiness */}
+            <div className={`p-5 space-y-4 ${card}`}>
+              <div className="text-mini font-mono uppercase text-teal-800 tracking-wider font-bold">Your Readiness</div>
 
-              <div className="space-y-2.5 text-[13px]">
-                <div className="flex items-center justify-between">
-                  <span className="text-teal-800">Academic Enrollment:</span>
-                  <span className="text-indigo-950 font-mono text-mini font-bold">{userProfile.university || 'Verified Student'}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-teal-800">Domain Track:</span>
-                  <span className="text-indigo-950 font-mono text-mini font-bold">{userProfile.role}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-teal-800">Sandbox Confinement:</span>
-                  <span className="text-emerald-700 font-mono text-mini font-bold">ACTIVE (/workspace/qadam)</span>
-                </div>
-              </div>
-
-              <div className="pt-2 border-t border-teal-200/60">
-                <div className="text-mini font-mono text-teal-800 uppercase mb-2 font-semibold">Required Skills</div>
-                <div className="flex flex-wrap gap-1.5">
-                  {currentOpp.skills.map((s) => {
-                    const isMatched = userProfile.skills.some((us) => us.toLowerCase() === s.toLowerCase());
-                    return (
+              <div className="space-y-3 text-[13px]">
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-teal-900">Skill match</span>
+                    <span className="font-mono text-mini font-bold text-indigo-950">
+                      {matchedSkills.length}/{currentOpp.skills.length}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {currentOpp.skills.map((s) => (
                       <span
                         key={s}
                         className={`px-2 py-0.5 rounded text-mini font-mono border ${
-                          isMatched
+                          isVerified(s)
                             ? 'bg-emerald-100 border-emerald-300 text-emerald-800 font-bold'
-                            : 'bg-white border-teal-200 text-slate-600'
+                            : hasSkill(s)
+                            ? 'bg-sky-50 border-sky-200 text-sky-900'
+                            : 'bg-white border-rose-200 text-rose-700'
                         }`}
+                        title={isVerified(s) ? 'Verified' : hasSkill(s) ? 'In profile, not verified' : 'Missing'}
                       >
-                        {isMatched ? '✓ ' : ''}{s}
+                        {isVerified(s) ? '✓ ' : ''}
+                        {s}
                       </span>
-                    );
-                  })}
+                    ))}
+                  </div>
+                  <div className="text-[11px] font-mono text-teal-800 mt-1.5">
+                    {verifiedCount} verified · {matchedSkills.length - verifiedCount} self-reported · {missingSkills.length} missing
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            {/* PII Shield Tokenization Status */}
-            <div className="p-5 rounded-card bg-gradient-to-br from-emerald-50 to-teal-100/80 border border-emerald-300/60 shadow-sm space-y-3 text-emerald-950">
-              <div className="flex items-center gap-2">
-                <ShieldIcon size={16} className="text-emerald-700" />
-                <span className="text-[14px] font-bold text-emerald-950">Zero-Leak Tokenization</span>
-              </div>
-              <p className="text-[12px] text-emerald-900 leading-relaxed">
-                Before sending context to cloud LLM APIs, all student identifiers are masked with cryptographic tokens:
-              </p>
-              <div className="space-y-1 font-mono text-[11px] text-emerald-950 bg-white/80 p-2.5 rounded border border-emerald-200">
-                <div>Name → <code className="text-emerald-800 font-bold">[CANDIDATE_NAME]</code></div>
-                <div>Email → <code className="text-emerald-800 font-bold">[EMAIL_MASKED]</code></div>
-                <div>Institution → <code className="text-emerald-800 font-bold">[UNIVERSITY_TOKEN]</code></div>
+                <div className="flex items-center justify-between pt-2 border-t border-teal-200/60">
+                  <span className="text-teal-900">Profile completeness</span>
+                  <span className="font-mono text-mini font-bold text-indigo-950">
+                    {filledProfile}/{profileFields.length} fields
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-teal-900">Checklist</span>
+                  <span className="font-mono text-mini font-bold text-indigo-950">
+                    {doneCount}/{steps.length} done
+                  </span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* RIGHT COLUMN: Full-Height Proposal Editor Studio (8 Cols) */}
-          <div className="lg:col-span-8 space-y-4">
-            {/* Tone Selector & Control Bar */}
-            <div className="p-4 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-slate-900">
-              <div className="flex items-center gap-2">
-                <span className="text-mini font-mono uppercase text-teal-800 whitespace-nowrap font-bold">
-                  Proposal Tone:
-                </span>
-                <div className="flex items-center gap-1.5">
-                  {(['ENGINEERING', 'RESEARCH', 'FOUNDER'] as const).map((t) => (
-                    <button
-                      key={t}
-                      type="button"
-                      onClick={() => handleToneChange(t)}
-                      className={`h-8 px-3 rounded-btn text-mini font-mono transition-all cursor-pointer border ${
-                        tone === t
-                          ? 'bg-gradient-to-r from-emerald-500 to-teal-600 border-emerald-600 text-white font-bold shadow-xs'
-                          : 'bg-white border-teal-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 shadow-xs'
+          {/* CENTER: Checklist */}
+          <div className="lg:col-span-7 xl:col-span-5 space-y-4">
+            <div className={`p-5 ${card}`}>
+              <div className="flex items-center justify-between gap-3 mb-1">
+                <h3 className="text-[16px] font-bold text-indigo-950">Preparation Checklist</h3>
+                <span className="text-mini font-mono text-emerald-700 font-bold">{progress}%</span>
+              </div>
+              <p className="text-[12px] text-teal-900 leading-relaxed">
+                Work through these steps before you register. Progress is saved on this device.
+              </p>
+              <div className="w-full h-2 bg-white/80 rounded-full overflow-hidden border border-teal-200/80 mt-3">
+                <div
+                  className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+
+              <ol className="mt-4 space-y-2">
+                {steps.map((step, i) => {
+                  const isDone = checked.includes(step.id);
+                  return (
+                    <li
+                      key={step.id}
+                      className={`p-3 rounded-btn border transition-colors ${
+                        isDone ? 'bg-emerald-50/80 border-emerald-200' : 'bg-white/80 border-teal-200/80'
                       }`}
                     >
-                      {t === 'ENGINEERING' ? 'Engineering' : t === 'RESEARCH' ? 'Academic Research' : 'Startup Founder'}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={handleRegenerate}
-                  disabled={isGenerating}
-                  className="h-8 px-3 rounded-btn border border-teal-200 bg-white hover:bg-slate-50 text-teal-950 text-mini font-mono flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs font-semibold"
-                >
-                  <FlaskIcon size={12} className="text-emerald-600" />
-                  <span>{isGenerating ? 'Synthesizing...' : 'Re-Draft with LLM'}</span>
-                </button>
-              </div>
+                      <div className="flex items-start gap-3">
+                        <button
+                          type="button"
+                          role="checkbox"
+                          aria-checked={isDone}
+                          aria-label={`Mark "${step.title}" as done`}
+                          onClick={() => toggleStep(step.id)}
+                          className={`w-6 h-6 rounded-md border flex items-center justify-center flex-shrink-0 cursor-pointer transition-colors ${
+                            isDone
+                              ? 'bg-emerald-500 border-emerald-600 text-white'
+                              : 'bg-white border-teal-300 text-teal-700 text-[11px] font-mono font-bold'
+                          }`}
+                        >
+                          {isDone ? <CheckIcon size={13} /> : i + 1}
+                        </button>
+                        <div className="min-w-0 flex-1">
+                          <div className={`text-[13px] font-semibold ${isDone ? 'text-emerald-900 line-through decoration-emerald-400' : 'text-indigo-950'}`}>
+                            {step.title}
+                          </div>
+                          <div className="text-[12px] text-slate-600 leading-relaxed mt-0.5">{step.detail}</div>
+                          {step.action &&
+                            (step.action.href ? (
+                              <a
+                                href={step.action.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 mt-1.5 text-mini font-mono font-semibold text-emerald-700 hover:underline"
+                              >
+                                {step.action.label}
+                                <ExternalLinkIcon size={11} />
+                              </a>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => step.action?.to && navigate(step.action.to)}
+                                className="inline-flex items-center gap-1 mt-1.5 text-mini font-mono font-semibold text-emerald-700 hover:underline cursor-pointer"
+                              >
+                                {step.action.label}
+                                <ChevronRightIcon size={11} />
+                              </button>
+                            ))}
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
             </div>
+          </div>
 
-            {/* Main Full-Height Textarea */}
-            <div className="rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] overflow-hidden flex flex-col text-slate-900">
-              <div className="px-4 py-2.5 border-b border-teal-200/60 bg-white/60 flex items-center justify-between text-mini font-mono">
-                <div className="flex items-center gap-2 text-indigo-950">
-                  <FileTextIcon size={14} className="text-emerald-600" />
-                  <span className="font-bold">application_proposal.md</span>
-                </div>
-                <span className="text-teal-800">Markdown Supported · Live Buffer</span>
+          {/* RIGHT: Copy-ready profile data for organizer forms */}
+          <div className="lg:col-span-12 xl:col-span-3 space-y-4">
+            <div className={`p-5 space-y-3 ${card}`}>
+              <div>
+                <h3 className="text-[15px] font-bold text-indigo-950">Quick Copy for Forms</h3>
+                <p className="text-[12px] text-teal-900 leading-relaxed mt-0.5">
+                  Copy your details into the organizer registration form in one click.
+                </p>
               </div>
-
-              <textarea
-                value={draftContent}
-                onChange={(e) => setDraftContent(e.target.value)}
-                rows={22}
-                className="w-full p-5 bg-white/70 hover:bg-white focus:bg-white text-slate-900 font-mono text-[13px] leading-relaxed focus:outline-none resize-y border-none select-text transition-colors"
-                placeholder="Drafting application..."
-              />
-
-              {/* Bottom Action Footer */}
-              <div className="px-5 py-3.5 border-t border-teal-200/60 bg-white/60 flex flex-wrap items-center justify-between gap-3">
-                <div className="text-mini font-mono text-teal-800">
-                  Sandbox Confinement: <code className="text-indigo-950 font-bold">/workspace/qadam/drafts/</code>
-                </div>
-
-                <div className="flex items-center gap-2.5">
-                  <button
-                    type="button"
-                    onClick={handleCopy}
-                    className="h-10 px-4 rounded-btn border border-teal-200 bg-white hover:bg-slate-50 text-slate-700 text-mini font-mono flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs font-semibold"
-                  >
-                    {copied ? <CheckIcon size={14} className="text-emerald-600" /> : <CopyIcon size={14} />}
-                    <span>{copied ? 'Copied to Clipboard' : 'Copy Draft'}</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleExportMarkdown}
-                    className="h-10 px-4 rounded-btn border border-teal-200 bg-white hover:bg-slate-50 text-slate-700 text-mini font-mono flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs font-semibold"
-                  >
-                    <span>Export .md</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleSaveToSandbox}
-                    className="h-10 px-5 rounded-btn bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-mini font-mono flex items-center gap-2 transition-all cursor-pointer shadow-xs"
-                  >
-                    <CheckIcon size={14} />
-                    <span>{isSaved ? 'Saved in /workspace/qadam ✓' : 'Save to Sandbox'}</span>
-                  </button>
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-1 gap-2">
+                {profileFields.map((f) => (
+                  <div key={f.label} className="p-2.5 rounded-btn bg-white/80 border border-teal-200/80">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-teal-800">{f.label}</span>
+                      {f.value ? (
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(f.label, f.value)}
+                          aria-label={`Copy ${f.label}`}
+                          className="h-6 px-2 rounded text-[10px] font-mono text-teal-800 hover:text-emerald-800 hover:bg-emerald-50 flex items-center gap-1 cursor-pointer"
+                        >
+                          {copiedField === f.label ? <CheckIcon size={11} /> : <CopyIcon size={11} />}
+                          {copiedField === f.label ? 'Copied' : 'Copy'}
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => navigate('/account?tab=profile')}
+                          className="h-6 px-2 rounded text-[10px] font-mono text-amber-700 hover:underline cursor-pointer"
+                        >
+                          Add
+                        </button>
+                      )}
+                    </div>
+                    <div className={`text-[12px] mt-0.5 break-words line-clamp-3 ${f.value ? 'text-slate-800' : 'text-slate-400 italic'}`}>
+                      {f.value || 'Not filled'}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

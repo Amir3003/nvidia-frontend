@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { USER_ROLES, POPULAR_TECH_STACK, CAREER_OBJECTIVES } from '../db/userProfile';
+import { USER_ROLES, CAREER_OBJECTIVES } from '../db/userProfile';
+import { SkillAutocomplete } from './SkillAutocomplete';
 import {
   CheckIcon,
   ShieldIcon,
@@ -109,12 +110,6 @@ export const OnboardingWizard: React.FC = () => {
   }, [isOnboardingOpen, setIsOnboardingOpen]);
 
   if (!isOnboardingOpen) return null;
-
-  const toggleSkill = (skill: string) => {
-    setSelectedSkills((prev) =>
-      prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill]
-    );
-  };
 
   const toggleGoal = (goal: string) => {
     setSelectedGoals((prev) =>
@@ -569,30 +564,12 @@ export const OnboardingWizard: React.FC = () => {
                 </p>
               </div>
 
-              {/* Tech Stack Chips */}
+              {/* Tech Stack Autocomplete */}
               <div>
                 <label className="block text-mini font-mono uppercase text-teal-900 font-semibold mb-2">
                   Core Technical Skills <span className="text-emerald-600">*</span>
                 </label>
-                <div className="flex flex-wrap gap-2">
-                  {POPULAR_TECH_STACK.map((tech) => {
-                    const isSelected = selectedSkills.includes(tech);
-                    return (
-                      <button
-                        key={tech}
-                        type="button"
-                        onClick={() => toggleSkill(tech)}
-                        className={`min-h-[38px] px-3.5 py-1.5 rounded-xl text-[12px] font-mono transition-all cursor-pointer active:scale-95 ${
-                          isSelected
-                            ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold shadow-xs'
-                            : 'bg-white border border-teal-200/90 text-slate-700 hover:border-teal-400'
-                        }`}
-                      >
-                        {isSelected ? `✓ ${tech}` : `+ ${tech}`}
-                      </button>
-                    );
-                  })}
-                </div>
+                <SkillAutocomplete value={selectedSkills} onChange={setSelectedSkills} />
               </div>
 
               {/* Career Goals */}
