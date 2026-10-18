@@ -124,39 +124,28 @@ export const NotificationsPage: React.FC = () => {
     setTestAlertSent(channel);
     setTimeout(() => setTestAlertSent(null), 3000);
 
-    if (channel === 'Discord') {
-      const targetWebhook = discordWebhook.trim() || OFFICIAL_DISCORD_WEBHOOK;
+    const base = import.meta.env.VITE_QADAM_API_URL?.replace(/\/$/, '');
+    if (base) {
       try {
-        await fetch(targetWebhook, {
+        const response = await fetch(`${base}/api/notify`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            username: 'QADAM Opportunity Radar',
-            avatar_url: 'https://raw.githubusercontent.com/nvidia/logos/main/nvidia.png',
-            embeds: [
-              {
-                title: '🎯 Nebius x NVIDIA Global AI Hackathon (94% Match)',
-                description: `⚡ **Live Opportunity Alert Dispatched for ${userProfile.name || 'Candidate'}**\nTrack: *GPU Compute & Multimodal Agents*`,
-                color: 1096065, // Emerald #10B981
-                fields: [
-                  { name: '🏆 Award / Pool', value: '$50,000 Compute Credits + Cash Pool', inline: true },
-                  { name: '⏳ Deadline', value: 'April 28, 2026', inline: true },
-                  { name: '🛡 Privacy Shield', value: 'Zero PII Leakage · Tokenized Prompt', inline: false },
-                ],
-                url: 'https://nvidia-pathfinder.vercel.app/application-studio?id=opp-1',
-                footer: { text: 'QADAM AI Platform · Verified Opportunity Ping' },
-                timestamp: new Date().toISOString(),
-              },
-            ],
+            channel,
+            user: userProfile.name || 'Candidate',
           }),
         });
-        addLog('SYSTEM', 'Discord Webhook payload dispatched directly to server channel (HTTP 204).');
+        if (response.ok) {
+          addLog('SYSTEM', `Dispatched ${channel} test notification via secure backend API.`);
+          return;
+        }
       } catch (err) {
-        addLog('SYSTEM', 'Discord test ping dispatched via local proxy handler.');
+        addLog('SYSTEM', err instanceof Error ? `Backend notification error: ${err.message}` : 'Backend notification failed');
+        return;
       }
-    } else {
-      addLog('SYSTEM', `Test push notification dispatched to ${channel} via secure local proxy.`);
     }
+
+    addLog('SYSTEM', `Test notification queued for ${channel}. Server-side notifications require backend configuration.`);
   };
 
   return (

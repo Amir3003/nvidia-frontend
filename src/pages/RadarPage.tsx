@@ -71,7 +71,7 @@ export const RadarPage: React.FC = () => {
             className="h-10 px-4 rounded-btn border border-teal-500/30 bg-slate-900/80 hover:bg-slate-800/80 text-teal-100 hover:border-teal-400 transition-colors flex items-center gap-2 text-[13px] font-mono font-medium disabled:opacity-50 shadow-xs cursor-pointer"
           >
             <RefreshIcon size={14} className={isTavilyScanning ? 'animate-spin text-emerald-400' : 'text-emerald-400'} />
-            <span>{isTavilyScanning ? 'Loading Radar…' : 'Refresh Results'}</span>
+            <span>{isTavilyScanning ? 'Loading Radar...' : 'Refresh Results'}</span>
           </button>
         }
       />
@@ -266,7 +266,11 @@ export const RadarPage: React.FC = () => {
 
         {filteredOpportunities.length === 0 && (
           <div className="p-12 text-center border border-dashed border-teal-500/30 rounded-card bg-slate-900/60">
-            <p className="text-[14px] text-teal-200 font-mono">No matching opportunities found for current criteria.</p>
+            <p className="text-[14px] text-teal-200 font-mono">
+              {opportunities.length === 0
+                ? 'No sourced opportunities have been published yet. Please check back after the scheduled scan.'
+                : 'No matching opportunities found for current criteria.'}
+            </p>
             <button
               type="button"
               onClick={() => {
