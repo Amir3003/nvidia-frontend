@@ -13,6 +13,7 @@ import {
   LogOutIcon,
 } from './Icons';
 import { useApp } from '../context/AppContext';
+import { useNetworkInbox } from '../lib/networkInbox';
 
 export const Sidebar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -22,6 +23,8 @@ export const Sidebar: React.FC = () => {
   const userCardRef = useRef<HTMLDivElement>(null);
 
   const { userProfile, resetToDefaultProfile } = useApp();
+  const { totalUnread } = useNetworkInbox();
+  const unreadLabel = totalUnread > 99 ? '99+' : String(totalUnread);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -150,6 +153,14 @@ export const Sidebar: React.FC = () => {
               >
                 <Icon size={16} className={isActive ? 'text-emerald-700' : 'text-teal-700/70 group-hover:text-emerald-700'} />
                 <span>{item.label}</span>
+                {item.to === '/network' && totalUnread > 0 && (
+                  <span
+                    className="ml-auto min-w-[20px] h-5 px-1.5 rounded-full bg-rose-500 text-white text-[11px] font-mono font-bold flex items-center justify-center"
+                    aria-label={`${totalUnread} unread messages`}
+                  >
+                    {unreadLabel}
+                  </span>
+                )}
               </NavLink>
             );
           })}
@@ -304,7 +315,17 @@ export const Sidebar: React.FC = () => {
                 }
               `}
             >
-              <Icon size={18} className={isActive ? 'text-emerald-400' : 'text-slate-400'} />
+              <span className="relative">
+                <Icon size={18} className={isActive ? 'text-emerald-400' : 'text-slate-400'} />
+                {item.to === '/network' && totalUnread > 0 && (
+                  <span
+                    className="absolute -top-1.5 -right-2.5 min-w-[16px] h-4 px-1 rounded-full bg-rose-500 text-white text-[9px] font-mono font-bold flex items-center justify-center"
+                    aria-label={`${totalUnread} unread messages`}
+                  >
+                    {unreadLabel}
+                  </span>
+                )}
+              </span>
               <span className="text-[10px] font-mono tracking-tight leading-none mt-0.5">
                 {item.label === 'Opportunity Radar'
                   ? 'Radar'

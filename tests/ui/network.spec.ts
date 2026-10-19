@@ -126,13 +126,15 @@ test("a fresh device can verify email, accept an invite, and exchange messages",
     await b.getByRole("button", { name: "Save network profile" }).click();
     await b.getByRole("button", { name: "Accept invitation" }).click();
     await b.getByRole("button", { name: "Open network", exact: true }).click();
-    await expect(b).toHaveURL(/\/network$/);
+    await expect(b).toHaveURL(/\/network\?tab=chats$/);
+    await a.getByRole("button", { name: "Find Teammates" }).click();
     await a.getByRole("button", { name: "Refresh", exact: true }).click();
     await a.getByRole("button", { name: "Message", exact: true }).click();
     await a
       .getByLabel("Message", { exact: true })
       .fill("Hello from another device");
     await a.getByRole("button", { name: "Send", exact: true }).click();
+    await b.getByRole("button", { name: "Find Teammates" }).click();
     await b.getByRole("button", { name: "Message", exact: true }).click();
     await expect(
       b.getByText("Hello from another device", { exact: true }),
