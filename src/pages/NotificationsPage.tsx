@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { PageHeader } from '../components/PageHeader';
 import {
@@ -12,11 +11,10 @@ import {
   DiscordIcon,
   KakaoTalkIcon,
 } from '../components/Icons';
-import { isKakaoConfigured, kakaoBotAction, kakaoChannelUrl, loadKakaoSession, startKakaoLogin } from '../lib/kakao';
+import { isKakaoChannelConfigured, kakaoChannelUrl } from '../lib/kakao';
 
 export const NotificationsPage: React.FC = () => {
   const { userProfile, updateUserProfile, addLog } = useApp();
-  const location = useLocation();
 
   const initialNotifications = userProfile.notifications || {
     telegram: false,
@@ -33,10 +31,7 @@ export const NotificationsPage: React.FC = () => {
 
   const [kakaoActive, setKakaoActive] = useState(initialNotifications.kakao);
   const [kakaoHandle, setKakaoHandle] = useState(initialNotifications.kakaoHandle || '');
-  const [kakaoBusy, setKakaoBusy] = useState<'' | 'connect' | 'test' | 'disconnect'>('');
-  const [kakaoNotice, setKakaoNotice] = useState<string>(
-    (location.state as { kakaoNotice?: string } | null)?.kakaoNotice || ''
-  );
+  const [kakaoNotice, setKakaoNotice] = useState('');
 
   const [discordActive, setDiscordActive] = useState(false);
   const [discordWebhook, setDiscordWebhook] = useState('');
@@ -89,62 +84,25 @@ export const NotificationsPage: React.FC = () => {
     addLog('SYSTEM', 'Telegram Bot integration disconnected');
   };
 
-  // Kakao bot: login with "talk_message" consent stores the subscription server-side,
-  // then the QADAM bot can send alerts to the user's KakaoTalk.
+  // The bot lives in the QADAM KakaoTalk Channel: connecting opens its 1:1 chat, where the
+  // student sends commands such as 구독 (subscribe) and 레이더 (radar).
   const handleConnectKakao = () => {
-    try {
-      setKakaoBusy('connect');
-      startKakaoLogin({ subscribe: true, returnTo: '/notifications' });
-    } catch (err) {
-      setKakaoBusy('');
-      setKakaoNotice(err instanceof Error ? err.message : 'Kakao login is unavailable');
+    if (!isKakaoChannelConfigured()) {
+      setKakaoNotice('The QADAM KakaoTalk channel is not configured yet.');
+      return;
     }
+    window.open(kakaoChannelUrl('/chat'), '_blank', 'noopener,noreferrer');
+    setKakaoNotice('');
+    setKakaoActive(true);
+    saveNotifications({ kakao: true, kakaoHandle: 'QADAM KakaoTalk bot' });
+    addLog('SYSTEM', 'Opened the QADAM KakaoTalk bot chat');
   };
 
-  const handleDisconnectKakao = async () => {
-    setKakaoBusy('disconnect');
-    try {
-      await kakaoBotAction('unsubscribe');
-      setKakaoNotice('');
-    } catch (err) {
-      setKakaoNotice(err instanceof Error ? err.message : 'Could not reach the Kakao bot');
-    } finally {
-      setKakaoBusy('');
-      setKakaoActive(false);
-      saveNotifications({ kakao: false });
-      addLog('SYSTEM', 'KakaoTalk bot alerts disconnected');
-    }
+  const handleDisconnectKakao = () => {
+    setKakaoActive(false);
+    saveNotifications({ kakao: false });
+    addLog('SYSTEM', 'KakaoTalk bot hidden on this device. Send 해지 to the bot to stop alerts.');
   };
-
-  const handleKakaoTest = async () => {
-    setKakaoBusy('test');
-    try {
-      await kakaoBotAction('test');
-      setKakaoNotice('');
-      setTestAlertSent('KakaoTalk');
-      setTimeout(() => setTestAlertSent(null), 3000);
-      addLog('SYSTEM', 'KakaoTalk test alert delivered');
-    } catch (err) {
-      setKakaoNotice(err instanceof Error ? err.message : 'KakaoTalk delivery failed');
-    } finally {
-      setKakaoBusy('');
-    }
-  };
-
-  // Reconcile the local badge with the server subscription while the Kakao session is valid
-  useEffect(() => {
-    if (!loadKakaoSession()) return;
-    let cancelled = false;
-    kakaoBotAction('status')
-      .then(({ subscribed }) => {
-        if (cancelled || typeof subscribed !== 'boolean') return;
-        setKakaoActive(subscribed);
-      })
-      .catch(() => undefined);
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   const DISCORD_INVITE_URL = 'https://discord.gg/A4rxRGx4Vt';
   const handleAuthorizeDiscord = () => {
@@ -346,18 +304,18 @@ export const NotificationsPage: React.FC = () => {
                 <h3 className="text-[17px] font-bold text-indigo-950">KakaoTalk Bot</h3>
                 <div className="text-mini font-mono text-amber-700 font-bold mt-0.5">카카오톡 알림 · QADAM 봇</div>
                 <p className="text-[13px] text-teal-950 mt-2 leading-relaxed">
-                  카카오 계정으로 로그인하면 QADAM 봇이 새로운 장학금과 해커톤 소식을 카카오톡으로 보내드립니다. Sign in with Kakao to receive daily radar alerts in KakaoTalk.
+                  QADAM 카카오톡 채널의 봇과 1:1로 대화하세요. 명령어로 최신 기회를 확인하고 알림을 구독할 수 있습니다. Chat with the QADAM bot in KakaoTalk: ask for opportunities and subscribe to alerts.
                 </p>
               </div>
 
               <div className="space-y-2 pt-2 border-t border-teal-200/60 text-mini font-mono text-teal-900">
                 <div className="flex items-center gap-2">
                   <CheckIcon size={12} className="text-emerald-600 flex-shrink-0" />
-                  <span>Daily radar digest in KakaoTalk</span>
+                  <span>Opportunity alerts in KakaoTalk</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckIcon size={12} className="text-emerald-600 flex-shrink-0" />
-                  <span>Channel commands: 레이더, 연결, 해지</span>
+                  <span>Commands: 레이더, 구독, 해지, 도움말</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckIcon size={12} className="text-emerald-600 flex-shrink-0" />
@@ -367,7 +325,7 @@ export const NotificationsPage: React.FC = () => {
 
               {kakaoActive && (
                 <div className="p-2.5 rounded bg-gradient-to-br from-amber-50 to-orange-100/80 border border-amber-300/60 text-mini font-mono text-amber-950">
-                  Linked ID: <span className="text-indigo-950 font-bold">{kakaoHandle}</span>
+                  In the chat send <span className="text-indigo-950 font-bold">구독</span> to subscribe and <span className="text-indigo-950 font-bold">도움말</span> for all commands.
                 </div>
               )}
             </div>
@@ -382,35 +340,17 @@ export const NotificationsPage: React.FC = () => {
                 <>
                   <button
                     type="button"
-                    onClick={handleKakaoTest}
-                    disabled={kakaoBusy !== ''}
-                    className="w-full h-10 rounded-btn bg-white hover:bg-slate-50 border border-teal-200 text-teal-950 text-mini font-mono flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs font-semibold disabled:opacity-60 disabled:cursor-wait"
+                    onClick={handleConnectKakao}
+                    className="w-full h-10 rounded-btn bg-[#fee500] hover:bg-[#ebd400] text-amber-950 text-mini font-mono font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
                   >
-                    <BellIcon size={14} className="text-emerald-600" />
-                    <span>
-                      {kakaoBusy === 'test'
-                        ? 'Sending...'
-                        : testAlertSent === 'KakaoTalk'
-                          ? 'Sent to KakaoTalk'
-                          : 'Send Test Opportunity Ping'}
-                    </span>
+                    <KakaoTalkIcon size={16} />
+                    <span>Open QADAM Bot Chat</span>
+                    <ExternalLinkIcon size={14} />
                   </button>
-                  {kakaoChannelUrl() && (
-                    <a
-                      href={kakaoChannelUrl('/chat')}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full h-10 rounded-btn bg-[#fee500] hover:bg-[#ebd400] text-amber-950 text-mini font-mono font-bold flex items-center justify-center gap-2 transition-colors shadow-xs"
-                    >
-                      <span>Chat with QADAM Bot</span>
-                      <ExternalLinkIcon size={14} />
-                    </a>
-                  )}
                   <button
                     type="button"
                     onClick={handleDisconnectKakao}
-                    disabled={kakaoBusy !== ''}
-                    className="w-full h-9 rounded-btn border border-rose-200 bg-white hover:bg-rose-50 text-rose-600 text-mini font-mono transition-colors cursor-pointer disabled:opacity-60"
+                    className="w-full h-9 rounded-btn border border-rose-200 bg-white hover:bg-rose-50 text-rose-600 text-mini font-mono transition-colors cursor-pointer"
                   >
                     Disconnect KakaoTalk
                   </button>
@@ -419,12 +359,11 @@ export const NotificationsPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleConnectKakao}
-                  disabled={kakaoBusy !== ''}
-                  title={isKakaoConfigured() ? 'Sign in with Kakao' : 'Kakao login is not configured'}
-                  className="w-full h-11 rounded-btn bg-[#fee500] hover:bg-[#ebd400] text-amber-950 font-bold text-[13px] font-mono transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-amber-900/15 disabled:opacity-60 disabled:cursor-wait"
+                  className="w-full h-11 rounded-btn bg-[#fee500] hover:bg-[#ebd400] text-amber-950 font-bold text-[13px] font-mono transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-amber-900/15"
                 >
                   <KakaoTalkIcon size={16} />
-                  <span>{kakaoBusy === 'connect' ? 'Redirecting...' : '카카오로 연결 / Connect KakaoTalk'}</span>
+                  <span>Connect KakaoTalk</span>
+                  <ExternalLinkIcon size={14} />
                 </button>
               )}
             </div>
