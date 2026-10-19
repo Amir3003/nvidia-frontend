@@ -39,7 +39,12 @@ export const App: React.FC = () => {
   // Shared network has verified email identity and must work on a fresh device.
   if (location.pathname === '/join') return <JoinPage />;
   if (location.pathname === '/network' && !hasValidProfile) {
-    return <div className="min-h-screen bg-slate-950 text-slate-100"><NetworkPage /></div>;
+    return (
+      <div className="min-h-[100dvh] bg-transparent text-slate-100 relative">
+        <AmbientBackground />
+        <NetworkPage />
+      </div>
+    );
   }
 
   // If user profile is not valid and not on /welcome, redirect to /welcome
