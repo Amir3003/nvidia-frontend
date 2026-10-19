@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { PageHeader } from '../components/PageHeader';
 import {
@@ -11,9 +12,11 @@ import {
   DiscordIcon,
   KakaoTalkIcon,
 } from '../components/Icons';
+import { isKakaoConfigured, kakaoBotAction, kakaoChannelUrl, loadKakaoSession, startKakaoLogin } from '../lib/kakao';
 
 export const NotificationsPage: React.FC = () => {
   const { userProfile, updateUserProfile, addLog } = useApp();
+  const location = useLocation();
 
   const initialNotifications = userProfile.notifications || {
     telegram: false,
@@ -30,7 +33,10 @@ export const NotificationsPage: React.FC = () => {
 
   const [kakaoActive, setKakaoActive] = useState(initialNotifications.kakao);
   const [kakaoHandle, setKakaoHandle] = useState(initialNotifications.kakaoHandle || '');
-  const [isKakaoModal, setIsKakaoModal] = useState(false);
+  const [kakaoBusy, setKakaoBusy] = useState<'' | 'connect' | 'test' | 'disconnect'>('');
+  const [kakaoNotice, setKakaoNotice] = useState<string>(
+    (location.state as { kakaoNotice?: string } | null)?.kakaoNotice || ''
+  );
 
   const [discordActive, setDiscordActive] = useState(false);
   const [discordWebhook, setDiscordWebhook] = useState('');
@@ -83,20 +89,62 @@ export const NotificationsPage: React.FC = () => {
     addLog('SYSTEM', 'Telegram Bot integration disconnected');
   };
 
+  // Kakao bot: login with "talk_message" consent stores the subscription server-side,
+  // then the QADAM bot can send alerts to the user's KakaoTalk.
   const handleConnectKakao = () => {
-    const handle = kakaoHandle.trim() || 'user_kakao_id';
-    setKakaoActive(true);
-    setKakaoHandle(handle);
-    saveNotifications({ kakao: true, kakaoHandle: handle });
-    setIsKakaoModal(false);
-    addLog('SYSTEM', `KakaoTalk Channel connected via Kakao i OpenBuilder for ${handle}`);
+    try {
+      setKakaoBusy('connect');
+      startKakaoLogin({ subscribe: true, returnTo: '/notifications' });
+    } catch (err) {
+      setKakaoBusy('');
+      setKakaoNotice(err instanceof Error ? err.message : 'Kakao login is unavailable');
+    }
   };
 
-  const handleDisconnectKakao = () => {
-    setKakaoActive(false);
-    saveNotifications({ kakao: false });
-    addLog('SYSTEM', 'KakaoTalk Channel integration disconnected');
+  const handleDisconnectKakao = async () => {
+    setKakaoBusy('disconnect');
+    try {
+      await kakaoBotAction('unsubscribe');
+      setKakaoNotice('');
+    } catch (err) {
+      setKakaoNotice(err instanceof Error ? err.message : 'Could not reach the Kakao bot');
+    } finally {
+      setKakaoBusy('');
+      setKakaoActive(false);
+      saveNotifications({ kakao: false });
+      addLog('SYSTEM', 'KakaoTalk bot alerts disconnected');
+    }
   };
+
+  const handleKakaoTest = async () => {
+    setKakaoBusy('test');
+    try {
+      await kakaoBotAction('test');
+      setKakaoNotice('');
+      setTestAlertSent('KakaoTalk');
+      setTimeout(() => setTestAlertSent(null), 3000);
+      addLog('SYSTEM', 'KakaoTalk test alert delivered');
+    } catch (err) {
+      setKakaoNotice(err instanceof Error ? err.message : 'KakaoTalk delivery failed');
+    } finally {
+      setKakaoBusy('');
+    }
+  };
+
+  // Reconcile the local badge with the server subscription while the Kakao session is valid
+  useEffect(() => {
+    if (!loadKakaoSession()) return;
+    let cancelled = false;
+    kakaoBotAction('status')
+      .then(({ subscribed }) => {
+        if (cancelled || typeof subscribed !== 'boolean') return;
+        setKakaoActive(subscribed);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const DISCORD_INVITE_URL = 'https://discord.gg/A4rxRGx4Vt';
   const handleAuthorizeDiscord = () => {
@@ -295,21 +343,21 @@ export const NotificationsPage: React.FC = () => {
               </div>
 
               <div>
-                <h3 className="text-[17px] font-bold text-indigo-950">KakaoTalk Channel</h3>
-                <div className="text-mini font-mono text-amber-700 font-bold mt-0.5">카카오 i OpenBuilder</div>
+                <h3 className="text-[17px] font-bold text-indigo-950">KakaoTalk Bot</h3>
+                <div className="text-mini font-mono text-amber-700 font-bold mt-0.5">카카오톡 알림 · QADAM 봇</div>
                 <p className="text-[13px] text-teal-950 mt-2 leading-relaxed">
-                  Dedicated Korean academic and tech alert integration via Kakao i OpenBuilder skill channel for East Asian opportunities and MEXT grants.
+                  카카오 계정으로 로그인하면 QADAM 봇이 새로운 장학금과 해커톤 소식을 카카오톡으로 보내드립니다. Sign in with Kakao to receive daily radar alerts in KakaoTalk.
                 </p>
               </div>
 
               <div className="space-y-2 pt-2 border-t border-teal-200/60 text-mini font-mono text-teal-900">
                 <div className="flex items-center gap-2">
                   <CheckIcon size={12} className="text-emerald-600 flex-shrink-0" />
-                  <span>MEXT & Asian research grants</span>
+                  <span>Daily radar digest in KakaoTalk</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckIcon size={12} className="text-emerald-600 flex-shrink-0" />
-                  <span>KakaoTalk 알림톡 official alerts</span>
+                  <span>Channel commands: 레이더, 연결, 해지</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckIcon size={12} className="text-emerald-600 flex-shrink-0" />
@@ -325,20 +373,44 @@ export const NotificationsPage: React.FC = () => {
             </div>
 
             <div className="space-y-2 pt-4 border-t border-teal-200/60">
+              {kakaoNotice && (
+                <div role="alert" className="p-2.5 rounded bg-rose-50 border border-rose-200 text-mini font-mono text-rose-700">
+                  {kakaoNotice}
+                </div>
+              )}
               {kakaoActive ? (
                 <>
                   <button
                     type="button"
-                    onClick={() => triggerTestAlert('KakaoTalk')}
-                    className="w-full h-10 rounded-btn bg-white hover:bg-slate-50 border border-teal-200 text-teal-950 text-mini font-mono flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs font-semibold"
+                    onClick={handleKakaoTest}
+                    disabled={kakaoBusy !== ''}
+                    className="w-full h-10 rounded-btn bg-white hover:bg-slate-50 border border-teal-200 text-teal-950 text-mini font-mono flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs font-semibold disabled:opacity-60 disabled:cursor-wait"
                   >
                     <BellIcon size={14} className="text-emerald-600" />
-                    <span>{testAlertSent === 'KakaoTalk' ? '알림톡 Dispatched ✓' : 'Send Test Opportunity Ping'}</span>
+                    <span>
+                      {kakaoBusy === 'test'
+                        ? 'Sending...'
+                        : testAlertSent === 'KakaoTalk'
+                          ? 'Sent to KakaoTalk'
+                          : 'Send Test Opportunity Ping'}
+                    </span>
                   </button>
+                  {kakaoChannelUrl() && (
+                    <a
+                      href={kakaoChannelUrl('/chat')}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full h-10 rounded-btn bg-[#fee500] hover:bg-[#ebd400] text-amber-950 text-mini font-mono font-bold flex items-center justify-center gap-2 transition-colors shadow-xs"
+                    >
+                      <span>Chat with QADAM Bot</span>
+                      <ExternalLinkIcon size={14} />
+                    </a>
+                  )}
                   <button
                     type="button"
                     onClick={handleDisconnectKakao}
-                    className="w-full h-9 rounded-btn border border-rose-200 bg-white hover:bg-rose-50 text-rose-600 text-mini font-mono transition-colors cursor-pointer"
+                    disabled={kakaoBusy !== ''}
+                    className="w-full h-9 rounded-btn border border-rose-200 bg-white hover:bg-rose-50 text-rose-600 text-mini font-mono transition-colors cursor-pointer disabled:opacity-60"
                   >
                     Disconnect KakaoTalk
                   </button>
@@ -346,11 +418,13 @@ export const NotificationsPage: React.FC = () => {
               ) : (
                 <button
                   type="button"
-                  onClick={() => setIsKakaoModal(true)}
-                  className="w-full h-11 rounded-btn bg-[#fee500] hover:bg-[#ebd400] text-amber-950 font-bold text-[13px] font-mono transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-amber-900/15"
+                  onClick={handleConnectKakao}
+                  disabled={kakaoBusy !== ''}
+                  title={isKakaoConfigured() ? 'Sign in with Kakao' : 'Kakao login is not configured'}
+                  className="w-full h-11 rounded-btn bg-[#fee500] hover:bg-[#ebd400] text-amber-950 font-bold text-[13px] font-mono transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-amber-900/15 disabled:opacity-60 disabled:cursor-wait"
                 >
-                  <span>Authorize with KakaoTalk</span>
-                  <ExternalLinkIcon size={14} />
+                  <KakaoTalkIcon size={16} />
+                  <span>{kakaoBusy === 'connect' ? 'Redirecting...' : '카카오로 연결 / Connect KakaoTalk'}</span>
                 </button>
               )}
             </div>
@@ -510,53 +584,6 @@ export const NotificationsPage: React.FC = () => {
                 type="button"
                 onClick={handleConnectTelegram}
                 className="h-10 px-5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-semibold rounded-btn text-mini font-mono cursor-pointer transition-colors shadow-xs"
-              >
-                Confirm Connection
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal: Authorize KakaoTalk */}
-      {isKakaoModal && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setIsKakaoModal(false);
-          }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto"
-        >
-          <div className="w-full max-w-md max-h-[85vh] my-auto overflow-y-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-6 space-y-4 text-slate-900">
-            <h3 className="text-[17px] font-bold text-indigo-950">Link KakaoTalk Channel</h3>
-            <p className="text-[13px] text-teal-950 leading-relaxed">
-              Connect via Kakao i OpenBuilder channel to receive official 알림톡 notifications for Asian grants and scholarships.
-            </p>
-            <div>
-              <label className="block text-mini font-mono uppercase text-teal-900 font-semibold mb-1">
-                Kakao ID or Phone Number
-              </label>
-              <input
-                type="text"
-                value={kakaoHandle}
-                onChange={(e) => setKakaoHandle(e.target.value)}
-                placeholder="kakao_id or +82 10-xxxx-xxxx"
-                className="w-full h-11 px-3.5 bg-white border border-teal-200 rounded-btn text-[13px] text-slate-900 font-mono focus:border-emerald-600 focus:outline-none transition-colors shadow-xs"
-              />
-            </div>
-            <div className="pt-2 flex items-center justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => setIsKakaoModal(false)}
-                className="h-10 px-4 rounded-btn border border-teal-200 text-slate-700 hover:text-slate-900 hover:bg-white text-mini font-mono cursor-pointer transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleConnectKakao}
-                className="h-10 px-5 bg-[#fee500] hover:bg-[#ebd400] text-amber-950 font-bold rounded-btn text-mini font-mono cursor-pointer transition-colors shadow-xs"
               >
                 Confirm Connection
               </button>

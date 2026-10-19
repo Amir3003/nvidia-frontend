@@ -36,8 +36,10 @@ export const WelcomePage: React.FC = () => {
     setKakaoStatus('loading');
 
     completeKakaoLogin(search)
-      .then(({ user }) => {
+      .then(({ session, subscribed, subscribeError, returnTo }) => {
+        const { user } = session;
         const [first = '', ...rest] = user.nickname.trim().split(/\s+/);
+        const linkedToBot = subscribed || Boolean(userProfile.notifications?.kakao);
         updateUserProfile({
           name: userProfile.name || first,
           surname: userProfile.surname || rest.join(' '),
@@ -49,7 +51,7 @@ export const WelcomePage: React.FC = () => {
             discord: false,
             discordWebhook: '',
             ...userProfile.notifications,
-            kakao: true,
+            kakao: linkedToBot,
             kakaoHandle: user.nickname || user.id,
           },
         });
@@ -57,7 +59,7 @@ export const WelcomePage: React.FC = () => {
         if ((userProfile.name || first).trim().length < 2) {
           setIsOnboardingOpen(true);
         } else {
-          navigate('/', { replace: true });
+          navigate(returnTo, { replace: true, state: subscribeError ? { kakaoNotice: subscribeError } : undefined });
         }
       })
       .catch((err: unknown) => {
@@ -68,7 +70,7 @@ export const WelcomePage: React.FC = () => {
 
   const handleKakaoLogin = () => {
     try {
-      startKakaoLogin();
+      startKakaoLogin({ returnTo: '/' });
     } catch (err) {
       setKakaoStatus('error');
       setKakaoError(err instanceof Error ? err.message : 'Kakao login is unavailable');

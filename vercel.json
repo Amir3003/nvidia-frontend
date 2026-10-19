@@ -4,5 +4,11 @@
             "source": "/((?!api/).*)",
             "destination": "/index.html"
         }
+    ],
+    "crons": [
+        {
+            "path": "/api/kakao/notify",
+            "schedule": "0 7 * * *"
+        }
     ]
 }
