@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { completeKakaoLogin, hasKakaoCallback, isKakaoConfigured, startKakaoLogin } from '../lib/kakao';
 import {
   ChevronRightIcon,
   ShieldIcon,
@@ -19,63 +18,8 @@ import {
 } from '../components/Icons';
 
 export const WelcomePage: React.FC = () => {
-  const { setIsOnboardingOpen, userProfile, updateUserProfile } = useApp();
-  const location = useLocation();
-  const navigate = useNavigate();
+  const { setIsOnboardingOpen } = useApp();
   const sectionRef = useRef<HTMLDivElement>(null);
-  const kakaoHandledRef = useRef(false);
-  const [kakaoStatus, setKakaoStatus] = useState<'idle' | 'loading' | 'error'>('idle');
-  const [kakaoError, setKakaoError] = useState('');
-
-  // Kakao OAuth redirect handler: /welcome?code=...&state=...
-  useEffect(() => {
-    if (kakaoHandledRef.current || !hasKakaoCallback(location.search)) return;
-    kakaoHandledRef.current = true;
-    const search = location.search;
-    navigate('/welcome', { replace: true });
-    setKakaoStatus('loading');
-
-    completeKakaoLogin(search)
-      .then(({ session, subscribed, subscribeError, returnTo }) => {
-        const { user } = session;
-        const [first = '', ...rest] = user.nickname.trim().split(/\s+/);
-        const linkedToBot = subscribed || Boolean(userProfile.notifications?.kakao);
-        updateUserProfile({
-          name: userProfile.name || first,
-          surname: userProfile.surname || rest.join(' '),
-          email: userProfile.email || user.email,
-          avatarUrl: userProfile.avatarUrl || user.avatarUrl || undefined,
-          notifications: {
-            telegram: false,
-            telegramHandle: '',
-            discord: false,
-            discordWebhook: '',
-            ...userProfile.notifications,
-            kakao: linkedToBot,
-            kakaoHandle: user.nickname || user.id,
-          },
-        });
-        setKakaoStatus('idle');
-        if ((userProfile.name || first).trim().length < 2) {
-          setIsOnboardingOpen(true);
-        } else {
-          navigate(returnTo, { replace: true, state: subscribeError ? { kakaoNotice: subscribeError } : undefined });
-        }
-      })
-      .catch((err: unknown) => {
-        setKakaoStatus('error');
-        setKakaoError(err instanceof Error ? err.message : 'Kakao login failed');
-      });
-  }, [location.search, navigate, setIsOnboardingOpen, updateUserProfile, userProfile]);
-
-  const handleKakaoLogin = () => {
-    try {
-      startKakaoLogin({ returnTo: '/' });
-    } catch (err) {
-      setKakaoStatus('error');
-      setKakaoError(err instanceof Error ? err.message : 'Kakao login is unavailable');
-    }
-  };
   const [activeStage, setActiveStage] = useState<0 | 1 | 2>(0);
 
   // High-performance 60fps Scroll-Locked Stage Controller with RAF & re-render debounce
@@ -153,18 +97,8 @@ export const WelcomePage: React.FC = () => {
           </span>
         </div>
 
-        {/* Top-Right Buttons: Kakao Login and Sign In */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          <button
-            type="button"
-            onClick={handleKakaoLogin}
-            disabled={kakaoStatus === 'loading'}
-            title={isKakaoConfigured() ? 'Sign in with Kakao' : 'Kakao login is not configured'}
-            className="h-10 px-3 sm:px-4 rounded-btn bg-[#FEE500] hover:bg-[#F5DC00] text-[#191919] text-mini font-mono font-semibold transition-colors shadow-md cursor-pointer flex items-center gap-2 disabled:opacity-60 disabled:cursor-wait"
-          >
-            <KakaoTalkIcon size={16} />
-            <span className="hidden sm:inline">{kakaoStatus === 'loading' ? 'Connecting...' : 'Kakao Login'}</span>
-          </button>
+        {/* Top-Right Button: ALWAYS Sign In */}
+        <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={handleOpenAuth}
@@ -175,20 +109,6 @@ export const WelcomePage: React.FC = () => {
           </button>
         </div>
       </header>
-
-      {kakaoStatus !== 'idle' && (
-        <div
-          role={kakaoStatus === 'error' ? 'alert' : 'status'}
-          className="fixed top-20 left-4 right-4 sm:left-auto sm:right-6 sm:w-96 z-50 rounded-card border px-4 py-3 text-mini font-mono shadow-xl bg-slate-900/95 backdrop-blur-md border-teal-500/30 text-teal-100 flex items-start justify-between gap-3"
-        >
-          <span>{kakaoStatus === 'loading' ? 'Completing Kakao sign-in...' : `Kakao sign-in failed: ${kakaoError}`}</span>
-          {kakaoStatus === 'error' && (
-            <button type="button" onClick={() => setKakaoStatus('idle')} className="text-teal-300 hover:text-white cursor-pointer">
-              Close
-            </button>
-          )}
-        </div>
-      )}
 
       {/* ========================================================= */}
       {/* SCREEN 1: ENLARGED HERO SECTION (Cosmic Pearl & Soft Ivory) */}
