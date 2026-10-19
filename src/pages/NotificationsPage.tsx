@@ -101,7 +101,7 @@ export const NotificationsPage: React.FC = () => {
   const handleDisconnectKakao = () => {
     setKakaoActive(false);
     saveNotifications({ kakao: false });
-    addLog('SYSTEM', 'KakaoTalk bot hidden on this device. Send 해지 to the bot to stop alerts.');
+    addLog('SYSTEM', 'KakaoTalk bot card reset on this device');
   };
 
   const DISCORD_INVITE_URL = 'https://discord.gg/A4rxRGx4Vt';
@@ -304,18 +304,18 @@ export const NotificationsPage: React.FC = () => {
                 <h3 className="text-[17px] font-bold text-indigo-950">KakaoTalk Bot</h3>
                 <div className="text-mini font-mono text-amber-700 font-bold mt-0.5">카카오톡 알림 · QADAM 봇</div>
                 <p className="text-[13px] text-teal-950 mt-2 leading-relaxed">
-                  QADAM 카카오톡 채널의 봇과 1:1로 대화하세요. 명령어로 최신 기회를 확인하고 알림을 구독할 수 있습니다. Chat with the QADAM bot in KakaoTalk: ask for opportunities and subscribe to alerts.
+                  QADAM 카카오톡 채널의 봇과 1:1로 대화하세요. 명령어로 최신 장학금, 해커톤, 마감 일정을 확인하세요. Chat with the QADAM bot in KakaoTalk and ask for the latest opportunities.
                 </p>
               </div>
 
               <div className="space-y-2 pt-2 border-t border-teal-200/60 text-mini font-mono text-teal-900">
                 <div className="flex items-center gap-2">
                   <CheckIcon size={12} className="text-emerald-600 flex-shrink-0" />
-                  <span>Opportunity alerts in KakaoTalk</span>
+                  <span>Latest opportunities on request</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckIcon size={12} className="text-emerald-600 flex-shrink-0" />
-                  <span>Commands: 레이더, 구독, 해지, 도움말</span>
+                  <span>Commands: 레이더, 마감, 사이트, 도움말</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckIcon size={12} className="text-emerald-600 flex-shrink-0" />
@@ -325,7 +325,7 @@ export const NotificationsPage: React.FC = () => {
 
               {kakaoActive && (
                 <div className="p-2.5 rounded bg-gradient-to-br from-amber-50 to-orange-100/80 border border-amber-300/60 text-mini font-mono text-amber-950">
-                  In the chat send <span className="text-indigo-950 font-bold">구독</span> to subscribe and <span className="text-indigo-950 font-bold">도움말</span> for all commands.
+                  In the chat send <span className="text-indigo-950 font-bold">레이더</span> for opportunities and <span className="text-indigo-950 font-bold">도움말</span> for all commands.
                 </div>
               )}
             </div>

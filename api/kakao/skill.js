@@ -1,21 +1,19 @@
 // Kakao i Open Builder skill server for the QADAM KakaoTalk Channel chatbot.
-// Point the bot's fallback block and the qadam_alert event block at this URL. If
-// KAKAO_SKILL_SECRET is set, add the header "x-qadam-skill-key: <secret>" in the skill settings.
-import { isEventApiConfigured, readJsonBody, webAppUrl } from '../_lib/kakao.js';
-import { addSubscriber, isStoreConfigured, isSubscriber, removeSubscriber } from '../_lib/store.js';
+// Point the bot's fallback block at this URL. The bot only answers messages, which is free;
+// it never messages first (that needs the paid Event API). If KAKAO_SKILL_SECRET is set, add
+// the header "x-qadam-skill-key: <secret>" in the skill settings.
+import { readJsonBody, webAppUrl } from '../_lib/kakao.js';
 import { loadRadar } from '../../bot/radar-data.mjs';
 
 const QUICK_REPLIES = [
   { label: '레이더 Radar', action: 'message', messageText: '레이더' },
-  { label: '구독 Subscribe', action: 'message', messageText: '구독' },
+  { label: '마감 Deadlines', action: 'message', messageText: '마감' },
   { label: '도움말 Help', action: 'message', messageText: '도움말' },
 ];
 
 const COMMANDS = {
   radar: ['레이더', 'radar', '/radar', '기회', '공고'],
-  subscribe: ['구독', 'subscribe', '/subscribe', '알림'],
-  stop: ['해지', '구독해지', 'stop', '/stop', 'unsubscribe', '/unsubscribe'],
-  status: ['상태', 'status', '/status'],
+  deadlines: ['마감', 'deadline', 'deadlines', '/deadlines', '마감임박'],
   site: ['사이트', 'site', 'web', '/site'],
   help: ['도움말', 'help', '/help', '/start', '시작', '안녕', '안녕하세요', 'hi', 'hello'],
 };
@@ -52,31 +50,14 @@ async function radarReply() {
   ]);
 }
 
-async function subscribeReply(botUserKey) {
-  if (!botUserKey || !isStoreConfigured()) {
-    return reply([text('알림 기능을 준비 중입니다. Alerts are not available yet, try "레이더" anytime.')]);
-  }
-  await addSubscriber(botUserKey);
-  const note = isEventApiConfigured()
-    ? '새로운 장학금과 해커톤 소식을 이 채팅으로 보내드릴게요. New opportunities will arrive in this chat.'
-    : '구독이 저장되었습니다. 알림 발송이 시작되면 이 채팅으로 보내드릴게요. Saved: alerts will arrive here once sending is enabled.';
-  return reply([text(`QADAM 알림 구독 완료. ${note}\n\n"해지" stops alerts.`)]);
-}
-
-async function stopReply(botUserKey) {
-  if (botUserKey && isStoreConfigured()) await removeSubscriber(botUserKey);
-  return reply([text('알림이 해지되었습니다. Alerts are off. Send "구독" to turn them back on.')]);
-}
-
-async function statusReply(botUserKey) {
-  const subscribed = Boolean(botUserKey && isStoreConfigured() && (await isSubscriber(botUserKey)));
-  return reply([
-    text(
-      subscribed
-        ? '알림 구독 중입니다. You are subscribed to QADAM alerts.'
-        : '구독하지 않았습니다. Send "구독" to subscribe.'
-    ),
-  ]);
+async function deadlinesReply() {
+  const items = (await loadRadar(50).catch(() => []))
+    .filter((item) => item.deadline)
+    .sort((a, b) => a.deadline.localeCompare(b.deadline))
+    .slice(0, 5);
+  if (!items.length) return reply([text('마감일이 정해진 기회가 없습니다. No upcoming deadlines right now.')]);
+  const lines = items.map((item, index) => `${index + 1}. ${item.deadline} · ${item.title}\n${item.url}`);
+  return reply([text(['마감 임박 / Closing soon', '', ...lines].join('\n'))]);
 }
 
 const siteReply = () =>
@@ -97,9 +78,7 @@ const helpReply = () =>
         'QADAM («Қадам») AI Opportunity Hub',
         '',
         '레이더 / radar: 최신 장학금, 해커톤, 인턴십',
-        '구독 / subscribe: 새 기회 알림 받기',
-        '해지 / stop: 알림 해지',
-        '상태 / status: 구독 상태 확인',
+        '마감 / deadlines: 마감이 가까운 기회',
         '사이트 / site: QADAM 웹사이트',
         '도움말 / help: 명령어 보기',
       ].join('\n')
@@ -117,26 +96,14 @@ export default async function handler(request, response) {
   }
 
   const body = readJsonBody(request);
-  // Event API deliveries (qadam_alert block) carry the message in the event params.
-  const alertText = body.action?.params?.qadam_text;
-  if (typeof alertText === 'string' && alertText) {
-    return response.status(200).json(reply([text(alertText)]));
-  }
-
   const utterance = String(body.userRequest?.utterance || '');
-  // userRequest.user.id is the botUserKey: stable per user and channel, used for Event API.
-  const botUserKey = body.userRequest?.user?.id ? String(body.userRequest.user.id) : '';
 
   try {
     switch (detectCommand(utterance)) {
       case 'radar':
         return response.status(200).json(await radarReply());
-      case 'subscribe':
-        return response.status(200).json(await subscribeReply(botUserKey));
-      case 'stop':
-        return response.status(200).json(await stopReply(botUserKey));
-      case 'status':
-        return response.status(200).json(await statusReply(botUserKey));
+      case 'deadlines':
+        return response.status(200).json(await deadlinesReply());
       case 'site':
         return response.status(200).json(siteReply());
       case 'help':
