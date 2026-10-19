@@ -98,7 +98,7 @@ For local development use the same variables in your ignored `.env` file, then
   messages, max 20 owned teams, max 30 members per team and limited invite creation.
 - Chat is ordinary server-stored text, **not end-to-end encrypted**. Do not claim
   E2EE, CV protection or OpenShell isolation based on this feature.
-- Sessions use sessionStorage and expire on tab/browser session end. A new device
+- Sessions are kept in localStorage on this device until "Sign out of network". A new device
   verifies its email again. Sign out of network is separate from local workspace logout.
 
 ## Verification

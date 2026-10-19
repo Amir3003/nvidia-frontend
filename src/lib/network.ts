@@ -6,7 +6,8 @@ export const networkClient =
   url && key
     ? createClient(url, key, {
         auth: {
-          storage: window.sessionStorage,
+          // Persist the network sign-in on this device until the user signs out.
+          storage: window.localStorage,
           storageKey: "qadam-network-auth",
           detectSessionInUrl: false,
         },
