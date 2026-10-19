@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { NetworkAccess } from "../components/NetworkAccess";
 import { AmbientBackground } from "../components/AmbientBackground";
 import { NetworkWorkspace } from "./NetworkPage";
 import { invitationCode } from "../lib/network";
 
 export function JoinPage() {
-  const code = invitationCode();
+  // Read once: switching tabs rewrites the URL and drops the #code fragment.
+  const [code] = useState(invitationCode);
   return (
     <main className="min-h-[100dvh] bg-transparent text-slate-100 relative">
       <AmbientBackground />
