@@ -12,20 +12,26 @@
     "scan": "node --env-file=.env backend/server.mjs scan",
     "bot": "node --env-file=.env bot/index.mjs",
     "bot:discord": "node --env-file=.env bot/discord.mjs",
-    "bot:all": "concurrently \"npm run bot\" \"npm run bot:discord\""
+    "bot:all": "concurrently \"npm run bot\" \"npm run bot:discord\"",
+    "test:network": "node --test tests/network-db.test.mjs",
+    "test:network-ui": "playwright test --config playwright.network.config.ts"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.10",
+    "@playwright/test": "^1.51.1",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "autoprefixer": "^10.6.1",
     "concurrently": "^10.0.6",
     "postcss": "^8.5.30",
+    "prettier": "^3.9.10",
     "tailwindcss": "^3.4.19",
     "typescript": "~6.0.2",
     "vite": "^8.3.0"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-router-dom": "^7.18.4"
