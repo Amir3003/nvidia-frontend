@@ -9,6 +9,7 @@ import { CvLabPage } from './pages/CvLabPage';
 import { NetworkPage } from './pages/NetworkPage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { ApplicationStudioPage } from './pages/ApplicationStudioPage';
+import { JoinPage } from './pages/JoinPage';
 import { AccountPortalPage } from './pages/AccountPortalPage';
 import { WelcomePage } from './pages/WelcomePage';
 import { PrivacyPage } from './pages/PrivacyPage';
@@ -33,6 +34,12 @@ export const App: React.FC = () => {
         <PrivacyPage />
       </div>
     );
+  }
+
+  // Shared network has verified email identity and must work on a fresh device.
+  if (location.pathname === '/join') return <JoinPage />;
+  if (location.pathname === '/network' && !hasValidProfile) {
+    return <div className="min-h-screen bg-slate-950 text-slate-100"><NetworkPage /></div>;
   }
 
   // If user profile is not valid and not on /welcome, redirect to /welcome
