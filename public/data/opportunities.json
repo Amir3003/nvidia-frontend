@@ -8,7 +8,8 @@
     "deadline": null,
     "deadlineEvidence": null,
     "eligibility": "check source",
-    "skills": []
+    "skills": [],
+    "lastSeen": "2026-10-20"
   },
   {
     "id": "scan-aHR0cHM6Ly93d3cu",
@@ -19,6 +20,54 @@
     "deadline": null,
     "deadlineEvidence": null,
     "eligibility": "check source",
-    "skills": []
+    "skills": [],
+    "lastSeen": "2026-10-20"
+  },
+  {
+    "id": "scan-aHR0cHM6Ly9jbG91",
+    "type": "HACKATHON",
+    "title": "Agents for Impact 2026",
+    "organization": "Google Cloud",
+    "url": "https://cloud.google.com/resources/agents-for-impact-2026",
+    "deadline": null,
+    "deadlineEvidence": null,
+    "eligibility": "check source",
+    "skills": [
+      "AI agents",
+      "social impact"
+    ],
+    "firstSeen": "2026-10-20",
+    "lastSeen": "2026-10-20"
+  },
+  {
+    "id": "scan-aHR0cHM6Ly93d3cu",
+    "type": "HACKATHON",
+    "title": "Google UK Students AI Hackathon 2026",
+    "organization": "Google UK",
+    "url": "https://www.edu-live.com/posts/google-uk-students-ai-hackathon-2026---apply",
+    "deadline": null,
+    "deadlineEvidence": null,
+    "eligibility": "check source",
+    "skills": [
+      "AI development",
+      "technical implementation",
+      "business feasibility",
+      "presentation quality"
+    ],
+    "firstSeen": "2026-10-20",
+    "lastSeen": "2026-10-20"
+  },
+  {
+    "id": "scan-aHR0cHM6Ly9haWhh",
+    "type": "HACKATHON",
+    "title": "USAII® Global AI Hackathon 2026",
+    "organization": "USAII®",
+    "url": "https://aihackathon.usaii.org",
+    "deadline": null,
+    "deadlineEvidence": null,
+    "eligibility": "check source",
+    "skills": [],
+    "firstSeen": "2026-10-20",
+    "lastSeen": "2026-10-20"
   }
 ]
