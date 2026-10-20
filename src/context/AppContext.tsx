@@ -321,10 +321,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (!response.ok) throw new Error(`Radar data responded ${response.status}`);
       const data = await response.json() as { results?: Array<{
         id: string; type: Opportunity['type']; title: string; organization: string;
-        deadline: string | null; url: string; eligibility: string; skills: string[]; summary?: string;
+        deadline: string | null; url: string; eligibility: string; skills: string[]; summary?: string; location?: string; countries?: string[];
       }> } | Array<{
         id: string; type: Opportunity['type']; title: string; organization: string;
-        deadline: string | null; url: string; eligibility: string; skills: string[]; summary?: string;
+        deadline: string | null; url: string; eligibility: string; skills: string[]; summary?: string; location?: string; countries?: string[];
       }>;
       const results = Array.isArray(data) ? data : data.results;
       if (!Array.isArray(results)) throw new Error('Radar data format is invalid');
@@ -361,8 +361,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         ].filter(Boolean).join(' ') || 'Details and eligibility are on the official page.',
         skills: item.skills || [],
         url: item.url,
-        // Not extracted by the scan; empty fields are hidden in the UI.
-        location: '',
+        // Location and countries come from the source text; empty when not stated.
+        location: item.location || '',
+        countries: item.countries || [],
         award: '',
       }));
       setServerOpportunities(mapped);

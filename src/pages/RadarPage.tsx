@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { PageHeader } from '../components/PageHeader';
+import { availableIn, profileCountry } from '../db/location';
 import {
   SearchIcon,
   RefreshIcon,
@@ -26,7 +27,9 @@ export const RadarPage: React.FC = () => {
   } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState<'All' | 'Hackathons' | 'Grants' | 'Internships' | 'Match >80%'>('All');
+  const [activeFilter, setActiveFilter] = useState<'All' | 'Hackathons' | 'Grants' | 'Internships' | 'Near me' | 'Match >80%'>('All');
+  // The radar is global; the country filter appears only when the profile has a country.
+  const country = profileCountry(userProfile.location || '');
 
   // Check if candidate profile has been configured with skills
   const isProfileReady = userProfile.isOnboarded && userProfile.skills && userProfile.skills.length > 0;
@@ -38,6 +41,7 @@ export const RadarPage: React.FC = () => {
       if (activeFilter === 'Grants' && opp.type !== 'GRANT') return false;
       if (activeFilter === 'Internships' && opp.type !== 'INTERNSHIP') return false;
       if (activeFilter === 'Match >80%' && opp.match < 80) return false;
+      if (activeFilter === 'Near me' && !availableIn(opp, country)) return false;
 
       // Filter by search query
       if (searchQuery.trim() !== '') {
@@ -52,7 +56,7 @@ export const RadarPage: React.FC = () => {
 
       return true;
     });
-  }, [opportunities, activeFilter, searchQuery]);
+  }, [opportunities, activeFilter, searchQuery, country]);
 
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-transparent relative z-10 text-slate-100">
@@ -124,7 +128,11 @@ export const RadarPage: React.FC = () => {
 
           {/* Filter Chips */}
           <div className="flex flex-wrap items-center gap-2">
-            {(['All', 'Hackathons', 'Grants', 'Internships', 'Match >80%'] as const).map((filter) => {
+            {([
+              'All', 'Hackathons', 'Grants', 'Internships',
+              ...(country ? (['Near me'] as const) : []),
+              'Match >80%',
+            ] as const).map((filter) => {
               const isActive = activeFilter === filter;
               return (
                 <button
@@ -139,7 +147,7 @@ export const RadarPage: React.FC = () => {
                     }
                   `}
                 >
-                  {filter}
+                  {filter === 'Near me' ? `Open from ${country}` : filter}
                 </button>
               );
             })}
@@ -277,6 +285,8 @@ export const RadarPage: React.FC = () => {
             <p className="text-[14px] text-teal-200 font-mono">
               {opportunities.length === 0
                 ? 'No sourced opportunities have been published yet. Please check back after the scheduled scan.'
+                : !searchQuery.trim() && activeFilter === 'Near me'
+                  ? `Nothing is confirmed open from ${country} yet. A listing shows here when its source says online, worldwide or names ${country}.`
                 : !searchQuery.trim() && (activeFilter === 'Grants' || activeFilter === 'Internships')
                   ? `No ${activeFilter.toLowerCase()} on the radar yet. The daily scan adds new ones with an official link.`
                   : 'No matching opportunities found for current criteria.'}
