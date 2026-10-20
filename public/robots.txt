@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://nvidia-pathfinder.vercel.app/sitemap.xml
