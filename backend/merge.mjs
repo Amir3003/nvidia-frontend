@@ -1,4 +1,12 @@
+import { createHash } from 'node:crypto';
+
 const MAX_PUBLISHED = 30;
+
+// Stable id from the full URL. The old id used the first 12 URL characters,
+// so every "https://www." link got the same id.
+export function opportunityId(url) {
+  return `scan-${createHash('sha1').update(url).digest('hex').slice(0, 12)}`;
+}
 const UNDATED_TTL_DAYS = 21;
 
 function addDays(isoDate, days) {
@@ -18,7 +26,7 @@ export function mergeOpportunities(previous, fresh, today) {
     if (item.deadline && item.deadline < today) continue;
     if (!item.deadline && (item.lastSeen || today) < undatedCutoff) continue;
     // Items published before lastSeen existed start aging from today.
-    byUrl.set(item.url, item.lastSeen ? item : { ...item, lastSeen: today });
+    byUrl.set(item.url, { ...item, id: opportunityId(item.url), lastSeen: item.lastSeen || today });
   }
   for (const item of fresh) {
     const old = byUrl.get(item.url);
@@ -26,6 +34,9 @@ export function mergeOpportunities(previous, fresh, today) {
     const keepOldDeadline = old?.deadline && !item.deadline;
     byUrl.set(item.url, {
       ...item,
+      id: opportunityId(item.url),
+      // Keep an earlier description if this scan did not find one.
+      summary: item.summary || old?.summary || '',
       deadline: keepOldDeadline ? old.deadline : item.deadline,
       deadlineEvidence: keepOldDeadline ? old.deadlineEvidence : item.deadlineEvidence,
       firstSeen: old?.firstSeen || today,

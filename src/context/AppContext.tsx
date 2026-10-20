@@ -321,10 +321,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (!response.ok) throw new Error(`Radar data responded ${response.status}`);
       const data = await response.json() as { results?: Array<{
         id: string; type: Opportunity['type']; title: string; organization: string;
-        deadline: string | null; url: string; eligibility: string; skills: string[];
+        deadline: string | null; url: string; eligibility: string; skills: string[]; summary?: string;
       }> } | Array<{
         id: string; type: Opportunity['type']; title: string; organization: string;
-        deadline: string | null; url: string; eligibility: string; skills: string[];
+        deadline: string | null; url: string; eligibility: string; skills: string[]; summary?: string;
       }>;
       const results = Array.isArray(data) ? data : data.results;
       if (!Array.isArray(results)) throw new Error('Radar data format is invalid');
@@ -336,8 +336,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       // A skipped or failed scheduled run must not show an expired deadline.
       const today = new Date().toISOString().slice(0, 10);
       const currentResults = results.filter((item) => !item.deadline || item.deadline >= today);
+      // Older feeds could contain duplicate ids; React needs unique keys.
+      const seenIds = new Set<string>();
+      const uniqueId = (id: string) => {
+        let next = id, n = 2;
+        while (seenIds.has(next)) next = `${id}-${n++}`;
+        seenIds.add(next);
+        return next;
+      };
       const mapped: Opportunity[] = currentResults.map((item) => ({
-        id: item.id,
+        id: uniqueId(item.id),
         type: item.type,
         title: item.title,
         organization: item.organization,
@@ -346,9 +354,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         deadlineDate: item.deadline || '',
         match: 0,
         // The scan keeps eligibility only as an exact quote from the source page.
-        description: item.eligibility && item.eligibility !== 'check source'
-          ? `Who can apply: ${item.eligibility}`
-          : 'Details and eligibility are on the official page.',
+        // Both texts are exact excerpts from the source page.
+        description: [
+          item.summary,
+          item.eligibility && item.eligibility !== 'check source' ? `Who can apply: ${item.eligibility}` : '',
+        ].filter(Boolean).join(' ') || 'Details and eligibility are on the official page.',
         skills: item.skills || [],
         url: item.url,
         // Not extracted by the scan; empty fields are hidden in the UI.

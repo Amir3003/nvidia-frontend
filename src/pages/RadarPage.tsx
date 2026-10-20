@@ -277,7 +277,9 @@ export const RadarPage: React.FC = () => {
             <p className="text-[14px] text-teal-200 font-mono">
               {opportunities.length === 0
                 ? 'No sourced opportunities have been published yet. Please check back after the scheduled scan.'
-                : 'No matching opportunities found for current criteria.'}
+                : !searchQuery.trim() && (activeFilter === 'Grants' || activeFilter === 'Internships')
+                  ? `No ${activeFilter.toLowerCase()} on the radar yet. The daily scan adds new ones with an official link.`
+                  : 'No matching opportunities found for current criteria.'}
             </p>
             <button
               type="button"

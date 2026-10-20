@@ -31,6 +31,11 @@ test('a rescan without evidence does not erase a confirmed deadline', () => {
   assert.equal(merged.lastSeen, '2026-10-20');
 });
 
+test('ids are unique per URL even with a shared prefix', () => {
+  const merged = mergeOpportunities([], [item('https://www.a.org/x'), item('https://www.b.org/y')], '2026-10-20');
+  assert.equal(new Set(merged.map((x) => x.id)).size, 2);
+});
+
 test('confirmed deadlines sort first, soonest first', () => {
   const merged = mergeOpportunities([], [item('x'), item('late', '2027-03-01'), item('soon', '2026-11-05')], '2026-10-20');
   assert.deepEqual(merged.map((x) => x.url), ['soon', 'late', 'x']);

@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { PageHeader } from '../components/PageHeader';
 import { SkillCard } from '../components/SkillCard';
-import { OPPORTUNITIES_DATABASE, Opportunity } from '../db/opportunities';
+import { TARGET_TRACKS, radarTargets } from '../db/targetTracks';
 import {
   ExternalLinkIcon,
   CheckIcon,
@@ -18,15 +18,18 @@ import {
 } from '../components/Icons';
 
 export const CvLabPage: React.FC = () => {
-  const { skills, openSkillQuiz, userProfile, setIsOnboardingOpen } = useApp();
+  const { skills, openSkillQuiz, userProfile, setIsOnboardingOpen, opportunities } = useApp();
 
   // Benchmark target selection state
-  const [targetOppId, setTargetOppId] = useState<string>('nebius-nvidia-hackathon');
+  const [targetOppId, setTargetOppId] = useState<string>(TARGET_TRACKS[0].id);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
   const triggerRef = useRef<HTMLButtonElement>(null);
 
-  const selectedOpp = OPPORTUNITIES_DATABASE.find((o) => o.id === targetOppId) || OPPORTUNITIES_DATABASE[0];
+  // Targets: skill tracks first, then radar opportunities that list required skills.
+  const fromRadar = useMemo(() => radarTargets(opportunities), [opportunities]);
+  const allTargets = useMemo(() => [...TARGET_TRACKS, ...fromRadar], [fromRadar]);
+  const selectedOpp = allTargets.find((o) => o.id === targetOppId) || TARGET_TRACKS[0];
 
   // Anchor the popover to the trigger in viewport coordinates. On desktop it opens below
   // (or above, when space below is tight) aligned to the trigger's right edge; on mobile it
@@ -221,7 +224,7 @@ export const CvLabPage: React.FC = () => {
                     className="fixed z-50 w-auto sm:w-96 rounded-card bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300 shadow-2xl pb-1 overflow-y-auto overscroll-contain text-slate-900"
                   >
                     <div className="px-3 py-2 border-b border-teal-200/60 text-[11px] font-mono uppercase text-teal-800 font-semibold sticky top-0 z-10 bg-[#EDF7F6] flex items-center justify-between">
-                      <span>Select Benchmark Target Opportunity</span>
+                      <span>Select a target</span>
                       <button
                         type="button"
                         onClick={() => setIsDropdownOpen(false)}
@@ -230,7 +233,15 @@ export const CvLabPage: React.FC = () => {
                         Close
                       </button>
                     </div>
-                    {OPPORTUNITIES_DATABASE.map((opp) => {
+                    {[
+                      { label: 'Skill tracks', items: TARGET_TRACKS },
+                      { label: 'From the radar', items: fromRadar },
+                    ].filter((g) => g.items.length > 0).map((group) => (
+                      <div key={group.label}>
+                        <div className="px-3 pt-3 pb-1 text-[10px] font-mono uppercase tracking-wider text-teal-700 font-semibold">
+                          {group.label}
+                        </div>
+                        {group.items.map((opp) => {
                       const isSelected = opp.id === targetOppId;
                       return (
                         <button
@@ -252,13 +263,15 @@ export const CvLabPage: React.FC = () => {
                             <CompanyBadgeIcon orgKey={opp.orgKey} size={16} className="flex-shrink-0" />
                             <div className="min-w-0">
                               <div className="text-[13px] font-semibold truncate">{opp.title}</div>
-                              <div className="text-mini font-mono text-teal-800 truncate">{opp.organization} · {opp.type}</div>
+                              <div className="text-mini font-mono text-teal-800 truncate">{opp.subtitle}</div>
                             </div>
                           </div>
                           {isSelected && <CheckIcon size={14} className="text-emerald-600 flex-shrink-0 ml-2" />}
                         </button>
                       );
                     })}
+                      </div>
+                    ))}
                   </div>
                 </>,
                 document.body
@@ -603,7 +616,7 @@ export const CvLabPage: React.FC = () => {
                 Recommended Skills & Benchmark Curriculum
               </h3>
               <div className="text-[14px] text-indigo-950 font-bold mt-0.5">
-                Target Requirements for {selectedOpp.title} ({selectedOpp.organization})
+                {selectedOpp.kind === 'TRACK' ? 'Skills for the track' : 'Skills listed by'} {selectedOpp.title}
               </div>
             </div>
             <span className="text-mini font-mono px-2.5 py-1 rounded bg-white/80 border border-teal-200 text-teal-900 font-semibold">
@@ -626,7 +639,7 @@ export const CvLabPage: React.FC = () => {
                   skill={skill}
                   isGap={isMissingTarget}
                   isMatch={isMatchedTarget}
-                  gapReason={`Required by ${selectedOpp.title} (${selectedOpp.organization}). Verify it to close this gap.`}
+                  gapReason={`Part of ${selectedOpp.title}. Verify it to close this gap.`}
                   onStartQuiz={() => openSkillQuiz(skill)}
                 />
               );
