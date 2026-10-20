@@ -11,6 +11,8 @@ continue to run as before; the Oracle VM does not need another process.
 2. In its SQL editor, run `supabase/migrations/202610180001_network.sql` **once**.
    It creates tables, invitation RPCs and row-level security policies. Do not rerun
    this initial migration on an existing installation; use later migrations.
+   Then run `supabase/migrations/202610200001_social.sql` **once**: it adds open
+   discovery, friend requests, online presence and adding friends to groups.
 3. Enable Email authentication in Authentication → Providers.
 4. In Authentication → Email templates → Magic Link, include the code token:
 

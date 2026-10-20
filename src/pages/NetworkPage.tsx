@@ -6,7 +6,10 @@ import {
   checked,
   emptyNetworkProfile,
   inviteUrl,
+  isOnline,
+  lastSeenLabel,
   networkClient,
+  type FriendRequest,
   type NetworkMessage,
   type NetworkProfile,
   type NetworkTeam,
@@ -21,6 +24,7 @@ import { USER_ROLES } from "../db/userProfile";
 import {
   CheckIcon,
   ChevronRightIcon,
+  CloseIcon,
   LogOutIcon,
   MessageSquareIcon,
   PlusIcon,
@@ -31,13 +35,15 @@ import {
   UsersIcon,
 } from "../components/Icons";
 
-type Tab = "profile" | "chats" | "discover" | "invite";
+type Tab = "discover" | "chats" | "requests" | "profile";
 const TABS: { id: Tab; label: string; icon: typeof UserIcon }[] = [
-  { id: "profile", label: "Network Profile", icon: UserIcon },
+  { id: "discover", label: "Discover", icon: SearchIcon },
   { id: "chats", label: "Chats & Groups", icon: MessageSquareIcon },
-  { id: "discover", label: "Find Teammates", icon: SearchIcon },
-  { id: "invite", label: "Invite", icon: UserPlusIcon },
+  { id: "requests", label: "Requests", icon: UserPlusIcon },
+  { id: "profile", label: "My Profile", icon: UserIcon },
 ];
+
+type Relation = "self" | "friend" | "outgoing" | "incoming" | "none";
 
 const button =
   "h-10 px-4 rounded-btn bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-mini font-mono font-semibold shadow-sm transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2";
@@ -64,7 +70,19 @@ const AVATAR_COLORS = [
   "from-lime-400 to-emerald-600",
 ];
 
-function Avatar({ name, seed, size = 40, group = false }: { name: string; seed: string; size?: number; group?: boolean }) {
+function Avatar({
+  name,
+  seed,
+  size = 40,
+  group = false,
+  online = false,
+}: {
+  name: string;
+  seed: string;
+  size?: number;
+  group?: boolean;
+  online?: boolean;
+}) {
   const hash = [...seed].reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
   const initials = name
     .split(/\s+/)
@@ -72,13 +90,21 @@ function Avatar({ name, seed, size = 40, group = false }: { name: string; seed: 
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase())
     .join("");
+  const dot = Math.max(10, Math.round(size * 0.26));
   return (
-    <span
-      className={`flex-shrink-0 inline-flex items-center justify-center bg-gradient-to-br ${AVATAR_COLORS[hash % AVATAR_COLORS.length]} text-white font-bold shadow-sm ${group ? "rounded-xl" : "rounded-full"}`}
-      style={{ width: size, height: size, fontSize: size * 0.38 }}
-      aria-hidden="true"
-    >
-      {group ? <UsersIcon size={size * 0.45} /> : initials || "?"}
+    <span className="relative flex-shrink-0 inline-flex" style={{ width: size, height: size }} aria-hidden="true">
+      <span
+        className={`w-full h-full inline-flex items-center justify-center bg-gradient-to-br ${AVATAR_COLORS[hash % AVATAR_COLORS.length]} text-white font-bold shadow-sm ${group ? "rounded-xl" : "rounded-full"}`}
+        style={{ fontSize: size * 0.38 }}
+      >
+        {group ? <UsersIcon size={size * 0.45} /> : initials || "?"}
+      </span>
+      {online && (
+        <span
+          className="absolute bottom-0 right-0 rounded-full bg-emerald-500 ring-2 ring-white"
+          style={{ width: dot, height: dot }}
+        />
+      )}
     </span>
   );
 }
@@ -101,6 +127,47 @@ function dayLabel(iso: string) {
   return date.toLocaleDateString([], { day: "numeric", month: "long", year: "numeric" });
 }
 
+// Centered dialog with backdrop click-to-close and bounded, scrollable height.
+function Modal({
+  title,
+  onClose,
+  children,
+}: {
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm overflow-y-auto"
+    >
+      <div className="w-full max-w-md max-h-[85vh] my-auto overflow-y-auto rounded-card bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 shadow-2xl text-slate-900">
+        <div className="sticky top-0 z-10 px-5 py-3 border-b border-teal-200/80 bg-white/85 backdrop-blur flex items-center justify-between">
+          <h2 className="text-[15px] font-bold text-indigo-950">{title}</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-500 cursor-pointer"
+            aria-label="Close"
+          >
+            <CloseIcon size={15} />
+          </button>
+        </div>
+        <div className="p-5">{children}</div>
+      </div>
+    </div>
+  );
+}
+
 export const NetworkPage: React.FC = () => (
   <NetworkAccess>{(user) => <NetworkWorkspace user={user} />}</NetworkAccess>
 );
@@ -121,6 +188,8 @@ export function NetworkWorkspace({
   const [savedProfile, setSavedProfile] = useState<NetworkProfile | null>(null);
   const [profiles, setProfiles] = useState<NetworkProfile[]>([]);
   const [connections, setConnections] = useState<string[]>([]);
+  const [requests, setRequests] = useState<FriendRequest[]>([]);
+  const [requestsReady, setRequestsReady] = useState(true);
   const [teams, setTeams] = useState<NetworkTeam[]>([]);
   const [members, setMembers] = useState<
     { team_id: string; user_id: string }[]
@@ -132,8 +201,6 @@ export function NetworkWorkspace({
   const [search, setSearch] = useState("");
   const [skills, setSkills] = useState("");
   const [goals, setGoals] = useState("");
-  const [teamName, setTeamName] = useState("");
-  const [opportunity, setOpportunity] = useState("");
   const [link, setLink] = useState("");
   const [linkLabel, setLinkLabel] = useState("");
   const [preview, setPreview] = useState<{
@@ -151,6 +218,12 @@ export function NetworkWorkspace({
   const [chatError, setChatError] = useState("");
   const [text, setText] = useState("");
   const [chatFilter, setChatFilter] = useState("");
+  const [viewing, setViewing] = useState<string | null>(null);
+  const [groupModal, setGroupModal] = useState(false);
+  const [groupName, setGroupName] = useState("");
+  const [groupGoal, setGroupGoal] = useState("");
+  const [groupPicks, setGroupPicks] = useState<string[]>([]);
+  const [membersModal, setMembersModal] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const stickToBottom = useRef(true);
 
@@ -159,7 +232,7 @@ export function NetworkWorkspace({
     ? "profile"
     : TABS.some((t) => t.id === tabParam)
       ? (tabParam as Tab)
-      : "chats";
+      : "discover";
   const selectTab = (next: Tab) => {
     const params = new URLSearchParams(searchParams);
     params.set("tab", next);
@@ -190,6 +263,13 @@ export function NetworkWorkspace({
     );
     setTeams((checked(results[3]) || []) as NetworkTeam[]);
     setMembers(checked(results[4]) || []);
+    // Friend requests arrive with the social migration; before that the tab explains it.
+    const pending = await db
+      .from("network_friend_requests")
+      .select("sender_id,recipient_id,created_at")
+      .order("created_at", { ascending: false });
+    setRequestsReady(!pending.error);
+    setRequests(!pending.error && Array.isArray(pending.data) ? (pending.data as FriendRequest[]) : []);
     return own;
   }, [user.id]);
 
@@ -229,7 +309,7 @@ export function NetworkWorkspace({
     };
   }, [joinCode]);
 
-  // Refresh connections and teams only while visible.
+  // Refresh people, requests and presence while visible.
   useEffect(() => {
     if (!savedProfile) return;
     const timer = window.setInterval(() => {
@@ -239,16 +319,18 @@ export function NetworkWorkspace({
     return () => window.clearInterval(timer);
   }, [reload, !!savedProfile]);
 
-  // A message from someone new (a fresh connection or team) refreshes the lists.
+  // A new request, or a message from a new friend or group, refreshes the lists right away.
   useEffect(() => {
+    if (!savedProfile) return;
+    const incoming = requests.filter((r) => r.recipient_id === user.id).length;
     const unknown = Object.keys(inbox.channels).some((key) => {
       const [type, id] = key.split(":");
       return type === "dm" ? !connections.includes(id) : !teams.some((t) => t.id === id);
     });
-    if (unknown && savedProfile) reload().catch(() => undefined);
-  }, [inbox.channels]);
+    if (unknown || inbox.incomingRequests !== incoming) reload().catch(() => undefined);
+  }, [inbox.channels, inbox.incomingRequests]);
 
-  const channelKey: ChannelKey | null = channel ? `${channel.type}:${channel.id}` as ChannelKey : null;
+  const channelKey: ChannelKey | null = channel ? (`${channel.type}:${channel.id}` as ChannelKey) : null;
 
   useEffect(() => {
     setMessages([]);
@@ -347,7 +429,7 @@ export function NetworkWorkspace({
       setProfile(safe);
       await reload();
       setNotice("Network profile saved.");
-      if (firstSave && !joinCode) selectTab("invite");
+      if (firstSave && !joinCode) selectTab("discover");
     });
   }
 
@@ -359,10 +441,72 @@ export function NetworkWorkspace({
         }),
       );
       setLink(inviteUrl(code));
-      setLinkLabel(team ? `Team invite: ${team.name}` : "Connection invite");
-      setNotice("Invitation created. It expires in 7 days.");
+      setLinkLabel(team ? `Group invite: ${team.name}` : "Friend invite");
+      setNotice("Invitation link created. It expires in 7 days.");
     });
   }
+
+  const relationOf = (id: string): Relation => {
+    if (id === user.id) return "self";
+    if (connections.includes(id)) return "friend";
+    if (requests.some((r) => r.sender_id === user.id && r.recipient_id === id)) return "outgoing";
+    if (requests.some((r) => r.sender_id === id && r.recipient_id === user.id)) return "incoming";
+    return "none";
+  };
+
+  const sendRequest = (target: NetworkProfile) =>
+    run(async () => {
+      const result = checked(
+        await networkClient!.rpc("network_send_friend_request", { target: target.id }),
+      ) as string;
+      await reload();
+      refreshInbox();
+      setNotice(
+        result === "connected"
+          ? `You and ${target.name} are now friends.`
+          : result === "already"
+            ? `You are already friends with ${target.name}.`
+            : `Friend request sent to ${target.name}.`,
+      );
+    });
+
+  const respond = (requester: NetworkProfile | undefined, requesterId: string, accept: boolean) =>
+    run(async () => {
+      checked(
+        await networkClient!.rpc("network_respond_friend_request", {
+          requester: requesterId,
+          accept,
+        }),
+      );
+      await reload();
+      refreshInbox();
+      setNotice(
+        accept
+          ? `You and ${requester?.name || "your new friend"} are now friends.`
+          : "Request declined.",
+      );
+    });
+
+  const cancelRequest = (target: NetworkProfile | undefined, targetId: string) =>
+    run(async () => {
+      checked(await networkClient!.rpc("network_cancel_friend_request", { target: targetId }));
+      await reload();
+      setNotice(`Request to ${target?.name || "this person"} cancelled.`);
+    });
+
+  const removeFriend = (target: NetworkProfile) =>
+    run(async () => {
+      checked(
+        await networkClient!
+          .from("network_connections")
+          .delete()
+          .eq("user_a", user.id < target.id ? user.id : target.id)
+          .eq("user_b", user.id < target.id ? target.id : user.id),
+      );
+      await reload();
+      if (channel?.id === target.id) setChannel(null);
+      setNotice(`${target.name} removed from friends.`);
+    });
 
   function sendMessage() {
     if (!channel || !text.trim()) return;
@@ -390,9 +534,47 @@ export function NetworkWorkspace({
     });
   }
 
+  const createGroup = () =>
+    run(async () => {
+      const teamId = checked(
+        await networkClient!.rpc("network_create_team", {
+          team_name: groupName.trim(),
+          opportunity: groupGoal.trim(),
+        }),
+      ) as string;
+      for (const member of groupPicks) {
+        checked(
+          await networkClient!.rpc("network_add_team_member", {
+            target_team: teamId,
+            member,
+          }),
+        );
+      }
+      await reload();
+      setGroupModal(false);
+      setGroupName("");
+      setGroupGoal("");
+      setGroupPicks([]);
+      setChannel({ type: "team", id: teamId, name: groupName.trim() });
+      selectTab("chats");
+      setNotice("Group created.");
+    });
+
+  const addToGroup = (teamId: string, member: string) =>
+    run(async () => {
+      checked(
+        await networkClient!.rpc("network_add_team_member", {
+          target_team: teamId,
+          member,
+        }),
+      );
+      await reload();
+      setNotice(`${nameFor(member)} added to the group.`);
+    });
+
+  const profileOf = (id: string) => profiles.find((p) => p.id === id);
   const nameFor = (id: string) =>
-    profiles.find((p) => p.id === id)?.name ||
-    (id === user.id ? profile.name : "Teammate");
+    profileOf(id)?.name || (id === user.id ? profile.name : "Teammate");
 
   const conversations = useMemo(() => {
     const items = [
@@ -403,6 +585,7 @@ export function NetworkWorkspace({
           id,
           name: p?.name || "Teammate",
           subtitle: p ? [p.role, p.university].filter(Boolean).join(" · ") : "",
+          online: isOnline(p),
         };
       }),
       ...teams.map((t) => ({
@@ -410,6 +593,7 @@ export function NetworkWorkspace({
         id: t.id,
         name: t.name,
         subtitle: `${members.filter((m) => m.team_id === t.id).length} members`,
+        online: false,
       })),
     ].map((item) => ({ ...item, summary: inbox.channels[`${item.type}:${item.id}`] }));
     return items
@@ -426,35 +610,95 @@ export function NetworkWorkspace({
       </p>
     );
 
-  const discover = profiles.filter(
-    (p) =>
-      p.id !== user.id &&
-      [p.name, p.university, p.location, ...p.skills]
-        .join(" ")
-        .toLowerCase()
-        .includes(search.toLowerCase()),
-  );
+  const people = profiles
+    .filter(
+      (p) =>
+        p.id !== user.id &&
+        [p.name, p.role, p.university, p.location, ...p.skills]
+          .join(" ")
+          .toLowerCase()
+          .includes(search.toLowerCase()),
+    )
+    .sort((a, b) => Number(isOnline(b)) - Number(isOnline(a)));
+  const friends = connections
+    .map((id) => profileOf(id))
+    .filter((p): p is NetworkProfile => Boolean(p));
+  const incoming = requests.filter((r) => r.recipient_id === user.id);
+  const outgoing = requests.filter((r) => r.sender_id === user.id);
   const openChat = (type: "dm" | "team", id: string, name: string) => {
+    setViewing(null);
     setChannel({ type, id, name });
     selectTab("chats");
   };
+  const viewed = viewing ? profileOf(viewing) : undefined;
+  const membersTeam = membersModal ? teams.find((t) => t.id === membersModal) : undefined;
+
+  // Primary action for a person, shared by cards, the profile dialog and request lists.
+  const RelationActions = ({ p, compact = false }: { p: NetworkProfile; compact?: boolean }) => {
+    const relation = relationOf(p.id);
+    const size = compact ? "!h-9 !px-3" : "";
+    if (relation === "friend")
+      return (
+        <button className={`${button} ${size}`} onClick={() => openChat("dm", p.id, p.name)}>
+          <MessageSquareIcon size={14} />
+          Message
+        </button>
+      );
+    if (relation === "outgoing")
+      return (
+        <button className={`${ghostButton} ${size}`} disabled={busy} onClick={() => cancelRequest(p, p.id)}>
+          Requested · Cancel
+        </button>
+      );
+    if (relation === "incoming")
+      return (
+        <span className="inline-flex gap-2">
+          <button className={`${button} ${size}`} disabled={busy} onClick={() => respond(p, p.id, true)}>
+            <CheckIcon size={14} />
+            Accept
+          </button>
+          <button className={`${ghostButton} ${size}`} disabled={busy} onClick={() => respond(p, p.id, false)}>
+            Decline
+          </button>
+        </span>
+      );
+    if (relation === "none")
+      return (
+        <button
+          className={`${button} ${size}`}
+          disabled={busy || !requestsReady}
+          title={requestsReady ? undefined : "Friend requests are not set up yet"}
+          onClick={() => sendRequest(p)}
+        >
+          <UserPlusIcon size={14} />
+          Add friend
+        </button>
+      );
+    return null;
+  };
+
+  const requestBadge = inbox.incomingRequests || incoming.length;
 
   return (
     <div className="relative z-10 p-4 sm:p-6 pb-28 lg:pb-8 space-y-5 max-w-6xl w-full mx-auto">
       {/* Header with account summary and section tabs */}
       <header className={`${panel} !p-4 sm:!p-5 space-y-4`}>
         <div className="flex flex-wrap gap-4 justify-between items-center">
-          <div className="flex items-center gap-3 min-w-0">
-            <Avatar name={profile.name || user.email || "Me"} seed={user.id} size={44} />
-            <div className="min-w-0">
-              <h1 className="text-[20px] font-bold text-indigo-950 leading-tight">
+          <button
+            type="button"
+            onClick={() => savedProfile && selectTab("profile")}
+            className="flex items-center gap-3 min-w-0 text-left cursor-pointer"
+          >
+            <Avatar name={profile.name || user.email || "Me"} seed={user.id} size={44} online />
+            <span className="min-w-0">
+              <span className="block text-[20px] font-bold text-indigo-950 leading-tight">
                 Teammates & Network
-              </h1>
-              <p className="text-mini font-mono text-teal-800 truncate">
-                {user.email} · {connections.length} friends · {teams.length} groups
-              </p>
-            </div>
-          </div>
+              </span>
+              <span className="block text-mini font-mono text-teal-800 truncate">
+                {profile.name || user.email} · {connections.length} friends · {teams.length} groups
+              </span>
+            </span>
+          </button>
           <button
             className="h-9 px-3 rounded-btn text-mini font-mono text-rose-600 hover:bg-rose-50 transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
             disabled={busy}
@@ -477,6 +721,7 @@ export function NetworkWorkspace({
             const Icon = t.icon;
             const active = tab === t.id;
             const locked = !savedProfile && t.id !== "profile";
+            const count = t.id === "chats" ? inbox.totalUnread : t.id === "requests" ? requestBadge : 0;
             return (
               <button
                 key={t.id}
@@ -492,13 +737,13 @@ export function NetworkWorkspace({
               >
                 <Icon size={13} />
                 <span>{t.label}</span>
-                {t.id === "chats" && inbox.totalUnread > 0 && (
+                {count > 0 && (
                   <span
                     className={`min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center ${
                       active ? "bg-white text-emerald-700" : "bg-rose-500 text-white"
                     }`}
                   >
-                    {inbox.totalUnread > 99 ? "99+" : inbox.totalUnread}
+                    {count > 99 ? "99+" : count}
                   </span>
                 )}
               </button>
@@ -547,8 +792,7 @@ export function NetworkWorkspace({
                   <b>{preview.creator}</b> invited you{" "}
                   {preview.team ? <>to join <b>{preview.team}</b></> : "to connect on QADAM"}.
                   Accepting shares your network profile with{" "}
-                  {preview.team ? "the team members" : "this person"}, even if it
-                  is hidden from search.
+                  {preview.team ? "the group members" : "this person"}.
                 </p>
               </div>
               <p className="text-mini font-mono text-teal-800">
@@ -590,147 +834,112 @@ export function NetworkWorkspace({
         </section>
       )}
 
-      {/* ===================== TAB 1: NETWORK PROFILE ===================== */}
-      {tab === "profile" && (
-        <form onSubmit={save} className={`${panel} space-y-5`}>
-          <div className="flex flex-wrap items-center gap-4 justify-between">
-            <div className="flex items-center gap-4">
-              <Avatar name={profile.name || "?"} seed={user.id} size={56} />
-              <div>
-                <h2 className={heading}>
-                  {savedProfile ? "Your network profile" : "Create your network profile"}
-                </h2>
-                <p className="text-[13px] text-teal-950 leading-relaxed max-w-xl">
-                  This is the card your teammates see. CVs, passwords, email, phone
-                  numbers and identity documents are never shared.
-                </p>
-              </div>
+      {/* ===================== DISCOVER ===================== */}
+      {tab === "discover" && (
+        <section className="space-y-4">
+          <div className={`${panel} !p-4 space-y-3`}>
+            <div className="relative">
+              <SearchIcon size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                aria-label="Search teammates"
+                className={`${input} pl-10`}
+                placeholder="Search people by name, role, university, city or skills"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
             </div>
-            <button className={button} disabled={busy}>
-              Save network profile
-            </button>
+            <p className="text-mini font-mono text-teal-800">
+              {people.length} {people.length === 1 ? "person" : "people"} ·{" "}
+              {people.filter((p) => isOnline(p)).length} online now
+            </p>
           </div>
-          <div className="grid md:grid-cols-2 gap-4">
-            <label className={label}>
-              <span>Name</span>
-              <input
-                className={input}
-                required
-                minLength={2}
-                maxLength={120}
-                value={profile.name}
-                onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-              />
-            </label>
-            <label className={label}>
-              <span>Role</span>
-              <select
-                className={input}
-                value={profile.role}
-                onChange={(e) => setProfile({ ...profile, role: e.target.value })}
-              >
-                {USER_ROLES.map((r) => (
-                  <option key={r}>{r}</option>
-                ))}
-              </select>
-            </label>
-            <label className={label}>
-              <span>University</span>
-              <input
-                className={input}
-                maxLength={160}
-                value={profile.university}
-                onChange={(e) => setProfile({ ...profile, university: e.target.value })}
-              />
-            </label>
-            <label className={label}>
-              <span>City / location</span>
-              <input
-                className={input}
-                maxLength={120}
-                value={profile.location}
-                onChange={(e) => setProfile({ ...profile, location: e.target.value })}
-              />
-            </label>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {people.map((p) => {
+              const relation = relationOf(p.id);
+              return (
+                <article
+                  key={p.id}
+                  className="group rounded-card bg-white/95 border border-teal-200/80 shadow-sm hover:shadow-[0_16px_40px_-12px_rgba(6,182,212,0.3)] hover:-translate-y-0.5 transition-all overflow-hidden flex flex-col"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setViewing(p.id)}
+                    className="text-left cursor-pointer"
+                    aria-label={`View ${p.name}'s profile`}
+                  >
+                    <div className="h-16 bg-gradient-to-r from-emerald-100 via-teal-50 to-indigo-100" />
+                    <div className="px-4 -mt-8 flex items-end justify-between">
+                      <span className="rounded-full ring-4 ring-white">
+                        <Avatar name={p.name} seed={p.id} size={64} online={isOnline(p)} />
+                      </span>
+                      {relation === "friend" && (
+                        <span className="mb-1 text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+                          Friend
+                        </span>
+                      )}
+                      {relation === "incoming" && (
+                        <span className="mb-1 text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                          Wants to connect
+                        </span>
+                      )}
+                    </div>
+                    <div className="px-4 pt-2 space-y-1">
+                      <h3 className="text-[16px] font-bold text-indigo-950 truncate">{p.name}</h3>
+                      <p className="text-mini font-mono text-emerald-700 font-semibold truncate">{p.role}</p>
+                      <p className={`text-[12px] ${isOnline(p) ? "text-emerald-600 font-semibold" : "text-slate-400"}`}>
+                        {lastSeenLabel(p)}
+                      </p>
+                      {(p.university || p.location) && (
+                        <p className="text-[13px] text-teal-950 truncate">
+                          {[p.university, p.location].filter(Boolean).join(" · ")}
+                        </p>
+                      )}
+                      {p.bio && <p className="text-[13px] text-slate-600 line-clamp-2">{p.bio}</p>}
+                    </div>
+                    {p.skills.length > 0 && (
+                      <div className="px-4 pt-2 flex flex-wrap gap-1.5">
+                        {p.skills.slice(0, 5).map((skill) => (
+                          <span key={skill} className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200/80">
+                            {skill}
+                          </span>
+                        ))}
+                        {p.skills.length > 5 && (
+                          <span className="text-[11px] font-mono px-2 py-0.5 text-teal-700">+{p.skills.length - 5}</span>
+                        )}
+                      </div>
+                    )}
+                  </button>
+                  <div className="mt-auto p-4 flex flex-wrap gap-2 items-center">
+                    <RelationActions p={p} compact />
+                    <button type="button" className={linkButton} onClick={() => setViewing(p.id)}>
+                      View profile
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
           </div>
-          <label className={label}>
-            <span>Skills, separated by commas</span>
-            <input
-              className={input}
-              maxLength={1500}
-              placeholder="Python, PyTorch, React"
-              value={skills}
-              onChange={(e) => setSkills(e.target.value)}
-            />
-          </label>
-          <label className={label}>
-            <span>Goals, separated by commas</span>
-            <input
-              className={input}
-              maxLength={1500}
-              placeholder="Win a hackathon, find a research internship"
-              value={goals}
-              onChange={(e) => setGoals(e.target.value)}
-            />
-          </label>
-          <label className={label}>
-            <span>Short bio</span>
-            <textarea
-              className={`${input} h-24 py-2.5`}
-              maxLength={1000}
-              value={profile.bio}
-              onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-            />
-          </label>
-          <label className="flex gap-3 items-center p-3 rounded-xl bg-white/70 border border-teal-200/80 text-[13px] text-teal-950 cursor-pointer">
-            <input
-              type="checkbox"
-              className="w-4 h-4 accent-emerald-600"
-              checked={profile.is_public}
-              onChange={(e) => setProfile({ ...profile, is_public: e.target.checked })}
-            />
-            Show me in Find Teammates for other signed-in QADAM users
-          </label>
-          {savedProfile && (
-            <div className="pt-4 border-t border-teal-200/80">
-              <button
-                type="button"
-                className={dangerLink}
-                disabled={busy}
-                onClick={() => {
-                  if (
-                    window.confirm(
-                      "Delete your shared network profile, connections, sent messages and teams you own? Your local workspace stays on this device.",
-                    )
-                  )
-                    run(async () => {
-                      checked(
-                        await networkClient!
-                          .from("network_profiles")
-                          .delete()
-                          .eq("id", user.id),
-                      );
-                      setChannel(null);
-                      setLink("");
-                      setProfile(emptyNetworkProfile(user.id));
-                      setSkills("");
-                      setGoals("");
-                      await reload();
-                      setNotice("Shared network data deleted.");
-                    });
-                }}
-              >
-                Delete my network data
-              </button>
+          {!people.length && (
+            <div className={`${panel} text-center space-y-3`}>
+              <p className="text-[13px] text-teal-950">
+                {search
+                  ? "Nobody matches your search."
+                  : "No one else is here yet. Invite friends with a link from the Requests tab."}
+              </p>
+              {!search && (
+                <button className={button} onClick={() => selectTab("requests")}>
+                  <UserPlusIcon size={14} />
+                  Invite friends
+                </button>
+              )}
             </div>
           )}
-        </form>
+        </section>
       )}
 
-      {/* ===================== TAB 2: CHATS & GROUPS ===================== */}
+      {/* ===================== CHATS & GROUPS ===================== */}
       {tab === "chats" && (
         <section className="rounded-card bg-white/95 border border-teal-300/50 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.25)] overflow-hidden text-slate-900 grid md:grid-cols-[320px_1fr] h-[min(720px,calc(100dvh-230px))] min-h-[480px]">
-          {/* Conversation list */}
           <aside
             className={`flex flex-col border-r border-slate-200 bg-slate-50/80 min-h-0 ${channel ? "hidden md:flex" : "flex"}`}
           >
@@ -739,12 +948,12 @@ export function NetworkWorkspace({
                 <h2 className="text-[16px] font-bold text-indigo-950">Chats</h2>
                 <button
                   type="button"
-                  onClick={() => selectTab("invite")}
-                  className="w-8 h-8 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 flex items-center justify-center cursor-pointer"
-                  title="Add a friend or create a group"
-                  aria-label="Add a friend or create a group"
+                  onClick={() => setGroupModal(true)}
+                  className="h-8 px-3 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-mini font-mono font-semibold flex items-center gap-1.5 cursor-pointer"
+                  title="Create a group with your friends"
                 >
-                  <PlusIcon size={15} />
+                  <PlusIcon size={13} />
+                  New group
                 </button>
               </div>
               <div className="relative">
@@ -772,12 +981,10 @@ export function NetworkWorkspace({
                     type="button"
                     onClick={() => setChannel({ type: c.type, id: c.id, name: c.name })}
                     className={`w-full px-3 py-3 flex items-center gap-3 text-left transition-colors cursor-pointer border-l-2 ${
-                      active
-                        ? "bg-emerald-50 border-emerald-500"
-                        : "border-transparent hover:bg-white"
+                      active ? "bg-emerald-50 border-emerald-500" : "border-transparent hover:bg-white"
                     }`}
                   >
-                    <Avatar name={c.name} seed={c.id} size={44} group={c.type === "team"} />
+                    <Avatar name={c.name} seed={c.id} size={44} group={c.type === "team"} online={c.online} />
                     <span className="flex-1 min-w-0">
                       <span className="flex items-baseline justify-between gap-2">
                         <span className={`truncate text-[14px] ${unread ? "font-bold text-indigo-950" : "font-semibold text-slate-800"}`}>
@@ -806,12 +1013,12 @@ export function NetworkWorkspace({
               {!conversations.length && (
                 <div className="p-6 text-center space-y-3">
                   <p className="text-[13px] text-slate-600">
-                    {chatFilter ? "No chats match your search." : "No chats yet. Invite a friend to start talking."}
+                    {chatFilter ? "No chats match your search." : "No chats yet. Add friends in Discover to start talking."}
                   </p>
                   {!chatFilter && (
-                    <button type="button" className={button} onClick={() => selectTab("invite")}>
-                      <UserPlusIcon size={14} />
-                      Invite a teammate
+                    <button type="button" className={button} onClick={() => selectTab("discover")}>
+                      <SearchIcon size={14} />
+                      Find people
                     </button>
                   )}
                 </div>
@@ -819,7 +1026,6 @@ export function NetworkWorkspace({
             </div>
           </aside>
 
-          {/* Conversation */}
           <div className={`flex-col min-h-0 min-w-0 ${channel ? "flex" : "hidden md:flex"}`}>
             {channel ? (
               <>
@@ -832,21 +1038,36 @@ export function NetworkWorkspace({
                   >
                     <ChevronRightIcon size={16} className="rotate-180" />
                   </button>
-                  <Avatar name={channel.name} seed={channel.id} size={38} group={channel.type === "team"} />
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[15px] font-bold text-indigo-950 truncate">{channel.name}</div>
-                    <div className="text-[12px] text-slate-500 truncate">
-                      {channel.type === "team"
-                        ? members
-                            .filter((m) => m.team_id === channel.id)
-                            .map((m) => nameFor(m.user_id))
-                            .join(", ")
-                        : profiles.find((p) => p.id === channel.id)?.role || "Direct messages"}
-                    </div>
-                  </div>
-                  <button className={`hidden md:inline ${linkButton}`} onClick={() => setChannel(null)}>
-                    Close chat
+                  <button
+                    type="button"
+                    className="flex items-center gap-3 min-w-0 flex-1 text-left cursor-pointer"
+                    onClick={() => (channel.type === "dm" ? setViewing(channel.id) : setMembersModal(channel.id))}
+                  >
+                    <Avatar
+                      name={channel.name}
+                      seed={channel.id}
+                      size={38}
+                      group={channel.type === "team"}
+                      online={channel.type === "dm" && isOnline(profileOf(channel.id))}
+                    />
+                    <span className="min-w-0">
+                      <span className="block text-[15px] font-bold text-indigo-950 truncate">{channel.name}</span>
+                      <span className="block text-[12px] text-slate-500 truncate">
+                        {channel.type === "team"
+                          ? members
+                              .filter((m) => m.team_id === channel.id)
+                              .map((m) => nameFor(m.user_id))
+                              .join(", ")
+                          : lastSeenLabel(profileOf(channel.id))}
+                      </span>
+                    </span>
                   </button>
+                  {channel.type === "team" && (
+                    <button className={`${ghostButton} !h-8 !px-3`} onClick={() => setMembersModal(channel.id)}>
+                      <UsersIcon size={13} />
+                      <span className="hidden sm:inline">Members</span>
+                    </button>
+                  )}
                 </div>
                 {chatError && (
                   <p role="alert" className="px-4 pt-3 text-mini font-mono text-rose-700">
@@ -954,7 +1175,7 @@ export function NetworkWorkspace({
                 </span>
                 <p className="text-[15px] font-semibold text-indigo-950">Select a chat</p>
                 <p className="text-[13px] text-slate-500 max-w-xs">
-                  Pick a friend or a group on the left. New messages show a badge here and in the sidebar.
+                  Pick a friend or a group on the left, or create a new group with your friends.
                 </p>
               </div>
             )}
@@ -962,132 +1183,104 @@ export function NetworkWorkspace({
         </section>
       )}
 
-      {/* ===================== TAB 3: FIND TEAMMATES ===================== */}
-      {tab === "discover" && (
-        <section className={`${panel} space-y-4`}>
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h2 className={heading}>Find teammates</h2>
-              <p className="text-[13px] text-teal-950">
-                People who chose to be visible, plus your friends and group members.
-              </p>
-            </div>
-            <button
-              className={linkButton}
-              disabled={busy}
-              onClick={() =>
-                run(async () => {
-                  await reload();
-                  setNotice("Network refreshed.");
-                })
-              }
-            >
-              Refresh
-            </button>
-          </div>
-          <div className="relative">
-            <SearchIcon size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              aria-label="Search teammates"
-              className={`${input} pl-10`}
-              placeholder="Search name, university, city or skills"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {discover.map((p) => {
-              const connected = connections.includes(p.id);
-              return (
-                <article
-                  key={p.id}
-                  className="rounded-2xl bg-white/90 border border-teal-200/80 p-4 flex flex-col gap-3 hover:shadow-md hover:-translate-y-0.5 transition-all"
-                >
-                  <div className="flex items-center gap-3">
-                    <Avatar name={p.name} seed={p.id} size={48} />
-                    <div className="min-w-0">
-                      <h3 className="text-[15px] font-bold text-indigo-950 truncate">{p.name}</h3>
-                      <p className="text-mini font-mono text-emerald-700 font-semibold truncate">{p.role}</p>
-                    </div>
-                    {connected && (
-                      <span className="ml-auto text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
-                        Friend
-                      </span>
-                    )}
-                  </div>
-                  {(p.university || p.location) && (
-                    <p className="text-[13px] text-teal-950">
-                      {[p.university, p.location].filter(Boolean).join(" · ")}
-                    </p>
-                  )}
-                  {p.bio && <p className="text-[13px] text-slate-600 line-clamp-3">{p.bio}</p>}
-                  {p.skills.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5">
-                      {p.skills.slice(0, 8).map((skill) => (
-                        <span key={skill} className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200/80">
-                          {skill}
+      {/* ===================== REQUESTS ===================== */}
+      {tab === "requests" && (
+        <div className="grid lg:grid-cols-[1fr_380px] gap-5 items-start">
+          <div className="space-y-5">
+            <section className={`${panel} space-y-3`}>
+              <h2 className={heading}>Friend requests {incoming.length > 0 && `(${incoming.length})`}</h2>
+              {!requestsReady && (
+                <p className="p-3 rounded-btn bg-amber-50 border border-amber-200 text-mini font-mono text-amber-800">
+                  Friend requests are being set up. Until then, connect with an invite link.
+                </p>
+              )}
+              {incoming.map((r) => {
+                const p = profileOf(r.sender_id);
+                return (
+                  <div key={r.sender_id} className="p-3 rounded-xl bg-white/90 border border-teal-200/80 flex flex-wrap items-center gap-3">
+                    <button type="button" className="flex items-center gap-3 min-w-0 flex-1 text-left cursor-pointer" onClick={() => setViewing(r.sender_id)}>
+                      <Avatar name={p?.name || "?"} seed={r.sender_id} size={44} online={isOnline(p)} />
+                      <span className="min-w-0">
+                        <span className="block text-[14px] font-bold text-indigo-950 truncate">{p?.name || "QADAM user"}</span>
+                        <span className="block text-mini font-mono text-teal-800 truncate">
+                          {[p?.role, p?.university].filter(Boolean).join(" · ")} · {formatTime(r.created_at)}
                         </span>
-                      ))}
-                    </div>
-                  )}
-                  <div className="mt-auto pt-1 flex flex-wrap gap-3 items-center">
-                    {connected ? (
-                      <>
-                        <button className={button} onClick={() => openChat("dm", p.id, p.name)}>
-                          Message
-                        </button>
-                        <button
-                          className={dangerLink}
-                          disabled={busy}
-                          onClick={() =>
-                            run(async () => {
-                              checked(
-                                await networkClient!
-                                  .from("network_connections")
-                                  .delete()
-                                  .eq("user_a", user.id < p.id ? user.id : p.id)
-                                  .eq("user_b", user.id < p.id ? p.id : user.id),
-                              );
-                              await reload();
-                              if (channel?.id === p.id) setChannel(null);
-                              setNotice("Connection removed.");
-                            })
-                          }
-                        >
-                          Disconnect
-                        </button>
-                      </>
-                    ) : (
-                      <p className="text-mini font-mono text-teal-800">
-                        To connect, send them your link from the Invite tab.
-                      </p>
-                    )}
+                      </span>
+                    </button>
+                    <span className="inline-flex gap-2">
+                      <button className={`${button} !h-9`} disabled={busy} onClick={() => respond(p, r.sender_id, true)}>
+                        <CheckIcon size={14} />
+                        Accept
+                      </button>
+                      <button className={`${ghostButton} !h-9`} disabled={busy} onClick={() => respond(p, r.sender_id, false)}>
+                        Decline
+                      </button>
+                    </span>
                   </div>
-                </article>
-              );
-            })}
-          </div>
-          {!discover.length && (
-            <p className="text-[13px] text-teal-900">
-              {search ? "Nobody matches your search." : "No teammates yet. Invite someone or ask them to turn on visibility in their profile."}
-            </p>
-          )}
-        </section>
-      )}
+                );
+              })}
+              {requestsReady && !incoming.length && (
+                <p className="text-[13px] text-teal-900">No new requests.</p>
+              )}
+            </section>
 
-      {/* ===================== TAB 4: INVITE ===================== */}
-      {tab === "invite" && (
-        <div className="grid lg:grid-cols-2 gap-5 items-start">
+            <section className={`${panel} space-y-3`}>
+              <h2 className={heading}>Sent requests</h2>
+              {outgoing.map((r) => {
+                const p = profileOf(r.recipient_id);
+                return (
+                  <div key={r.recipient_id} className="p-3 rounded-xl bg-white/90 border border-teal-200/80 flex flex-wrap items-center gap-3">
+                    <button type="button" className="flex items-center gap-3 min-w-0 flex-1 text-left cursor-pointer" onClick={() => setViewing(r.recipient_id)}>
+                      <Avatar name={p?.name || "?"} seed={r.recipient_id} size={40} online={isOnline(p)} />
+                      <span className="min-w-0">
+                        <span className="block text-[14px] font-bold text-indigo-950 truncate">{p?.name || "QADAM user"}</span>
+                        <span className="block text-mini font-mono text-teal-800">Waiting · {formatTime(r.created_at)}</span>
+                      </span>
+                    </button>
+                    <button className={`${ghostButton} !h-9`} disabled={busy} onClick={() => cancelRequest(p, r.recipient_id)}>
+                      Cancel
+                    </button>
+                  </div>
+                );
+              })}
+              {!outgoing.length && <p className="text-[13px] text-teal-900">No pending sent requests.</p>}
+            </section>
+
+            <section className={`${panel} space-y-3`}>
+              <h2 className={heading}>Friends ({friends.length})</h2>
+              <div className="grid sm:grid-cols-2 gap-3">
+                {friends.map((p) => (
+                  <div key={p.id} className="p-3 rounded-xl bg-white/90 border border-teal-200/80 flex items-center gap-3">
+                    <button type="button" className="flex items-center gap-3 min-w-0 flex-1 text-left cursor-pointer" onClick={() => setViewing(p.id)}>
+                      <Avatar name={p.name} seed={p.id} size={40} online={isOnline(p)} />
+                      <span className="min-w-0">
+                        <span className="block text-[14px] font-bold text-indigo-950 truncate">{p.name}</span>
+                        <span className={`block text-[12px] ${isOnline(p) ? "text-emerald-600" : "text-slate-400"}`}>{lastSeenLabel(p)}</span>
+                      </span>
+                    </button>
+                    <button
+                      className="w-9 h-9 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 flex items-center justify-center cursor-pointer"
+                      aria-label={`Message ${p.name}`}
+                      onClick={() => openChat("dm", p.id, p.name)}
+                    >
+                      <MessageSquareIcon size={15} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              {!friends.length && <p className="text-[13px] text-teal-900">No friends yet. Find people in Discover.</p>}
+            </section>
+          </div>
+
           <section className={`${panel} space-y-4`}>
             <div className="flex items-center gap-3">
-              <span className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+              <span className="w-10 h-10 flex-shrink-0 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
                 <UserPlusIcon size={18} />
               </span>
               <div>
-                <h2 className={heading}>Add a friend</h2>
+                <h2 className={heading}>Invite by link</h2>
                 <p className="text-[13px] text-teal-950">
-                  Create a link and send it. When your friend opens it and accepts,
-                  you both appear in each other&apos;s chats.
+                  For friends who are not on QADAM yet. They open the link, sign up and accept.
                 </p>
               </div>
             </div>
@@ -1100,29 +1293,20 @@ export function NetworkWorkspace({
                 disabled={busy}
                 onClick={() =>
                   run(async () => {
-                    checked(
-                      await networkClient!.rpc("network_revoke_invites", {
-                        target_team: null,
-                      }),
-                    );
+                    checked(await networkClient!.rpc("network_revoke_invites", { target_team: null }));
                     setLink("");
-                    setNotice("Your connection invitation links have been revoked.");
+                    setNotice("Your invitation links have been revoked.");
                   })
                 }
               >
-                Revoke connection links
+                Revoke links
               </button>
             </div>
             {link && (
               <div className="p-3 rounded-xl bg-white border border-emerald-200 space-y-2">
                 <label className={label}>
                   <span>Invitation link{linkLabel ? ` · ${linkLabel}` : ""}</span>
-                  <input
-                    readOnly
-                    className={input}
-                    value={link}
-                    onFocus={(e) => e.target.select()}
-                  />
+                  <input readOnly className={input} value={link} onFocus={(e) => e.target.select()} />
                 </label>
                 <button
                   className={ghostButton}
@@ -1140,134 +1324,361 @@ export function NetworkWorkspace({
               </div>
             )}
           </section>
+        </div>
+      )}
 
-          <section className={`${panel} space-y-4`}>
-            <div className="flex items-center gap-3">
-              <span className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center">
-                <UsersIcon size={18} />
-              </span>
+      {/* ===================== MY PROFILE ===================== */}
+      {tab === "profile" && (
+        <form onSubmit={save} className={`${panel} space-y-5`}>
+          <div className="flex flex-wrap items-center gap-4 justify-between">
+            <div className="flex items-center gap-4">
+              <Avatar name={profile.name || "?"} seed={user.id} size={64} online={!!savedProfile} />
               <div>
-                <h2 className={heading}>Groups</h2>
-                <p className="text-[13px] text-teal-950">
-                  Create a group for a hackathon team and invite members with its own link.
+                <h2 className={heading}>
+                  {savedProfile ? "My profile" : "Create your network profile"}
+                </h2>
+                <p className="text-[13px] text-teal-950 leading-relaxed max-w-xl">
+                  This is what other students see in Discover. CVs, passwords, email, phone
+                  numbers and identity documents are never shared.
                 </p>
               </div>
             </div>
-            <form
-              className="flex flex-col sm:flex-row gap-3"
-              onSubmit={(e) => {
-                e.preventDefault();
-                run(async () => {
-                  checked(
-                    await networkClient!.rpc("network_create_team", {
-                      team_name: teamName.trim(),
-                      opportunity: opportunity.trim(),
-                    }),
-                  );
-                  setTeamName("");
-                  setOpportunity("");
-                  await reload();
-                  setNotice("Group created. Create its invite link below.");
-                });
-              }}
-            >
+            <button className={button} disabled={busy}>
+              Save network profile
+            </button>
+          </div>
+          <div className="grid md:grid-cols-2 gap-4">
+            <label className={label}>
+              <span>Name</span>
+              <input
+                className={input}
+                required
+                minLength={2}
+                maxLength={120}
+                value={profile.name}
+                onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+              />
+            </label>
+            <label className={label}>
+              <span>Role</span>
+              <select
+                className={input}
+                value={profile.role}
+                onChange={(e) => setProfile({ ...profile, role: e.target.value })}
+              >
+                {USER_ROLES.map((r) => (
+                  <option key={r}>{r}</option>
+                ))}
+              </select>
+            </label>
+            <label className={label}>
+              <span>University</span>
+              <input
+                className={input}
+                maxLength={160}
+                value={profile.university}
+                onChange={(e) => setProfile({ ...profile, university: e.target.value })}
+              />
+            </label>
+            <label className={label}>
+              <span>City / location</span>
+              <input
+                className={input}
+                maxLength={120}
+                value={profile.location}
+                onChange={(e) => setProfile({ ...profile, location: e.target.value })}
+              />
+            </label>
+          </div>
+          <label className={label}>
+            <span>Skills, separated by commas</span>
+            <input
+              className={input}
+              maxLength={1500}
+              placeholder="Python, PyTorch, React"
+              value={skills}
+              onChange={(e) => setSkills(e.target.value)}
+            />
+          </label>
+          <label className={label}>
+            <span>Goals, separated by commas</span>
+            <input
+              className={input}
+              maxLength={1500}
+              placeholder="Win a hackathon, find a research internship"
+              value={goals}
+              onChange={(e) => setGoals(e.target.value)}
+            />
+          </label>
+          <label className={label}>
+            <span>Short bio</span>
+            <textarea
+              className={`${input} h-24 py-2.5`}
+              maxLength={1000}
+              value={profile.bio}
+              onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+            />
+          </label>
+          <label className="flex gap-3 items-center p-3 rounded-xl bg-white/70 border border-teal-200/80 text-[13px] text-teal-950 cursor-pointer">
+            <input
+              type="checkbox"
+              className="w-4 h-4 accent-emerald-600"
+              checked={profile.is_public}
+              onChange={(e) => setProfile({ ...profile, is_public: e.target.checked })}
+            />
+            Show my profile in Discover so other students can find me and send friend requests
+          </label>
+          {savedProfile && (
+            <div className="pt-4 border-t border-teal-200/80">
+              <button
+                type="button"
+                className={dangerLink}
+                disabled={busy}
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      "Delete your shared network profile, friends, sent messages and groups you own? Your local workspace stays on this device.",
+                    )
+                  )
+                    run(async () => {
+                      checked(await networkClient!.from("network_profiles").delete().eq("id", user.id));
+                      setChannel(null);
+                      setLink("");
+                      setProfile(emptyNetworkProfile(user.id));
+                      setSkills("");
+                      setGoals("");
+                      await reload();
+                      setNotice("Shared network data deleted.");
+                    });
+                }}
+              >
+                Delete my network data
+              </button>
+            </div>
+          )}
+        </form>
+      )}
+
+      {/* ===================== PROFILE DIALOG ===================== */}
+      {viewing && viewed && (
+        <Modal title="Profile" onClose={() => setViewing(null)}>
+          <div className="space-y-4">
+            <div className="flex flex-col items-center text-center gap-2">
+              <Avatar name={viewed.name} seed={viewed.id} size={88} online={isOnline(viewed)} />
+              <h3 className="text-[20px] font-bold text-indigo-950">{viewed.name}</h3>
+              <p className="text-mini font-mono text-emerald-700 font-semibold">{viewed.role}</p>
+              <p className={`text-[12px] ${isOnline(viewed) ? "text-emerald-600 font-semibold" : "text-slate-400"}`}>
+                {lastSeenLabel(viewed)}
+              </p>
+              <div className="pt-1 flex flex-wrap justify-center gap-2">
+                <RelationActions p={viewed} />
+              </div>
+            </div>
+            {(viewed.university || viewed.location) && (
+              <p className="text-[13px] text-teal-950 text-center">
+                {[viewed.university, viewed.location].filter(Boolean).join(" · ")}
+              </p>
+            )}
+            {viewed.bio && (
+              <div className="p-3 rounded-xl bg-white/80 border border-teal-200/80">
+                <div className="text-mini font-mono uppercase tracking-wider text-teal-800 font-semibold mb-1">About</div>
+                <p className="text-[13px] text-slate-700 whitespace-pre-wrap">{viewed.bio}</p>
+              </div>
+            )}
+            {viewed.skills.length > 0 && (
+              <div>
+                <div className="text-mini font-mono uppercase tracking-wider text-teal-800 font-semibold mb-1.5">Skills</div>
+                <div className="flex flex-wrap gap-1.5">
+                  {viewed.skills.map((skill) => (
+                    <span key={skill} className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200/80">
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {viewed.goals.length > 0 && (
+              <div>
+                <div className="text-mini font-mono uppercase tracking-wider text-teal-800 font-semibold mb-1.5">Goals</div>
+                <ul className="space-y-1">
+                  {viewed.goals.map((goal) => (
+                    <li key={goal} className="text-[13px] text-slate-700 flex gap-2">
+                      <CheckIcon size={13} className="text-emerald-600 mt-0.5 flex-shrink-0" />
+                      {goal}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {relationOf(viewed.id) === "friend" && (
+              <div className="pt-3 border-t border-teal-200/80 text-center">
+                <button
+                  className={dangerLink}
+                  disabled={busy}
+                  onClick={() => {
+                    if (window.confirm(`Remove ${viewed.name} from friends?`)) {
+                      removeFriend(viewed);
+                      setViewing(null);
+                    }
+                  }}
+                >
+                  Remove from friends
+                </button>
+              </div>
+            )}
+          </div>
+        </Modal>
+      )}
+
+      {/* ===================== NEW GROUP DIALOG ===================== */}
+      {groupModal && (
+        <Modal title="New group" onClose={() => setGroupModal(false)}>
+          <form
+            className="space-y-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              createGroup();
+            }}
+          >
+            <label className={label}>
+              <span>Group name</span>
               <input
                 className={input}
                 aria-label="Team name"
-                placeholder="Group name"
                 required
                 minLength={2}
                 maxLength={100}
-                value={teamName}
-                onChange={(e) => setTeamName(e.target.value)}
+                placeholder="NVIDIA Hackathon team"
+                value={groupName}
+                onChange={(e) => setGroupName(e.target.value)}
               />
+            </label>
+            <label className={label}>
+              <span>Hackathon or goal (optional)</span>
               <input
                 className={input}
-                aria-label="Opportunity or hackathon"
-                placeholder="Hackathon (optional)"
                 maxLength={200}
-                value={opportunity}
-                onChange={(e) => setOpportunity(e.target.value)}
+                value={groupGoal}
+                onChange={(e) => setGroupGoal(e.target.value)}
               />
-              <button className={`${button} flex-shrink-0`} disabled={busy}>
-                Create
-              </button>
-            </form>
-            <div className="space-y-3">
-              {teams.map((t) => (
-                <article key={t.id} className="p-3 rounded-xl bg-white/80 border border-teal-200/80 space-y-2">
-                  <div className="flex items-center gap-3">
-                    <Avatar name={t.name} seed={t.id} size={36} group />
-                    <div className="min-w-0 flex-1">
-                      <h3 className="text-[14px] font-bold text-indigo-950 truncate">{t.name}</h3>
-                      <p className="text-mini font-mono text-teal-800 truncate">
-                        {t.opportunity_title ? `${t.opportunity_title} · ` : ""}
-                        {members.filter((m) => m.team_id === t.id).map((m) => nameFor(m.user_id)).join(", ")}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-3 items-center">
-                    <button className={ghostButton} onClick={() => openChat("team", t.id, t.name)}>
-                      Open group chat
-                    </button>
-                    {t.owner_id === user.id && (
-                      <>
-                        <button className={button} disabled={busy} onClick={() => createInvite(t)}>
-                          Create team invite
-                        </button>
-                        <button
-                          className={linkButton}
-                          disabled={busy}
-                          onClick={() =>
-                            run(async () => {
-                              checked(
-                                await networkClient!.rpc("network_revoke_invites", {
-                                  target_team: t.id,
-                                }),
-                              );
-                              setLink("");
-                              setNotice("Team invitation links revoked.");
-                            })
-                          }
-                        >
-                          Revoke links
-                        </button>
-                      </>
-                    )}
-                    <button
-                      className={dangerLink}
-                      disabled={busy}
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            t.owner_id === user.id
-                              ? "Delete this group and its chat for all members?"
-                              : "Leave this group?",
-                          )
-                        )
-                          run(async () => {
-                            checked(
-                              await networkClient!.rpc("network_leave_team", {
-                                target_team: t.id,
-                              }),
-                            );
-                            if (channel?.id === t.id) setChannel(null);
-                            await reload();
-                            setNotice("Group updated.");
-                          });
-                      }}
+            </label>
+            <div>
+              <div className={label}>Add friends</div>
+              <div className="mt-2 space-y-1.5 max-h-60 overflow-y-auto">
+                {friends.map((p) => {
+                  const picked = groupPicks.includes(p.id);
+                  return (
+                    <label
+                      key={p.id}
+                      className={`flex items-center gap-3 p-2 rounded-xl border cursor-pointer transition-colors ${
+                        picked ? "bg-emerald-50 border-emerald-300" : "bg-white border-teal-200/80 hover:bg-slate-50"
+                      }`}
                     >
-                      {t.owner_id === user.id ? "Delete group" : "Leave group"}
-                    </button>
-                  </div>
-                </article>
-              ))}
-              {!teams.length && (
-                <p className="text-mini font-mono text-teal-800">No groups yet.</p>
-              )}
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4 accent-emerald-600"
+                        checked={picked}
+                        onChange={() =>
+                          setGroupPicks((prev) => (picked ? prev.filter((id) => id !== p.id) : [...prev, p.id]))
+                        }
+                      />
+                      <Avatar name={p.name} seed={p.id} size={32} online={isOnline(p)} />
+                      <span className="text-[13px] font-semibold text-slate-800 truncate">{p.name}</span>
+                    </label>
+                  );
+                })}
+                {!friends.length && (
+                  <p className="text-[13px] text-teal-900">
+                    Add friends first, or create the group and share its invite link.
+                  </p>
+                )}
+              </div>
             </div>
-          </section>
-        </div>
+            <button className={`${button} w-full`} disabled={busy || groupName.trim().length < 2}>
+              Create group{groupPicks.length ? ` with ${groupPicks.length} ${groupPicks.length === 1 ? "friend" : "friends"}` : ""}
+            </button>
+          </form>
+        </Modal>
+      )}
+
+      {/* ===================== GROUP MEMBERS DIALOG ===================== */}
+      {membersModal && membersTeam && (
+        <Modal title={membersTeam.name} onClose={() => setMembersModal(null)}>
+          <div className="space-y-4">
+            {membersTeam.opportunity_title && (
+              <p className="text-[13px] text-teal-950">{membersTeam.opportunity_title}</p>
+            )}
+            <div>
+              <div className={label}>Members</div>
+              <div className="mt-2 space-y-1.5">
+                {members
+                  .filter((m) => m.team_id === membersTeam.id)
+                  .map((m) => {
+                    const p = profileOf(m.user_id);
+                    return (
+                      <div key={m.user_id} className="flex items-center gap-3 p-2 rounded-xl bg-white border border-teal-200/80">
+                        <Avatar name={nameFor(m.user_id)} seed={m.user_id} size={32} online={m.user_id === user.id || isOnline(p)} />
+                        <span className="text-[13px] font-semibold text-slate-800 truncate flex-1">
+                          {nameFor(m.user_id)}
+                          {m.user_id === membersTeam.owner_id && (
+                            <span className="ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700">owner</span>
+                          )}
+                        </span>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+            {membersTeam.owner_id === user.id && (
+              <>
+                <div>
+                  <div className={label}>Add friends</div>
+                  <div className="mt-2 space-y-1.5">
+                    {friends
+                      .filter((p) => !members.some((m) => m.team_id === membersTeam.id && m.user_id === p.id))
+                      .map((p) => (
+                        <div key={p.id} className="flex items-center gap-3 p-2 rounded-xl bg-white border border-teal-200/80">
+                          <Avatar name={p.name} seed={p.id} size={32} online={isOnline(p)} />
+                          <span className="text-[13px] font-semibold text-slate-800 truncate flex-1">{p.name}</span>
+                          <button className={`${button} !h-8 !px-3`} disabled={busy} onClick={() => addToGroup(membersTeam.id, p.id)}>
+                            <PlusIcon size={13} />
+                            Add
+                          </button>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <button className={`${ghostButton} w-full`} disabled={busy} onClick={() => createInvite(membersTeam)}>
+                    Create team invite
+                  </button>
+                  {link && linkLabel === `Group invite: ${membersTeam.name}` && (
+                    <input readOnly aria-label="Group invite link" className={input} value={link} onFocus={(e) => e.target.select()} />
+                  )}
+                </div>
+              </>
+            )}
+            <div className="pt-3 border-t border-teal-200/80 text-center">
+              <button
+                className={dangerLink}
+                disabled={busy}
+                onClick={() => {
+                  const owner = membersTeam.owner_id === user.id;
+                  if (window.confirm(owner ? "Delete this group and its chat for all members?" : "Leave this group?"))
+                    run(async () => {
+                      checked(await networkClient!.rpc("network_leave_team", { target_team: membersTeam.id }));
+                      if (channel?.id === membersTeam.id) setChannel(null);
+                      setMembersModal(null);
+                      await reload();
+                      setNotice(owner ? "Group deleted." : "You left the group.");
+                    });
+                }}
+              >
+                {membersTeam.owner_id === user.id ? "Delete group" : "Leave group"}
+              </button>
+            </div>
+          </div>
+        </Modal>
       )}
     </div>
   );
