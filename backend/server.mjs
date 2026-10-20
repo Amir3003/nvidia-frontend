@@ -39,7 +39,7 @@ function validate(items, sources) {
     const quote = String(item.deadline_quote || '').trim();
     const deadline = String(item.deadline || '');
     const hasDeadlineEvidence = quote && source.toLowerCase().includes(quote.toLowerCase()) &&
-      /deadline|registration|apply|applications|submit|closes/i.test(quote) &&
+      /deadline|registration|apply|applications|submit|clos(e|es|ing)|due|until|last date/i.test(quote) &&
       /^\d{4}-\d{2}-\d{2}$/.test(deadline) && !Number.isNaN(Date.parse(`${deadline}T00:00:00Z`)) && deadline >= today;
     const eligibilityQuote = String(item.eligibility_quote || '').trim();
     const eligibility = eligibilityQuote && source.toLowerCase().includes(eligibilityQuote.toLowerCase())
@@ -55,35 +55,16 @@ function validate(items, sources) {
   });
 }
 
-export async function scan() {
-  const tavily = process.env.TAVILY_API_KEY;
-  const nebius = process.env.NEBIUS_API_KEY;
-  const model = process.env.NEBIUS_MODEL || 'nvidia/Nemotron-3_5-Lightning';
-  if (!tavily || !nebius) throw new Error('Set TAVILY_API_KEY and NEBIUS_API_KEY in .env');
-  let sources;
-  try {
-    const cached = JSON.parse(await fs.readFile(sourcesFile, 'utf8'));
-    if (cached.date === new Date().toISOString().slice(0, 10) && Array.isArray(cached.sources)) {
-      sources = new Map(cached.sources);
-      if (sources.size) console.log('Reusing today\'s extracted source pages');
-    }
-  } catch (error) {
-    if (error.code !== 'ENOENT' && !(error instanceof SyntaxError)) throw error;
-  }
-  if (!sources?.size) {
-    const search = await postJson('https://api.tavily.com/search', tavily, {
-      query: 'upcoming student AI hackathons scholarships internships application deadline',
-      max_results: 5,
-    });
-    const urls = [...new Set((search.results || []).map((r) => r.url).filter((u) => /^https?:\/\//.test(u || '')))].slice(0, 5);
-    if (!urls.length) throw new Error('Tavily returned no URLs; existing cache was kept');
-    const extracted = await postJson('https://api.tavily.com/extract', tavily, { urls });
-    sources = new Map((extracted.results || []).filter((r) => urls.includes(r.url) && r.raw_content)
-      .map((r) => [r.url, String(r.raw_content).slice(0, 12000)]));
-    if (!sources.size) throw new Error('Tavily could not extract pages; existing cache was kept');
-    await fs.mkdir(path.dirname(sourcesFile), { recursive: true });
-    await fs.writeFile(sourcesFile, JSON.stringify({ date: new Date().toISOString().slice(0, 10), sources: [...sources] }), { mode: 0o600 });
-  }
+const SEARCH_QUERIES = [
+  'student AI hackathon 2026 2027 registration deadline',
+  'undergraduate scholarship grant computer science application deadline 2027',
+  'AI machine learning summer internship 2027 students apply by',
+  'Kazakhstan Central Asia students hackathon grant competition deadline',
+];
+const MAX_SOURCES = 12;
+const SOURCES_PER_CALL = 4;
+
+async function extractBatch(sources, nebius, model) {
   const sourceText = [...sources].map(([url, content]) => `URL: ${url}\nCONTENT: ${content}`).join('\n\n').slice(0, 45000);
   const completion = await postJson('https://api.tokenfactory.nebius.com/v1/chat/completions', nebius, {
     model, max_tokens: 4000,
@@ -102,10 +83,58 @@ export async function scan() {
   } catch {
     const start = content.indexOf('{');
     const end = content.lastIndexOf('}');
-    if (start < 0 || end <= start) throw new Error('Nebius returned no JSON; the extracted Tavily pages were saved for retry');
+    if (start < 0 || end <= start) throw new Error('Nebius returned no JSON');
     parsed = JSON.parse(content.slice(start, end + 1));
   }
-  const results = validate(parsed.opportunities, sources);
+  return validate(parsed.opportunities, sources);
+}
+
+export async function scan() {
+  const tavily = process.env.TAVILY_API_KEY;
+  const nebius = process.env.NEBIUS_API_KEY;
+  const model = process.env.NEBIUS_MODEL || 'nvidia/Nemotron-3_5-Lightning';
+  if (!tavily || !nebius) throw new Error('Set TAVILY_API_KEY and NEBIUS_API_KEY in .env');
+  let sources;
+  try {
+    const cached = JSON.parse(await fs.readFile(sourcesFile, 'utf8'));
+    if (cached.date === new Date().toISOString().slice(0, 10) && Array.isArray(cached.sources)) {
+      sources = new Map(cached.sources);
+      if (sources.size) console.log('Reusing today\'s extracted source pages');
+    }
+  } catch (error) {
+    if (error.code !== 'ENOENT' && !(error instanceof SyntaxError)) throw error;
+  }
+  if (!sources?.size) {
+    const found = [];
+    for (const query of SEARCH_QUERIES) {
+      try {
+        const search = await postJson('https://api.tavily.com/search', tavily, { query, max_results: 5 });
+        found.push(...(search.results || []).map((r) => r.url));
+      } catch (error) {
+        console.error(`Search failed for "${query}": ${error.message}`);
+      }
+    }
+    const urls = [...new Set(found.filter((u) => /^https?:\/\//.test(u || '')))].slice(0, MAX_SOURCES);
+    if (!urls.length) throw new Error('Tavily returned no URLs; existing cache was kept');
+    const extracted = await postJson('https://api.tavily.com/extract', tavily, { urls });
+    sources = new Map((extracted.results || []).filter((r) => urls.includes(r.url) && r.raw_content)
+      .map((r) => [r.url, String(r.raw_content).slice(0, 12000)]));
+    if (!sources.size) throw new Error('Tavily could not extract pages; existing cache was kept');
+    await fs.mkdir(path.dirname(sourcesFile), { recursive: true });
+    await fs.writeFile(sourcesFile, JSON.stringify({ date: new Date().toISOString().slice(0, 10), sources: [...sources] }), { mode: 0o600 });
+  }
+  // Several smaller model calls instead of one: each page keeps its full text.
+  const entries = [...sources];
+  const results = [];
+  for (let i = 0; i < entries.length; i += SOURCES_PER_CALL) {
+    const batch = new Map(entries.slice(i, i + SOURCES_PER_CALL));
+    try {
+      results.push(...await extractBatch(batch, nebius, model));
+    } catch (error) {
+      console.error(`Extraction batch ${i / SOURCES_PER_CALL + 1} failed: ${error.message}`);
+    }
+  }
+  if (!results.length) throw new Error('No opportunities extracted; the extracted Tavily pages were saved for retry');
   await fs.mkdir(path.dirname(dataFile), { recursive: true });
   const temp = `${dataFile}.${process.pid}.tmp`;
   await fs.writeFile(temp, JSON.stringify(results, null, 2), { mode: 0o600 });

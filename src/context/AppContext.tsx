@@ -339,7 +339,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         title: item.title,
         organization: item.organization,
         orgKey: 'general',
-        deadline: item.deadline ? `Due ${item.deadline}` : 'Deadline unknown',
+        deadline: item.deadline ? `Due ${item.deadline}` : 'Deadline: see official page',
         deadlineDate: item.deadline || '',
         match: 0,
         description: item.eligibility === 'check source'

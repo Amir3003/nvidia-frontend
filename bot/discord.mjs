@@ -42,7 +42,7 @@ async function loadRadarSafe() {
 }
 
 function describeOpportunity(opp) {
-  return `${opp.type}${opp.organization ? ` · ${opp.organization}` : ''} · Deadline: ${opp.deadline || 'not confirmed'}`;
+  return `${opp.type}${opp.organization ? ` · ${opp.organization}` : ''} · Deadline: ${opp.deadline || 'see official page'}`;
 }
 
 // Helper: Make authenticated Discord REST API calls
