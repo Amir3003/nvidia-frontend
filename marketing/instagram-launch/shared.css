@@ -1,0 +1,200 @@
+  /* Light palette from the website panels; logo color from the avatar. */
+  :root {
+    --ink: #1B2440;
+    --text-2: #475569;
+    --muted: #64748B;
+    --accent: #059669;
+    --accent-soft: rgba(16, 185, 129, 0.10);
+    --teal: #0F766E;
+    --card: rgba(255, 255, 255, 0.88);
+    --border: rgba(13, 148, 136, 0.22);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #E2E8F0; font-family: 'Geist', sans-serif; color: var(--ink); }
+  .slide {
+    position: relative;
+    width: 1080px;
+    height: 1350px;
+    overflow: hidden;
+    background: linear-gradient(155deg, #F2FAF8 0%, #F6F8FF 55%, #EDF6FA 100%);
+    padding: 96px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 40px;
+  }
+  .slide::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(27, 36, 64, 0.07) 1.5px, transparent 1.5px);
+    background-size: 36px 36px;
+    mask-image: linear-gradient(180deg, transparent 0%, #000 45%, transparent 100%);
+    pointer-events: none;
+  }
+  .top, .bottom { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; }
+  .brand { display: flex; align-items: center; gap: 18px; font-weight: 700; font-size: 30px; }
+  .brand svg { width: 52px; height: 52px; }
+  .count { font-family: 'JetBrains Mono', monospace; font-size: 24px; color: var(--muted); letter-spacing: 0.08em; }
+  .body { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .kicker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 32px;
+  }
+  h1 { font-size: 112px; line-height: 1.04; font-weight: 800; letter-spacing: -0.03em; }
+  h2 { font-size: 76px; line-height: 1.08; font-weight: 800; letter-spacing: -0.025em; }
+  .accent { color: var(--accent); }
+  .lead { font-size: 36px; line-height: 1.4; color: var(--text-2); margin-top: 40px; max-width: 840px; }
+  .bottom { font-size: 26px; color: var(--muted); }
+  .handle { font-family: 'JetBrains Mono', monospace; letter-spacing: 0.04em; }
+  .swipe { display: flex; align-items: center; gap: 14px; color: var(--ink); font-weight: 600; }
+  .swipe svg { width: 34px; height: 34px; color: var(--accent); }
+  .mark { color: var(--ink); }
+
+  .cover .body > .mark { width: 220px; height: 220px; margin-bottom: 64px; }
+  .cover h1 { font-size: 124px; }
+
+  .list { margin-top: 60px; display: flex; flex-direction: column; gap: 26px; }
+  .item {
+    display: flex; align-items: center; gap: 28px;
+    padding: 34px 40px;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 24px;
+    font-size: 36px; font-weight: 600;
+    box-shadow: 0 16px 40px -18px rgba(6, 182, 212, 0.25);
+  }
+  .num {
+    flex-shrink: 0; width: 64px; height: 64px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 26px;
+    color: #BE123C; background: rgba(244, 63, 94, 0.08); border: 1.5px solid rgba(244, 63, 94, 0.30);
+  }
+
+  .cards { margin-top: 48px; }
+  .card {
+    padding: 30px 40px;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 28px;
+    box-shadow: 0 16px 40px -18px rgba(6, 182, 212, 0.25);
+  }
+  .card + .card { margin-top: 22px; }
+  .card-head { display: flex; align-items: center; gap: 22px; font-size: 36px; font-weight: 700; }
+  .card p { margin-top: 12px; font-size: 29px; line-height: 1.4; color: var(--text-2); }
+  .compact h2 { font-size: 64px; }
+  .icon {
+    flex-shrink: 0; width: 66px; height: 66px; border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--accent-soft); border: 1.5px solid rgba(5, 150, 105, 0.35);
+  }
+  .icon svg { width: 34px; height: 34px; stroke: var(--accent); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .channel { font-family: 'JetBrains Mono', monospace; color: var(--teal); font-weight: 600; }
+  .note {
+    margin-top: 28px;
+    display: flex; align-items: center; gap: 14px;
+    font-size: 27px; color: var(--teal); font-weight: 600;
+  }
+  .note .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
+
+  .cta .body { align-items: center; text-align: center; }
+  .cta .body > .mark { width: 170px; height: 170px; margin-bottom: 56px; }
+  .status {
+    margin-top: 56px;
+    display: flex; flex-direction: column; gap: 18px; align-items: stretch;
+    width: 720px;
+  }
+  .status-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 26px 36px;
+    border-radius: 20px;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    font-size: 32px; font-weight: 600;
+  }
+  .tag { font-family: 'JetBrains Mono', monospace; font-size: 22px; letter-spacing: 0.1em; padding: 8px 16px; border-radius: 999px; }
+  .tag.live { color: #F8FAFC; background: var(--accent); }
+  .tag.soon { color: var(--teal); background: var(--accent-soft); border: 1.5px solid rgba(5, 150, 105, 0.35); }
+  .button {
+    margin-top: 48px;
+    display: inline-flex; align-items: center; gap: 18px;
+    padding: 28px 52px; border-radius: 20px;
+    background: linear-gradient(90deg, #10B981, #0D9488);
+    color: #F8FAFC; font-size: 38px; font-weight: 700;
+  }
+  .button svg { width: 36px; height: 36px; color: #F8FAFC; }
+  .meaning { margin-top: 56px; font-size: 30px; color: var(--muted); }
+  .meaning b { color: var(--ink); }
+
+  /* Posts 2 and 3 */
+  .cover-icon {
+    width: 200px; height: 200px; margin-bottom: 64px; border-radius: 48px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--card); border: 2px solid var(--border);
+    box-shadow: 0 24px 60px -24px rgba(6, 182, 212, 0.35);
+  }
+  .cover-icon svg { width: 110px; height: 110px; stroke: var(--accent); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .steps { margin-top: 56px; display: flex; flex-direction: column; gap: 22px; }
+  .step {
+    display: flex; gap: 30px; align-items: flex-start;
+    padding: 32px 40px;
+    background: var(--card); border: 1.5px solid var(--border); border-radius: 28px;
+    box-shadow: 0 16px 40px -18px rgba(6, 182, 212, 0.25);
+  }
+  .step-num {
+    flex-shrink: 0; width: 66px; height: 66px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 600;
+    color: #F8FAFC; background: linear-gradient(135deg, #10B981, #0D9488);
+  }
+  .step h3 { font-size: 36px; font-weight: 700; }
+  .step p { margin-top: 8px; font-size: 29px; line-height: 1.4; color: var(--text-2); }
+  .template {
+    margin-top: 52px;
+    padding: 40px 44px;
+    border-radius: 28px;
+    background: var(--ink);
+    color: #E2E8F0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 31px;
+    line-height: 1.75;
+    box-shadow: 0 24px 60px -24px rgba(27, 36, 64, 0.45);
+  }
+  .template .t-head { color: #34D399; font-weight: 600; }
+  .template .t-key { color: #94A3B8; }
+  .center { align-items: center; text-align: center; }
+  .center .lead { margin-left: auto; margin-right: auto; }
+
+  /* TikTok: square 1080x1080. TikTok shows the username and page dots itself,
+     so the header row and handle are dropped and everything is scaled down. */
+  body.tiktok .slide { height: 1080px; padding: 84px 92px; }
+  body.tiktok .top, body.tiktok .bottom { display: none; }
+  body.tiktok h1, body.tiktok .cover h1 { font-size: 92px !important; }
+  body.tiktok h2, body.tiktok .compact h2 { font-size: 58px !important; }
+  body.tiktok .kicker { font-size: 21px; margin-bottom: 22px; }
+  body.tiktok .lead { font-size: 31px; margin-top: 26px; }
+  body.tiktok .cover .body > .mark { width: 150px; height: 150px; margin-bottom: 40px; }
+  body.tiktok .cta .body > .mark { width: 120px; height: 120px; margin-bottom: 32px; }
+  body.tiktok .cover-icon { width: 140px; height: 140px; margin-bottom: 40px; border-radius: 36px; }
+  body.tiktok .cover-icon svg { width: 78px; height: 78px; }
+  body.tiktok .list { margin-top: 40px; gap: 18px; }
+  body.tiktok .item { padding: 24px 32px; font-size: 31px; }
+  body.tiktok .cards, body.tiktok .steps { margin-top: 36px; }
+  body.tiktok .steps { gap: 16px; }
+  body.tiktok .card, body.tiktok .step { padding: 22px 32px; border-radius: 24px; }
+  body.tiktok .card + .card { margin-top: 16px; }
+  body.tiktok .card-head, body.tiktok .step h3 { font-size: 31px; }
+  body.tiktok .icon { width: 54px; height: 54px; border-radius: 14px; }
+  body.tiktok .icon svg { width: 28px; height: 28px; }
+  body.tiktok .step-num { width: 54px; height: 54px; font-size: 24px; }
+  body.tiktok .card p, body.tiktok .step p { margin-top: 6px; font-size: 25px; }
+  body.tiktok .template { margin-top: 36px !important; padding: 30px 36px; font-size: 27px; line-height: 1.65; }
+  body.tiktok .note { margin-top: 22px; font-size: 24px; }
+  body.tiktok .status { margin-top: 36px; gap: 14px; width: 680px; }
+  body.tiktok .status-row { padding: 20px 30px; font-size: 28px; }
+  body.tiktok .button { margin-top: 32px; padding: 22px 42px; font-size: 32px; }
+  body.tiktok .meaning { margin-top: 32px; font-size: 26px; }

@@ -32,3 +32,11 @@ __pycache__/
 # Browser test output
 test-results/
 playwright-report/
+
+# Rendered marketing outputs and local coursework
+marketing/**/png/
+marketing/**/*.mp4
+marketing/**/*.wav
+marketing/**/frames/
+marketing/**/vo-work/
+lab-figma-cat/

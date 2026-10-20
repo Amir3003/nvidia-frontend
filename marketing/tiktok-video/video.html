@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  /* 1080x1920, 21.5 s. Every animation is driven by its delay on one timeline;
+     render.mjs pauses them and steps currentTime frame by frame.
+     Safe area: TikTok covers ~150px on the right and ~420px at the bottom. */
+  :root {
+    --ink: #1B2440;
+    --text-2: #475569;
+    --muted: #64748B;
+    --accent: #059669;
+    --teal: #0F766E;
+    --card: rgba(255, 255, 255, 0.92);
+    --border: rgba(13, 148, 136, 0.22);
+    --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; }
+  body {
+    font-family: 'Geist', sans-serif;
+    color: var(--ink);
+    background: linear-gradient(160deg, #F2FAF8 0%, #F6F8FF 55%, #EDF6FA 100%);
+    position: relative;
+  }
+  .glow {
+    position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.55;
+    animation: drift 21.5s ease-in-out 0s forwards;
+  }
+  .glow.a { width: 700px; height: 700px; background: rgba(16, 185, 129, 0.22); left: -200px; top: 200px; }
+  .glow.b { width: 640px; height: 640px; background: rgba(99, 102, 241, 0.14); right: -220px; top: 1000px; animation-direction: reverse; }
+  @keyframes drift { 0% { transform: translate(0, 0); } 50% { transform: translate(160px, 220px); } 100% { transform: translate(40px, -120px); } }
+  .dots {
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(27, 36, 64, 0.06) 1.5px, transparent 1.5px);
+    background-size: 36px 36px;
+  }
+
+  .scene {
+    position: absolute;
+    left: 96px; right: 150px; top: 170px; bottom: 430px;
+    display: flex; flex-direction: column; justify-content: center;
+    opacity: 0;
+    animation: sceneIn 0.45s var(--ease) var(--in) forwards, sceneOut 0.4s ease-in var(--out) forwards;
+  }
+  .scene.last { animation: sceneIn 0.45s var(--ease) var(--in) forwards; }
+  @keyframes sceneIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: none; } }
+  @keyframes sceneOut { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(-40px); } }
+
+  .rise { opacity: 0; animation: rise 0.6s var(--ease) var(--d) forwards; }
+  @keyframes rise { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
+  .pop { opacity: 0; animation: pop 0.45s var(--ease) var(--d) forwards; }
+  @keyframes pop { 0% { opacity: 0; transform: scale(0.6) rotate(var(--r, 0deg)); } 100% { opacity: 1; transform: scale(1) rotate(var(--r, 0deg)); } }
+  .slide-in { opacity: 0; animation: slideIn 0.6s var(--ease) var(--d) forwards; }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(-80px); } to { opacity: 1; transform: none; } }
+
+  .kicker {
+    font-family: 'JetBrains Mono', monospace; font-weight: 600;
+    font-size: 30px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--teal);
+    margin-bottom: 30px;
+  }
+  .huge { font-size: 112px; line-height: 1.02; font-weight: 800; letter-spacing: -0.035em; }
+  .big { font-size: 84px; line-height: 1.05; font-weight: 800; letter-spacing: -0.03em; }
+  .accent { color: var(--accent); }
+  .lead { font-size: 40px; line-height: 1.35; color: var(--text-2); margin-top: 36px; }
+
+  /* Scene 2: tab chaos */
+  .tabs { position: relative; height: 760px; margin-top: 40px; }
+  .tab {
+    position: absolute;
+    display: flex; align-items: center; gap: 16px;
+    padding: 22px 30px;
+    background: var(--card); border: 2px solid rgba(148, 163, 184, 0.35); border-radius: 20px;
+    font-size: 34px; font-weight: 600; color: var(--text-2);
+    box-shadow: 0 18px 40px -18px rgba(15, 23, 42, 0.25);
+    white-space: nowrap;
+  }
+  .tab i { width: 18px; height: 18px; border-radius: 50%; background: #CBD5E1; flex-shrink: 0; }
+  .stamp {
+    position: absolute; left: 30px; top: 300px;
+    padding: 20px 36px; white-space: nowrap;
+    border: 7px solid #E11D48; border-radius: 22px;
+    color: #E11D48; font-size: 62px; font-weight: 800; letter-spacing: 0.02em;
+    background: rgba(255, 241, 242, 0.92);
+    --r: -9deg;
+  }
+
+  /* Scene 3: logo */
+  .logo { width: 300px; height: 300px; margin-bottom: 60px; }
+  .logo path {
+    stroke-dasharray: 1; stroke-dashoffset: 1;
+    animation: draw 0.9s var(--ease) var(--d) forwards;
+  }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+
+  /* Scene 4: cards */
+  .card {
+    display: flex; gap: 30px; align-items: flex-start;
+    padding: 34px 38px; margin-top: 26px;
+    background: var(--card); border: 2px solid var(--border); border-radius: 30px;
+    box-shadow: 0 20px 48px -20px rgba(6, 182, 212, 0.35);
+  }
+  .icon {
+    flex-shrink: 0; width: 84px; height: 84px; border-radius: 22px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(16, 185, 129, 0.12); border: 2px solid rgba(5, 150, 105, 0.35);
+  }
+  .icon svg { width: 44px; height: 44px; stroke: var(--accent); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .card h3 { font-size: 44px; font-weight: 700; }
+  .card p { margin-top: 8px; font-size: 32px; line-height: 1.35; color: var(--text-2); }
+
+  /* Scene 5: Discord message */
+  .msg {
+    margin-top: 44px;
+    padding: 36px 38px;
+    background: #FFFFFF; border: 2px solid var(--border); border-radius: 30px;
+    box-shadow: 0 24px 56px -24px rgba(27, 36, 64, 0.35);
+  }
+  .msg-head { display: flex; align-items: center; gap: 20px; margin-bottom: 22px; }
+  .avatar { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #10B981, #0D9488); }
+  .avatar.b { background: linear-gradient(135deg, #818CF8, #6366F1); }
+  .name { font-size: 34px; font-weight: 700; }
+  .channel { font-family: 'JetBrains Mono', monospace; font-size: 26px; color: var(--teal); }
+  .line { font-family: 'JetBrains Mono', monospace; font-size: 31px; line-height: 1.7; color: var(--text-2); }
+  .line b { color: var(--accent); font-weight: 600; }
+  .reply { margin-top: 22px; display: flex; align-items: center; gap: 18px; padding: 24px 30px; background: #EEF2FF; border-radius: 24px; font-size: 32px; font-weight: 600; }
+  .reply .avatar { width: 56px; height: 56px; }
+
+  /* Scene 6: CTA */
+  .cta { align-items: center; text-align: center; }
+  .cta .logo { width: 210px; height: 210px; margin-bottom: 44px; }
+  .status { margin-top: 50px; width: 100%; display: flex; flex-direction: column; gap: 18px; }
+  .row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 28px 36px; background: var(--card); border: 2px solid var(--border); border-radius: 24px;
+    font-size: 36px; font-weight: 600; text-align: left;
+  }
+  .tag { font-family: 'JetBrains Mono', monospace; font-size: 25px; letter-spacing: 0.1em; padding: 10px 20px; border-radius: 999px; }
+  .tag.live { color: #F8FAFC; background: var(--accent); }
+  .tag.soon { color: var(--teal); background: rgba(16, 185, 129, 0.10); border: 2px solid rgba(5, 150, 105, 0.35); }
+  .follow {
+    margin-top: 50px; display: inline-flex; align-items: center; gap: 16px;
+    padding: 30px 54px; border-radius: 22px;
+    background: linear-gradient(90deg, #10B981, #0D9488); color: #F8FAFC;
+    font-size: 44px; font-weight: 700;
+  }
+</style>
+</head>
+<body>
+<div class="glow a"></div>
+<div class="glow b"></div>
+<div class="dots"></div>
+
+<!-- 1. Hook: 0 to 3 s -->
+<section class="scene" style="--in:0s; --out:2.7s">
+  <div class="kicker rise" style="--d:0.1s">Students,</div>
+  <div class="huge rise" style="--d:0.35s">Still checking</div>
+  <div class="huge rise accent" style="--d:0.75s">10 sites</div>
+  <div class="huge rise" style="--d:1.15s">for one<br>hackathon?</div>
+</section>
+
+<!-- 2. Chaos: 3 to 6.6 s -->
+<section class="scene" style="--in:3s; --out:6.3s; justify-content:flex-start; padding-top:40px">
+  <div class="big rise" style="--d:3.1s">Every opportunity lives <span class="accent">somewhere else.</span></div>
+  <div class="tabs">
+    <div class="tab pop" style="--d:3.5s; --r:-3deg; left:0; top:0"><i></i>Hackathon website</div>
+    <div class="tab pop" style="--d:3.75s; --r:2deg; left:300px; top:110px"><i></i>University portal</div>
+    <div class="tab pop" style="--d:4.0s; --r:-2deg; left:20px; top:225px"><i></i>Telegram channel</div>
+    <div class="tab pop" style="--d:4.25s; --r:3deg; left:360px; top:335px"><i></i>Instagram post</div>
+    <div class="tab pop" style="--d:4.5s; --r:-4deg; left:0; top:450px"><i></i>Shared Google Doc</div>
+    <div class="tab pop" style="--d:4.75s; --r:2deg; left:310px; top:565px"><i></i>PDF from last year</div>
+    <div class="stamp pop" style="--d:5.3s">DEADLINE PASSED</div>
+  </div>
+</section>
+
+<!-- 3. Reveal: 6.6 to 9.8 s -->
+<section class="scene" style="--in:6.6s; --out:9.5s">
+  <svg class="logo" viewBox="6 7.5 54 54">
+    <g fill="none" stroke="#1B2440" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+      <path pathLength="1" style="--d:6.8s" d="M34.18,15.68 A20,20 0 1 0 49.0,35.0 L49.0,14"/>
+      <path pathLength="1" style="--d:7.4s" d="M41.0,22 L49.0,14 L57.0,22"/>
+      <path pathLength="1" style="--d:7.6s" d="M38 45 L47 54"/>
+    </g>
+  </svg>
+  <div class="kicker rise" style="--d:7.7s">Meet</div>
+  <div class="huge rise" style="--d:7.9s">QADAM <span class="accent">Hub</span></div>
+  <div class="lead rise" style="--d:8.4s">One AI radar for hackathons, grants and internships.</div>
+</section>
+
+<!-- 4. How it works: 9.8 to 14.8 s -->
+<section class="scene" style="--in:9.8s; --out:14.5s">
+  <div class="kicker rise" style="--d:9.9s">How it works</div>
+  <div class="big rise" style="--d:10.0s">From finding <span class="accent">to applying.</span></div>
+  <div class="card slide-in" style="--d:10.6s">
+    <span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 12l6-6"/></svg></span>
+    <div><h3>Radar</h3><p>New opportunities every day, each with its official link.</p></div>
+  </div>
+  <div class="card slide-in" style="--d:11.6s">
+    <span class="icon"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></span>
+    <div><h3>Skill check</h3><p>See which skills you have and which are missing.</p></div>
+  </div>
+  <div class="card slide-in" style="--d:12.6s">
+    <span class="icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg></span>
+    <div><h3>Application prep</h3><p>A checklist for each one, your details ready to copy.</p></div>
+  </div>
+</section>
+
+<!-- 5. Discord: 14.8 to 18.3 s -->
+<section class="scene" style="--in:14.8s; --out:18s">
+  <div class="kicker rise" style="--d:14.9s">On our Discord</div>
+  <div class="big rise" style="--d:15.0s">Don't apply alone. <span class="accent">Find your team.</span></div>
+  <div class="msg rise" style="--d:15.5s">
+    <div class="msg-head">
+      <span class="avatar"></span>
+      <div><div class="name">Aruzhan</div><div class="channel">#find-teammates</div></div>
+    </div>
+    <div class="line rise" style="--d:15.9s"><b>[LOOKING FOR A TEAM]</b></div>
+    <div class="line rise" style="--d:16.2s">My skills: Python, ML</div>
+    <div class="line rise" style="--d:16.5s">We need: frontend, pitch</div>
+    <div class="reply pop" style="--d:17.1s"><span class="avatar b"></span>I'm in. I do frontend!</div>
+  </div>
+</section>
+
+<!-- 6. CTA: 18.3 s to end -->
+<section class="scene last cta" style="--in:18.3s">
+  <svg class="logo" viewBox="6 7.5 54 54">
+    <g fill="none" stroke="#1B2440" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+      <path pathLength="1" style="--d:18.3s" d="M34.18,15.68 A20,20 0 1 0 49.0,35.0 L49.0,14"/>
+      <path pathLength="1" style="--d:18.8s" d="M41.0,22 L49.0,14 L57.0,22"/>
+      <path pathLength="1" style="--d:18.9s" d="M38 45 L47 54"/>
+    </g>
+  </svg>
+  <div class="huge rise" style="--d:18.5s">Take your<br><span class="accent">next step.</span></div>
+  <div class="status">
+    <div class="row slide-in" style="--d:19.0s">Discord community <span class="tag live">OPEN NOW</span></div>
+    <div class="row slide-in" style="--d:19.3s">Website <span class="tag soon">COMING SOON</span></div>
+  </div>
+  <div class="follow pop" style="--d:19.8s">Follow @qadamhub</div>
+</section>
+</body>
+</html>
