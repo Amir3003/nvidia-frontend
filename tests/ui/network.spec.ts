@@ -56,7 +56,8 @@ test("a fresh device can verify email, accept an invite, and exchange messages",
         } else if (url.searchParams.has("id"))
           data = profiles.find((p) => p.id === ids[index]) || null;
         else data = profiles;
-      } else if (url.pathname.endsWith("/network_connections"))
+      } else if (url.pathname.endsWith("/network_friend_requests")) data = [];
+      else if (url.pathname.endsWith("/network_connections"))
         data = connected ? [{ user_a: ids[0], user_b: ids[1] }] : [];
       else if (
         url.pathname.endsWith("/network_teams") ||
@@ -106,6 +107,7 @@ test("a fresh device can verify email, accept an invite, and exchange messages",
     await a.getByRole("button", { name: "Verify and continue" }).click();
     await a.getByLabel("Name", { exact: true }).fill("Alice");
     await a.getByRole("button", { name: "Save network profile" }).click();
+    await a.getByRole("button", { name: "Requests" }).click();
     await a.getByRole("button", { name: "Create connection link" }).click();
     await expect(a.getByLabel("Invitation link")).toHaveValue(
       `http://127.0.0.1:5178/join#code=${code}`,
@@ -127,14 +129,14 @@ test("a fresh device can verify email, accept an invite, and exchange messages",
     await b.getByRole("button", { name: "Accept invitation" }).click();
     await b.getByRole("button", { name: "Open network", exact: true }).click();
     await expect(b).toHaveURL(/\/network\?tab=chats$/);
-    await a.getByRole("button", { name: "Find Teammates" }).click();
-    await a.getByRole("button", { name: "Refresh", exact: true }).click();
+    await a.reload();
+    await a.getByRole("button", { name: "Discover" }).click();
     await a.getByRole("button", { name: "Message", exact: true }).click();
     await a
       .getByLabel("Message", { exact: true })
       .fill("Hello from another device");
     await a.getByRole("button", { name: "Send", exact: true }).click();
-    await b.getByRole("button", { name: "Find Teammates" }).click();
+    await b.getByRole("button", { name: "Discover" }).click();
     await b.getByRole("button", { name: "Message", exact: true }).click();
     await expect(
       b.getByText("Hello from another device", { exact: true }),

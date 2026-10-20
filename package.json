@@ -13,7 +13,7 @@
     "bot": "node --env-file=.env bot/index.mjs",
     "bot:discord": "node --env-file=.env bot/discord.mjs",
     "bot:all": "concurrently \"npm run bot\" \"npm run bot:discord\"",
-    "test:network": "node --test tests/network-db.test.mjs",
+    "test:network": "node --test tests/network-db.test.mjs tests/network-social.test.mjs",
     "test:network-ui": "playwright test --config playwright.network.config.ts"
   },
   "devDependencies": {

@@ -16,13 +16,16 @@ export interface InboxState {
   userId: string | null;
   channels: Record<string, ChannelSummary>;
   totalUnread: number;
+  incomingRequests: number;
 }
 
 const POLL_MS = 5000;
-const EMPTY: InboxState = { userId: null, channels: {}, totalUnread: 0 };
+const HEARTBEAT_MS = 60000;
+const EMPTY: InboxState = { userId: null, channels: {}, totalUnread: 0, incomingRequests: 0 };
 
 let state: InboxState = EMPTY;
 let timer: number | null = null;
+let heartbeatTimer: number | null = null;
 let subscribers = 0;
 const listeners = new Set<() => void>();
 
@@ -54,8 +57,9 @@ export function channelKeyOf(message: NetworkMessage, userId: string): ChannelKe
 function setState(next: InboxState) {
   state = next;
   if (typeof document !== "undefined") {
+    const count = next.totalUnread + next.incomingRequests;
     const base = document.title.replace(/^\(\d+\)\s/, "");
-    document.title = next.totalUnread ? `(${next.totalUnread}) ${base}` : base;
+    document.title = count ? `(${count}) ${base}` : base;
   }
   listeners.forEach((listener) => listener());
 }
@@ -98,11 +102,24 @@ async function refresh() {
     if (!seen || message.created_at > seen) channels[key].unread += 1;
   }
   const totalUnread = Object.values(channels).reduce((sum, c) => sum + c.unread, 0);
-  setState({ userId, channels, totalUnread });
+  // Missing before the social migration runs: the count simply stays at zero.
+  const requests = await networkClient
+    .from("network_friend_requests")
+    .select("sender_id", { count: "exact", head: true })
+    .eq("recipient_id", userId);
+  setState({ userId, channels, totalUnread, incomingRequests: requests.count || 0 });
 }
 
 const refreshSafely = () => {
   refresh().catch(() => undefined);
+};
+
+// Marks this user online for friends; ignored until the social migration runs.
+const heartbeat = () => {
+  if (document.visibilityState !== "visible" || !networkClient) return;
+  networkClient.auth.getSession().then(({ data }) => {
+    if (data.session) networkClient!.rpc("network_heartbeat").then(() => undefined, () => undefined);
+  });
 };
 
 function start() {
@@ -112,15 +129,21 @@ function start() {
   timer = window.setInterval(() => {
     if (document.visibilityState === "visible") refreshSafely();
   }, POLL_MS);
+  heartbeat();
+  heartbeatTimer = window.setInterval(heartbeat, HEARTBEAT_MS);
   document.addEventListener("visibilitychange", refreshSafely);
+  document.addEventListener("visibilitychange", heartbeat);
 }
 
 function stop() {
   subscribers -= 1;
   if (subscribers > 0) return;
   if (timer !== null) window.clearInterval(timer);
+  if (heartbeatTimer !== null) window.clearInterval(heartbeatTimer);
   timer = null;
+  heartbeatTimer = null;
   document.removeEventListener("visibilitychange", refreshSafely);
+  document.removeEventListener("visibilitychange", heartbeat);
 }
 
 // Marks a channel read up to `upTo` (a message created_at) and updates badges right away.

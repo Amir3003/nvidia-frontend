@@ -24,6 +24,7 @@ export interface NetworkProfile {
   skills: string[];
   goals: string[];
   is_public: boolean;
+  last_seen_at?: string | null;
 }
 export interface NetworkTeam {
   id: string;
@@ -49,8 +50,29 @@ export const emptyNetworkProfile = (id: string): NetworkProfile => ({
   bio: "",
   skills: [],
   goals: [],
-  is_public: false,
+  is_public: true,
 });
+export interface FriendRequest {
+  sender_id: string;
+  recipient_id: string;
+  created_at: string;
+}
+
+// Presence comes from a heartbeat every minute (networkInbox); two missed beats mean offline.
+const ONLINE_WINDOW_MS = 150_000;
+export const isOnline = (profile?: { last_seen_at?: string | null } | null) =>
+  Boolean(profile?.last_seen_at && Date.now() - new Date(profile.last_seen_at).getTime() < ONLINE_WINDOW_MS);
+
+export function lastSeenLabel(profile?: { last_seen_at?: string | null } | null) {
+  if (!profile?.last_seen_at) return "Offline";
+  if (isOnline(profile)) return "Online";
+  const minutes = Math.round((Date.now() - new Date(profile.last_seen_at).getTime()) / 60000);
+  if (minutes < 60) return `Active ${minutes}m ago`;
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return `Active ${hours}h ago`;
+  return `Active ${Math.round(hours / 24)}d ago`;
+}
+
 export function checked<T>(result: {
   data: T;
   error: { message: string } | null;
