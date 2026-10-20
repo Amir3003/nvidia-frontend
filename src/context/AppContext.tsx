@@ -36,6 +36,8 @@ interface AppContextType {
   fieldsMaskedPerRequest: number;
   activeHoveredMemoryId: string;
   isTavilyScanning: boolean;
+  /** True once the first radar load has finished, whether or not it found anything. */
+  radarReady: boolean;
   activeQuizSkill: SkillItem | null;
   selectedOpportunityForDraft: Opportunity | null;
   selectedOpportunityForDetails: Opportunity | null;
@@ -154,6 +156,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [activeHoveredMemoryId, setActiveHoveredMemoryId] = useState<string>('');
   const [isTavilyScanning, setIsTavilyScanning] = useState<boolean>(false);
+  const [radarReady, setRadarReady] = useState(false);
   const [activeQuizSkill, setActiveQuizSkill] = useState<SkillItem | null>(null);
   const [selectedOpportunityForDraft, setSelectedOpportunityForDraft] = useState<Opportunity | null>(null);
   const [selectedOpportunityForDetails, setSelectedOpportunityForDetails] = useState<Opportunity | null>(null);
@@ -342,13 +345,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         deadline: item.deadline ? `Due ${item.deadline}` : 'Deadline: see official page',
         deadlineDate: item.deadline || '',
         match: 0,
-        description: item.eligibility === 'check source'
-          ? 'Eligibility unknown; check the official source.'
-          : 'Eligibility evidence is available at the source.',
+        // The scan keeps eligibility only as an exact quote from the source page.
+        description: item.eligibility && item.eligibility !== 'check source'
+          ? `Who can apply: ${item.eligibility}`
+          : 'Details and eligibility are on the official page.',
         skills: item.skills || [],
         url: item.url,
-        location: 'Check source',
-        award: 'Check source',
+        // Not extracted by the scan; empty fields are hidden in the UI.
+        location: '',
+        award: '',
       }));
       setServerOpportunities(mapped);
       addLog('SYSTEM', `Loaded ${mapped.length} sourced opportunities`);
@@ -356,6 +361,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       addLog('SYSTEM', err instanceof Error ? `Radar unavailable: ${err.message}` : 'Radar unavailable');
     } finally {
       setIsTavilyScanning(false);
+      setRadarReady(true);
     }
   };
 
@@ -470,6 +476,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         fieldsMaskedPerRequest,
         activeHoveredMemoryId,
         isTavilyScanning,
+        radarReady,
         activeQuizSkill,
         selectedOpportunityForDraft,
         selectedOpportunityForDetails,

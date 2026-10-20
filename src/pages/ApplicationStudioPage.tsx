@@ -55,16 +55,54 @@ function loadChecked(oppId: string): string[] {
   }
 }
 
+// Resolves the opportunity from the URL. Radar items load asynchronously and are
+// not in the static demo list, so an unknown id must never fall back to a demo entry.
 export const ApplicationStudioPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { selectedOpportunityForDraft, userProfile, skills, addLog } = useApp();
+  const { opportunities, radarReady, selectedOpportunityForDraft } = useApp();
 
   const oppId = searchParams.get('id');
-  const currentOpp: Opportunity =
-    (oppId ? OPPORTUNITIES_DATABASE.find((o) => o.id === oppId) : undefined) ||
-    selectedOpportunityForDraft ||
-    OPPORTUNITIES_DATABASE[0];
+  const found = oppId
+    ? opportunities.find((o) => o.id === oppId) || OPPORTUNITIES_DATABASE.find((o) => o.id === oppId)
+    : selectedOpportunityForDraft || opportunities[0];
+
+  if (found) return <ApplicationPrep key={found.id} currentOpp={found} />;
+
+  const waiting = !radarReady;
+  return (
+    <div className="flex-1 flex flex-col min-w-0 bg-transparent relative z-10 text-slate-100">
+      <PageHeader title="Application Prep" subtitle="Get ready, then apply on the organizer site" />
+      <div className="p-4 sm:p-6 pb-28 lg:pb-8">
+        <div className="max-w-lg mx-auto mt-6 p-6 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 border border-teal-300/40 text-center text-slate-900">
+          <h3 className="text-[17px] font-bold text-indigo-950">
+            {waiting ? 'Loading the radar...' : oppId ? 'This opportunity is no longer on the radar' : 'Pick an opportunity first'}
+          </h3>
+          {!waiting && (
+            <>
+              <p className="mt-2 text-[13px] text-slate-600 leading-relaxed">
+                {oppId
+                  ? 'Its deadline may have passed or the listing was removed. Choose another one from the radar.'
+                  : 'Open the radar and press Prepare & Apply on the opportunity you want.'}
+              </p>
+              <button
+                type="button"
+                onClick={() => navigate('/')}
+                className="mt-5 h-10 px-4 rounded-btn bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-[13px] font-semibold cursor-pointer"
+              >
+                Open Opportunity Radar
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ApplicationPrep: React.FC<{ currentOpp: Opportunity }> = ({ currentOpp }) => {
+  const navigate = useNavigate();
+  const { userProfile, skills, addLog } = useApp();
 
   const [checked, setChecked] = useState<string[]>(() => loadChecked(currentOpp.id));
   const [copiedField, setCopiedField] = useState<string | null>(null);
@@ -207,21 +245,23 @@ export const ApplicationStudioPage: React.FC = () => {
               <div>
                 <h3 className="text-[17px] font-bold text-indigo-950 leading-snug">{currentOpp.title}</h3>
                 <div className="text-mini font-mono text-teal-800 mt-1">
-                  {currentOpp.organization} · {currentOpp.location}
+                  {[currentOpp.organization, currentOpp.location].filter(Boolean).join(' · ')}
                 </div>
               </div>
 
               <p className="text-[13px] text-teal-950 leading-relaxed">{currentOpp.description}</p>
 
-              <div className="grid grid-cols-2 gap-2 text-mini font-mono">
-                <div className="p-2.5 bg-white/80 rounded-btn border border-teal-200">
-                  <div className="text-teal-800">Award</div>
-                  <div className="text-emerald-800 font-bold mt-0.5 leading-snug">{currentOpp.award}</div>
-                </div>
+              <div className={`grid ${currentOpp.award ? 'grid-cols-2' : 'grid-cols-1'} gap-2 text-mini font-mono`}>
+                {currentOpp.award && (
+                  <div className="p-2.5 bg-white/80 rounded-btn border border-teal-200">
+                    <div className="text-teal-800">Award</div>
+                    <div className="text-emerald-800 font-bold mt-0.5 leading-snug">{currentOpp.award}</div>
+                  </div>
+                )}
                 <div className="p-2.5 bg-white/80 rounded-btn border border-teal-200">
                   <div className="text-teal-800">Time left</div>
                   <div className={`font-bold mt-0.5 ${days !== null && days <= 7 ? 'text-rose-700' : 'text-indigo-950'}`}>
-                    {days === null ? 'See site' : days < 0 ? 'Closed' : days === 0 ? 'Today' : `${days} days`}
+                    {days === null ? 'See official page' : days < 0 ? 'Closed' : days === 0 ? 'Today' : `${days} days`}
                   </div>
                 </div>
               </div>

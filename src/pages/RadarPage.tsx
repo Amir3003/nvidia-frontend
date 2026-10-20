@@ -184,21 +184,29 @@ export const RadarPage: React.FC = () => {
                     {opp.title}
                   </h3>
 
-                  {/* Match Bar */}
-                  <div className="my-3 space-y-1">
-                    <div className="flex items-center justify-between text-mini font-mono">
-                      <span className="text-teal-800">Alignment</span>
-                      <span className={isHighMatch ? 'text-emerald-700 font-bold' : 'text-slate-600'}>
-                        {opp.match}% match
-                      </span>
+                  {/* Match Bar: a percentage only means something when both sides list skills */}
+                  {opp.skills.length > 0 && isProfileReady ? (
+                    <div className="my-3 space-y-1">
+                      <div className="flex items-center justify-between text-mini font-mono">
+                        <span className="text-teal-800">Alignment</span>
+                        <span className={isHighMatch ? 'text-emerald-700 font-bold' : 'text-slate-600'}>
+                          {opp.match}% match
+                        </span>
+                      </div>
+                      <div className="w-full h-[4px] bg-white/80 rounded-full overflow-hidden border border-teal-200/60">
+                        <div
+                          className={`h-full ${isHighMatch ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-slate-300'}`}
+                          style={{ width: `${opp.match}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="w-full h-[4px] bg-white/80 rounded-full overflow-hidden border border-teal-200/60">
-                      <div
-                        className={`h-full ${isHighMatch ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-slate-300'}`}
-                        style={{ width: `${opp.match}%` }}
-                      />
+                  ) : (
+                    <div className="my-3 text-mini font-mono text-teal-800">
+                      {opp.skills.length === 0
+                        ? 'Required skills are not listed by the organizer'
+                        : 'Add your skills in Settings to see your match'}
                     </div>
-                  </div>
+                  )}
 
                   {/* Short Description */}
                   <p className="text-[13px] text-teal-950 leading-relaxed line-clamp-2 mb-3.5">

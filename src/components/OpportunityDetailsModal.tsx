@@ -8,11 +8,13 @@ export const OpportunityDetailsModal: React.FC = () => {
   const {
     selectedOpportunityForDetails,
     setSelectedOpportunityForDetails,
+    userProfile,
   } = useApp();
 
   if (!selectedOpportunityForDetails) return null;
 
   const opp = selectedOpportunityForDetails;
+  const hasProfileSkills = Boolean(userProfile.skills?.length);
   const isHighMatch = opp.match >= 80;
 
   const handleOpenDraft = () => {
@@ -61,32 +63,41 @@ export const OpportunityDetailsModal: React.FC = () => {
             <p className="text-[13px] text-slate-700 mt-2 leading-relaxed font-medium">{opp.description}</p>
           </div>
 
-          <div className="p-3.5 bg-white/90 rounded-btn border border-teal-200/80 space-y-2 shadow-2xs">
-            <div className="flex items-center justify-between text-mini font-mono">
-              <span className="text-teal-900 font-bold uppercase">MATCH COMPATIBILITY</span>
-              <span className={isHighMatch ? 'text-emerald-800 font-bold' : 'text-slate-700 font-medium'}>
-                {opp.match}% match
-              </span>
+          {opp.skills.length > 0 && hasProfileSkills && (
+            <div className="p-3.5 bg-white/90 rounded-btn border border-teal-200/80 space-y-2 shadow-2xs">
+              <div className="flex items-center justify-between text-mini font-mono">
+                <span className="text-teal-900 font-bold uppercase">MATCH COMPATIBILITY</span>
+                <span className={isHighMatch ? 'text-emerald-800 font-bold' : 'text-slate-700 font-medium'}>
+                  {opp.match}% match
+                </span>
+              </div>
+              <div className="w-full h-[5px] bg-teal-100/80 rounded-full overflow-hidden">
+                <div
+                  className={`h-full ${isHighMatch ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-slate-400'}`}
+                  style={{ width: `${opp.match}%` }}
+                />
+              </div>
             </div>
-            <div className="w-full h-[5px] bg-teal-100/80 rounded-full overflow-hidden">
-              <div
-                className={`h-full ${isHighMatch ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-slate-400'}`}
-                style={{ width: `${opp.match}%` }}
-              />
-            </div>
-          </div>
+          )}
 
-          <div className="grid grid-cols-2 gap-3 text-mini font-mono">
-            <div className="p-3 bg-white/90 rounded border border-teal-200/80 shadow-2xs">
-              <div className="text-teal-900 uppercase font-bold">Location / Mode</div>
-              <div className="text-indigo-950 mt-0.5 font-bold">{opp.location}</div>
+          {(opp.location || opp.award) && (
+            <div className={`grid ${opp.location && opp.award ? 'grid-cols-2' : 'grid-cols-1'} gap-3 text-mini font-mono`}>
+              {opp.location && (
+                <div className="p-3 bg-white/90 rounded border border-teal-200/80 shadow-2xs">
+                  <div className="text-teal-900 uppercase font-bold">Location / Mode</div>
+                  <div className="text-indigo-950 mt-0.5 font-bold">{opp.location}</div>
+                </div>
+              )}
+              {opp.award && (
+                <div className="p-3 bg-white/90 rounded border border-teal-200/80 shadow-2xs">
+                  <div className="text-teal-900 uppercase font-bold">Prize / Stipend</div>
+                  <div className="text-indigo-950 mt-0.5 font-bold">{opp.award}</div>
+                </div>
+              )}
             </div>
-            <div className="p-3 bg-white/90 rounded border border-teal-200/80 shadow-2xs">
-              <div className="text-teal-900 uppercase font-bold">Prize / Stipend</div>
-              <div className="text-indigo-950 mt-0.5 font-bold">{opp.award}</div>
-            </div>
-          </div>
+          )}
 
+          {opp.skills.length > 0 && (
           <div>
             <div className="text-mini font-mono uppercase text-teal-900 font-bold mb-2">Required Tech Stack</div>
             <div className="flex flex-wrap gap-1.5">
@@ -100,6 +111,7 @@ export const OpportunityDetailsModal: React.FC = () => {
               ))}
             </div>
           </div>
+          )}
         </div>
 
         {/* Footer */}
