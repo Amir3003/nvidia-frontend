@@ -30,6 +30,8 @@ export interface Opportunity {
   url?: string;
   location: string;
   award: string;
+  /** Countries the source names as eligible or as the host. Empty when not stated. */
+  countries?: string[];
 }
 
 export const OPPORTUNITIES_DATABASE: Opportunity[] = [

@@ -1,0 +1,12 @@
+{
+  "voice": "en_US-hfc_female-medium",
+  "lengthScale": 0.92,
+  "lines": [
+    { "start": 0.25, "end": 2.9, "text": "Still checking ten sites for one hackathon?" },
+    { "start": 3.2, "end": 6.75, "text": "Every opportunity lives somewhere else. Deadlines slip by." },
+    { "start": 6.75, "end": 10.1, "text": "Meet Kadam Hub, your AI radar for opportunities." },
+    { "start": 10.15, "end": 14.7, "text": "New opportunities every day, a skill check, and a prep checklist for each one." },
+    { "start": 15.0, "end": 18.2, "text": "And on our Discord, you find your team." },
+    { "start": 18.5, "end": 21.3, "text": "Take your next step. Follow Kadam Hub." }
+  ]
+}

@@ -1,6 +1,6 @@
 [
   {
-    "id": "scan-aHR0cHM6Ly9vcHBv",
+    "id": "scan-839464e7a848",
     "type": "HACKATHON",
     "title": "JPMorgan Chase Data for Good Hackathon 2027 Data AI Summer Internship Opportunity",
     "organization": "JPMorgan Chase",
@@ -8,10 +8,11 @@
     "deadline": null,
     "deadlineEvidence": null,
     "eligibility": "check source",
-    "skills": []
+    "skills": [],
+    "lastSeen": "2026-10-20"
   },
   {
-    "id": "scan-aHR0cHM6Ly93d3cu",
+    "id": "scan-a6b48798cf59",
     "type": "HACKATHON",
     "title": "AI NextGen Challenge™ 2026",
     "organization": "USAII",
@@ -19,6 +20,54 @@
     "deadline": null,
     "deadlineEvidence": null,
     "eligibility": "check source",
-    "skills": []
+    "skills": [],
+    "lastSeen": "2026-10-20"
+  },
+  {
+    "id": "scan-06c06fcc39ad",
+    "type": "HACKATHON",
+    "title": "Agents for Impact 2026",
+    "organization": "Google Cloud",
+    "url": "https://cloud.google.com/resources/agents-for-impact-2026",
+    "deadline": null,
+    "deadlineEvidence": null,
+    "eligibility": "check source",
+    "skills": [
+      "AI agents",
+      "social impact"
+    ],
+    "firstSeen": "2026-10-20",
+    "lastSeen": "2026-10-20"
+  },
+  {
+    "id": "scan-44ef50673fb1",
+    "type": "HACKATHON",
+    "title": "Google UK Students AI Hackathon 2026",
+    "organization": "Google UK",
+    "url": "https://www.edu-live.com/posts/google-uk-students-ai-hackathon-2026---apply",
+    "deadline": null,
+    "deadlineEvidence": null,
+    "eligibility": "check source",
+    "skills": [
+      "AI development",
+      "technical implementation",
+      "business feasibility",
+      "presentation quality"
+    ],
+    "firstSeen": "2026-10-20",
+    "lastSeen": "2026-10-20"
+  },
+  {
+    "id": "scan-a7110b095124",
+    "type": "HACKATHON",
+    "title": "USAII® Global AI Hackathon 2026",
+    "organization": "USAII®",
+    "url": "https://aihackathon.usaii.org",
+    "deadline": null,
+    "deadlineEvidence": null,
+    "eligibility": "check source",
+    "skills": [],
+    "firstSeen": "2026-10-20",
+    "lastSeen": "2026-10-20"
   }
 ]

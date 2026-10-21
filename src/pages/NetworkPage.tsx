@@ -168,6 +168,63 @@ function Modal({
   );
 }
 
+type ConfirmRequest = {
+  title: string;
+  message: string;
+  action: string;
+  onConfirm: () => void;
+};
+
+// In-app replacement for window.confirm. Sits above Modal and takes Escape first.
+function ConfirmDialog({ request, onClose }: { request: ConfirmRequest; onClose: () => void }) {
+  const confirmRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    confirmRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      e.stopPropagation();
+      onClose();
+    };
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [onClose]);
+  return (
+    <div
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="confirm-title"
+      aria-describedby="confirm-message"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm overflow-y-auto"
+    >
+      <div className="w-full max-w-sm my-auto rounded-card bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 shadow-2xl text-slate-900 p-6">
+        <h2 id="confirm-title" className="text-[16px] font-bold text-indigo-950">
+          {request.title}
+        </h2>
+        <p id="confirm-message" className="mt-2 text-[13px] leading-relaxed text-slate-600">
+          {request.message}
+        </p>
+        <div className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+          <button type="button" className={ghostButton} onClick={onClose}>
+            Cancel
+          </button>
+          <button
+            ref={confirmRef}
+            type="button"
+            className="h-10 px-4 rounded-btn bg-rose-600 hover:bg-rose-500 text-white text-mini font-mono font-semibold shadow-sm transition-colors cursor-pointer inline-flex items-center justify-center"
+            onClick={() => {
+              onClose();
+              request.onConfirm();
+            }}
+          >
+            {request.action}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export const NetworkPage: React.FC = () => (
   <NetworkAccess>{(user) => <NetworkWorkspace user={user} />}</NetworkAccess>
 );
@@ -224,6 +281,8 @@ export function NetworkWorkspace({
   const [groupGoal, setGroupGoal] = useState("");
   const [groupPicks, setGroupPicks] = useState<string[]>([]);
   const [membersModal, setMembersModal] = useState<string | null>(null);
+  const [confirmBox, setConfirmBox] = useState<ConfirmRequest | null>(null);
+  const closeConfirm = useCallback(() => setConfirmBox(null), []);
   const scrollRef = useRef<HTMLDivElement>(null);
   const stickToBottom = useRef(true);
 
@@ -1434,23 +1493,25 @@ export function NetworkWorkspace({
                 type="button"
                 className={dangerLink}
                 disabled={busy}
-                onClick={() => {
-                  if (
-                    window.confirm(
-                      "Delete your shared network profile, friends, sent messages and groups you own? Your local workspace stays on this device.",
-                    )
-                  )
-                    run(async () => {
-                      checked(await networkClient!.from("network_profiles").delete().eq("id", user.id));
-                      setChannel(null);
-                      setLink("");
-                      setProfile(emptyNetworkProfile(user.id));
-                      setSkills("");
-                      setGoals("");
-                      await reload();
-                      setNotice("Shared network data deleted.");
-                    });
-                }}
+                onClick={() =>
+                  setConfirmBox({
+                    title: "Delete network data?",
+                    message:
+                      "This removes your shared network profile, friends, sent messages and groups you own. Your local workspace stays on this device.",
+                    action: "Delete data",
+                    onConfirm: () =>
+                      run(async () => {
+                        checked(await networkClient!.from("network_profiles").delete().eq("id", user.id));
+                        setChannel(null);
+                        setLink("");
+                        setProfile(emptyNetworkProfile(user.id));
+                        setSkills("");
+                        setGoals("");
+                        await reload();
+                        setNotice("Shared network data deleted.");
+                      }),
+                  })
+                }
               >
                 Delete my network data
               </button>
@@ -1515,12 +1576,17 @@ export function NetworkWorkspace({
                 <button
                   className={dangerLink}
                   disabled={busy}
-                  onClick={() => {
-                    if (window.confirm(`Remove ${viewed.name} from friends?`)) {
-                      removeFriend(viewed);
-                      setViewing(null);
-                    }
-                  }}
+                  onClick={() =>
+                    setConfirmBox({
+                      title: `Remove ${viewed.name}?`,
+                      message: "They will be removed from your friends list. You can send a new friend request later.",
+                      action: "Remove",
+                      onConfirm: () => {
+                        removeFriend(viewed);
+                        setViewing(null);
+                      },
+                    })
+                  }
                 >
                   Remove from friends
                 </button>
@@ -1664,14 +1730,21 @@ export function NetworkWorkspace({
                 disabled={busy}
                 onClick={() => {
                   const owner = membersTeam.owner_id === user.id;
-                  if (window.confirm(owner ? "Delete this group and its chat for all members?" : "Leave this group?"))
-                    run(async () => {
-                      checked(await networkClient!.rpc("network_leave_team", { target_team: membersTeam.id }));
-                      if (channel?.id === membersTeam.id) setChannel(null);
-                      setMembersModal(null);
-                      await reload();
-                      setNotice(owner ? "Group deleted." : "You left the group.");
-                    });
+                  setConfirmBox({
+                    title: owner ? "Delete this group?" : "Leave this group?",
+                    message: owner
+                      ? "The group and its chat will be deleted for all members."
+                      : "You will stop receiving messages from this group.",
+                    action: owner ? "Delete group" : "Leave group",
+                    onConfirm: () =>
+                      run(async () => {
+                        checked(await networkClient!.rpc("network_leave_team", { target_team: membersTeam.id }));
+                        if (channel?.id === membersTeam.id) setChannel(null);
+                        setMembersModal(null);
+                        await reload();
+                        setNotice(owner ? "Group deleted." : "You left the group.");
+                      }),
+                  });
                 }}
               >
                 {membersTeam.owner_id === user.id ? "Delete group" : "Leave group"}
@@ -1680,6 +1753,8 @@ export function NetworkWorkspace({
           </div>
         </Modal>
       )}
+
+      {confirmBox && <ConfirmDialog request={confirmBox} onClose={closeConfirm} />}
     </div>
   );
 }

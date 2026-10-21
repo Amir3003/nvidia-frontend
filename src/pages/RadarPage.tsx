@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { PageHeader } from '../components/PageHeader';
+import { availableIn, profileCountry } from '../db/location';
 import {
   SearchIcon,
   RefreshIcon,
@@ -26,7 +27,9 @@ export const RadarPage: React.FC = () => {
   } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState<'All' | 'Hackathons' | 'Grants' | 'Internships' | 'Match >80%'>('All');
+  const [activeFilter, setActiveFilter] = useState<'All' | 'Hackathons' | 'Grants' | 'Internships' | 'Near me' | 'Match >80%'>('All');
+  // The radar is global; the country filter appears only when the profile has a country.
+  const country = profileCountry(userProfile.location || '');
 
   // Check if candidate profile has been configured with skills
   const isProfileReady = userProfile.isOnboarded && userProfile.skills && userProfile.skills.length > 0;
@@ -38,6 +41,7 @@ export const RadarPage: React.FC = () => {
       if (activeFilter === 'Grants' && opp.type !== 'GRANT') return false;
       if (activeFilter === 'Internships' && opp.type !== 'INTERNSHIP') return false;
       if (activeFilter === 'Match >80%' && opp.match < 80) return false;
+      if (activeFilter === 'Near me' && !availableIn(opp, country)) return false;
 
       // Filter by search query
       if (searchQuery.trim() !== '') {
@@ -52,7 +56,7 @@ export const RadarPage: React.FC = () => {
 
       return true;
     });
-  }, [opportunities, activeFilter, searchQuery]);
+  }, [opportunities, activeFilter, searchQuery, country]);
 
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-transparent relative z-10 text-slate-100">
@@ -124,7 +128,11 @@ export const RadarPage: React.FC = () => {
 
           {/* Filter Chips */}
           <div className="flex flex-wrap items-center gap-2">
-            {(['All', 'Hackathons', 'Grants', 'Internships', 'Match >80%'] as const).map((filter) => {
+            {([
+              'All', 'Hackathons', 'Grants', 'Internships',
+              ...(country ? (['Near me'] as const) : []),
+              'Match >80%',
+            ] as const).map((filter) => {
               const isActive = activeFilter === filter;
               return (
                 <button
@@ -139,7 +147,7 @@ export const RadarPage: React.FC = () => {
                     }
                   `}
                 >
-                  {filter}
+                  {filter === 'Near me' ? `Open from ${country}` : filter}
                 </button>
               );
             })}
@@ -184,21 +192,29 @@ export const RadarPage: React.FC = () => {
                     {opp.title}
                   </h3>
 
-                  {/* Match Bar */}
-                  <div className="my-3 space-y-1">
-                    <div className="flex items-center justify-between text-mini font-mono">
-                      <span className="text-teal-800">Alignment</span>
-                      <span className={isHighMatch ? 'text-emerald-700 font-bold' : 'text-slate-600'}>
-                        {opp.match}% match
-                      </span>
+                  {/* Match Bar: a percentage only means something when both sides list skills */}
+                  {opp.skills.length > 0 && isProfileReady ? (
+                    <div className="my-3 space-y-1">
+                      <div className="flex items-center justify-between text-mini font-mono">
+                        <span className="text-teal-800">Alignment</span>
+                        <span className={isHighMatch ? 'text-emerald-700 font-bold' : 'text-slate-600'}>
+                          {opp.match}% match
+                        </span>
+                      </div>
+                      <div className="w-full h-[4px] bg-white/80 rounded-full overflow-hidden border border-teal-200/60">
+                        <div
+                          className={`h-full ${isHighMatch ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-slate-300'}`}
+                          style={{ width: `${opp.match}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="w-full h-[4px] bg-white/80 rounded-full overflow-hidden border border-teal-200/60">
-                      <div
-                        className={`h-full ${isHighMatch ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-slate-300'}`}
-                        style={{ width: `${opp.match}%` }}
-                      />
+                  ) : (
+                    <div className="my-3 text-mini font-mono text-teal-800">
+                      {opp.skills.length === 0
+                        ? 'Required skills are not listed by the organizer'
+                        : 'Add your skills in Settings to see your match'}
                     </div>
-                  </div>
+                  )}
 
                   {/* Short Description */}
                   <p className="text-[13px] text-teal-950 leading-relaxed line-clamp-2 mb-3.5">
@@ -269,7 +285,11 @@ export const RadarPage: React.FC = () => {
             <p className="text-[14px] text-teal-200 font-mono">
               {opportunities.length === 0
                 ? 'No sourced opportunities have been published yet. Please check back after the scheduled scan.'
-                : 'No matching opportunities found for current criteria.'}
+                : !searchQuery.trim() && activeFilter === 'Near me'
+                  ? `Nothing is confirmed open from ${country} yet. A listing shows here when its source says online, worldwide or names ${country}.`
+                : !searchQuery.trim() && (activeFilter === 'Grants' || activeFilter === 'Internships')
+                  ? `No ${activeFilter.toLowerCase()} on the radar yet. The daily scan adds new ones with an official link.`
+                  : 'No matching opportunities found for current criteria.'}
             </p>
             <button
               type="button"

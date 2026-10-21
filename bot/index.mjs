@@ -113,7 +113,7 @@ async function renderRadar() {
   const items = await loadRadarSafe();
   const text = items.length
     ? `<b>QADAM Radar</b>\n\n${items.map((opp, index) =>
-      `${index + 1}. <b>${escapeHtml(opp.title)}</b>\n${escapeHtml(opp.type)}${opp.organization ? ` · ${escapeHtml(opp.organization)}` : ''} · Deadline: ${escapeHtml(opp.deadline || 'not confirmed')}`
+      `${index + 1}. <b>${escapeHtml(opp.title)}</b>\n${escapeHtml(opp.type)}${opp.organization ? ` · ${escapeHtml(opp.organization)}` : ''} · Deadline: ${escapeHtml(opp.deadline || 'see official page')}`
     ).join('\n\n')}\n\nCheck each source before applying.`
     : 'No current radar results are available. Please check the website and try again later.';
   const keyboard = items.map((opp, index) => [
@@ -188,7 +188,7 @@ async function renderDraft(index) {
 
   const title = escapeHtml(opp.title);
   const text = `<b>Application Draft: ${title}</b>
-${escapeHtml(opp.type)}${opp.organization ? ` · ${escapeHtml(opp.organization)}` : ''} · Deadline: ${escapeHtml(opp.deadline || 'not confirmed')}
+${escapeHtml(opp.type)}${opp.organization ? ` · ${escapeHtml(opp.organization)}` : ''} · Deadline: ${escapeHtml(opp.deadline || 'see official page')}
 
 <i>Template with placeholders. Replace the [brackets] with your own details, or open Application Studio on the website to fill it from your profile.</i>
 
