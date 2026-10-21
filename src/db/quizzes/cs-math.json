@@ -124,9 +124,9 @@
    "After V - 1 rounds of Bellman-Ford, one extra round still relaxes some edge. What does this indicate?",
    "A negative cycle is reachable from the source",
    [
-    "The graph is not connected",
-    "The source has no outgoing edges",
-    "All edge weights are positive"
+    "Some vertex cannot be reached from the source at all",
+    "The source has no outgoing edges in the graph",
+    "All edge weights in the graph are positive"
    ],
    "Without negative cycles, shortest paths have at most V - 1 edges and are final after V - 1 rounds. Any further improvement proves a negative cycle."
   ],
@@ -144,7 +144,7 @@
    "What is the time complexity of Dijkstra's algorithm using a binary heap on a graph with V vertices and E edges?",
    "O((V + E) log V)",
    [
-    "O(V * E)",
+    "O((V * E) log V)",
     "O(V + E)",
     "O(V^2 log V)"
    ],
@@ -185,7 +185,7 @@
    "Pick the interval that finishes earliest",
    [
     "Pick the interval that starts earliest",
-    "Pick the shortest interval",
+    "Pick the shortest interval first",
     "Pick the interval with the fewest overlaps"
    ],
    "Choosing the earliest finish leaves the most room for the rest, and an exchange argument proves it optimal. The other rules have counterexamples."
@@ -194,8 +194,8 @@
    "With coins {1, 3, 4} and amount 6, compare greedy (always take the largest coin that fits) with the optimal solution.",
    "Greedy uses 3 coins, optimal uses 2",
    [
-    "Both use 2 coins",
-    "Both use 3 coins",
+    "Both use 2 coins, so greedy is optimal",
+    "Both use 3 coins, so greedy is optimal",
     "Greedy uses 2 coins, optimal uses 3"
    ],
    "Greedy takes 4 + 1 + 1 (3 coins), while 3 + 3 needs only 2. Greedy change-making is only optimal for certain coin systems."
@@ -226,9 +226,9 @@
    "Which technique detects whether a singly linked list has a cycle using O(1) extra memory?",
    "Slow and fast pointers (Floyd's algorithm)",
    [
-    "Sorting the nodes by address",
+    "Sorting the nodes by their memory address",
     "Storing visited nodes in a hash set",
-    "Reversing the list twice"
+    "Reversing the list twice and comparing heads"
    ],
    "A fast pointer moving two steps meets a slow pointer moving one step only if there is a cycle. A hash set also works but uses O(n) memory."
   ],
@@ -294,11 +294,11 @@
   ],
   [
    "Why does a hash table grow and rehash when its load factor (items per bucket) gets too high?",
-   "To keep chains short so operations stay O(1) on average",
+   "To keep chains short and operations O(1) on average",
    [
-    "To keep the keys in sorted order",
-    "To remove duplicate keys from buckets",
-    "To reduce the memory the table uses"
+    "To keep the keys in sorted order for range scans",
+    "To remove duplicate keys that pile up in the same bucket",
+    "To reduce the total memory the table uses"
    ],
    "A high load factor means more collisions and longer probe sequences. Resizing restores a low load factor, at the cost of more memory."
   ],
@@ -346,8 +346,8 @@
    "Which of these is one of the rules of a red-black tree?",
    "A red node cannot have a red child",
    [
-    "Every leaf must be red",
-    "The root must be red",
+    "Every leaf (NIL) node must be red",
+    "The root node must be colored red",
     "Every path has the same number of red nodes"
    ],
    "Red-black trees forbid two reds in a row and require the same number of black nodes on every root-to-leaf path, which bounds the height at O(log n)."
@@ -388,7 +388,7 @@
    [
     "Adjacency matrix",
     "Incidence matrix",
-    "Edge list sorted by weight only"
+    "Edge list sorted by weight"
    ],
    "The graph is sparse. An adjacency matrix would need 10^12 cells, while adjacency lists use O(V + E) memory."
   ],
@@ -448,9 +448,9 @@
    "You need the maximum sum of any contiguous subarray of fixed length k. With a sliding window, how do you update the sum when the window moves one step?",
    "Add the new element and subtract the leaving one",
    [
-    "Recompute the sum of all k elements",
-    "Multiply the sum by the new element",
-    "Add the new element only"
+    "Recompute the sum of all k elements from scratch",
+    "Multiply the sum by the ratio of new to old element",
+    "Add the new element only, keeping the old ones"
    ],
    "Each shift changes only two elements, so updating in O(1) gives O(n) total instead of O(n * k)."
   ],
@@ -488,11 +488,11 @@
    "Which expression correctly tests whether an integer x is a power of two?",
    "x > 0 and (x & (x - 1)) == 0",
    [
-    "(x & 1) == 0",
-    "(x | (x - 1)) == 0",
-    "x % 2 == 0 and x > 2"
+    "x > 0 and (x & 1) == 0",
+    "x > 0 and (x | (x - 1)) == 0",
+    "x > 0 and (x ^ (x - 1)) == 0"
    ],
-   "A power of two has exactly one set bit, so clearing the lowest set bit gives zero. x > 0 excludes zero."
+   "A power of two has exactly one set bit, so clearing the lowest set bit gives zero. x > 0 excludes zero. (x & 1) == 0 only tests evenness."
   ],
   [
    "What is the value of 5 ^ 3 in C++, Java or Python, where ^ is bitwise XOR?",
@@ -556,11 +556,11 @@
   ],
   [
    "With both path compression and union by rank, what is the amortized cost per union-find operation?",
-   "O(alpha(n)), inverse Ackermann",
+   "O(alpha(n)) amortized",
    [
-    "O(log n)",
-    "O(sqrt n)",
-    "O(1) worst case"
+    "O(log n) amortized",
+    "O(sqrt n) amortized",
+    "O(1) in the worst case"
    ],
    "Tarjan proved the inverse Ackermann bound, which is at most 4 or 5 for any practical n, but it is amortized, not worst case per operation."
   ],
@@ -588,11 +588,11 @@
    "In C++, (a - b) % m can be negative when a < b. Which expression always gives a result in [0, m)?",
    "((a - b) % m + m) % m",
    [
-    "(a - b) % m + m",
+    "((a - b) % m - m) % m",
     "abs(a - b) % m",
-    "(a % m - b) % m"
+    "((a - b) % m) + m"
    ],
-   "C++ % keeps the sign of the dividend, so adding m and taking % m again shifts the result into range. abs gives a different value."
+   "C++ % keeps the sign of the dividend, so adding m and taking % m again shifts the result into range. abs gives a different value, and the other forms stay negative or reach m or more."
   ],
   [
    "What does pow(3, 4, 5) return in Python?",
@@ -692,7 +692,7 @@
    [
     "'requests.get'",
     "'requests.api.get'",
-    "'get'"
+    "'builtins.get'"
    ],
    "Patch where the name is looked up. app already holds its own reference to get, so patching requests.get leaves app.get unchanged."
   ],
@@ -718,27 +718,27 @@
   ],
   [
    "What does 100% line coverage of a module actually guarantee?",
-   "Every line ran at least once during the tests",
+   "Every line ran at least once",
    [
     "The module contains no bugs",
     "Every branch outcome was tested",
     "Every possible input was checked"
    ],
-   "Coverage measures execution, not correctness. A line can run with assertions that check nothing, and branches or input ranges can still be untested."
+   "Coverage measures execution, not correctness: every line ran at least once during the tests. A line can run with assertions that check nothing, and branches or input ranges can still be untested."
   ],
   [
    "What does mutation testing measure?",
-   "Whether the tests fail when small bugs are injected into the code",
+   "Whether tests fail when small bugs are injected",
    [
     "How many lines of code the tests execute",
-    "How long the test suite takes to run",
-    "Whether tests pass when run in random order"
+    "How long the whole test suite takes to run",
+    "Whether tests still pass when run in random order"
    ],
    "Tools change operators or constants to create mutants. If no test fails, the mutant survives, which shows weak assertions even with high coverage."
   ],
   [
    "A function average(nums) returns sum(nums) / len(nums). Which input is the most important edge case to test?",
-   "An empty list",
+   "An empty list, nums = []",
    [
     "A list of one million numbers",
     "A list of positive integers",
@@ -758,11 +758,11 @@
   ],
   [
    "What is equivalence partitioning in test design?",
-   "Splitting inputs into classes that behave alike and testing one value from each",
+   "Testing one value from each class of inputs that behave alike",
    [
-    "Running the same test on several machines at once",
+    "Running the same test on several machines in parallel at once",
     "Giving every test an equal share of the time budget",
-    "Comparing two implementations on random inputs"
+    "Comparing two implementations on randomly generated inputs"
    ],
    "If the code treats all values in a class the same way, one representative per class covers it, which cuts redundant tests."
   ],
@@ -780,7 +780,7 @@
    "What distinguishes an integration test from a unit test?",
    "It checks that several real components work together",
    [
-    "It always runs in a production environment",
+    "It always runs in a production environment with real users",
     "It must be written before the code exists",
     "It replaces every dependency with a mock"
    ],
@@ -798,11 +798,11 @@
   ],
   [
    "Integration tests share one database and pass or fail depending on the order they run in. What is the best fix?",
-   "Isolate each test's data, for example by rolling back a transaction after each test",
+   "Isolate each test's data, such as rolling back a transaction after it",
    [
-    "Always run the tests in alphabetical order",
-    "Run the whole suite twice and keep the better result",
-    "Remove the assertions that depend on stored data"
+    "Run the whole suite twice in a row and keep whichever run had better results",
+    "Remove the assertions that depend on data stored in the database",
+    "Always run the tests in alphabetical order so results repeat"
    ],
    "Order dependence means tests leak state into each other. Giving each test a clean, isolated state makes results independent of order."
   ]
@@ -864,7 +864,7 @@
    [
     "They are parallel",
     "They have equal length",
-    "One is a multiple of the other"
+    "One is twice the other"
    ],
    "u . v = |u| |v| cos(theta), and with nonzero lengths this is 0 only when cos(theta) = 0, so the angle is 90 degrees."
   ],
@@ -872,9 +872,9 @@
    "What is the cosine similarity between [1, 0] and [1, 1]?",
    "About 0.707",
    [
-    "1",
-    "0.5",
-    "0"
+    "Exactly 1.0",
+    "Exactly 0.5",
+    "About 0.866"
    ],
    "The dot product is 1 and the norms are 1 and sqrt(2), so the cosine is 1 / sqrt(2), about 0.707 (an angle of 45 degrees)."
   ],
@@ -910,11 +910,11 @@
   ],
   [
    "Which property holds for every real symmetric matrix?",
-   "Its eigenvalues are real and it has orthogonal eigenvectors",
+   "Real eigenvalues and an orthogonal set of eigenvectors",
    [
-    "All its eigenvalues are positive",
-    "Its determinant is always 1",
-    "It is always invertible"
+    "Positive eigenvalues and an orthogonal set of eigenvectors",
+    "A determinant of 1 and real eigenvalues",
+    "Invertible, with all eigenvalues nonzero"
    ],
    "The spectral theorem guarantees real eigenvalues and an orthonormal eigenbasis. Eigenvalues can still be zero or negative, so the other claims fail."
   ],
@@ -932,7 +932,7 @@
    "Are the vectors (1, 0), (0, 1) and (1, 1) linearly independent in R^2?",
    "No, because three vectors in R^2 must be dependent",
    [
-    "Yes, because no two of them are parallel",
+    "Yes, because no two of them are parallel to each other",
     "Yes, because each one has a nonzero entry",
     "No, because (1, 1) is not a unit vector"
    ],
@@ -953,8 +953,8 @@
    "The line y = 2x",
    [
     "The line y = 2x + 1",
-    "The first quadrant x >= 0, y >= 0",
-    "The unit circle x^2 + y^2 = 1"
+    "The quadrant x, y >= 0",
+    "The circle x^2 + y^2 = 1"
    ],
    "A subspace must contain zero and be closed under addition and scaling. y = 2x + 1 misses the origin and the quadrant fails under multiplication by -1."
   ],
@@ -964,7 +964,7 @@
    [
     "The eigenvalues of A, possibly negative",
     "The diagonal entries of A",
-    "The column norms of A"
+    "The Euclidean norms of A's columns"
    ],
    "Singular values are square roots of the eigenvalues of A^T A, so they are never negative, and they are usually listed in descending order."
   ],
@@ -972,9 +972,9 @@
    "In PCA, the principal directions are the eigenvectors of which matrix?",
    "The covariance matrix of the centered data",
    [
-    "The raw data matrix itself",
-    "The identity matrix",
-    "The matrix of pairwise distances"
+    "The raw data matrix before centering",
+    "The identity matrix of the same size",
+    "The matrix of pairwise distances between rows"
    ],
    "PCA finds directions of maximum variance, which are the eigenvectors of the covariance matrix, ordered by eigenvalue."
   ],
@@ -983,7 +983,7 @@
    "Subtract the mean of each feature",
    [
     "Sort the rows by the first feature",
-    "Square every value",
+    "Square every value in the matrix",
     "Remove every negative value"
    ],
    "Without centering, the first component points toward the mean instead of the direction of greatest variance. Scaling features is also common when units differ."
@@ -1064,9 +1064,9 @@
    "Why does the sample variance divide by n - 1 instead of n?",
    "So it is an unbiased estimate of the population variance",
    [
-    "So it is always smaller than the population variance",
-    "So it equals the standard deviation",
-    "So it works when n = 1"
+    "So it is always smaller than the true population variance",
+    "So that it equals the sample standard deviation",
+    "So the formula still works when n = 1"
    ],
    "Deviations are measured from the sample mean, which makes them slightly too small. Dividing by n - 1 (Bessel's correction) removes that bias."
   ],
@@ -1122,11 +1122,11 @@
   ],
   [
    "What is the correct definition of a p-value?",
-   "The probability, assuming H0 is true, of data at least as extreme as observed",
+   "The probability, under H0, of data at least as extreme as observed",
    [
-    "The probability that the null hypothesis is true",
-    "The probability that the alternative hypothesis is true",
-    "The probability that the result happened by chance only"
+    "The probability that the null hypothesis is true given the data",
+    "The probability that the alternative hypothesis is true given the data",
+    "The probability that the result happened by chance alone"
    ],
    "A p-value is computed under the null hypothesis. It is not the probability that H0 or H1 is true."
   ],
@@ -1145,8 +1145,8 @@
    "Data this extreme would be rare if H0 were true",
    [
     "There is a 3% chance that H0 is true",
-    "There is a 97% chance the effect is real",
-    "The effect size is 3%"
+    "There is a 97% chance that the observed effect is real",
+    "The effect size measured in the study is 3%"
    ],
    "The p-value describes data under H0, not the probability of hypotheses, and it says nothing direct about effect size."
   ],
@@ -1176,7 +1176,7 @@
    [
     "It is narrower",
     "It has the same width",
-    "It has a different center"
+    "It has a new center"
    ],
    "Higher confidence needs a larger critical value (about 2.58 instead of 1.96), so the interval is wider around the same estimate."
   ],
@@ -1184,9 +1184,9 @@
    "A fitted linear regression is y = 3 + 2x. How do you interpret the coefficient 2?",
    "Each unit increase in x adds 2 to predicted y",
    [
-    "y equals 2 when x equals 0",
-    "x causes y to double",
-    "The model explains 2% of the variance"
+    "Predicted y equals 2 when x equals 0",
+    "Each unit increase in x doubles predicted y",
+    "The model explains 2% of the variance in y"
    ],
    "The slope is the change in the predicted y per one-unit change in x. The intercept 3 is the prediction at x = 0. Regression alone does not prove causation."
   ],
@@ -1246,11 +1246,11 @@
    "You roll a fair six-sided die twice. What is the probability of getting at least one six?",
    "11/36",
    [
-    "1/3",
+    "12/36",
     "1/6",
     "1/36"
    ],
-   "Use the complement: P(no six) = (5/6)^2 = 25/36, so P(at least one) = 1 - 25/36 = 11/36. Adding 1/6 + 1/6 double counts double six."
+   "Use the complement: P(no six) = (5/6)^2 = 25/36, so P(at least one) = 1 - 25/36 = 11/36. Adding 1/6 + 1/6 = 12/36 double counts double six."
   ],
   [
    "A fair die is rolled and you are told the result is even. What is the probability that it is a 6?",
@@ -1304,11 +1304,11 @@
   ],
   [
    "X is a continuous random variable with a density. What is P(X = 2.5) exactly?",
-   "0",
+   "Exactly 0",
    [
-    "The density f(2.5)",
-    "1 divided by the range of X",
-    "It depends on the mean of X"
+    "The value f(2.5)",
+    "1 / range of X",
+    "Half of f(2.5)"
    ],
    "For a continuous variable, probability is the area under the density, and a single point has zero width, so its probability is 0."
   ],
@@ -1346,9 +1346,9 @@
    "Which condition must every probability density function f satisfy?",
    "f(x) >= 0 and its integral over all x equals 1",
    [
-    "f(x) <= 1 for every x",
-    "f is symmetric around its mean",
-    "f(x) > 0 for every real x"
+    "f(x) <= 1 for every x and it integrates to 1",
+    "f is symmetric around its mean value",
+    "f(x) > 0 for every real number x"
    ],
    "Densities are nonnegative and integrate to 1. They may exceed 1, be asymmetric, and be zero outside a range."
   ],
@@ -1366,9 +1366,9 @@
    "What is the expected value of one roll of a fair six-sided die?",
    "3.5",
    [
-    "3",
-    "4",
-    "6"
+    "3.0",
+    "4.0",
+    "6.0"
    ],
    "E = (1 + 2 + 3 + 4 + 5 + 6) / 6 = 21 / 6 = 3.5. The expected value need not be a possible outcome."
   ],
@@ -1388,7 +1388,7 @@
    [
     "Var(X + Y) = Var(X) + Var(Y)",
     "E[XY] = E[X] E[Y]",
-    "P(X = x, Y = y) = P(X = x) P(Y = y)"
+    "P(X, Y) = P(X) P(Y)"
    ],
    "Linearity of expectation needs no independence. The variance rule needs uncorrelated variables, and the other two need independence."
   ],
@@ -1448,8 +1448,8 @@
    "The sigmoid is s(x) = 1 / (1 + e^(-x)). What is its derivative?",
    "s(x) (1 - s(x))",
    [
-    "s(x)^2",
-    "1 - s(x)",
+    "s(x) (1 + s(x))",
+    "1 - s(x)^2",
     "e^(-x) s(x)"
    ],
    "Differentiating gives e^(-x) / (1 + e^(-x))^2, which simplifies to s(x)(1 - s(x)). Its maximum is 0.25 at x = 0."
@@ -1508,8 +1508,8 @@
    "In which direction is the directional derivative of a differentiable f equal to zero?",
    "Perpendicular to the gradient",
    [
-    "Along the gradient",
-    "Opposite to the gradient",
+    "Along the gradient direction",
+    "Opposite to the gradient vector",
     "Along the vector (1, 1)"
    ],
    "The dot product of the gradient with a perpendicular unit vector is zero. That direction is tangent to the level curve."
@@ -1578,9 +1578,9 @@
    "Using a first-order Taylor approximation of sqrt(x) around x = 4, what is the estimate for sqrt(4.1)?",
    "2.025",
    [
-    "2.05",
-    "2.1",
-    "2.01"
+    "2.050",
+    "2.100",
+    "2.010"
    ],
    "f(4) = 2 and f'(x) = 1 / (2 sqrt(x)) = 0.25 at 4, so the estimate is 2 + 0.25 * 0.1 = 2.025."
   ],
@@ -1630,9 +1630,9 @@
    "Gradient descent on f(x) = x^2 uses learning rate 1.5. What happens to the iterates?",
    "They flip sign and grow, so the method diverges",
    [
-    "They converge to 0 in one step",
-    "They converge slowly to 0",
-    "They stay at the starting point"
+    "They oscillate but shrink, so they converge to 0",
+    "They converge slowly and monotonically to 0",
+    "They stay at the starting point forever"
    ],
    "The update is x - 1.5 * 2x = -2x, so the magnitude doubles every step. Rates below 1 converge for this function."
   ],
@@ -1640,9 +1640,9 @@
    "How does stochastic gradient descent differ from full-batch gradient descent?",
    "It uses the gradient of one example or a small batch",
    [
-    "It uses second derivatives of the loss",
-    "It picks random step directions",
-    "It needs a convex loss function"
+    "It uses second derivatives of the loss instead of gradients",
+    "It picks a random step direction at each iteration",
+    "It needs a convex loss function to work at all"
    ],
    "Each SGD step is cheap but noisy, because the mini-batch gradient only estimates the full gradient. The noise can even help escape poor regions."
   ],
@@ -1650,9 +1650,9 @@
    "What does adding momentum to gradient descent do?",
    "Accumulates past gradients to smooth and speed up updates",
    [
-    "Doubles the learning rate after each epoch",
-    "Resets the weights when the loss rises",
-    "Computes exact second derivatives"
+    "Doubles the learning rate after each epoch to speed up training",
+    "Resets the weights to their start whenever the loss rises",
+    "Computes exact second derivatives of the loss"
    ],
    "Momentum keeps a decaying average of gradients, which dampens oscillation across steep directions and builds speed along consistent ones."
   ],
@@ -1670,19 +1670,19 @@
    "Why does Adam apply bias correction to its moment estimates?",
    "The averages start at zero and are biased low early on",
    [
-    "To stop the learning rate from ever decaying",
-    "To make the loss function convex",
-    "To remove noise from the training labels"
+    "To stop the learning rate from ever decaying during training",
+    "To make the loss function convex near the start",
+    "To remove label noise from the gradient estimates"
    ],
    "Starting both moving averages at 0 makes the first estimates too small. Dividing by (1 - beta^t) corrects this, which matters most in early steps."
   ],
   [
    "What does AdamW change compared with Adam plus an L2 penalty in the loss?",
-   "It applies weight decay directly to weights, outside the adaptive step",
+   "It decouples weight decay from the adaptive gradient step",
    [
-    "It removes the second-moment estimate",
-    "It replaces momentum with Nesterov momentum",
-    "It disables bias correction"
+    "It removes the second-moment estimate entirely",
+    "It replaces standard momentum with Nesterov momentum updates",
+    "It disables bias correction for both moments"
    ],
    "With Adam, an L2 term is rescaled by the adaptive denominator. AdamW decouples weight decay so every weight shrinks at the intended rate."
   ],
@@ -1730,9 +1730,9 @@
    "At a constrained optimum of f subject to g(x) = c found with Lagrange multipliers, what relationship holds (with regular constraints)?",
    "grad f = lambda * grad g",
    [
-    "grad f = 0",
-    "grad g = 0",
-    "f = lambda * g"
+    "grad f = lambda * g",
+    "grad f = 0 and g(x) = c",
+    "f(x) = lambda * g(x)"
    ],
    "At the optimum, the level set of f is tangent to the constraint, so their gradients are parallel. grad f = 0 is the unconstrained condition."
   ],
@@ -1758,11 +1758,11 @@
   ],
   [
    "How is a Lagrange multiplier lambda interpreted in a constrained optimization problem?",
-   "The rate of change of the optimal value as the constraint level changes",
+   "The sensitivity of the optimal value to the constraint level",
    [
-    "The step size used by the optimizer",
-    "The number of constraints that are active",
-    "The curvature of the objective function"
+    "The step size used by the optimizer at each iteration",
+    "The number of constraints that are active at the optimal point",
+    "The curvature of the objective function at the optimum"
    ],
    "lambda measures how sensitive the optimum is to relaxing the constraint, which is why economists call it a shadow price."
   ],
@@ -1778,11 +1778,11 @@
   ],
   [
    "Gradient descent runs on f(x) = x^4 - 2x^2, which has minima at x = 1 and x = -1. It starts at exactly x0 = 0. What happens?",
-   "It stays at x = 0 because the gradient is zero there",
+   "It stays at x = 0, where the gradient is zero",
    [
-    "It moves to x = 1",
-    "It moves to x = -1",
-    "It diverges to infinity"
+    "It moves to the minimum at x = 1",
+    "It moves to the minimum at x = -1",
+    "It oscillates between x = 1 and x = -1 forever"
    ],
    "f'(x) = 4x^3 - 4x is 0 at x = 0, a local maximum, so the update does nothing. This is one reason weights are initialized randomly."
   ],

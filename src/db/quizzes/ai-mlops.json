@@ -35,7 +35,7 @@
    "Letting gradients flow through identity paths so very deep nets train well",
    [
     "Sharing weights between layers so the model has fewer parameters",
-    "Replacing pooling layers so feature maps keep their full resolution",
+    "Replacing pooling layers so feature maps keep their full spatial resolution",
     "Forcing activations to be sparse so the network generalizes better"
    ],
    "Residual blocks learn F(x) + x, so the identity path eases optimization and reduces degradation in very deep networks."
@@ -46,7 +46,7 @@
    [
     "Increase the spatial resolution of the incoming feature map",
     "Detect fine edges more precisely than a 3x3 kernel can",
-    "Normalize activations in place of batch normalization layers"
+    "Normalize activations in place of separate batch normalization layers"
    ],
    "A 1x1 convolution mixes channels at each pixel, so it is used to reduce (or expand) channel depth and cut computation."
   ],
@@ -95,7 +95,7 @@
    "Mean average precision, counting a hit when IoU with ground truth is 0.5 or more",
    [
     "Mean accuracy of class labels on images resized to half resolution",
-    "Average precision measured only on the 50 percent most confident boxes",
+    "Average precision computed only over the 50 percent most confident predicted boxes",
     "Mean anchor precision when the confidence threshold is fixed at 0.5"
    ],
    "mAP@0.5 averages per-class AP, where a predicted box is a true positive if its IoU with a matching ground-truth box is at least 0.5."
@@ -154,7 +154,7 @@
    "In PyTorch, which loop freezes every parameter of a pretrained backbone?",
    "for p in model.parameters(): p.requires_grad = False",
    [
-    "for p in model.parameters(): p.grad = None",
+    "for p in model.parameters(): p.grad = torch.zeros_like(p)",
     "for p in model.parameters(): p.data.zero_()",
     "for p in model.parameters(): p.detach()"
    ],
@@ -164,11 +164,11 @@
    "Which classic hand-crafted method detects keypoints and builds descriptors that are invariant to scale and rotation?",
    "SIFT",
    [
-    "Sobel filter",
-    "Canny edge detector",
-    "Histogram equalization"
+    "Sobel",
+    "Canny",
+    "HOG"
    ],
-   "SIFT finds keypoints in scale space and builds orientation-normalized gradient histograms. Sobel and Canny only find edges."
+   "SIFT finds keypoints in scale space and builds orientation-normalized gradient histograms. Sobel and Canny only find edges, and HOG computes dense gradient histograms that are not scale or rotation invariant."
   ],
   [
    "A ViT with 16x16 patches processes a 224x224 image. How many patch tokens are created, not counting the [CLS] token?",
@@ -227,7 +227,7 @@
    "Rare and unseen words can be built from known pieces",
    [
     "It removes the need for any embedding layer",
-    "It guarantees one token for every word in the text",
+    "It guarantees exactly one token for every word in the text",
     "It makes sentences shorter than with word tokens"
    ],
    "Subwords keep the vocabulary fixed while still representing rare or new words as sequences of known units, avoiding unknown tokens."
@@ -238,7 +238,7 @@
    [
     "Every English word becomes exactly one token",
     "The vocabulary needs only 256 entries in total",
-    "Tokenization no longer depends on training data"
+    "Tokenization no longer depends on the training corpus or its merges"
    ],
    "Starting from the 256 possible bytes means every string is representable, so no [UNK] token is needed. Merges still build a larger vocabulary."
   ],
@@ -258,7 +258,7 @@
    [
     "Freezing the encoder while only the decoder is trained",
     "Using a larger model's outputs as soft training labels",
-    "Forcing the decoder to stop at the reference output length"
+    "Forcing the decoder to stop exactly at the reference output length"
    ],
    "With teacher forcing the decoder sees the correct previous token instead of its own prediction, which speeds up and stabilizes training."
   ],
@@ -276,7 +276,7 @@
    "A unigram bag-of-words sentiment model labels 'not good at all' as positive. Which change most directly helps?",
    "Adding bigram features so 'not good' becomes its own feature",
    [
-    "Lowercasing all text before the features are extracted",
+    "Lowercasing all text before the bag-of-words features are extracted",
     "Stemming words so that 'good' and 'goods' are merged",
     "Removing all stopwords from the input before training"
    ],
@@ -286,7 +286,7 @@
    "Why can removing stopwords with a standard list hurt a sentiment classifier?",
    "Common lists include negations such as 'not' and 'no'",
    [
-    "Stopword removal converts all text to lowercase",
+    "Stopword removal also converts all of the text to lowercase",
     "It removes every adjective from each sentence",
     "It splits each word into individual characters"
    ],
@@ -296,9 +296,9 @@
    "Your sentiment dataset is 90% positive. A model that always predicts 'positive' gets 90% accuracy. Which metric better reveals the problem?",
    "Macro-averaged F1 score",
    [
-    "Training loss",
+    "Training loss curve",
     "Overall accuracy",
-    "Number of epochs"
+    "Number of training epochs"
    ],
    "Macro F1 averages F1 per class, so failing on the minority class pulls the score down sharply, unlike accuracy."
   ],
@@ -366,9 +366,9 @@
    "A language model's average cross-entropy on a test set is 2.0 nats per token. What is its perplexity?",
    "About 7.39",
    [
-    "4.0",
-    "2.0",
-    "100"
+    "About 4.00",
+    "About 2.00",
+    "About 100"
    ],
    "Perplexity is exp(cross-entropy) when using natural log: e^2 is about 7.39. 100 would be the value for base 10."
   ],
@@ -418,7 +418,7 @@
    "Why do MFCCs use the mel scale instead of a linear frequency scale?",
    "It mimics human pitch perception, with finer detail at low frequencies",
    [
-    "It removes all background noise from the recording before analysis",
+    "It removes all of the background noise from the recording before analysis",
     "It doubles the sampling rate so high frequencies are kept intact",
     "It turns the signal into text tokens that a decoder can read"
    ],
@@ -438,7 +438,7 @@
    "What does the discrete cosine transform contribute to MFCC features?",
    "It decorrelates filterbank energies and packs information into a few coefficients",
    [
-    "It converts the waveform from the time domain into the frequency domain",
+    "It converts the raw waveform from the time domain into the frequency domain directly",
     "It resamples the audio to 16 kHz before the filterbank is applied",
     "It removes silence at the beginning and the end of the utterance"
    ],
@@ -449,8 +449,8 @@
    "(13, number_of_frames)",
    [
     "(number_of_frames, 13)",
-    "(13,)",
-    "(len(y), 13)"
+    "(1, 13, number_of_frames)",
+    "(13, len(y) // sr)"
    ],
    "librosa returns coefficients along the first axis and time frames along the second, so you often transpose it for frame-major models."
   ],
@@ -458,7 +458,7 @@
    "What problem does Connectionist Temporal Classification (CTC) loss solve in speech recognition?",
    "Training without a frame-by-frame alignment of audio to text",
    [
-    "Removing background noise from the audio before training",
+    "Removing background noise from the audio before training begins",
     "Translating speech directly into a different language",
     "Splitting long recordings into sentences automatically"
    ],
@@ -488,7 +488,7 @@
    "Why do CTC-based recognizers often benefit from an external language model during decoding?",
    "CTC treats each frame's output as independent given the audio",
    [
-    "CTC cannot produce any output longer than ten characters",
+    "CTC cannot produce any output sequence longer than ten characters",
     "CTC requires a language model to compute its loss",
     "CTC can only output phonemes, not characters"
    ],
@@ -499,7 +499,7 @@
    "How likely a word sequence is, independent of the audio",
    [
     "How well each audio frame matches a phoneme state",
-    "How loud the speaker is relative to background noise",
+    "How loud the speaker is relative to the background noise level",
     "How many frames each word should occupy in time"
    ],
    "The acoustic model scores the audio given units like phonemes; the language model scores P(words), and the decoder combines both."
@@ -538,9 +538,9 @@
    "What is the core architecture of OpenAI's Whisper model?",
    "An encoder-decoder Transformer working on log-Mel spectrograms",
    [
-    "A CTC-only convolutional model on raw waveforms",
-    "A hidden Markov model with Gaussian mixture outputs",
-    "A decoder-only language model reading MFCC tokens"
+    "A CTC-only convolutional model operating on raw waveforms",
+    "A hidden Markov model with Gaussian mixture emissions per phoneme state",
+    "A decoder-only language model that reads MFCC feature tokens"
    ],
    "Whisper encodes log-Mel spectrogram frames with a Transformer encoder and generates text tokens with a Transformer decoder."
   ],
@@ -568,8 +568,8 @@
    "Whisper's built-in 'translate' task produces text in which language?",
    "English",
    [
-    "The speaker's language",
-    "Any language you pass",
+    "Its input language",
+    "Any target language",
     "Chinese"
    ],
    "Whisper was trained for X to English speech translation; transcribing in the source language is the separate 'transcribe' task."
@@ -610,7 +610,7 @@
    "What training objective does CLIP use?",
    "A contrastive loss that matches images with their paired captions",
    [
-    "A captioning loss that generates text from images word by word",
+    "A captioning loss that generates text from images one word at a time",
     "A pixel reconstruction loss on masked image patches",
     "A classification loss over the 1,000 ImageNet classes"
    ],
@@ -622,7 +622,7 @@
    [
     "It fine-tunes a new head on a few labeled images per class",
     "It generates a caption and searches it for a class name",
-    "It clusters image embeddings and names each resulting cluster"
+    "It clusters image embeddings and then names each resulting cluster"
    ],
    "Labels are turned into prompts like 'a photo of a dog', encoded, and the class whose text embedding is closest to the image embedding wins."
   ],
@@ -631,7 +631,7 @@
    "N",
    [
     "N squared",
-    "N squared minus N",
+    "2N",
     "1"
    ],
    "The N x N similarity matrix has the N true pairs on the diagonal; the other N^2 - N entries act as negatives."
@@ -640,7 +640,7 @@
    "What does the learnable temperature (logit scale) do in CLIP?",
    "Scales cosine similarities before the softmax to control its sharpness",
    [
-    "Sets the learning rate of the text encoder relative to the image one",
+    "Sets the learning rate of the text encoder relative to the image encoder",
     "Decides how many image patches the vision encoder keeps",
     "Controls the randomness of captions sampled at inference"
    ],
@@ -651,7 +651,7 @@
    "A learned projection maps CLIP image features into the LLM's embedding space",
    [
     "The LLM reads a caption written by a separate captioning model first",
-    "Image pixels are converted to ASCII characters and fed as plain text",
+    "Image pixels are converted to ASCII characters and fed to the LLM as plain text",
     "The vision encoder replaces the bottom layers of the language model"
    ],
    "LLaVA projects CLIP ViT patch features (with a linear layer, later an MLP) into visual tokens placed alongside text tokens."
@@ -681,7 +681,7 @@
    "Through gated cross-attention layers inserted between frozen LM layers",
    [
     "By fine-tuning every LM weight on paired image and caption data",
-    "By converting each image into a long string of text descriptions",
+    "By converting each image into a long string of text descriptions for the LM",
     "By replacing the LM tokenizer with an image patch tokenizer"
    ],
    "Flamingo keeps the LM frozen and adds new cross-attention blocks with tanh gates initialized at zero, so training starts from the original LM."
@@ -700,7 +700,7 @@
    "What does a VQ-VAE style image tokenizer enable in unified-token multimodal models?",
    "Images become discrete codebook tokens that one Transformer can model with text",
    [
-    "Images are stored as JPEG bytes that a text tokenizer reads directly",
+    "Images are stored as raw JPEG bytes that the text tokenizer then reads directly",
     "Text is rendered into images so the model sees only pixel inputs",
     "Image features are averaged into one vector appended after the text"
    ],
@@ -720,7 +720,7 @@
    "A vision encoder uses 14x14 pixel patches. If input resolution grows from 224x224 to 448x448, how does the number of visual tokens change?",
    "It becomes 4 times larger",
    [
-    "It doubles",
+    "It becomes 2 times larger",
     "It stays the same",
     "It becomes 8 times larger"
    ],
@@ -730,7 +730,7 @@
    "In a typical encoder-decoder image captioning model, how is the caption produced at inference time?",
    "The decoder generates tokens one at a time conditioned on image features",
    [
-    "The encoder outputs the whole caption in one step as a single vector",
+    "The encoder outputs the whole caption in a single step as one fixed vector",
     "A nearest neighbor search copies a caption from the training data",
     "A classifier picks one sentence from a fixed list of templates"
    ],
@@ -813,7 +813,7 @@
    "The next state depends only on the current state and action",
    [
     "The reward is the same for every state and action pair",
-    "The agent must visit every state at least once per episode",
+    "The agent must visit every state at least once in each episode",
     "The next state depends on the full history of past states"
    ],
    "Under the Markov property the current state summarizes everything relevant from the past for predicting what happens next."
@@ -863,7 +863,7 @@
    "Its target uses the max over next actions, not the action actually taken",
    [
     "It updates values only after a full episode has finished",
-    "It learns a policy network directly instead of a value table",
+    "It learns a policy network directly instead of a table of state values",
     "It acts only with the greedy policy and does not explore"
    ],
    "Q-learning learns about the greedy policy while acting with another (for example epsilon-greedy). SARSA uses the next action actually taken, so it is on-policy."
@@ -873,7 +873,7 @@
    "To break the correlation between consecutive transitions",
    [
     "To avoid needing a neural network for the Q-function",
-    "To make the environment respond faster to each action",
+    "To make the environment respond faster to each action it receives",
     "To make every reward in the batch positive"
    ],
    "Consecutive samples are highly correlated; random replay makes updates closer to i.i.d. and reuses past experience efficiently."
@@ -882,7 +882,7 @@
    "How does Double DQN reduce the overestimation of Q-values?",
    "The online network selects the next action and the target network evaluates it",
    [
-    "It trains two agents in parallel and keeps the one with the higher reward",
+    "It trains two agents in parallel and keeps the one with the higher total reward",
     "It doubles the replay buffer size so that rare transitions are sampled",
     "It averages the Q-values of all actions instead of taking the max"
    ],
@@ -892,7 +892,7 @@
    "In the REINFORCE policy gradient algorithm, what happens to actions that were followed by high returns?",
    "Their log-probability is pushed up in proportion to the return",
    [
-    "They are removed from the action space for later episodes",
+    "They are removed from the action space for all of the later episodes",
     "Their Q-values are copied into a separate target network",
     "Their rewards are clipped to keep the gradient small"
    ],
@@ -902,7 +902,7 @@
    "Why do policy gradient methods subtract a baseline, such as V(s), from the return?",
    "It reduces gradient variance without biasing the estimate",
    [
-    "It makes every reward positive so learning is stable",
+    "It makes every reward positive so that learning becomes more stable",
     "It turns the method into an off-policy algorithm",
     "It removes the need for a discount factor gamma"
    ],
@@ -954,7 +954,7 @@
    [
     "Catastrophic forgetting",
     "Policy collapse",
-    "Overfitting to the test set"
+    "Test set overfitting"
    ],
    "The agent maximizes the reward as specified, not the designer's intent. The fix is a better-specified reward."
   ],
@@ -990,11 +990,11 @@
   ],
   [
    "How does the UCB strategy choose an arm in a multi-armed bandit?",
-   "Highest estimated value plus a bonus that shrinks as the arm is tried more",
+   "Highest estimated value plus a bonus that shrinks with more pulls",
    [
-    "A uniformly random arm on every pull, ignoring past results",
-    "The arm with the lowest observed variance of its rewards",
-    "The arm that was pulled most recently by the agent"
+    "A uniformly random arm on every pull, ignoring all past results",
+    "The arm with the lowest observed variance of its rewards so far",
+    "The arm that was pulled most often so far, to reuse what it knows"
    ],
    "The uncertainty bonus makes rarely tried arms attractive, giving systematic exploration that fades as estimates become confident."
   ],
@@ -1014,9 +1014,9 @@
    "Which MLflow call records the training loss at each epoch so it can be plotted as a curve?",
    "mlflow.log_metric('loss', value, step=epoch)",
    [
-    "mlflow.log_param('loss', value)",
-    "mlflow.set_tag('loss', value)",
-    "mlflow.log_artifact('loss', value)"
+    "mlflow.log_param('loss', value) in each epoch",
+    "mlflow.set_tag('loss', value) after each epoch",
+    "mlflow.log_dict({'loss': value}, 'loss.json')"
    ],
    "Metrics can be logged many times with a step and are charted over time. Params are single immutable values per run."
   ],
@@ -1074,7 +1074,7 @@
    "In MLflow 2.9 and later, what is the recommended way to mark which registered model version serves production?",
    "Assign an alias such as 'champion' to that version",
    [
-    "Move the version into the 'Production' stage",
+    "Move the version into the 'Production' stage of the registry",
     "Rename the registered model to end in -prod",
     "Delete every other version of that model"
    ],
@@ -1084,7 +1084,7 @@
    "What does mlflow.pyfunc.load_model('models:/fraud/3') load?",
    "Version 3 of the registered model named fraud",
    [
-    "The third run of the experiment named fraud",
+    "The third run of the experiment that is named fraud",
     "The model with three as its alias in fraud",
     "The newest model logged in the last 3 days"
    ],
@@ -1095,7 +1095,7 @@
    "Creates the next version number under that name",
    [
     "Overwrites the files of the latest version",
-    "Fails because model names must be unique",
+    "Fails, because registered model names must be unique",
     "Creates a second model with the same name"
    ],
    "A registered model is a container of versions; each new registration increments the version (for example from 3 to 4)."
@@ -1114,9 +1114,9 @@
    "What does mlflow.log_artifact('confusion.png') do inside an active run?",
    "Uploads the local file to the run's artifact location",
    [
-    "Logs the image's pixel mean as a metric",
-    "Stores the file path as a run parameter",
-    "Registers the image as a model version"
+    "Logs the image's mean pixel value as a run metric",
+    "Stores the local file path as a run parameter, not the file",
+    "Registers the image as a new version of a model"
    ],
    "log_artifact copies a local file into the run's artifact store so it appears in the UI next to the run."
   ],
@@ -1166,7 +1166,7 @@
    [
     "POST /predict",
     "GET /model/run",
-    "POST /v1/infer"
+    "POST /v1/predict"
    ],
    "The MLflow scoring server accepts JSON or CSV input on /invocations and also exposes /ping for health checks."
   ],
@@ -1204,7 +1204,7 @@
    "Inside one run you call mlflow.log_param('lr', 0.01) and later mlflow.log_param('lr', 0.02). What happens?",
    "The second call raises an error because params are immutable",
    [
-    "The value is replaced with 0.02 and the change is logged",
+    "The value is replaced with 0.02 and the change is logged in history",
     "Both values are kept and charted as a time series",
     "The second call is silently ignored with no message"
    ],
@@ -1237,7 +1237,7 @@
    "Log both metric sets in one wandb.log call per epoch",
    [
     "Call wandb.finish() after every training epoch",
-    "Create a new project for the validation metrics",
+    "Create a separate new project for the validation metrics",
     "Rename the metrics so they share the same key"
    ],
    "Separate calls advance the step twice per epoch. Combining them (or passing an explicit step or epoch metric) keeps them aligned."
@@ -1246,9 +1246,9 @@
    "Where can training code read the hyperparameters that were passed to wandb.init or set by a sweep?",
    "In wandb.config, for example wandb.config.lr",
    [
-    "In wandb.summary['lr']",
-    "In os.environ['WANDB_LR']",
-    "In wandb.run.history['lr']"
+    "In wandb.summary['lr'], set by the sweep",
+    "In os.environ['WANDB_LR'], set per trial",
+    "In wandb.run.history['lr'] after init"
    ],
    "wandb.config holds the run's configuration; a sweep agent fills it with the chosen values for each trial."
   ],
@@ -1256,7 +1256,7 @@
    "Your training cluster has no internet access but you still want W&B tracking. What is the standard approach?",
    "Set WANDB_MODE=offline, then upload later with wandb sync",
    [
-    "Set WANDB_MODE=disabled and copy the logs by hand",
+    "Set WANDB_MODE=disabled and copy the run logs over by hand later",
     "Run wandb login with an empty API key on each node",
     "Write metrics to CSV and import them as an artifact"
    ],
@@ -1276,7 +1276,7 @@
    "A sweep configuration uses method: bayes. Which key must it also define?",
    "metric, with a name and a goal such as minimize",
    [
-    "early_terminate, with a hyperband setting",
+    "early_terminate, with a hyperband setting for pruning",
     "program, pointing to a Docker image name",
     "count, with the total number of runs"
    ],
@@ -1297,7 +1297,7 @@
    "Stops runs that perform poorly compared with others at set points",
    [
     "Ends the whole sweep once any single run reaches the goal metric",
-    "Restarts crashed runs from their last saved checkpoint file",
+    "Restarts crashed runs automatically from their last saved checkpoint",
     "Limits each run to a fixed number of wall-clock seconds"
    ],
    "Hyperband checks runs at brackets of iterations and kills the weaker ones, freeing compute for promising configurations."
@@ -1317,7 +1317,7 @@
    "It detects identical contents and creates no new version",
    [
     "It creates a new version with a copy of every file",
-    "It raises an error because the name already exists",
+    "It raises an error because an artifact with that name already exists",
     "It deletes the earlier version and stores a new one"
    ],
    "Artifacts are content-addressed with checksums, so unchanged contents are deduplicated rather than versioned again."
@@ -1376,9 +1376,9 @@
    "Without extra code, what does a W&B run record in its System panel?",
    "Hardware usage such as GPU utilization, GPU memory and CPU",
    [
-    "The full Python source of every imported library",
-    "Validation accuracy computed on a held-out split",
-    "Network requests made by the training script"
+    "The full Python source code of every imported library",
+    "Validation accuracy computed on an automatic held-out split",
+    "Network requests and responses made by the training script"
    ],
    "The W&B client samples system metrics in the background, which helps find bottlenecks and memory issues."
   ],
@@ -1394,11 +1394,11 @@
   ],
   [
    "System metrics show GPU memory growing every epoch until an out-of-memory error. Which PyTorch bug is a classic cause?",
-   "Accumulating total_loss += loss instead of total_loss += loss.item()",
+   "Summing total_loss += loss instead of total_loss += loss.item()",
    [
-    "Calling optimizer.zero_grad() before every backward pass",
-    "Setting model.eval() before running the validation loop",
-    "Wrapping the validation loop in torch.no_grad() blocks"
+    "Calling optimizer.zero_grad() before every single backward pass",
+    "Setting model.eval() before running the validation loop each epoch",
+    "Wrapping the whole validation loop in torch.no_grad() blocks"
    ],
    "Adding the loss tensor keeps each step's computation graph alive. .item() converts it to a Python number and frees the graph."
   ],
@@ -1419,7 +1419,7 @@
    "data/raw.csv.dvc and data/.gitignore",
    [
     "data/raw.csv and data/raw.csv.dvc",
-    "Only data/raw.csv",
+    "Only data/raw.csv itself",
     "The whole .dvc/cache folder"
    ],
    "DVC moves the data into its cache and adds it to .gitignore. Git tracks the small .dvc pointer file, not the data itself."
@@ -1428,7 +1428,7 @@
    "What does a .dvc file created by dvc add mainly contain?",
    "The hash, size and path of the tracked data",
    [
-    "A compressed copy of the tracked data",
+    "A compressed copy of the tracked data itself",
     "The Python code that created the data",
     "The Git commit history of the data"
    ],
@@ -1440,7 +1440,7 @@
    [
     "Inside the Git objects folder as large blobs",
     "In a hidden database file at the repository root",
-    "In the user's home directory under a project name"
+    "In the user's home directory, under a folder named after the project"
    ],
    "The local cache is content-addressed, so identical files are stored once and different versions coexist."
   ],
@@ -1468,7 +1468,7 @@
    "What is the purpose of the dvc.lock file?",
    "Recording the hashes of each stage's deps, params and outs",
    [
-    "Preventing two users from running DVC at the same time",
+    "Preventing two users from running DVC commands at the same time",
     "Storing credentials for the configured remote storage",
     "Listing which files are excluded from remote pushes"
    ],
@@ -1488,7 +1488,7 @@
    "Which pair of commands configures an S3 bucket as the default remote and uploads the cached data to it?",
    "dvc remote add -d storage s3://bucket/path, then dvc push",
    [
-    "dvc remote add storage s3://bucket/path, then git push",
+    "dvc remote add storage s3://bucket/path, then git push origin",
     "dvc add s3://bucket/path, then dvc commit",
     "dvc init s3://bucket/path, then dvc pull"
    ],
@@ -1509,7 +1509,7 @@
    "Running dvc push to upload the data",
    [
     "Running dvc init in the repository",
-    "Adding .dvc/cache to Git",
+    "Adding the .dvc/cache directory to Git",
     "Running dvc gc on the remote"
    ],
    "Git only carries pointer files. Without dvc push, the remote does not contain the data those pointers reference."
@@ -1530,7 +1530,7 @@
    [
     "dvc checkout v1.0, then git checkout data.csv",
     "git revert v1.0, then dvc push to the remote",
-    "dvc pull --tag v1.0, then git commit data.csv"
+    "dvc pull --tag v1.0, then git commit data.csv to the repo"
    ],
    "Git restores the old pointer file; dvc checkout then updates the workspace file from the cache to match that hash."
   ],
@@ -1538,9 +1538,9 @@
    "What does dvc checkout do?",
    "Syncs workspace files with the hashes in .dvc files and dvc.lock",
    [
-    "Switches Git to a different branch of the repository",
-    "Downloads new data from the default remote storage",
-    "Creates a new branch to hold an experiment"
+    "Switches Git to a different branch and resets the working tree",
+    "Downloads new data from the default remote storage into the cache",
+    "Creates a new Git branch to hold the results of an experiment"
    ],
    "dvc checkout links or copies the right versions from the local cache; use dvc pull if the cache does not have them yet."
   ],
@@ -1560,7 +1560,7 @@
    [
     "dvc repro --param train.lr=0.01",
     "dvc params set train.lr=0.01",
-    "dvc run --lr 0.01 train"
+    "dvc run --lr 0.01 --name train"
    ],
    "dvc exp run -S (--set-param) applies the value for that experiment and records it, so you can compare with dvc exp show."
   ],
@@ -1630,7 +1630,7 @@
    "What does kfp.compiler.Compiler().compile(my_pipeline, 'pipeline.yaml') produce?",
    "A pipeline spec file that a KFP backend can run",
    [
-    "A Docker image containing every pipeline step",
+    "A Docker image that contains every pipeline step",
     "A Kubernetes Deployment that serves the model",
     "A Python wheel with the pipeline's components"
    ],
@@ -1640,7 +1640,7 @@
    "In a KFP v2 pipeline, train_task = train(). How does a downstream step receive train's single return value?",
    "Pass train_task.output as an argument",
    [
-    "Call train_task.result() inside it",
+    "Call train_task.result() inside the next step",
     "Read it from os.environ['TRAIN']",
     "Import train inside the next step"
    ],
@@ -1651,7 +1651,7 @@
    "Declare out: Output[Dataset] and write a file to out.path",
    [
     "Return the pandas DataFrame object from the function",
-    "Save the file to /tmp and print its name to stdout",
+    "Save the file to /tmp and print its full name to stdout for KFP",
     "Upload it with kfp.Client().upload_artifact()"
    ],
    "Artifact outputs are typed parameters; KFP provides a path, and the backend uploads the file and passes it to consumers."
@@ -1661,7 +1661,7 @@
    "Step caching reused old output; call set_caching_options(False)",
    [
     "The API is rate-limited; add more replicas to the step",
-    "The container image is stale; delete the cluster and reinstall",
+    "The container image is stale; delete the cluster and reinstall KFP",
     "The step lacks a GPU; request nvidia.com/gpu resources"
    ],
    "KFP caches steps whose inputs did not change. Disabling caching for that task forces it to run each time."
@@ -1670,7 +1670,7 @@
    "A lightweight KFP component imports pandas but fails with ModuleNotFoundError at runtime. What is a correct fix?",
    "Add packages_to_install=['pandas'] or use a base_image with pandas",
    [
-    "Install pandas on your laptop before compiling the pipeline",
+    "Install pandas on your own laptop before compiling the pipeline file",
     "Move the import pandas line to the top of the pipeline file",
     "Add pandas to the pipeline's display name and recompile"
    ],
@@ -1678,11 +1678,11 @@
   ],
   [
    "Why must imports go inside the function body of a KFP lightweight Python component?",
-   "Only the function's source runs in the container, without the module's top-level code",
+   "Only the function source runs in the container, not the module's top-level code",
    [
     "Python forbids imports at module level in any file that defines a decorator",
     "KFP compiles the function to Go, and Go needs imports inside functions",
-    "Imports at the top run on the Kubernetes API server instead of the pod"
+    "Imports at the top of the file run on the Kubernetes API server instead of the pod"
    ],
    "The function source is serialized and executed alone, so anything defined outside it, including imports, is not available."
   ],
@@ -1691,7 +1691,7 @@
    "Hyperparameter tuning and neural architecture search",
    [
     "Serving models behind autoscaled HTTP endpoints",
-    "Hosting Jupyter notebooks for each data scientist",
+    "Hosting Jupyter notebook servers for each data scientist",
     "Storing pipeline artifacts in object storage"
    ],
    "Katib runs Experiments made of Trials, searching over parameter spaces with algorithms such as random, grid, Bayesian optimization or TPE."
@@ -1701,7 +1701,7 @@
    "spec.algorithm.algorithmName",
    [
     "spec.objective.type",
-    "spec.trialTemplate.primaryContainerName",
+    "spec.trialTemplate.trialSpec",
     "spec.parallelTrialCount"
    ],
    "algorithmName (for example random, grid, bayesianoptimization or tpe) sets how Katib proposes parameter values."
@@ -1762,7 +1762,7 @@
    [
     "maxReplicas: 10",
     "minReplicas: 10",
-    "timeout: 10"
+    "containerConcurrency: 10"
    ],
    "On update, canaryTrafficPercent splits traffic between the latest ready revision and the new one, enabling gradual rollout."
   ],
@@ -1822,7 +1822,7 @@
    "For a function decorated with @ray.remote, what does f.remote(x) return?",
    "An ObjectRef, immediately, while the task runs",
    [
-    "The function's result, after it finishes",
+    "The function's result, after the task has finished",
     "A thread object that must be joined",
     "None, since remote tasks return nothing"
    ],
@@ -1843,7 +1843,7 @@
    "Launch all tasks first, then call ray.get once on the list of refs",
    [
     "Call ray.init again inside the loop to add more workers",
-    "Decorate work with @ray.remote(num_cpus=0) to skip scheduling",
+    "Decorate work with @ray.remote(num_cpus=0) so it skips the scheduler",
     "Replace ray.get with ray.put so the results are stored"
    ],
    "Calling ray.get right after each .remote waits for that task before the next starts, so nothing runs in parallel."
@@ -1852,7 +1852,7 @@
    "What distinguishes a Ray actor from a Ray task?",
    "An actor is a stateful worker process whose methods share state",
    [
-    "An actor runs only on the head node of the Ray cluster",
+    "An actor runs only on the head node of the Ray cluster, never on workers",
     "An actor cannot accept arguments or return any values",
     "An actor is a task that is retried if it ever fails"
    ],
@@ -1864,7 +1864,7 @@
    [
     "0",
     "1",
-    "It is nondeterministic"
+    "2"
    ],
    "Calls from a single caller to a default (synchronous) actor run in submission order, so get sees all three increments."
   ],
@@ -1872,7 +1872,7 @@
    "What does @ray.remote(num_gpus=1) do for a task?",
    "Schedules it on a node with a free GPU and reserves that GPU for it",
    [
-    "Moves all tensors inside the task to the GPU automatically",
+    "Moves all tensors inside the task to the GPU automatically before it runs",
     "Limits the whole Ray cluster to a single GPU in total",
     "Runs the task on the GPU of the driver machine only"
    ],
@@ -1882,7 +1882,7 @@
    "You pass the same 1 GB NumPy array as an argument to 100 Ray tasks. What is the better pattern?",
    "Store it once with ray.put and pass the ObjectRef to each task",
    [
-    "Pickle it to a file and let each task read it from local disk",
+    "Pickle it to a file once and let each task read it from its local disk",
     "Pass the array directly, since Ray caches each argument",
     "Convert it to a Python list so it serializes faster"
    ],
@@ -1924,7 +1924,7 @@
    [
     "Integers spread uniformly between the two bounds",
     "Exactly the two endpoint values with equal chance",
-    "Values from a normal distribution centered at 1e-2"
+    "Values from a normal distribution centered at 1e-2 with a set spread"
    ],
    "Log-uniform sampling gives equal weight to each order of magnitude, which suits learning rates."
   ],
@@ -1972,9 +1972,9 @@
    "In Ray Serve, what does @serve.deployment(num_replicas=3) on a model class do?",
    "Runs 3 copies of the class and balances requests across them",
    [
-    "Retries each failed request up to 3 times",
-    "Keeps the 3 most recent model versions online",
-    "Batches every 3 requests into one model call"
+    "Retries each failed request up to 3 times before returning an error",
+    "Keeps the 3 most recent model versions online for rollback",
+    "Batches every 3 requests together into a single model call"
    ],
    "A deployment is a scalable group of replicas, each an actor holding the model; the router spreads requests among them."
   ],
@@ -2024,7 +2024,7 @@
    "What happens when you run df = dd.read_csv('data/*.csv') with dask.dataframe?",
    "A lazy, partitioned DataFrame is created and no data is fully loaded yet",
    [
-    "Every CSV file is read into memory and merged into one pandas DataFrame",
+    "Every CSV file is read into memory and merged into one large pandas DataFrame",
     "A background job starts that converts every file into Parquet format",
     "Only the first file is read and the others are ignored until later"
    ],
@@ -2034,9 +2034,9 @@
    "Given a Dask DataFrame df, what does total = df['amount'].sum() hold before you call anything else?",
    "A lazy Dask scalar that needs total.compute()",
    [
-    "A plain Python float with the sum",
-    "A pandas Series of partial sums",
-    "An error, since sum needs compute"
+    "A plain Python float with the sum of the column",
+    "A pandas Series of partial sums, one per partition",
+    "An error, since sum needs compute() to be called first"
    ],
    "Reductions on Dask collections are lazy; total.compute() executes the graph and returns the actual number."
   ],
@@ -2055,8 +2055,8 @@
    "df.set_index('user_id')",
    [
     "df[df.amount > 0]",
-    "df.assign(x=df.a + 1)",
-    "df.head()"
+    "df.assign(x=df.a + df.b * 2)",
+    "df.head(npartitions=2)"
    ],
    "set_index on an unsorted column requires a full shuffle and sort across partitions. Filtering and assign are partition-local."
   ],
@@ -2065,7 +2065,7 @@
    "persist keeps results in worker memory as a Dask object; compute returns pandas",
    [
     "persist writes results to disk as Parquet; compute keeps them on workers",
-    "persist runs on one thread only; compute uses every worker in the cluster",
+    "persist runs on one thread only; compute uses every worker in the whole cluster",
     "persist deletes the task graph; compute keeps it for later reuse"
    ],
    "persist is useful when you reuse a dataset many times; compute brings the full result back to the client as an in-memory object."
@@ -2074,9 +2074,9 @@
    "After filtering a large Dask DataFrame down to 1% of its rows, you have thousands of tiny partitions. What helps?",
    "Repartition into fewer, larger partitions",
    [
-    "Call set_index on a random column",
-    "Convert each partition to a list",
-    "Increase the number of partitions"
+    "Call set_index on a random column to rebalance",
+    "Convert each partition to a Python list first",
+    "Increase the number of partitions even further"
    ],
    "Many tiny partitions add scheduler overhead per task; df.repartition(npartitions=...) or partition_size consolidates them."
   ],
@@ -2094,7 +2094,7 @@
    "A Dask Array computation with chunks of 10 x 10 elements runs very slowly. What is the most likely reason?",
    "Per-task scheduling overhead dominates with such tiny chunks",
    [
-    "Dask Array cannot handle more than ten chunks at a time",
+    "Dask Array cannot handle more than ten chunks at a time in one graph",
     "Small chunks force Dask to use only one CPU core",
     "Small chunks disable NumPy vectorization entirely"
    ],
@@ -2106,7 +2106,7 @@
    [
     "3",
     "4",
-    "A Delayed object"
+    "6"
    ],
    "inc(1) = 2 and inc(2) = 3, so add gives 5. Building the expression is lazy; compute runs the graph."
   ],
@@ -2114,7 +2114,7 @@
    "What does calling result.visualize() on a Dask collection or delayed object do?",
    "Renders its task graph as an image",
    [
-    "Opens the distributed dashboard",
+    "Opens the distributed dashboard page",
     "Plots the data values as a chart",
     "Prints the first five rows"
    ],
@@ -2124,9 +2124,9 @@
    "a and b are Dask results that share an expensive intermediate step. Why is dask.compute(a, b) better than a.compute() followed by b.compute()?",
    "Shared tasks run once instead of being recomputed for each result",
    [
-    "It runs both results on a GPU instead of the CPU",
-    "It skips the expensive intermediate step entirely",
-    "It caches results on disk for any future session"
+    "It runs both results on a GPU instead of the CPU for more speed",
+    "It skips the expensive intermediate step entirely for both results",
+    "It caches the results on disk for use in any future session"
    ],
    "Computing together merges the graphs, so common tasks execute only once."
   ],
@@ -2135,7 +2135,7 @@
    "Use the processes scheduler or a distributed cluster with several processes",
    [
     "Increase the number of threads in the threaded scheduler to 64",
-    "Convert the code to use Dask Bag with the synchronous scheduler",
+    "Convert the code to use Dask Bag with the synchronous single-thread scheduler",
     "Call persist() before compute() so each thread holds more data"
    ],
    "Threads cannot run Python bytecode in parallel under the GIL; separate processes can. NumPy and pandas code often releases the GIL."
@@ -2144,7 +2144,7 @@
    "What does running client = Client() from dask.distributed with no arguments do?",
    "Starts a local cluster and makes it the default scheduler",
    [
-    "Connects to a cloud cluster set in a config file",
+    "Connects to a cloud cluster that is set in a Dask config file",
     "Opens a shell session on a remote Dask worker",
     "Starts a Jupyter server for Dask notebooks"
    ],
@@ -2164,9 +2164,9 @@
    "What does future = client.submit(func, x) return?",
    "A Future that runs right away; future.result() returns the value",
    [
-    "The value of func(x), after waiting for it to finish",
-    "A lazy Delayed object that runs only on compute()",
-    "A list of worker addresses that will run func"
+    "The value of func(x), returned after waiting for the task to finish",
+    "A lazy Delayed object that runs only once compute() is called",
+    "A list of the worker addresses that will run func on the cluster"
    ],
    "The futures interface is eager: submit sends the task immediately, unlike delayed, which waits for compute."
   ],
@@ -2184,9 +2184,9 @@
    "When a Dask worker's managed memory exceeds its spill threshold, what does it do with stored results?",
    "Writes some of them to local disk to free memory",
    [
-    "Deletes them and recomputes on demand",
-    "Sends them to the client process",
-    "Compresses them inside the scheduler"
+    "Deletes them and recomputes them later on demand",
+    "Sends them back to the client process for storage",
+    "Compresses them in place inside the scheduler"
    ],
    "Workers spill least recently used data to disk and load it back when a later task needs it."
   ],
@@ -2247,7 +2247,7 @@
    "It combines values within each partition before the shuffle",
    [
     "It avoids reading data from disk during the operation",
-    "It sorts keys first so that lookups become faster",
+    "It sorts the keys first so that later lookups become much faster",
     "It runs on the driver, which skips network transfer"
    ],
    "Map-side combining shrinks the data sent over the network; groupByKey ships every value across the shuffle."
@@ -2256,7 +2256,7 @@
    "How does Spark recover a lost partition of an RDD after an executor failure?",
    "It recomputes the partition from its lineage of transformations",
    [
-    "It restores the partition from a mandatory checkpoint on HDFS",
+    "It restores the partition from a mandatory checkpoint stored on HDFS",
     "It asks the driver for a full copy of the original dataset",
     "It skips the partition and returns partial results"
    ],
@@ -2266,7 +2266,7 @@
    "Why do Spark DataFrames typically outperform equivalent RDD code written with Python lambdas?",
    "Their schema and declarative operations let Catalyst optimize the plan",
    [
-    "They store all data on the driver, so no network transfer is needed",
+    "They store all data on the driver, so no network transfer is ever needed",
     "They skip lazy evaluation, so the work starts as soon as possible",
     "They run only on GPUs, which are faster for any type of workload"
    ],
@@ -2276,7 +2276,7 @@
    "What does df.createOrReplaceTempView('sales') allow you to do?",
    "Query df with spark.sql('SELECT ... FROM sales')",
    [
-    "Save df permanently to the Hive metastore",
+    "Save df permanently as a table in the Hive metastore",
     "Write df as a CSV file named sales",
     "Cache df in memory under the name sales"
    ],
@@ -2288,7 +2288,7 @@
    [
     "Spark SQL is faster because it skips the optimizer",
     "The DataFrame API is faster because it skips parsing",
-    "Spark SQL runs on the driver only, so it is much slower"
+    "Spark SQL runs on the driver only, so it is much slower at scale"
    ],
    "Both front ends produce logical plans that Catalyst optimizes into the same physical plan."
   ],
@@ -2296,9 +2296,9 @@
    "df2 = big_df.filter(...).select(...) returns instantly even on terabytes of data. Why?",
    "Transformations are lazy, so only a plan is built",
    [
-    "Spark samples 1% of the data by default",
-    "The data is already cached in memory",
-    "Filters run on the driver in parallel"
+    "Spark samples only 1% of the data by default for speed",
+    "The data is already cached in executor memory",
+    "Filters run on the driver in parallel across threads"
    ],
    "No data is read until an action is called; Spark then optimizes and runs the whole plan."
   ],
@@ -2306,7 +2306,7 @@
    "You call df.cache() and then immediately check the Storage tab of the Spark UI, which shows nothing cached. Why?",
    "cache() is lazy; data is stored when an action first computes df",
    [
-    "cache() only works on RDDs and is ignored for DataFrames",
+    "cache() only works on RDDs and is silently ignored for DataFrames",
     "The Storage tab shows only data cached on the driver",
     "cache() needs a call to spark.conf.set before it works"
    ],
@@ -2326,7 +2326,7 @@
    "Which plans does df.explain(True) print?",
    "Parsed, analyzed and optimized logical plans plus the physical plan",
    [
-    "Only the physical plan with the estimated running cost in seconds",
+    "Only the physical plan, along with an estimated running cost in seconds",
     "The DAG of stages with the run time of every completed task",
     "The Python bytecode generated for each transformation used"
    ],
@@ -2336,9 +2336,9 @@
    "Which transformation causes a shuffle?",
    "groupBy followed by an aggregation",
    [
-    "filter on a column value",
-    "withColumn with an expression",
-    "select of a few columns"
+    "filter on a single column value",
+    "withColumn with an arithmetic expression",
+    "select of a few named columns"
    ],
    "Wide transformations such as groupBy, join and distinct need data with the same key in one partition, so rows move across the network."
   ],
@@ -2418,7 +2418,7 @@
    [
     "1",
     "16",
-    "It depends on the number of executors"
+    "4"
    ],
    "Spark creates one task per partition in a stage; executors and cores determine how many run at the same time."
   ]
@@ -2448,7 +2448,7 @@
    "You run df.withColumn('flag', F.lit(1)) without assigning the result. Does df now have a flag column?",
    "No, it returns a new DataFrame and df is unchanged",
    [
-    "Yes, withColumn modifies df in place like pandas",
+    "Yes, withColumn modifies df in place, just like pandas does",
     "Yes, but only after an action such as count()",
     "No, withColumn fails unless df is cached first"
    ],
@@ -2460,7 +2460,7 @@
    [
     "F.if(F.col('age') >= 18, 'adult').else('minor')",
     "F.case(F.col('age') >= 18, 'adult', 'minor')",
-    "F.col('age').when(18, 'adult').default('minor')"
+    "F.col('age').when(F.col('age') >= 18, 'adult').default('minor')"
    ],
    "pyspark.sql.functions.when with .otherwise is the DataFrame equivalent of SQL CASE WHEN."
   ],
@@ -2478,9 +2478,9 @@
    "Which code counts rows per country and names the result column n?",
    "df.groupBy('country').agg(F.count('*').alias('n'))",
    [
-    "df.groupBy('country').count('n')",
+    "df.groupBy('country').count().name('n')",
     "df.agg('country', F.count('*')).name('n')",
-    "df.select('country').groupBy(F.count('n'))"
+    "df.select('country').groupBy(F.count('*').alias('n'))"
    ],
    "agg accepts aggregate expressions; alias renames the output column."
   ],
@@ -2489,7 +2489,7 @@
    "VectorAssembler",
    [
     "StringIndexer",
-    "StandardScaler",
+    "PolynomialExpansion",
     "OneHotEncoder"
    ],
    "MLlib estimators read a vector features column. VectorAssembler builds it from input columns."
@@ -2499,7 +2499,7 @@
    "A fitted Model, which is a Transformer",
    [
     "A new DataFrame with predictions",
-    "A list of the learned coefficients",
+    "A list of the learned coefficients only",
     "Nothing, the estimator is updated"
    ],
    "Estimators learn from data and return Models; you call model.transform(df) to add prediction columns."
@@ -2508,7 +2508,7 @@
    "By default, how does MLlib's StringIndexer assign indices to labels?",
    "By frequency, with the most frequent label getting 0",
    [
-    "Alphabetically, with the first label getting 0",
+    "Alphabetically, with the first label in sorted order getting 0",
     "In order of first appearance in the data",
     "Randomly, using the seed set on the session"
    ],
@@ -2518,9 +2518,9 @@
    "Which call splits a PySpark DataFrame into roughly 80% train and 20% test reproducibly?",
    "df.randomSplit([0.8, 0.2], seed=42)",
    [
-    "df.split(0.8, seed=42)",
+    "df.split([0.8, 0.2], seed=42)",
     "df.sample(0.8, 0.2, seed=42)",
-    "train_test_split(df, 0.2)"
+    "train_test_split(df, test_size=0.2)"
    ],
    "randomSplit returns a list of DataFrames with approximately the given weights; the seed makes the split repeatable."
   ],
@@ -2538,7 +2538,7 @@
    "Why are regular Python UDFs often slow in PySpark?",
    "Rows are serialized between the JVM and Python workers",
    [
-    "Python UDFs run only on the driver machine",
+    "Python UDFs run only on the driver machine, not on executors",
     "Python UDFs disable all partitioning in Spark",
     "Python UDFs force every column to string type"
    ],
@@ -2548,9 +2548,9 @@
    "Which option is usually much faster for a custom numeric transformation that has no built-in function?",
    "A pandas_udf that maps a pandas Series to a Series",
    [
-    "A regular udf that returns a Python list",
-    "A collect() followed by a Python for loop",
-    "An RDD map with a lambda per row"
+    "A regular udf that returns a Python list per row",
+    "A collect() followed by a plain Python for loop",
+    "An RDD map with a Python lambda applied per row"
    ],
    "pandas UDFs transfer data with Apache Arrow in column batches and run vectorized pandas code, reducing per-row overhead."
   ],
@@ -2588,9 +2588,9 @@
    "Which setting speeds up toPandas() and createDataFrame(pandas_df) by using Apache Arrow?",
    "spark.sql.execution.arrow.pyspark.enabled",
    [
-    "spark.sql.shuffle.partitions",
-    "spark.python.worker.reuse",
-    "spark.sql.adaptive.enabled"
+    "spark.sql.adaptive.coalescePartitions.enabled",
+    "spark.sql.inMemoryColumnarStorage.compressed",
+    "spark.sql.adaptive.skewJoin.enabled"
    ],
    "With Arrow enabled, data moves between the JVM and Python in columnar batches instead of row-by-row pickling."
   ],
@@ -2608,9 +2608,9 @@
    "In the physical plan printed by df.explain(), what does an Exchange node indicate?",
    "A shuffle that redistributes data between partitions",
    [
-    "A data write to an external storage system",
-    "A cache lookup for stored partitions",
-    "A Python UDF running on the workers"
+    "A data write to an external storage system such as S3",
+    "A cache lookup for partitions stored in executor memory",
+    "A Python UDF running on the workers in a separate process"
    ],
    "Exchange operators mark where data moves across the network, for example for groupBy or a sort-merge join."
   ],

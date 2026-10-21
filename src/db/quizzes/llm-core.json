@@ -44,9 +44,9 @@
    "What is the YAML block at the top of a model card's README.md used for?",
    "Machine-readable metadata such as license, language and tags",
    [
-    "Hyperparameters that from_pretrained applies on load",
-    "The tokenizer's special token mapping",
-    "Access tokens needed to download the model"
+    "Training hyperparameters that from_pretrained applies on every load",
+    "The tokenizer's special token mapping and vocabulary size",
+    "Access tokens needed to download the gated model files"
    ],
    "The YAML front matter is metadata the Hub indexes for search and filtering, such as license, language, datasets and tags."
   ],
@@ -54,9 +54,9 @@
    "What does load_dataset(\"imdb\") from the datasets library return?",
    "A DatasetDict keyed by split names such as train and test",
    [
-    "A pandas DataFrame with every row of the dataset",
+    "A pandas DataFrame holding every row of every split in the dataset",
     "A single Dataset with an extra split column",
-    "A PyTorch DataLoader that yields batches"
+    "A PyTorch DataLoader that yields shuffled batches"
    ],
    "Without a split argument, load_dataset returns a DatasetDict with one Dataset per split. Pass split=\"train\" to get a single Dataset."
   ],
@@ -104,7 +104,7 @@
    "In the evaluate library, what is metric.add_batch(predictions=..., references=...) used for?",
    "Accumulating results over many batches before one compute() call",
    [
-    "Computing and returning the metric for that batch only",
+    "Computing and immediately returning the metric for that batch only",
     "Uploading predictions to the Hub leaderboard",
     "Averaging the metric of each batch with equal weight"
    ],
@@ -115,7 +115,7 @@
    "A list of dicts with label and score keys",
    [
     "A single float probability of positive",
-    "A tensor of raw logits",
+    "A PyTorch tensor of raw logits",
     "Only the label string, such as POSITIVE"
    ],
    "Transformers pipelines return Python objects. Text classification returns something like [{'label': 'POSITIVE', 'score': 0.99}]."
@@ -144,7 +144,7 @@
    "You load a BERT checkpoint with AutoModelForSequenceClassification.from_pretrained(name, num_labels=3) and see a warning that some weights are newly initialized. Why?",
    "The classification head is not in the checkpoint and starts random",
    [
-    "The checkpoint is corrupted and was partly re-downloaded",
+    "The checkpoint file is corrupted and was partly re-downloaded from the Hub",
     "num_labels must match the vocabulary size of the model",
     "The encoder layers are reset whenever num_labels is set"
    ],
@@ -154,9 +154,9 @@
    "What does device_map=\"auto\" do in from_pretrained for a large model?",
    "Places layers across available GPUs, then CPU, using Accelerate",
    [
-    "Picks the fastest GPU and loads the whole model there",
-    "Converts the weights to INT8 to fit into memory",
-    "Downloads only the layers needed for inference"
+    "Picks the single fastest GPU and loads the whole model onto that one device",
+    "Converts all the weights to INT8 so they fit into memory",
+    "Downloads only the layers that are needed for inference"
    ],
    "device_map=\"auto\" lets Accelerate split the model across devices by available memory, offloading to CPU or disk if needed."
   ],
@@ -174,7 +174,7 @@
    "What does calling tokenizer(\"Hello world\") on a Transformers tokenizer return?",
    "A BatchEncoding with keys such as input_ids and attention_mask",
    [
-    "A plain list of string tokens like ['hello', 'world']",
+    "A plain Python list of lowercase string tokens like ['hello', 'world']",
     "A tensor of contextual embeddings from the model",
     "The integer number of tokens counted in the text"
    ],
@@ -216,9 +216,9 @@
    "Why are attention scores divided by sqrt(d_k) before the softmax?",
    "Large dot products would saturate the softmax and shrink gradients",
    [
-    "It converts the scores into valid probabilities",
-    "It makes attention cost linear in sequence length",
-    "It keeps the values V on the same scale as the keys"
+    "It converts the raw scores into valid probabilities before softmax",
+    "It makes the cost of attention linear in the sequence length",
+    "It keeps the values V on the same numeric scale as the keys K"
    ],
    "Dot products grow with dimension. Scaling keeps their variance stable so softmax does not become nearly one-hot with vanishing gradients."
   ],
@@ -238,7 +238,7 @@
    [
     "Queries from the input, keys and values from a fixed codebook",
     "Three separate input sequences given to the layer",
-    "The previous layer's attention weights"
+    "The attention weight matrix from the previous layer"
    ],
    "In self-attention Q, K and V are all linear projections of the same hidden states, which is what makes it self-attention."
   ],
@@ -256,7 +256,7 @@
    "What is the main benefit of multi-head attention over a single attention head of the same total width?",
    "Heads can attend to different positions and feature subspaces in parallel",
    [
-    "It removes the need for any positional information in the model",
+    "It removes the need for any positional information anywhere in the model",
     "It lowers attention cost from quadratic to linear in length",
     "It lets the model skip the feed-forward layers entirely"
    ],
@@ -328,7 +328,7 @@
    [
     "Learned embeddings concatenated to each token",
     "Rotations applied to the query and key vectors",
-    "A bias added to attention scores based on distance"
+    "A learned bias added to attention scores based on token distance"
    ],
    "The paper used sine and cosine waves of different frequencies, added to embeddings. Rotary embeddings (RoPE) came later."
   ],
@@ -386,9 +386,9 @@
    "What does top-p (nucleus) sampling with p = 0.9 do?",
    "Samples from the smallest token set whose total probability reaches 0.9",
    [
-    "Samples only from the 90 most probable tokens at each step",
-    "Discards every token whose probability is below 0.9",
-    "Uses greedy decoding for 90% of the generation steps"
+    "Samples only from the 90 most probable tokens in the vocabulary at each step",
+    "Discards every token whose own probability falls below 0.9",
+    "Uses greedy decoding for 90% of the steps and sampling for the rest"
    ],
    "Nucleus sampling uses a dynamic cutoff by cumulative probability, then renormalizes and samples within that set."
   ],
@@ -396,9 +396,9 @@
    "Why does a KV cache speed up autoregressive generation in decoder-only Transformers?",
    "Keys and values of earlier tokens are stored instead of recomputed",
    [
-    "It caches the final output text for repeated prompts",
-    "It stores the gradients from the previous step",
-    "It skips attention entirely for tokens after the first"
+    "It caches the final output text so repeated prompts return instantly",
+    "It stores the gradients from the previous step for reuse",
+    "It skips attention entirely for every token after the first"
    ],
    "Each new token only needs its own Q, K and V; past K and V are reused from the cache, avoiding recomputation over the whole prefix."
   ]
@@ -419,7 +419,7 @@
    "A PIL.Image.Image",
    [
     "A NumPy array of latents",
-    "A torch tensor in the range -1 to 1",
+    "A torch.Tensor in [-1, 1]",
     "A path to a saved PNG file"
    ],
    "By default output_type is \"pil\", so .images is a list of PIL images you can save with image.save()."
@@ -448,7 +448,7 @@
    "What happens in the forward diffusion process?",
    "Gaussian noise is gradually added to an image over many steps",
    [
-    "A network removes noise from the image step by step",
+    "A network removes the noise from the image step by step over time",
     "The image is compressed into a latent by the VAE",
     "The text prompt is converted into embeddings"
    ],
@@ -458,9 +458,9 @@
    "What does the neural network learn in the reverse diffusion process of a DDPM?",
    "To predict the noise in a noisy sample at a given timestep",
    [
-    "To add the correct amount of noise at each step",
-    "To classify which timestep an image came from",
-    "To compress images into a lower dimensional code"
+    "To add exactly the right amount of noise to the sample at each timestep",
+    "To classify which timestep a noisy image came from",
+    "To compress images into a lower dimensional latent code"
    ],
    "The model, usually a UNet, predicts the noise so that the sampler can step from x_t toward a cleaner x_{t-1}."
   ],
@@ -468,7 +468,7 @@
    "What is the standard simplified training loss for a DDPM?",
    "Mean squared error between predicted and true added noise",
    [
-    "Cross-entropy between predicted and true pixel classes",
+    "Cross-entropy between the predicted and true pixel class labels",
     "Adversarial loss from a discriminator network",
     "KL divergence between two text embeddings"
    ],
@@ -480,7 +480,7 @@
    [
     "The model is trained only at the final timestep T",
     "Timesteps are independent of the original image",
-    "The scheduler caches every intermediate image on disk"
+    "The scheduler caches every intermediate noisy image on local disk"
    ],
    "Because the noise steps are Gaussian, x_t = sqrt(alpha_bar_t) x_0 + sqrt(1 - alpha_bar_t) eps, so any timestep is sampled directly."
   ],
@@ -489,7 +489,7 @@
    "pipe.scheduler = DDIMScheduler.from_config(pipe.scheduler.config)",
    [
     "pipe.set_scheduler(\"ddim\", keep_config=True, reuse=True)",
-    "pipe.scheduler = DDIMScheduler(pipe.unet, pipe.scheduler)",
+    "pipe.scheduler = DDIMScheduler(pipe.unet, pipe.scheduler.config)",
     "pipe.scheduler.load_type(\"DDIMScheduler\", pipe.config)"
    ],
    "Schedulers are interchangeable. from_config builds the new scheduler from the old one's settings, such as the beta schedule."
@@ -498,7 +498,7 @@
    "What is a key practical advantage of the DDIM sampler over the original DDPM sampler?",
    "Good samples in far fewer steps, optionally deterministic",
    [
-    "It needs no trained model at all to generate images",
+    "It needs no trained model at all to generate realistic images",
     "It trains the UNet much faster than DDPM does",
     "It produces higher resolution than the training data"
    ],
@@ -518,7 +518,7 @@
    "In Diffusers, what is the role of a scheduler in the denoising loop?",
    "It turns the model's output into the next, less noisy sample",
    [
-    "It decides which GPU runs each of the denoising steps",
+    "It decides which GPU device runs each of the many denoising steps",
     "It encodes the text prompt into text embeddings",
     "It decodes the final latents into an RGB image"
    ],
@@ -529,8 +529,8 @@
    "Downsampling and upsampling paths linked by skip connections",
    [
     "A stack of identical encoder blocks with no resolution change",
-    "A single fully connected layer per pixel",
-    "A recurrent network applied row by row"
+    "A single fully connected layer applied per pixel",
+    "A recurrent network applied to the image row by row"
    ],
    "The UNet compresses spatial resolution, then expands it again, and skip connections carry fine detail from down blocks to up blocks."
   ],
@@ -539,7 +539,7 @@
    "It receives an embedding of the timestep as an extra input",
    [
     "It estimates the noise level from image brightness",
-    "The scheduler crops the image based on the timestep",
+    "The scheduler crops the input image based on the current timestep",
     "It is retrained separately for every timestep"
    ],
    "The timestep is turned into a sinusoidal embedding and injected into the residual blocks, so one network handles all noise levels."
@@ -548,9 +548,9 @@
    "In Stable Diffusion, how does the text prompt influence the UNet?",
    "Through cross-attention layers over the text encoder's embeddings",
    [
-    "By adding the prompt's token ids to the latent pixels",
-    "By choosing which pretrained UNet to load",
-    "By changing the number of inference steps"
+    "By adding the prompt's token ids directly to the latent pixel values",
+    "By choosing which pretrained UNet checkpoint to load",
+    "By changing the number of inference steps it runs"
    ],
    "Cross-attention lets each spatial position of the latent attend to the prompt's token embeddings from the text encoder."
   ],
@@ -578,9 +578,9 @@
    "In a Stable Diffusion pipeline, what usually happens when you raise guidance_scale from 7.5 to 15?",
    "Images follow the prompt more strictly but can look oversaturated",
    [
-    "Images get more diverse and less tied to the prompt",
-    "Generation becomes about twice as fast",
-    "The output resolution doubles"
+    "Images become more diverse and much less tied to the prompt wording",
+    "Generation becomes about twice as fast as before",
+    "The output resolution doubles to 1024 by 1024"
    ],
    "Higher classifier-free guidance pushes harder toward the prompt, which reduces diversity and can cause artifacts or harsh colors."
   ],
@@ -612,7 +612,7 @@
    [
     "A pruned copy of W with most entries set to exactly zero",
     "A new output layer placed after the frozen base model",
-    "The bias vectors only, while every weight matrix stays frozen"
+    "The bias vectors only, while every weight matrix in W stays frozen"
    ],
    "LoRA freezes W and learns delta W = B A, where B is d x r and A is r x k with a small rank r."
   ],
@@ -630,9 +630,9 @@
    "Why is LoRA's B matrix initialized to zeros while A is random?",
    "So B A starts at zero and the model initially equals the base model",
    [
-    "So gradients flow only into A during the first epoch",
-    "So the adapter can be merged into W before training",
-    "So the rank of the product B A grows during training"
+    "So gradients flow only into A and not B during the first epoch",
+    "So the adapter can be merged into the frozen W before any training starts",
+    "So the rank of the product B A can grow steadily during training"
    ],
    "With B = 0 the update is zero at step 0, so training starts exactly from the pretrained behavior and A still receives gradients."
   ],
@@ -680,7 +680,7 @@
    "How does QLoRA reduce memory compared with standard LoRA?",
    "The frozen base model is stored in 4-bit, adapters train in 16-bit",
    [
-    "Adapters are trained in 4-bit while the base stays in 16-bit",
+    "Adapters are trained in 4-bit precision while the base stays in 16-bit",
     "Every second layer of the base model is removed",
     "Gradients are computed only for the last layer"
    ],
@@ -710,7 +710,7 @@
    "Why does QLoRA use paged optimizers?",
    "To move optimizer states to CPU memory during spikes and avoid OOM",
    [
-    "To split optimizer states into pages for faster convergence",
+    "To split the optimizer states into small pages for faster convergence",
     "To compress gradients before each optimizer step",
     "To run a separate optimizer for every adapter"
    ],
@@ -730,9 +730,9 @@
    "What distinguishes Prompt Tuning from Prefix Tuning?",
    "Prompt Tuning adds trainable embeddings only at the input layer",
    [
-    "Prompt Tuning trains all the attention weights",
-    "Prompt Tuning uses discrete words chosen by search",
-    "Prompt Tuning adds trainable vectors to every layer"
+    "Prompt Tuning trains all the attention weights of the base model",
+    "Prompt Tuning uses discrete words that are chosen by a search",
+    "Prompt Tuning adds trainable vectors to the keys of every layer"
    ],
    "Prompt Tuning learns soft prompt embeddings at the input only. Prefix Tuning injects trainable vectors into every layer's attention."
   ],
@@ -740,7 +740,7 @@
    "What does merge_and_unload() do on a PEFT LoRA model?",
    "Folds the LoRA updates into the base weights and drops the adapters",
    [
-    "Saves only the adapter file and deletes the base model weights",
+    "Saves only the adapter file to disk and deletes the base model weights",
     "Unloads the model from GPU memory into CPU memory",
     "Merges two different base models into one checkpoint"
    ],
@@ -770,7 +770,7 @@
    "You serve 20 customer-specific LoRA fine-tunes of the same 7B model. What is the storage benefit of LoRA?",
    "One copy of the base plus small adapter files for each customer",
    [
-    "Each customer model is compressed to under 100 MB in total",
+    "Each customer model is compressed to under 100 MB in total on disk",
     "Adapters let you delete the base model after training",
     "All 20 adapters are merged into one shared file"
    ],
@@ -823,7 +823,7 @@
    "-log sigmoid(r(A) - r(B))",
    [
     "(r(A) - r(B))^2",
-    "-log softmax over the vocabulary of A",
+    "-log softmax(A tokens)",
     "max(0, r(B) - r(A)) squared"
    ],
    "This Bradley-Terry style loss pushes the chosen response's score above the rejected one's; only the score difference matters."
@@ -832,9 +832,9 @@
    "What does an RLHF reward model output for a prompt and response?",
    "A single scalar score",
    [
-    "A probability for every vocabulary token",
-    "A corrected version of the response",
-    "A class label of good or bad with no score"
+    "A probability per token",
+    "A rewritten response",
+    "A good or bad label"
    ],
    "The reward model maps a (prompt, response) pair to one number used as the reward signal for RL."
   ],
@@ -842,9 +842,9 @@
    "How is the reward model commonly built in RLHF pipelines?",
    "From the SFT model, with the LM head replaced by a scalar head",
    [
-    "From a small CNN trained from scratch",
-    "From a copy of the policy with frozen weights and no head",
-    "From a rule-based scorer counting keywords"
+    "From a small CNN trained from scratch on rankings",
+    "From a copy of the policy with all weights frozen and no output head",
+    "From a rule-based scorer that counts approved keywords"
    ],
    "Starting from the SFT model gives the reward model strong language understanding; a linear head outputs the scalar reward."
   ],
@@ -853,7 +853,7 @@
    "Reward hacking",
    [
     "Catastrophic forgetting",
-    "Mode collapse in pretraining",
+    "Mode collapse",
     "Exposure bias"
    ],
    "The policy exploits flaws in the learned reward model, for example a bias toward length, instead of improving true quality."
@@ -862,9 +862,9 @@
    "What does the clipping in PPO's objective do?",
    "Limits how far the new policy's probability ratio moves from 1",
    [
-    "Clips every reward into the range from 0 to 1",
-    "Cuts generated responses that exceed a token limit",
-    "Bounds the gradient norm of the value model only"
+    "Clips every reward into the range from 0 to 1 before updates",
+    "Cuts generated responses that exceed a fixed token limit",
+    "Bounds the gradient norm of the value model only, not the policy"
    ],
    "The ratio pi_new / pi_old is clipped to [1 - eps, 1 + eps], so a single update cannot change the policy too much."
   ],
@@ -882,9 +882,9 @@
    "How many models are typically held in memory during standard PPO-based RLHF of an LLM?",
    "Four: policy, reference, reward and value",
    [
-    "Two: policy and reward",
+    "Two: policy and reference only",
     "Three: policy, reward and value",
-    "Five: policy, reference, reward, value and teacher"
+    "Five: policy, reference, reward, value, judge"
    ],
    "PPO needs the trainable policy and value models plus the frozen reference and reward models, which is why it is memory heavy."
   ],
@@ -892,9 +892,9 @@
    "What is the main practical difference between DPO and PPO-based RLHF?",
    "DPO trains on preference pairs directly, with no reward model or RL loop",
    [
-    "DPO needs a larger reward model than PPO does to work",
-    "DPO uses human ratings on a 1 to 10 scale, not pairs",
-    "DPO trains only the value model and leaves the policy fixed"
+    "DPO needs a much larger reward model than PPO does in order to train the policy",
+    "DPO uses human ratings on a 1 to 10 scale instead of preference pairs",
+    "DPO trains only the value model and keeps the policy weights fixed"
    ],
    "DPO shows the RLHF objective can be optimized with a simple classification-style loss on chosen and rejected responses."
   ],
@@ -913,7 +913,7 @@
    "The trainable policy and a frozen reference model",
    [
     "The policy, a reward model and a value model",
-    "Only a reward model",
+    "A reward model and the reference only",
     "The policy and a separate critic network"
    ],
    "The DPO loss uses log probability ratios of policy over reference for chosen and rejected answers, so both are needed."
@@ -922,9 +922,9 @@
    "What does the DPO loss push up during training?",
    "Policy-to-reference log ratio of chosen minus that of rejected",
    [
-    "The absolute probability of every rejected response",
-    "The reward model's score for the chosen response",
-    "The KL divergence from the reference model"
+    "The absolute probability of every rejected response in the batch",
+    "The reward model's score for the chosen response only",
+    "The KL divergence from the reference model at each step"
    ],
    "DPO minimizes -log sigmoid(beta * (chosen log ratio - rejected log ratio)), widening the margin in favor of the chosen response."
   ],
@@ -942,9 +942,9 @@
    "Why do RLHF data pipelines usually ask annotators to compare two responses instead of scoring each one from 1 to 10?",
    "People give more consistent relative judgments than absolute scores",
    [
-    "Comparisons need no human labor at all",
-    "Absolute scores cannot be stored in datasets",
-    "Comparisons let the model skip supervised fine-tuning"
+    "Comparisons need no human labor because a script picks winners",
+    "Absolute 1 to 10 scores cannot be stored in standard preference datasets",
+    "Comparisons let the model skip supervised fine-tuning entirely"
    ],
    "Absolute scales vary between annotators. Pairwise choices are easier and more reliable, and fit the Bradley-Terry reward loss."
   ],
@@ -952,9 +952,9 @@
    "What is the reference model in RLHF?",
    "A frozen copy of the policy taken before RL, usually the SFT model",
    [
-    "The reward model with its scalar head removed",
-    "A larger model used to label the preference pairs",
-    "The latest checkpoint of the policy being trained now"
+    "The reward model after its scalar head has been removed",
+    "A larger model that is used to label the preference pairs",
+    "The latest checkpoint of the policy that is being trained right now"
    ],
    "The reference stays fixed, and the policy is penalized for diverging from it during PPO or DPO."
   ],
@@ -962,9 +962,9 @@
    "Why does PPO-based RLHF add a KL divergence penalty between the policy and the reference model?",
    "To keep the policy from drifting into text that games the reward",
    [
-    "To make the reward model's scores sum to exactly one",
-    "To speed up sampling of new responses during rollouts",
-    "To ensure the value model always predicts zero"
+    "To make the reward model's scores sum to exactly one per batch",
+    "To speed up the sampling of new responses during each PPO rollout phase",
+    "To ensure the value model always predicts a reward of zero"
    ],
    "Without the penalty the policy can exploit the reward model and lose fluency; the KL term keeps outputs close to the SFT distribution."
   ],
@@ -972,9 +972,9 @@
    "In PPO-based RLHF the reward is r_RM - beta * KL(policy || reference). What is the likely result of setting beta to 0?",
    "The policy over-optimizes the reward model and reward hacking grows",
    [
-    "The policy stops changing because rewards become zero",
-    "Training becomes identical to supervised fine-tuning",
-    "The reward model is retrained at each step"
+    "The policy stops changing because all of its rewards become zero",
+    "Training becomes mathematically identical to plain supervised fine-tuning",
+    "The reward model is retrained from scratch at every step"
    ],
    "With no KL penalty nothing anchors the policy to fluent behavior, so it chases reward model flaws."
   ],
@@ -992,9 +992,9 @@
    "In the per-token KL estimate log pi(y) - log pi_ref(y), what does a large positive value mean for a sampled token?",
    "The policy gives that token much more probability than the reference",
    [
-    "The reference model prefers that token over the policy",
-    "The reward model scored that token highly",
-    "The token was outside the vocabulary"
+    "The reference model prefers that token over the policy model",
+    "The reward model gave that token a high per-token score",
+    "The token was sampled from outside the model's vocabulary"
    ],
    "A large positive log ratio means the policy has moved far toward that token compared with the reference, so it is penalized."
   ],
@@ -1002,9 +1002,9 @@
    "What is a key risk when a preference dataset is built from a single annotator group with similar backgrounds?",
    "The model learns that group's biases as if they were general preferences",
    [
-    "The dataset becomes too large to train on in practice",
-    "Chosen and rejected responses become identical text",
-    "The reward model can no longer output a scalar score"
+    "The dataset becomes too large to train a reward model on in practice",
+    "Chosen and rejected responses become identical text in most pairs",
+    "The reward model can no longer output a single scalar score per pair"
    ],
    "Reward models learn whatever annotators prefer. Narrow annotator pools bake their views into the aligned model."
   ]
@@ -1034,9 +1034,9 @@
    "Which Transformers tokenizer method formats a list of role and content messages using the model's own chat template?",
    "apply_chat_template",
    [
-    "format_messages",
-    "encode_chat",
-    "build_prompt"
+    "format_chat_messages",
+    "encode_chat_turns",
+    "build_chat_prompt"
    ],
    "tokenizer.apply_chat_template(messages) renders the conversation with the template stored in the tokenizer config, including special tokens."
   ],
@@ -1064,9 +1064,9 @@
    "Your instruction dataset has thousands of near-duplicate examples. Why remove them before fine-tuning?",
    "They push the model to memorize and overfit those patterns",
    [
-    "They make the tokenizer vocabulary grow",
-    "They cause the loss to become negative",
-    "They prevent the use of a learning rate schedule"
+    "They make the tokenizer vocabulary grow with every copy",
+    "They cause the training loss to become negative over time",
+    "They prevent the use of a learning rate schedule in training"
    ],
    "Duplicates are effectively up-weighted, so the model overfits them and generalizes worse; deduplication is standard data hygiene."
   ],
@@ -1114,9 +1114,9 @@
    "Why is a learning rate warmup used at the start of fine-tuning?",
    "It avoids large unstable updates while optimizer statistics settle",
    [
-    "It lowers GPU memory use during the first epoch",
-    "It lets the optimizer skip the first few batches",
-    "It prevents overfitting at the very end of training"
+    "It lowers GPU memory use while the first epoch is running",
+    "It lets the optimizer skip the first few batches of each epoch",
+    "It prevents overfitting at the very end of training by slowing updates"
    ],
    "Adam's moment estimates are noisy at first. Ramping the learning rate up over some steps prevents early divergence."
   ],
@@ -1135,7 +1135,7 @@
    "Lower the learning rate and add warmup",
    [
     "Increase the learning rate to escape the spike",
-    "Remove the validation set",
+    "Remove the validation set from training",
     "Increase the number of epochs"
    ],
    "Divergence to NaN usually means updates are too large. A smaller peak learning rate with warmup, plus gradient clipping, stabilizes training."
@@ -1144,9 +1144,9 @@
    "Compared with full fine-tuning of the same LLM, how does the typical LoRA learning rate differ?",
    "It is usually higher, often around 1e-4 to 2e-4",
    [
-    "It is usually lower, often around 1e-7",
-    "It must be exactly the same value",
-    "LoRA does not use a learning rate"
+    "It is usually lower, often around 1e-7 to 1e-6",
+    "It must be exactly the same value as for full tuning",
+    "LoRA does not use a learning rate for its adapters"
    ],
    "Only small adapters are trained, starting from zero, so larger rates are common. Full fine-tuning often uses about 1e-5 or lower."
   ],
@@ -1154,7 +1154,7 @@
    "After fine-tuning on medical Q and A only, a model gets worse at general coding tasks it used to handle. What is this effect called?",
    "Catastrophic forgetting",
    [
-    "Reward hacking",
+    "Reward model hacking",
     "Exposure bias",
     "Gradient explosion"
    ],
@@ -1164,9 +1164,9 @@
    "Which practice most directly reduces catastrophic forgetting during domain fine-tuning?",
    "Mixing in a share of general data from the original distribution",
    [
-    "Training for more epochs on the new domain data only",
+    "Freezing the embeddings and training for many more epochs on new data",
     "Raising the learning rate for all layers of the model",
-    "Removing the warmup phase from the schedule"
+    "Removing the warmup phase from the learning rate schedule"
    ],
    "Replaying general data keeps old capabilities in the loss, so the model is penalized for forgetting them."
   ],
@@ -1174,9 +1174,9 @@
    "How does Elastic Weight Consolidation (EWC) limit forgetting?",
    "It penalizes changes to weights important for earlier tasks",
    [
-    "It freezes every layer except the last one",
-    "It doubles the model width for each new task",
-    "It stores the full old dataset inside the model"
+    "It freezes every layer of the model except the last one",
+    "It doubles the model width for each new task it learns",
+    "It stores the full old dataset inside the model weights"
    ],
    "EWC uses Fisher information to estimate weight importance and adds a quadratic penalty for moving those weights."
   ],
@@ -1185,7 +1185,7 @@
    "Use the epoch 2 checkpoint or stop earlier",
    [
     "Train more epochs until validation loss falls",
-    "Increase the learning rate",
+    "Increase the learning rate for epoch 3",
     "Remove the validation set to save time"
    ],
    "Rising validation loss with falling training loss is overfitting. Early stopping keeps the best generalizing checkpoint."
@@ -1204,9 +1204,9 @@
    "What is sequence packing in LLM fine-tuning?",
    "Concatenating short examples into full-length sequences to cut padding",
    [
-    "Compressing the dataset files with gzip before training",
-    "Sorting examples by topic before building each batch",
-    "Cutting long examples into overlapping fixed-size windows"
+    "Compressing the dataset files with gzip before training begins",
+    "Sorting examples by topic before building each training batch",
+    "Splitting long examples into overlapping fixed-size windows to cut truncation"
    ],
    "Packing fills each sequence up to the context length with several examples, so fewer tokens are wasted on padding."
   ]
@@ -1246,9 +1246,9 @@
    "What extra parameter does asymmetric quantization use that symmetric quantization does not?",
    "A zero-point that shifts the integer range",
    [
-    "A second scale for negative values",
-    "A lookup table of every weight",
-    "A random rounding seed"
+    "A second scale factor used only for negative values",
+    "A lookup table that stores every original weight",
+    "A random seed for stochastic rounding"
    ],
    "Asymmetric quantization maps x to round(x / scale) + zero_point, so a range like 0 to 6 can use all integer levels."
   ],
@@ -1266,7 +1266,7 @@
    "What is the main difference between post-training quantization (PTQ) and quantization-aware training (QAT)?",
    "PTQ quantizes after training; QAT simulates quantization in training",
    [
-    "PTQ needs full retraining; QAT needs no training data at all",
+    "PTQ needs full retraining of the model; QAT needs no training data at all",
     "PTQ works only for activations; QAT works only for weights",
     "PTQ is used for INT4 only; QAT is used for INT8 only"
    ],
@@ -1276,7 +1276,7 @@
    "Your INT4 PTQ model loses too much accuracy and you can afford extra training compute. Which approach is most likely to help?",
    "Quantization-aware training",
    [
-    "Increasing the calibration set to one sample",
+    "Using a smaller calibration set",
     "Removing the scale factors",
     "Switching to per-tensor scaling"
    ],
@@ -1286,9 +1286,9 @@
    "What is the calibration dataset used for in static post-training quantization?",
    "Estimating value ranges, especially of activations, to set scales",
    [
-    "Fine-tuning all weights after quantization",
-    "Measuring the model's final accuracy for the report",
-    "Choosing the model's vocabulary"
+    "Fine-tuning all of the model's weights again after quantization is done",
+    "Measuring the model's final accuracy for the evaluation report",
+    "Choosing the model's vocabulary and tokenizer merges"
    ],
    "A few hundred representative samples are run through the model to observe activation ranges, which set the quantization parameters."
   ],
@@ -1296,7 +1296,7 @@
    "How does GPTQ quantize the weights of a layer?",
    "Column by column, using second-order information to compensate errors",
    [
-    "By rounding every weight to the nearest level independently",
+    "By rounding every weight to the nearest quantization level independently",
     "By retraining the full model with fake quantization",
     "By clustering weights with k-means across all layers"
    ],
@@ -1306,7 +1306,7 @@
    "Which description of GPTQ is accurate?",
    "A one-shot, weight-only PTQ method that needs a small calibration set",
    [
-    "A training method that learns quantized activations end to end",
+    "A training method that learns quantized activations end to end with backprop",
     "A data-free method that never sees any input samples",
     "A quantization method that applies only to embedding layers"
    ],
@@ -1316,7 +1316,7 @@
    "What key observation does AWQ (Activation-aware Weight Quantization) build on?",
    "A small share of weight channels matter most, found via activation size",
    [
-    "Weights with the largest magnitude are always the least important",
+    "Weights with the largest magnitude are always the least important for accuracy",
     "Activations can be quantized to 1 bit without loss",
     "Every channel contributes equally to output quality"
    ],
@@ -1336,9 +1336,9 @@
    "In W4A16 weight-only quantization, what happens at inference time?",
    "INT4 weights are dequantized to FP16 and multiplied with FP16 activations",
    [
-    "Both weights and activations are computed directly in INT4",
-    "Activations are quantized to INT4 before every single layer",
-    "The whole model is converted back to FP16 when it loads"
+    "Both weights and activations are multiplied directly in INT4 tensor core arithmetic",
+    "Activations are quantized to INT4 right before every single layer runs",
+    "The whole model is converted back to FP16 once when it first loads"
    ],
    "Weight-only schemes save memory and bandwidth; the matmul still runs in 16-bit after on-the-fly dequantization."
   ],
@@ -1346,9 +1346,9 @@
    "Why does weight-only quantization speed up single-user LLM decoding even though math still runs in FP16?",
    "Decoding is limited by memory bandwidth, and smaller weights load faster",
    [
-    "INT4 arithmetic runs on every CPU core at once instead",
-    "Smaller weights reduce the number of layers that run",
-    "It reduces the sequence length the model has to process"
+    "INT4 arithmetic runs on every CPU core at once instead of the GPU",
+    "Smaller weights reduce the number of transformer layers that need to run",
+    "It reduces the sequence length that the model has to attend over"
    ],
    "At batch size 1 each token reads all weights from memory, so moving 4x fewer bytes is the main speedup."
   ],
@@ -1366,9 +1366,9 @@
    "What does SmoothQuant do to make W8A8 quantization accurate?",
    "Moves quantization difficulty from activations to weights by channel scaling",
    [
-    "Keeps outlier activations in FP32 and quantizes the rest",
-    "Quantizes weights to 4 bits and keeps activations in 16 bits",
-    "Retrains the whole model with smoothed target labels"
+    "Keeps outlier activations in FP32 and quantizes all the rest to INT8",
+    "Quantizes weights to 4 bits and keeps activations in 16 bits instead",
+    "Retrains the whole model on smoothed targets, then quantizes weights and activations"
    ],
    "SmoothQuant divides activations by per-channel factors and multiplies weights by them, an equivalent transform that flattens outliers."
   ],
@@ -1419,7 +1419,7 @@
    "To fit model limits and retrieve focused, relevant passages",
    [
     "To make the documents load faster in a browser",
-    "Because vector databases cannot store long strings",
+    "Because vector databases cannot store long strings of text at all",
     "To remove duplicate words from the documents"
    ],
    "Embedding models and prompts have token limits, and smaller chunks give more precise matches for a given query."
@@ -1438,9 +1438,9 @@
    "Your RAG answers are vague and the retrieved 4000-token chunks contain much unrelated text. What is the best first change?",
    "Use smaller chunks that follow section boundaries",
    [
-    "Raise the generation temperature",
-    "Retrieve more of the same large chunks",
-    "Switch the LLM to a larger model"
+    "Raise the generation temperature for more variety",
+    "Retrieve more of the same large chunks per query",
+    "Switch the LLM to a larger model with more parameters"
    ],
    "Large chunks blur the embedding across many topics and fill the prompt with noise; smaller, coherent chunks improve precision."
   ],
@@ -1448,9 +1448,9 @@
    "Which chunking approach best preserves meaning in structured documents like manuals?",
    "Split on headings and paragraphs first, then by size",
    [
-    "Split every 500 characters regardless of content",
-    "Split at every punctuation mark",
-    "Keep each document as one chunk"
+    "Split every 500 characters regardless of the content",
+    "Split at every single punctuation mark in the text",
+    "Keep each whole document together as one single chunk"
    ],
    "Structure-aware or recursive splitting keeps logical units together and falls back to smaller separators only when needed."
   ],
@@ -1458,9 +1458,9 @@
    "You switched your query embedding model to a new one but did not re-index. Retrieval quality collapsed. Why?",
    "Query and document vectors now come from different embedding spaces",
    [
-    "The vector database expired its cached results",
-    "The new model's vectors are too short to be stored",
-    "The LLM rejected the new embeddings as invalid input"
+    "The vector database expired all of its cached query results",
+    "The new model's vectors are too short to be stored in the index",
+    "The LLM rejected the new embeddings as invalid input tokens at query time"
    ],
    "Similarity is only meaningful between vectors from the same model. Re-embed the whole corpus with the new model."
   ],
@@ -1468,8 +1468,8 @@
    "Two embeddings are both normalized to unit length. How does their cosine similarity relate to their dot product?",
    "They are equal",
    [
-    "Cosine is the square of the dot product",
-    "Cosine is one minus the dot product",
+    "Cosine is dot squared",
+    "Cosine is 1 minus dot",
     "They are unrelated"
    ],
    "cos(a, b) = a . b / (|a| |b|), and with unit vectors the denominator is 1."
@@ -1478,9 +1478,9 @@
    "The E5 embedding models are trained with input prefixes. How should a query and a document be embedded?",
    "With \"query: \" before the query and \"passage: \" before the document",
    [
-    "With no prefix, since prefixes only matter for training",
-    "With the same \"passage: \" prefix for both",
-    "With the document title placed before the query"
+    "With no prefix on either text, since prefixes only matter during training",
+    "With the same \"passage: \" prefix placed before both texts",
+    "With the document title placed before the query text instead"
    ],
    "E5 expects these prefixes; leaving them out or mixing them up noticeably lowers retrieval quality."
   ],
@@ -1490,7 +1490,7 @@
    [
     "HNSW",
     "Sentence-BERT",
-    "Cross-encoder reranking"
+    "Cross-encoder"
    ],
    "BM25 scores documents with term frequency and inverse document frequency over sparse word vectors. HNSW is an index for dense vectors."
   ],
@@ -1509,7 +1509,7 @@
    "Reciprocal Rank Fusion",
    [
     "Principal Component Analysis",
-    "Beam search",
+    "Beam search decoding",
     "Byte Pair Encoding"
    ],
    "RRF sums 1 / (k + rank) across lists, so it needs no score calibration between the two retrievers."
@@ -1528,9 +1528,9 @@
    "Why is a cross-encoder reranker usually applied only to the top 50 to 100 retrieved chunks?",
    "It reads each query and chunk pair jointly, which is too slow at scale",
    [
-    "It can only read 100 chunks at a time by its design",
-    "It needs the input chunks to be sorted alphabetically",
-    "It cannot handle chunks that were never embedded first"
+    "It can only read 100 chunks at a time because of its fixed design",
+    "It needs the input chunks to be sorted alphabetically by title before scoring",
+    "It cannot handle chunks that were not embedded by a bi-encoder first"
    ],
    "Cross-encoders are accurate because they read query and passage together, but each pair needs a full forward pass."
   ],
@@ -1538,9 +1538,9 @@
    "What is the main advantage of a bi-encoder retriever over a cross-encoder?",
    "Document embeddings can be computed once and indexed in advance",
    [
-    "It always ranks results more accurately than others",
-    "It reads the query and the document together",
-    "It needs no training data of any kind"
+    "It always ranks results more accurately than a cross-encoder does",
+    "It reads the query and the document together in one pass",
+    "It needs no labeled training data of any kind to work"
    ],
    "Bi-encoders embed queries and documents separately, enabling fast vector search; cross-encoders must process every pair at query time."
   ],
@@ -1558,9 +1558,9 @@
    "Which prompt instruction best reduces hallucination in a RAG answer?",
    "Answer only from the provided context and say if it is not there",
    [
-    "Answer creatively and add details you find interesting",
-    "Ignore the context if you already know the answer",
-    "Always give an answer, even when unsure"
+    "Answer creatively and freely add any extra details you find interesting",
+    "Ignore the context whenever you already know the answer",
+    "Always give a confident answer, even when you are unsure"
    ],
    "Grounding the model in the retrieved text and allowing it to say it does not know reduces made-up answers."
   ],
@@ -1569,7 +1569,7 @@
    "Label each chunk in the prompt with an ID and ask for citations by ID",
    [
     "Ask the model to recall source URLs from its training data",
-    "Store the citations inside the embedding vectors themselves",
+    "Store the citations inside the embedding vectors themselves as metadata",
     "Add the word source at the end of the user's prompt"
    ],
    "The model can only cite what it can see; IDs or titles next to each chunk let it reference them reliably."
@@ -1578,9 +1578,9 @@
    "A RAG answer cites [doc-17], but only doc-1 to doc-5 were retrieved. What is the best safeguard?",
    "Validate cited IDs against the retrieved set before showing them",
    [
-    "Raise the number of retrieved chunks to 17",
-    "Trust the citation since the model saw many documents",
-    "Remove all citations from every answer"
+    "Raise the number of retrieved chunks to 17 so the ID exists",
+    "Trust the citation, since the model saw many documents in training",
+    "Remove all citations from every answer the system produces"
    ],
    "Models can invent citations. Checking each cited ID, and ideally whether the chunk supports the claim, catches fabricated sources."
   ],
@@ -1588,9 +1588,9 @@
    "You inject 20 retrieved chunks of about 1000 tokens each into a model with an 8,000-token context window. What happens?",
    "The prompt exceeds the window, so content is cut or the call fails",
    [
-    "The model automatically summarizes the extra chunks",
-    "The vector database compresses chunks to fit",
-    "The model expands its window to 20,000 tokens"
+    "The model automatically summarizes the extra chunks to fit",
+    "The vector database compresses the chunks so that they fit",
+    "The model temporarily expands its context window to 20,000 tokens on demand"
    ],
    "Context size is fixed. Count tokens and limit or rerank chunks so the prompt plus the expected answer fits."
   ],
@@ -1598,9 +1598,9 @@
    "In a multi-tenant RAG app, how should you stop users from retrieving other tenants' documents?",
    "Filter by tenant metadata in the vector search itself",
    [
-    "Ask the LLM not to mention other tenants",
-    "Use a larger embedding model per tenant",
-    "Lower the similarity threshold for all users"
+    "Ask the LLM in the system prompt not to mention other tenants",
+    "Use a separate, larger embedding model for each tenant",
+    "Lower the similarity threshold for all users of the app"
    ],
    "Access control must be enforced in retrieval with metadata filters; prompt instructions are not a security boundary."
   ],
@@ -1620,7 +1620,7 @@
    "What is few-shot prompting?",
    "Including a few input and output examples in the prompt",
    [
-    "Fine-tuning the model on a few hundred examples",
+    "Fine-tuning the model on a few hundred labeled examples first",
     "Asking the model the same question a few times",
     "Limiting the model to a few output tokens"
    ],
@@ -1631,8 +1631,8 @@
    "Add a few examples showing the exact output format",
    [
     "Raise the temperature to explore formats",
-    "Remove the instruction and send only the input",
-    "Ask the model to be more creative"
+    "Remove the instruction and send only the raw input text",
+    "Ask the model to be more creative with the format"
    ],
    "Examples are one of the strongest signals for format; the model tends to copy the pattern it sees."
   ],
@@ -1650,9 +1650,9 @@
    "How can the order of few-shot examples affect results?",
    "Labels of the final examples can bias the prediction",
    [
-    "Order never matters to a language model",
-    "Only the first example is read by the model",
-    "Reordering changes the model's weights"
+    "Order never matters, since the model reads all examples at once",
+    "Only the first example is actually read by the model",
+    "Reordering the examples changes the model's weights"
    ],
    "Studies show recency bias: answers drift toward labels near the end of the prompt, so order and balance should be tested."
   ],
@@ -1682,7 +1682,7 @@
    [
     "Asking the model to repeat its last answer word for word",
     "Using temperature 0 to get one consistent reasoning path",
-    "Checking that the prompt has no spelling or grammar errors"
+    "Checking that the prompt has no spelling or grammar errors in it first"
    ],
    "Different reasoning chains can reach the same answer; majority voting over samples is more reliable than one greedy chain."
   ],
@@ -1690,9 +1690,9 @@
    "What is a real cost of adding Chain of Thought to every request in a production app?",
    "More output tokens, so higher latency and cost",
    [
-    "Lower accuracy on every type of task",
-    "The model forgets the system prompt",
-    "The output can no longer be parsed"
+    "Lower accuracy on every type of task it handles",
+    "The model forgets the system prompt after reasoning",
+    "The output can no longer be parsed by your code"
    ],
    "Reasoning text is generated token by token, so CoT increases response time and spend, which matters for simple tasks."
   ],
@@ -1700,9 +1700,9 @@
    "In chat-based LLM APIs, what is the system prompt mainly used for?",
    "Setting persistent instructions and behavior for the conversation",
    [
-    "Holding the end user's current question for the model",
-    "Storing the model's previous answers for later turns",
-    "Passing API keys and secrets to the model safely"
+    "Holding the end user's current question for the model to answer",
+    "Storing the model's previous answers so it can reuse them in later turns",
+    "Passing API keys and other secrets to the model safely"
    ],
    "The system prompt frames the whole conversation, such as role, rules and tone, while user messages carry each request."
   ],
@@ -1710,8 +1710,8 @@
    "Your app must always reply in Kazakh, whatever language users write in. Where does this rule belong?",
    "In the system prompt",
    [
-    "In each user message, added by the user",
-    "In the model's training data only",
+    "In each user message",
+    "In the training data",
     "In the max tokens setting"
    ],
    "App-level rules that must hold for every turn go in the system prompt, which users do not need to repeat."
@@ -1750,9 +1750,9 @@
    "Why wrap a pasted user document in clear delimiters such as <document> tags inside a prompt?",
    "So the model separates instructions from the data it must process",
    [
-    "So the model skips reading the document content at all",
-    "Because models cannot read plain text without tags",
-    "To reduce the number of tokens the document uses"
+    "So the model skips reading the document content entirely to save time",
+    "Because models cannot read plain text that has no tags around it",
+    "To reduce the number of tokens that the document uses up"
    ],
    "Delimiters make structure explicit, which reduces confusion and makes it harder for text inside the document to pass as instructions."
   ],
@@ -1760,9 +1760,9 @@
    "What does the ReAct framework combine?",
    "Reasoning traces with actions such as tool calls and their observations",
    [
-    "Reinforcement learning with supervised fine-tuning of weights",
+    "Reinforcement learning rewards with supervised fine-tuning of the weights",
     "Retrieval of documents with image generation models",
-    "Two separate models voting on each final answer"
+    "Two separate models that vote on each final answer"
    ],
    "ReAct (Yao et al., 2022) interleaves Thought, Action and Observation steps so reasoning can use outside information."
   ],
@@ -1790,9 +1790,9 @@
    "For extracting invoice fields where you want the same output for the same input, which sampling setting fits best?",
    "Temperature 0 or close to it",
    [
-    "Temperature 1.5",
+    "Temperature 1.5 or higher",
     "Top-p 1.0 with temperature 2",
-    "A random seed per request with high temperature"
+    "High temperature, new seed each call"
    ],
    "Low temperature makes decoding nearly greedy, giving stable and repeatable outputs for deterministic tasks."
   ],
@@ -1810,9 +1810,9 @@
    "Which prompt is likely to give the most useful result for a busy manager?",
    "Summarize this report in 3 bullets of under 20 words for an executive.",
    [
-    "Summarize this report for me, please, as soon as possible.",
-    "Tell me everything important about this report in detail.",
-    "Make this report better and also shorter for the team."
+    "Summarize this report for me, please, as soon as you possibly can.",
+    "Tell me everything important about this report in full detail, please.",
+    "Make this report better and also a lot shorter for the whole team."
    ],
    "Specific constraints on length, format and audience remove guesswork, so the model produces output closer to what is needed."
   ]
@@ -1822,7 +1822,7 @@
    "In LLM tool calling, who actually executes the tool?",
    "The application, after the model returns a tool name and arguments",
    [
-    "The model itself, running the code inside its own weights",
+    "The model itself, by running the code inside its own weights at inference",
     "The tokenizer, before the prompt is sent to the model",
     "The model provider, for any function name you mention"
    ],
@@ -1834,7 +1834,7 @@
    [
     "XML DTD",
     "SQL DDL",
-    "Protocol Buffers only"
+    "Protocol Buffers"
    ],
    "Tool definitions give a name, a description and a JSON Schema for the parameters, which the model fills in."
   ],
@@ -1843,7 +1843,7 @@
    "Write clearer tool descriptions with when to use each tool",
    [
     "Rename both tools to tool_1 and tool_2 for brevity",
-    "Raise the temperature so the agent tries both tools",
+    "Raise the temperature so the agent tries both tools more often",
     "Remove the parameter schemas from both tools"
    ],
    "The model chooses tools from names and descriptions. Explicit purpose, inputs and examples reduce confusion."
@@ -1852,7 +1852,7 @@
    "The model calls get_weather with {\"city\": 42}, which fails your validation. What should the application do?",
    "Return a clear error message to the model so it can retry",
    [
-    "Crash the agent loop and show the user a stack trace",
+    "Crash the agent loop and show the user the full stack trace",
     "Silently call the tool with a default city instead",
     "Ignore the call and end the conversation right away"
    ],
@@ -1903,7 +1903,7 @@
    "Short-term is the context window; long-term is an external store",
    [
     "Short-term is GPU memory; long-term is CPU memory",
-    "Short-term is the system prompt; long-term is the weights",
+    "Short-term is the system prompt; long-term is the model's weights",
     "Short-term is the last token; long-term is the whole chat"
    ],
    "The current conversation lives in the prompt, while durable facts are saved to a database and retrieved when relevant."
@@ -1912,9 +1912,9 @@
    "A long-running agent's conversation is about to exceed the context window. Which approach keeps the most useful information?",
    "Summarize older turns and keep recent turns verbatim",
    [
-    "Delete the system prompt to save space",
-    "Drop the newest messages first",
-    "Restart the conversation with no history"
+    "Delete the system prompt to save space for new turns",
+    "Drop the newest messages first to keep the oldest",
+    "Restart the conversation with no history at all"
    ],
    "Rolling summaries compress old context while recent turns, which are usually most relevant, stay intact."
   ],
@@ -1932,7 +1932,7 @@
    "In a supervisor multi-agent design, what does the supervisor do?",
    "Routes subtasks to specialized agents and combines their results",
    [
-    "Trains the weights of each worker agent before every task",
+    "Trains the weights of each worker agent from scratch before every task",
     "Executes every tool call itself instead of the workers",
     "Approves each token that the worker agents generate"
    ],
@@ -1942,9 +1942,9 @@
    "What is a main trade-off of a multi-agent system compared with a single agent?",
    "More token cost, and errors can spread between agents",
    [
-    "It cannot use any external tools at all",
-    "It must run on a single GPU with one process",
-    "It cannot keep any memory between the steps"
+    "It cannot use any external tools at all, only text",
+    "It must run on a single GPU within one process",
+    "It cannot keep any memory between the steps it takes"
    ],
    "More agents mean more model calls and handoffs, so cost grows and one agent's mistake can mislead the others."
   ],
@@ -1952,9 +1952,9 @@
    "Two agents frequently misunderstand each other's handoffs. Which change helps most?",
    "Define a structured message format for handoffs",
    [
-    "Let each agent use a different language",
-    "Remove the shared task description",
-    "Increase each agent's temperature"
+    "Let each agent use a different natural language",
+    "Remove the shared task description from both",
+    "Increase each agent's sampling temperature"
    ],
    "Explicit fields such as goal, inputs, status and results make handoffs unambiguous and easier to validate."
   ],
@@ -1974,7 +1974,7 @@
    [
     "It fine-tunes a LoRA adapter after each failed attempt",
     "It increases its context window size after each try",
-    "It asks a human to rewrite its prompt after every trial"
+    "It asks a human to rewrite its prompt by hand after every failed trial"
    ],
    "Reflexion stores natural-language reflections on failures in an episodic memory buffer that guides later trials."
   ],
@@ -1983,7 +1983,7 @@
    "Test results give an external signal instead of self-judgment alone",
    [
     "Tests make the model's weights larger and more capable",
-    "Reflection is impossible without running a compiler first",
+    "Reflection is impossible without running a compiler on the code first",
     "Tests remove the need for the agent to make a plan"
    ],
    "Self-critique alone can confirm its own mistakes. Concrete feedback like failing tests shows what is actually wrong."

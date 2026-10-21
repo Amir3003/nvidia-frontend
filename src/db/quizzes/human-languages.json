@@ -34,9 +34,9 @@
    "Complete the third conditional (an unreal past situation): 'If she had studied harder, she ___ the exam.'",
    "would have passed",
    [
-    "would pass",
-    "will pass",
-    "had passed"
+    "will have passed",
+    "would had passed",
+    "would pass"
    ],
    "The third conditional uses if + past perfect, then would have + past participle."
   ],
@@ -124,9 +124,9 @@
    "Which greeting is most appropriate in a formal email to a company when you do not know the recipient's name?",
    "Dear Sir or Madam,",
    [
-    "Hey there,",
-    "Hi guys,",
-    "Dear friend,"
+    "Hey there, team,",
+    "Hi guys and gals,",
+    "Dear valued friend,"
    ],
    "'Dear Sir or Madam' is the conventional formal greeting for an unknown recipient; the others are informal or inappropriate."
   ],
@@ -184,7 +184,7 @@
    "What is the main job of a topic sentence in a body paragraph?",
    "to state the paragraph's main idea",
    [
-    "to list the essay's sources",
+    "to list the sources used in the essay",
     "to restate the essay title",
     "to summarize the whole essay"
    ],
@@ -307,10 +307,10 @@
    "бармаймын",
    [
     "барамын",
-    "бардым",
-    "барсам"
+    "бармадым",
+    "бармасам"
    ],
-   "The negative suffix -ма/-ме comes right after the stem: бар + ма + й + мын. Барамын is 'I go', бардым 'I went', барсам 'if I go'."
+   "The negative suffix -ма/-ме comes right after the stem: бар + ма + й + мын. Барамын is 'I go', бармадым 'I did not go', бармасам 'if I do not go'."
   ],
   [
    "What does 'Уақытым болса, барамын' mean?",
@@ -386,11 +386,11 @@
    "Which greeting is appropriate when meeting an older person or a teacher?",
    "Сәлеметсіз бе!",
    [
-    "Сәлем!",
-    "Қалайсың?",
-    "Сау бол!"
+    "Сәлем, досым!",
+    "Қалың қалай?",
+    "Сау бол, досым!"
    ],
-   "'Сәлеметсіз бе' uses the polite сіз form. 'Сәлем' and 'Қалайсың' are informal, and 'Сау бол' is an informal goodbye."
+   "'Сәлеметсіз бе' uses the polite сіз form. 'Сәлем, досым' and 'Қалың қалай' are informal, and 'Сау бол, досым' is an informal goodbye."
   ],
   [
    "Which is the polite way to say 'Sit down!' to a teacher?",
@@ -488,9 +488,9 @@
    "Which future form is ungrammatical in Russian?",
    "буду прочитать",
    [
-    "прочитаю",
+    "я прочитаю",
     "буду читать",
-    "прочитаем"
+    "мы прочитаем"
    ],
    "Perfective verbs form the future with personal endings alone (прочитаю). Буду combines only with imperfective infinitives (буду читать)."
   ],
@@ -651,10 +651,10 @@
    "-습니다/-ㅂ니다",
    [
     "-아요/-어요",
-    "-아/-어",
-    "-자"
+    "-ㄴ다/-는다/-다",
+    "-아/-어"
    ],
-   "-습니다/-ㅂ니다 is the formal polite level. -아요/-어요 is informal polite, and -아/-어 and -자 are casual (반말)."
+   "-습니다/-ㅂ니다 is the formal polite level. -아요/-어요 is informal polite, -는다/-ㄴ다 is the plain written style, and -아/-어 is casual (반말)."
   ],
   [
    "Which sentence is appropriate when asking your teacher where they are going?",
@@ -711,10 +711,10 @@
    "에서",
    [
     "에",
-    "을",
-    "가"
+    "으로",
+    "에게"
    ],
-   "에서 marks the place where an action happens; 에 marks a destination or the place where something exists."
+   "에서 marks the place where an action happens; 에 marks a destination or the place where something exists, 으로 marks direction or means, and 에게 marks a person receiving something."
   ],
   [
    "What is the polite past form of 하다 (to do)?",
@@ -993,10 +993,10 @@
    "めしあがる",
    [
     "いただく",
-    "まいる",
+    "おたべする",
     "もうす"
    ],
-   "めしあがる raises the person eating. いただく is humble (kenjougo), used for your own eating or receiving."
+   "めしあがる raises the person eating. いただく is humble (kenjougo), used for your own eating or receiving, and おたべする follows the humble お...する pattern."
   ],
   [
    "A receptionist politely asks a guest where they are going. Which honorific verb replaces いく?",
@@ -1004,9 +1004,9 @@
    [
     "まいる",
     "うかがう",
-    "おる"
+    "おいきする"
    ],
-   "いらっしゃる is the honorific form of いく, くる and いる. まいる, うかがう and おる are humble forms used about yourself."
+   "いらっしゃる is the honorific form of いく, くる and いる. まいる and うかがう are humble forms used about yourself, and おいきする follows the humble お...する pattern."
   ]
  ],
  "german": [
@@ -1246,7 +1246,7 @@
    "In the pinyin qù (去, to go), which vowel sound does the letter u represent?",
    "ü",
    [
-    "u as in 'food'",
+    "u",
     "o",
     "e"
    ],
@@ -1306,9 +1306,9 @@
    "In 小 (xiǎo, small), which stroke comes first?",
    "the center vertical hook",
    [
-    "the left dot",
-    "the right dot",
-    "both dots together"
+    "the left-side dot",
+    "the right-side dot",
+    "both side dots together"
    ],
    "For symmetrical characters like 小 and 水, the center stroke is written before the two sides."
   ],
@@ -1386,9 +1386,9 @@
    "What does 过 (guo) express in 我去过中国 (wǒ qù guo Zhōngguó)?",
    "past experience: I have been there",
    [
-    "an action in progress now",
-    "a state that continues",
-    "a plan for the near future"
+    "an action in progress right now",
+    "a state that is still continuing",
+    "a plan for the near future: I will go"
    ],
    "过 marks that something has been experienced at least once. Ongoing actions use 在 or 着, not 过."
   ],
@@ -1469,8 +1469,8 @@
    "Thursday",
    [
     "Tuesday",
-    "Tuesday or Thursday",
-    "Tuesday and Thursday"
+    "Both days",
+    "Either day"
    ],
    "Speakers often correct themselves as a distractor. The final corrected information is the answer."
   ],
@@ -1489,8 +1489,8 @@
    "when the passage neither confirms nor contradicts it",
    [
     "when the statement is only partly true",
-    "when the passage contradicts the statement",
-    "when the statement seems unlikely"
+    "when the passage directly contradicts the statement",
+    "when the statement seems unlikely to be true"
    ],
    "Not Given means the text has no information either way. If the text contradicts the statement, the answer is False."
   ],
@@ -1500,7 +1500,7 @@
    [
     "True",
     "False",
-    "Yes"
+    "Partly True"
    ],
    "The passage says nothing about other museums in the city, so the statement can be neither confirmed nor contradicted."
   ],
@@ -1569,18 +1569,18 @@
    "Task 2",
    [
     "Task 1",
-    "both carry equal weight",
-    "whichever is longer"
+    "Both equally",
+    "The longer one"
    ],
    "Task 2 counts for twice as much as Task 1, so it deserves about 40 of the 60 minutes."
   ],
   [
    "Task 2 prompt: 'University education should be free. To what extent do you agree?' Which is the best thesis sentence?",
-   "I largely agree, since free tuition widens access, though some costs should be shared.",
+   "I largely agree, as free tuition widens access, though costs could be shared.",
    [
-    "University education is a topic many people discuss nowadays.",
-    "There are many advantages and disadvantages to this issue.",
-    "In this essay I will talk about universities and their fees."
+    "University education is a topic that many people around the world discuss nowadays.",
+    "There are many advantages and disadvantages to this issue for students.",
+    "In this essay I will talk about universities and the fees that they charge."
    ],
    "A strong thesis answers the question directly and previews the reasoning. The others are vague and take no position."
   ],
@@ -1608,7 +1608,7 @@
    "In IELTS Speaking Part 1 the examiner asks, 'Do you like reading?' Which answer is best?",
    "Yes, especially novels; they help me relax after classes.",
    [
-    "Yes, I do.",
+    "Yes, I do, and I think that is all I can say about it.",
     "Yes, I like reading, I like books, I like it a lot.",
     "Reading is a popular hobby all over the world."
    ],
@@ -1630,9 +1630,9 @@
    "What is the main goal of a TOEFL Integrated Writing response?",
    "explain how the lecture responds to the reading",
    [
-    "give your own opinion on the topic",
-    "summarize only the reading passage",
-    "add new examples from your own life"
+    "give your own opinion on the topic of the reading",
+    "summarize only the reading passage in detail",
+    "add new examples from your own life to the topic"
    ],
    "The task asks you to summarize the lecture's points and show how they relate to the reading. Personal opinion is not wanted."
   ],
@@ -1640,9 +1640,9 @@
    "Which is the best opening sentence for a TOEFL Integrated Writing response?",
    "The lecturer argues that the reading's three theories are unconvincing.",
    [
-    "I strongly believe that the reading passage is correct.",
-    "This topic is very interesting for many people today.",
-    "In my country, this problem is very common nowadays."
+    "I strongly believe that the reading passage is correct in every way.",
+    "This topic is very interesting for many people in the world today.",
+    "In my country, this problem is very common nowadays among young people."
    ],
    "It states the relationship between the lecture and the reading, which is the whole task. The others give opinion or filler."
   ],
@@ -1660,9 +1660,9 @@
    "Who typically speaks in a TOEFL iBT Listening conversation?",
    "a student and a professor or campus staff member",
    [
-    "two business partners on a phone call",
-    "a job applicant and a company manager",
-    "a news anchor reporting world events"
+    "two business partners discussing a deal on a phone call",
+    "a job applicant and a company manager in an interview",
+    "a news anchor reporting on world events"
    ],
    "TOEFL conversations are set in university life, such as office hours or a visit to a campus service office."
   ],
@@ -1680,9 +1680,9 @@
    "A lecturer says, 'Now, this is the crucial point...'. Why does this matter in TOEFL Listening?",
    "it signals information likely to be tested",
    [
-    "it signals the lecture is ending",
-    "it marks a joke you can ignore",
-    "it introduces an off-topic story"
+    "it signals that the lecture is about to end",
+    "it marks a joke that you can safely ignore",
+    "it introduces an off-topic personal story"
    ],
    "Emphasis phrases highlight main ideas, which questions often target."
   ],
@@ -1691,7 +1691,7 @@
    "a function or purpose question",
    [
     "a vocabulary question",
-    "a numeric detail question",
+    "a detail question about numbers",
     "a prose summary question"
    ],
    "Function questions ask why a speaker says something, such as to give an example or illustrate a concept."
@@ -1710,9 +1710,9 @@
    "What should a strong TOEFL independent speaking response include?",
    "a clear opinion with reasons and an example",
    [
-    "both sides with no final opinion",
-    "a long restatement of the question",
-    "a memorized story off the topic"
+    "both sides of the issue with no final opinion",
+    "a long restatement of the question itself",
+    "a memorized story that is off the topic"
    ],
    "Raters reward a clear position developed with specific reasons and examples in the short time available."
   ],
@@ -1720,9 +1720,9 @@
    "Prompt: 'Do you prefer studying alone or in a group?' Which is the best opening sentence?",
    "I prefer studying alone, mainly because I focus better without distractions.",
    [
-    "Studying is very important for all students in the whole world.",
-    "Some people like groups and some people like being alone.",
-    "This is a hard question and I have not thought about it."
+    "Studying is very important for all students everywhere, so both ways are good.",
+    "Some people like studying in groups and some people like being alone.",
+    "This is a hard question and I have not really thought about it before."
    ],
    "It states a clear preference and a reason immediately, giving the response a direction."
   ],
@@ -1740,9 +1740,9 @@
    "In a TOEFL campus-situation integrated speaking task, what do you typically do?",
    "report a student's opinion of a plan and the reasons",
    [
-    "describe your own campus and its facilities",
-    "give your own opinion on the announcement",
-    "read the announcement aloud to the rater"
+    "describe your own campus and the facilities it offers",
+    "give your own opinion on the campus announcement",
+    "read the announcement aloud to the rater clearly"
    ],
    "You read a short campus text, hear students discuss it, and then explain the speaker's opinion and reasons."
   ],
@@ -1750,9 +1750,9 @@
    "In an academic integrated speaking task, how should you use the professor's example?",
    "explain how it illustrates the concept from the reading",
    [
-    "replace it with an example of your own",
-    "skip it and only define the concept",
-    "criticize the professor's choice of it"
+    "replace it with a more interesting example from your own experience",
+    "skip it and only define the concept from the reading",
+    "criticize the professor's choice of it as an example"
    ],
    "The task tests whether you can connect the general concept in the reading to the specific example in the lecture."
   ],
@@ -1760,9 +1760,9 @@
    "Which note-taking approach works best for TOEFL integrated speaking tasks?",
    "key words split into reading and listening columns",
    [
-    "writing every word the speaker says",
-    "taking no notes in order to stay focused",
-    "noting only the first sentence of each"
+    "writing down every single word the speaker says",
+    "taking no notes at all in order to stay fully focused",
+    "noting only the first sentence of each source"
    ],
    "Brief, organized notes let you find each source's key points quickly during the short preparation time."
   ],
@@ -1770,9 +1770,9 @@
    "A TOEFL Reading question says, 'All of the following are mentioned in the paragraph EXCEPT'. What type is it?",
    "negative factual information",
    [
-    "inference",
-    "rhetorical purpose",
-    "vocabulary"
+    "inference from implied information",
+    "rhetorical purpose of a detail",
+    "vocabulary meaning in context"
    ],
    "EXCEPT and NOT questions are negative factual information items: three options appear in the text and one does not."
   ],
@@ -1782,7 +1782,7 @@
    [
     "pick sentences with exact words from the text",
     "write a short summary in your own words",
-    "put the paragraphs in time order"
+    "put the paragraphs of the passage back in time order"
    ],
    "Prose summary items ask you to select the answer choices that capture the passage's most important ideas, not minor details."
   ],
@@ -1790,9 +1790,9 @@
    "In a TOEFL Reading insert-text question, what is the best clue for placing the sentence?",
    "linking words and pronouns that connect to nearby sentences",
    [
-    "the length of the sentence to insert",
-    "where the paragraph appears on screen",
-    "how many squares the paragraph has"
+    "the length of the sentence compared with the ones nearby",
+    "where the paragraph appears on the screen during the test",
+    "how many squares the paragraph has, choosing the middle one"
    ],
    "Words like 'this', 'however' or 'these changes' must refer back to something just before them."
   ],

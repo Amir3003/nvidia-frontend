@@ -55,10 +55,10 @@
    "RollingUpdate",
    [
     "Recreate",
-    "BlueGreen",
-    "Canary"
+    "OnDelete",
+    "RollingRestart"
    ],
-   "RollingUpdate is the default, replacing Pods gradually. Recreate kills all old Pods first; blue-green and canary are patterns, not built-in strategy types."
+   "RollingUpdate is the default, replacing Pods gradually. Recreate kills all old Pods first; OnDelete is a StatefulSet and DaemonSet strategy, not a Deployment one."
   ],
   [
    "A Deployment has replicas: 4 with maxSurge: 1 and maxUnavailable: 0. What is the most Pods that can exist during a rollout?",
@@ -86,7 +86,7 @@
    [
     "ClusterIP",
     "ExternalName",
-    "Headless (clusterIP: None)"
+    "LoadBalancer"
    ],
    "NodePort opens the same port (by default from 30000 to 32767) on every node and forwards it to the Service. LoadBalancer builds on this with a cloud LB."
   ],
@@ -95,8 +95,8 @@
    "The Service gets no endpoints, so requests fail",
    [
     "The Service routes to all Pods in the namespace",
-    "The API server rejects the Service",
-    "kube-proxy relabels the Pods"
+    "The API server rejects the Service at creation",
+    "kube-proxy relabels the Pods to match the selector"
    ],
    "Services find Pods only through their label selector. With no matching labels the endpoint list is empty and traffic has nowhere to go."
   ],
@@ -134,8 +134,8 @@
    "How are values under the data field of a Kubernetes Secret stored in its YAML by default?",
    "Base64-encoded, which is not encryption",
    [
-    "AES-encrypted with the cluster key",
-    "Hashed with SHA-256",
+    "AES-encrypted with the cluster's root CA key",
+    "Hashed with SHA-256 so it cannot be read",
     "Stored as plain text in the data field"
    ],
    "Secret data is only base64-encoded. Real protection needs RBAC and encryption at rest configured on the API server."
@@ -144,9 +144,9 @@
    "A ConfigMap is consumed as environment variables in a running Pod. You edit the ConfigMap. What happens to the variables?",
    "They keep the old values until the Pod restarts",
    [
-    "They update within a minute",
-    "The Pod is restarted automatically",
-    "The edit is rejected while Pods use it"
+    "They update in the container within about a minute",
+    "The Pod is restarted automatically to pick them up",
+    "The edit is rejected while running Pods use it"
    ],
    "Environment variables are set when the container starts. Files from a mounted ConfigMap volume are refreshed, but env vars are not."
   ],
@@ -194,9 +194,9 @@
    "A PersistentVolume uses reclaimPolicy: Retain. Its PVC is deleted. What happens to the volume?",
    "It stays with its data, in the Released phase",
    [
-    "It is deleted with its data",
-    "It is wiped and becomes Available",
-    "It is bound to the next PVC automatically"
+    "It is deleted together with all of its data",
+    "It is wiped clean and then becomes Available",
+    "It is bound to the next matching PVC automatically"
    ],
    "Retain keeps the PV and its data for manual cleanup. It does not become Available for a new claim until an admin handles it. Delete would remove the storage."
   ]
@@ -286,19 +286,19 @@
    "What does {{ .Values.port | default 8080 }} render when port is not set in any values?",
    "8080",
    [
-    "An empty string",
+    "<no value>",
     "0",
-    "A render error"
+    "null"
    ],
-   "The default function returns its argument when the piped value is empty or unset."
+   "The default function returns its argument when the piped value is empty or unset. Without default, the missing value would render as empty."
   ],
   [
    "Why is include preferred over template when inserting a named template inside YAML?",
    "include returns a string you can pipe to nindent",
    [
-    "include runs faster at render time",
-    "template cannot accept a context argument",
-    "template is removed in Helm 3"
+    "include runs faster at render time than template",
+    "template cannot accept a context argument at all",
+    "template was removed from Helm 3 templates"
    ],
    "template writes output directly, so it cannot be piped. include returns a string, so you can fix indentation with nindent or indent."
   ],
@@ -347,7 +347,7 @@
    "helm rollback myapp 3",
    [
     "helm undo myapp 3",
-    "helm upgrade myapp --revision 3",
+    "helm upgrade myapp -r 3",
     "helm revert myapp 3"
    ],
    "helm rollback takes the release name and a revision number. helm history myapp lists the available revisions."
@@ -448,7 +448,7 @@
    "You need to look up an existing VPC that Terraform does not manage, to use its ID. Which block fits?",
    "A data block",
    [
-    "A resource block with import = true",
+    "A moved block",
     "A locals block",
     "An output block"
    ],
@@ -468,7 +468,7 @@
    "What is the default name of the local state file Terraform writes?",
    "terraform.tfstate",
    [
-    "state.tf",
+    "main.tfstate",
     ".terraform/state.json",
     "terraform.tfvars"
    ],
@@ -520,7 +520,7 @@
    [
     "eu-west-1",
     "us-east-1",
-    "Terraform errors on conflicting values"
+    "An error is raised"
    ],
    "Command-line -var and -var-file options have the highest precedence, above tfvars files, TF_VAR_ environment variables and defaults."
   ],
@@ -569,8 +569,8 @@
    "terraform plan -out=tfplan, then terraform apply tfplan",
    [
     "terraform plan, then terraform apply -auto-approve",
-    "terraform apply -refresh=false",
-    "terraform validate, then terraform apply"
+    "terraform apply -refresh=false after a fresh plan",
+    "terraform validate -json, then terraform apply -auto-approve"
    ],
    "A saved plan file is applied as-is without a new plan. A plain apply recalculates and could differ if anything changed meanwhile."
   ],
@@ -589,7 +589,7 @@
    "lifecycle { create_before_destroy = true }",
    [
     "lifecycle { prevent_destroy = true }",
-    "depends_on = [self]",
+    "lifecycle { replace_triggered_by = [self] }",
     "lifecycle { ignore_changes = all }"
    ],
    "create_before_destroy reverses the order for replacements. prevent_destroy blocks destruction entirely and makes the plan fail."
@@ -711,7 +711,7 @@
    "group_vars/web.yml",
    [
     "host_vars/web.yml",
-    "vars/web.yml in the playbook root",
+    "vars/web.yml in the root",
     "inventory/web.vars"
    ],
    "Files in group_vars named after a group are loaded for its hosts. host_vars files are named after individual hosts."
@@ -768,11 +768,11 @@
   ],
   [
    "What does {{ port | default(80) }} render in a Jinja2 template when port is undefined?",
-   "80",
+   "It renders 80",
    [
-    "An empty string",
-    "None",
-    "An undefined variable error"
+    "It renders nothing",
+    "It renders None",
+    "It fails as undefined"
    ],
    "The default filter supplies a fallback for undefined variables."
   ],
@@ -788,7 +788,7 @@
   ],
   [
    "You run the same playbook twice on a host with no outside changes. In a well-written playbook, what should the second run report?",
-   "changed=0",
+   "changed=0 in the play recap",
    [
     "changed equal to the task count",
     "failed=1 for repeated tasks",
@@ -842,9 +842,9 @@
    "Which line passes the client IP chain to the backend in the standard header?",
    "proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;",
    [
-    "proxy_set_header X-Forwarded-For $server_addr;",
-    "add_header X-Forwarded-For $remote_addr;",
-    "proxy_set_header X-Forwarded-For $host;"
+    "proxy_set_header X-Forwarded-For $server_addr:$server_port;",
+    "add_header X-Forwarded-For $remote_addr always;",
+    "proxy_set_header X-Forwarded-For $host$request_uri;"
    ],
    "$proxy_add_x_forwarded_for appends $remote_addr to any incoming X-Forwarded-For value."
   ],
@@ -864,7 +864,7 @@
    [
     "Least connections",
     "IP hash",
-    "Random with two choices"
+    "Random choice"
    ],
    "Nginx defaults to weighted round robin. least_conn, ip_hash, hash and random must be set explicitly."
   ],
@@ -902,7 +902,7 @@
    "Which pair of directives does a server block need to serve HTTPS with your certificate?",
    "ssl_certificate and ssl_certificate_key",
    [
-    "ssl_cert and ssl_key",
+    "ssl_cert_file and ssl_key_file",
     "tls_certificate and tls_private_key",
     "ssl_trusted_certificate and ssl_dhparam"
    ],
@@ -974,7 +974,7 @@
    [
     "/var/www/app.css",
     "/static/var/www/app.css",
-    "/var/www/static/static/app.css"
+    "/var/www/html/static/app.css"
    ],
    "root appends the full URI to the path. alias /var/www/; would replace the /static/ prefix and serve /var/www/app.css."
   ],
@@ -1014,7 +1014,7 @@
    "A user has an IAM policy that allows s3:DeleteObject and another that explicitly denies it. What is the result?",
    "Denied, because an explicit deny overrides any allow",
    [
-    "Allowed, because allows are evaluated first",
+    "Allowed, because allow statements are evaluated first",
     "Allowed only if the bucket policy agrees",
     "It depends on which policy was attached last"
    ],
@@ -1072,10 +1072,10 @@
   ],
   [
    "An EC2 instance is stopped and started again. What happens to data on an instance store volume?",
-   "It is lost",
+   "It is lost, as the storage is temporary",
    [
-    "It is kept like on EBS",
-    "It is moved to an EBS snapshot",
+    "It is kept, just like on an EBS volume",
+    "It is moved to an EBS snapshot first",
     "It is kept only if termination protection is on"
    ],
    "Instance store is physically attached temporary storage and does not survive stop or termination. EBS volumes persist independently."
@@ -1084,8 +1084,8 @@
    "By default, when does an EC2 user data shell script run?",
    "Once, at the first boot of the instance",
    [
-    "At every boot",
-    "Every time you SSH in",
+    "At every boot, including after a reboot",
+    "Every time a user connects with SSH",
     "Only when the instance is stopped"
    ],
    "cloud-init runs user data scripts on first launch by default. Running it every boot needs extra configuration."
@@ -1104,7 +1104,7 @@
    "A bucket policy allows public read, yet anonymous requests get 403. Which setting most likely overrides the policy?",
    "S3 Block Public Access",
    [
-    "Bucket versioning",
+    "Bucket versioning enabled",
     "Default encryption with SSE-S3",
     "Transfer Acceleration"
    ],
@@ -1124,9 +1124,9 @@
    "Instances in a private subnet must download updates from the internet but stay unreachable from it. What do you add?",
    "A NAT gateway in a public subnet, plus a route to it",
    [
-    "An internet gateway attached to the private subnet",
+    "An internet gateway attached directly to the private subnet",
     "A security group allowing 0.0.0.0/0 inbound",
-    "VPC peering with the default VPC"
+    "VPC peering with the account's default VPC"
    ],
    "A NAT gateway allows outbound connections initiated from private instances while blocking unsolicited inbound traffic."
   ],
@@ -1164,8 +1164,8 @@
    "A Lambda handler caches a database connection in a global variable. What happens on later invocations?",
    "Warm invocations in the same environment reuse it",
    [
-    "It is rebuilt on every invocation",
-    "The function fails, as globals are forbidden",
+    "It is rebuilt from scratch on every single invocation",
+    "The function fails, as globals are forbidden in Lambda",
     "All instances share it across machines"
    ],
    "Code outside the handler runs once per execution environment and is reused while that environment stays warm. It is not shared between environments."
@@ -1174,7 +1174,7 @@
    "In Amazon ECS, which role does the agent use to pull images from ECR and send logs to CloudWatch?",
    "The task execution role",
    [
-    "The task role",
+    "The task role (taskRoleArn)",
     "The service-linked role for EC2",
     "The container instance's SSH key"
    ],
@@ -1182,7 +1182,7 @@
   ],
   [
    "A team wants to run containers without managing any EC2 servers. Which launch option fits ECS or EKS?",
-   "AWS Fargate",
+   "Running on AWS Fargate",
    [
     "EC2 Auto Scaling groups",
     "Elastic Beanstalk worker tier",
@@ -1216,9 +1216,9 @@
    "In Google Cloud, what is a service account?",
    "An identity used by workloads and apps, not people",
    [
-    "A billing account shared by a team",
-    "A Google Workspace user with admin rights",
-    "A project-level API quota bucket"
+    "A billing account that is shared by a whole team",
+    "A Google Workspace user account with admin rights",
+    "A project-level bucket that tracks API quota"
    ],
    "Service accounts let VMs, functions and other code authenticate to Google APIs and receive IAM roles."
   ],
@@ -1236,9 +1236,9 @@
    "Why does Google recommend predefined roles such as roles/storage.objectViewer over the basic Editor role?",
    "Basic roles grant broad access across many services",
    [
-    "Basic roles cannot be granted to service accounts",
-    "Predefined roles bill less per request",
-    "Editor is limited to one region"
+    "Basic roles cannot be granted to service accounts at all",
+    "Predefined roles are billed less for each API request",
+    "Editor is limited to resources in a single region"
    ],
    "Owner, Editor and Viewer span almost all services. Predefined and custom roles follow least privilege."
   ],
@@ -1267,7 +1267,7 @@
    "Spot VMs",
    [
     "Sole-tenant nodes",
-    "Committed use VMs on demand",
+    "Reserved VMs",
     "Shielded VMs"
    ],
    "Spot (and older preemptible) VMs are heavily discounted but can be stopped by Google at any time, which suits restartable batch work."
@@ -1296,9 +1296,9 @@
    "You created a GKE cluster. Which command configures kubectl to talk to it?",
    "gcloud container clusters get-credentials NAME",
    [
-    "gcloud gke connect NAME --zone ZONE",
-    "kubectl config import NAME --gcp",
-    "gcloud compute ssh NAME --kubeconfig"
+    "gcloud container clusters connect NAME --kubeconfig",
+    "kubectl config import NAME --provider gcp",
+    "gcloud compute ssh NAME --kubeconfig ~/.kube"
    ],
    "get-credentials writes the cluster endpoint and auth settings into your kubeconfig."
   ],
@@ -1316,9 +1316,9 @@
    "Pods in GKE need to call Cloud Storage as a specific IAM identity, without key files. Which feature fits?",
    "Workload Identity Federation for GKE",
    [
-    "Node access scopes set to full",
-    "A Kubernetes Secret with a JSON key",
-    "Binary Authorization"
+    "Node access scopes set to full cloud-platform",
+    "A Kubernetes Secret holding a JSON key file",
+    "Binary Authorization for the workloads"
    ],
    "Workload Identity maps Kubernetes service accounts to IAM, so each workload gets its own short-lived credentials instead of sharing the node's identity."
   ],
@@ -1336,9 +1336,9 @@
    "What does enabling uniform bucket-level access on a Cloud Storage bucket do?",
    "Disables object ACLs so only IAM controls access",
    [
-    "Makes all objects publicly readable",
-    "Replicates the bucket to every region",
-    "Encrypts objects with a customer key"
+    "Makes all objects in the bucket publicly readable",
+    "Replicates the bucket to every region automatically",
+    "Encrypts objects with a customer-managed key"
    ],
    "With uniform access, per-object ACLs are turned off and permissions come only from bucket-level IAM policies."
   ],
@@ -1348,7 +1348,7 @@
    [
     "Making the bucket public for an hour",
     "Adding allUsers as Viewer to the project",
-    "A Cloud CDN cache key"
+    "A Cloud CDN cache key for the object"
    ],
    "Signed URLs grant time-limited access to a specific object to anyone who has the link."
   ],
@@ -1358,7 +1358,7 @@
    [
     "A Cloud Scheduler job per object",
     "Retention policy with bucket lock",
-    "Object versioning"
+    "Object versioning on the bucket"
    ],
    "Lifecycle rules apply actions such as SetStorageClass and Delete based on conditions like object age."
   ],
@@ -1386,9 +1386,9 @@
    "In BigQuery with on-demand pricing, does adding LIMIT 10 to SELECT * FROM a large unclustered table reduce the bytes billed?",
    "No, the chosen columns are still fully scanned",
    [
-    "Yes, only the first 10 rows are read",
-    "Yes, billing drops by about 90 percent",
-    "No, because SELECT * queries are free"
+    "Yes, only the first 10 rows are read and billed",
+    "Yes, the billing drops by about 90 percent",
+    "No, because SELECT * queries are free of charge"
    ],
    "On-demand billing depends on bytes scanned in the referenced columns. LIMIT does not reduce the scan; selecting fewer columns or partition filters do."
   ],
@@ -1396,9 +1396,9 @@
    "How do Google Cloud VPC networks and subnets relate to regions?",
    "The VPC is global, and each subnet is regional",
    [
-    "The VPC is regional, and subnets are zonal",
-    "Both the VPC and subnets are zonal",
-    "Both are global"
+    "The VPC is regional, and each of its subnets is zonal",
+    "Both the VPC and its subnets are zonal",
+    "Both the VPC and its subnets are global"
    ],
    "A single GCP VPC can span all regions, with subnets defined per region. This differs from AWS, where a VPC is regional."
   ],
@@ -1420,7 +1420,7 @@
    [
     "They move to the default resource group",
     "They stay but become unmanaged",
-    "Only the VM is deleted"
+    "Only the VM is deleted, the rest stay"
    ],
    "A resource group is a lifecycle container, so deleting it deletes everything inside. Resource locks can prevent accidental deletion."
   ],
@@ -1449,8 +1449,8 @@
    "A CanNotDelete resource lock",
    [
     "A ReadOnly resource lock",
-    "An Owner role assignment",
-    "A Deny NSG rule"
+    "A Contributor role assignment",
+    "A Deny rule in the database NSG"
    ],
    "CanNotDelete allows reads and updates but blocks deletion. ReadOnly also blocks updates, which would break normal changes."
   ],
@@ -1468,9 +1468,9 @@
    "How do you deploy a new version to App Service with near-zero downtime and an easy way back?",
    "Deploy to a staging slot, then swap it with production",
    [
-    "Stop the app, deploy, then start it",
-    "Create a new App Service plan each release",
-    "Edit files over FTP on the live app"
+    "Stop the app, deploy the new build over it, then start it again",
+    "Create a brand new App Service plan for each release",
+    "Edit the files over FTP directly on the live app"
    ],
    "Deployment slots let you warm up a release in staging and swap it into production. Swapping again restores the previous version."
   ],
@@ -1488,9 +1488,9 @@
    "Which command merges an AKS cluster's credentials into your local kubeconfig?",
    "az aks get-credentials --resource-group RG --name NAME",
    [
-    "az aks connect --resource-group RG --name NAME",
-    "kubectl login --aks NAME",
-    "az login --kubernetes NAME"
+    "az aks connect --resource-group RG --name NAME --merge-kubeconfig",
+    "kubectl login --aks --resource-group RG --name NAME",
+    "az login --kubernetes --resource-group RG --name NAME"
    ],
    "az aks get-credentials writes the cluster context into ~/.kube/config so kubectl can use it."
   ],
@@ -1498,9 +1498,9 @@
    "AKS nodes fail to pull images from your Azure Container Registry with an authorization error. Which fix is simplest?",
    "Attach the registry with az aks update --attach-acr",
    [
-    "Make every Pod run as privileged",
-    "Open port 443 in the AKS NSG to ACR only",
-    "Rebuild the images with a public base"
+    "Make every Pod in the cluster run as privileged",
+    "Open port 443 in the AKS NSG to the ACR address only",
+    "Rebuild all the images from a public base image and push again"
    ],
    "--attach-acr grants the cluster's kubelet identity the AcrPull role on the registry, so nodes can pull images."
   ],
@@ -1508,9 +1508,9 @@
    "In AKS, what is the purpose of a system node pool?",
    "Hosting critical system Pods like CoreDNS",
    [
-    "Running only GPU workloads",
-    "Storing etcd data for the cluster",
-    "Holding Windows nodes only"
+    "Running only GPU workloads for the cluster",
+    "Storing etcd data for the cluster control plane",
+    "Holding only the Windows nodes of the cluster"
    ],
    "System pools run critical add-ons, and user pools run application workloads. The control plane is managed by Azure, not hosted in your pools."
   ],
@@ -1568,9 +1568,9 @@
    "Two NSG rules match the same traffic: priority 100 denies it and priority 200 allows it. What happens?",
    "It is denied, because lower numbers are processed first",
    [
-    "It is allowed, because allow wins over deny",
-    "It is allowed, because higher numbers win",
-    "Both rules are merged and logged"
+    "It is allowed, because allow rules take precedence over deny rules",
+    "It is allowed, because higher priority numbers win",
+    "Both rules are merged, and the traffic is only logged"
    ],
    "NSG rules are evaluated in priority order from the lowest number, and processing stops at the first match."
   ],
@@ -1599,10 +1599,10 @@
    "Azure Active Directory",
    [
     "Azure Identity Services",
-    "Windows Live ID",
-    "Active Directory Federation Services"
+    "Microsoft Live Directory",
+    "Windows Server Active Directory"
    ],
-   "Microsoft renamed Azure AD to Microsoft Entra ID in 2023. AD FS is a separate on-premises federation product."
+   "Microsoft renamed Azure AD to Microsoft Entra ID in 2023. Windows Server Active Directory is the separate on-premises directory service."
   ],
   [
    "An App Service must read secrets from Key Vault without storing any credentials. Which Entra ID feature fits?",
@@ -1620,9 +1620,9 @@
    "In a managed Kubernetes service such as Nebius Managed Kubernetes, what does the provider operate for you?",
    "The control plane, including the API server and etcd",
    [
-    "Your application Deployments and Services",
-    "Your container images and registries",
-    "Your Helm releases and their values"
+    "Your application Deployments, Services and their scaling",
+    "Your container images and the registries that hold them",
+    "Your Helm releases and the values they are deployed with"
    ],
    "Managed Kubernetes means the provider runs and updates the control plane. You still define node groups and all workloads."
   ],
@@ -1630,9 +1630,9 @@
    "A training Pod on a managed Kubernetes GPU node group must get one GPU. What does its container spec need?",
    "resources.limits with nvidia.com/gpu: 1",
    [
-    "a nodeName of the GPU node",
-    "an env var GPU=1",
-    "privileged: true and hostNetwork"
+    "a nodeName set to the GPU node's name",
+    "an env var GPU=1 in the container spec",
+    "privileged: true together with hostNetwork"
    ],
    "GPUs are exposed by the NVIDIA device plugin as the extended resource nvidia.com/gpu, which the scheduler counts like CPU or memory."
   ],
@@ -1670,7 +1670,7 @@
    "Why are multi-node GPU clusters for large model training connected with InfiniBand instead of only regular Ethernet?",
    "It gives high bandwidth and low latency for collectives",
    [
-    "It is required to install CUDA drivers on each node",
+    "It is required to install CUDA drivers on each of the nodes",
     "It removes the need for large GPU memory per card",
     "It encrypts all of the traffic between nodes"
    ],
@@ -1740,9 +1740,9 @@
    "An object storage bucket holds a private dataset. What is the safest way to let one training service read it?",
    "A service account with read-only access to that bucket",
    [
-    "Making the bucket public for the training period",
-    "Sharing your personal access keys",
-    "Giving the service admin rights on the project"
+    "Making the bucket public for the length of the training run",
+    "Sharing your personal access keys with the training service",
+    "Giving the service admin rights on the whole project"
    ],
    "Least privilege means a dedicated identity with only the read permission it needs, which can be revoked without affecting people."
   ],
@@ -1750,9 +1750,9 @@
    "Training code in CI must call the cloud API automatically. Which identity fits best?",
    "A service account with only the roles it needs",
    [
-    "The team lead's personal account",
-    "A shared admin user for all pipelines",
-    "An anonymous public endpoint"
+    "The team lead's personal account and its credentials",
+    "A shared admin user used by all of the pipelines",
+    "An anonymous public endpoint with no authentication"
    ],
    "Service accounts are meant for automation, and scoping their roles limits damage if credentials leak."
   ],
@@ -1770,7 +1770,7 @@
    "A team wants to stop people from storing cloud access keys in a Git repository. Which practice helps most?",
    "Store keys in a secrets manager, inject at runtime",
    [
-    "Commit the keys, but only to a private repository",
+    "Commit the keys, but only to a private Git repository",
     "Encode the keys in base64 inside the source code",
     "Rotate the keys once a year and keep them in Git"
    ],
@@ -1780,9 +1780,9 @@
    "When you create a Linux compute instance on a cloud like Nebius, how do you usually get SSH access to it?",
    "Pass your public SSH key at creation, via cloud-init",
    [
-    "Upload your private SSH key to the new VM",
-    "Use the default root password from the docs",
-    "Open port 22 and log in with a password"
+    "Upload your private SSH key to the new VM after creation",
+    "Use the default root password listed in the provider docs",
+    "Open port 22 and log in as root with a password"
    ],
    "The cloud injects your public key into the instance. The private key never leaves your machine."
   ],
@@ -1790,9 +1790,9 @@
    "Your PyTorch training script will run on a fresh GPU VM. What saves the most setup time?",
    "A boot image with GPU drivers and CUDA preinstalled",
    [
-    "A generic minimal OS image",
-    "Installing drivers inside every container",
-    "Compiling the kernel on first boot"
+    "A generic minimal OS image that you configure yourself",
+    "Installing GPU drivers inside every container at start",
+    "Compiling the Linux kernel on the first boot of the VM"
    ],
    "GPU cloud providers offer images with drivers and CUDA ready, so the VM can run GPU workloads right after boot."
   ],
@@ -1822,7 +1822,7 @@
    "A DNS record in Cloudflare shows the orange cloud (Proxied). What does that mean?",
    "Traffic passes through Cloudflare, hiding the origin IP",
    [
-    "Cloudflare only answers DNS queries for the record",
+    "Cloudflare only answers DNS queries for the record, nothing else",
     "The record stays disabled until it is verified",
     "Email sent to the domain is filtered for spam"
    ],
@@ -1842,7 +1842,7 @@
    "You want the root domain example.com to point at a hostname such as myapp.example.net. Which Cloudflare feature makes this possible?",
    "CNAME flattening",
    [
-    "DNSSEC",
+    "DNSSEC signing",
     "Argo Smart Routing",
     "Load Balancing pools"
    ],
@@ -1882,8 +1882,8 @@
    "You deployed new CSS, but visitors still get the old file from Cloudflare. What fixes it right away?",
    "Purge the cached file or the whole cache",
    [
-    "Switch the record to DNS only for a day",
-    "Enable DNSSEC on the zone",
+    "Switch the DNS record to DNS only for a whole day",
+    "Enable DNSSEC signing on the whole zone",
     "Lower the DNS TTL to 60 seconds"
    ],
    "Purging removes cached copies so the next request fetches the new file. Versioned file names avoid this in the future."
@@ -1902,9 +1902,9 @@
    "Where does Cloudflare Workers code run?",
    "On Cloudflare's edge network in V8 isolates",
    [
-    "In a container on your origin server",
-    "In the visitor's browser tab",
-    "On one central VM per account"
+    "In a container that runs on your own origin server",
+    "In the visitor's browser tab, as a service worker",
+    "On one central VM that is created per account"
    ],
    "Workers run close to users across Cloudflare's data centers. V8 isolates start much faster than containers."
   ],
@@ -1943,8 +1943,8 @@
    "Durable Objects",
    [
     "Workers Sites",
-    "Cache API",
-    "Workers KV with a shorter TTL"
+    "The Cache API",
+    "KV with a short TTL"
    ],
    "KV is eventually consistent and optimized for reads. Durable Objects give a single, strongly consistent place for state."
   ],
@@ -1953,7 +1953,7 @@
    "Accept web traffic only from Cloudflare IPs",
    [
     "Enable Under Attack Mode on the zone",
-    "Lower the DNS TTL of the origin A record",
+    "Lower the DNS TTL of the origin A record to one minute",
     "Add more Page Rules for the domain"
    ],
    "Cloudflare only protects traffic that passes through it. Locking the origin firewall to Cloudflare's ranges (or using Cloudflare Tunnel) blocks direct attacks."
@@ -1972,9 +1972,9 @@
    "SSL/TLS mode is Flexible, and the origin redirects HTTP to HTTPS. What do visitors see?",
    "A redirect loop (too many redirects)",
    [
-    "A valid page over HTTPS",
-    "A certificate name mismatch error",
-    "A 521 origin down error"
+    "A valid page served normally over HTTPS",
+    "A certificate name mismatch error in the browser",
+    "A 521 error saying the origin is down"
    ],
    "Flexible connects to the origin over plain HTTP. The origin redirects to HTTPS, Cloudflare requests HTTP again, and the loop repeats. Full or Full (strict) fixes it."
   ],
@@ -1982,9 +1982,9 @@
    "What is the difference between Full and Full (strict) SSL/TLS modes?",
    "Strict also validates the origin certificate",
    [
-    "Strict uses HTTP/3 to the origin",
-    "Full encrypts only the visitor side",
-    "Strict disables TLS 1.2 for visitors"
+    "Strict uses HTTP/3 for connections to the origin",
+    "Full encrypts only the visitor side of the traffic",
+    "Strict disables TLS 1.2 for all visitors"
    ],
    "Both encrypt Cloudflare-to-origin traffic. Full accepts any certificate, including self-signed; Full (strict) requires a valid, trusted one such as a Cloudflare Origin CA cert."
   ],
@@ -2012,9 +2012,9 @@
    "Bots hammer your /login endpoint. Which Cloudflare WAF feature directly limits requests per IP to that path?",
    "A rate limiting rule matching the /login path",
    [
-    "A managed OWASP ruleset in log mode",
-    "A DNS-only record for the domain",
-    "Browser Cache TTL set to one year"
+    "A managed OWASP ruleset running in log-only mode on /login",
+    "A DNS-only record for the login subdomain",
+    "Browser Cache TTL set to one year for /login"
    ],
    "Rate limiting rules count requests matching an expression, such as http.request.uri.path eq \"/login\", and block or challenge clients above the threshold."
   ]
@@ -2034,7 +2034,7 @@
    "A Vercel serverless function writes uploaded files to a local folder and expects them on the next request. What goes wrong?",
    "The local filesystem does not persist between calls",
    [
-    "Vercel blocks every write to the disk at runtime",
+    "Vercel blocks every write to the disk at runtime, even to /tmp",
     "Files are copied to all regions instantly",
     "The function is converted into an edge function"
    ],
@@ -2046,7 +2046,7 @@
    [
     "exports.main = (event, context) => { }",
     "export async function onRequest(context) { }",
-    "addEventListener('fetch', handler)"
+    "addEventListener('fetch', (event) => handler(event))"
    ],
    "The Node.js runtime passes request and response objects similar to Express. The other forms belong to AWS Lambda, Cloudflare Pages and service workers."
   ],
@@ -2054,9 +2054,9 @@
    "In a Next.js 15 project on Vercel, where does Middleware live?",
    "In a middleware file at the project root or in src",
    [
-    "In pages/_middleware.js inside each folder",
-    "In vercel.json under middleware",
-    "In api/middleware.js"
+    "In pages/_middleware.js inside each route folder",
+    "In vercel.json under a middleware key",
+    "In api/middleware.js next to the functions"
    ],
    "Next.js expects middleware.ts (or .js) at the root or in src, and its matcher config limits which paths it runs on. Next.js 16 renamed this file to proxy."
   ],
@@ -2064,9 +2064,9 @@
    "When does Vercel Middleware run relative to the cache?",
    "Before the cache, on each matched request",
    [
-    "After the response has been cached",
-    "Only when the cache has a miss",
-    "Only once, during the build step"
+    "After the response has been stored in the cache",
+    "Only when the cache lookup results in a miss",
+    "Only once, during the build step of the project"
    ],
    "Middleware runs before routing and caching, so it suits redirects, auth checks and rewrites, but slow code delays every request."
   ],
@@ -2084,7 +2084,7 @@
    "Code using fs.readFileSync fails when moved to the Edge runtime. Why?",
    "The Edge runtime lacks Node.js APIs like fs",
    [
-    "The Edge runtime only supports Python code",
+    "The Edge runtime only supports Python code, not JS",
     "Using fs requires a paid Vercel plan",
     "The file must be base64-encoded first"
    ],
@@ -2106,7 +2106,7 @@
    [
     "Pushes to any branch with a tag",
     "Only manual deploys from the dashboard",
-    "Pushes to a branch named production only"
+    "Pushes to a branch that is named production only"
    ],
    "The production branch is set in project settings and defaults to the repository's main branch."
   ],
@@ -2114,7 +2114,7 @@
    "An API key should be available in preview deployments but differ from the production key. How do you set it up?",
    "Add it twice, scoped to Preview and Production",
    [
-    "Commit two separate .env files to the repo",
+    "Commit two separate .env files to the Git repository",
     "Use one variable and check the URL in code",
     "Store both values in vercel.json under env"
    ],
@@ -2124,9 +2124,9 @@
    "You changed an environment variable in the Vercel dashboard, but the live site still uses the old value. Why?",
    "Variable changes apply only to new deployments",
    [
-    "The variable needs a VERCEL_ prefix",
-    "Variables update only at midnight UTC",
-    "The browser cached the variable"
+    "The variable needs a VERCEL_ prefix to be read",
+    "Variables are only updated at midnight UTC each day",
+    "The browser cached the old variable value locally"
    ],
    "Values are captured at build and deploy time. Redeploy to pick up the change."
   ],
@@ -2204,7 +2204,7 @@
    "Your single-page app on Vercel returns 404 when users refresh a client-side route like /profile. Which vercel.json setting fixes it?",
    "A rewrite from /(.*) to /index.html",
    [
-    "A redirect from /(.*) to /",
+    "A redirect from /(.*) to / on every path",
     "A header rule adding Cache-Control",
     "A cleanUrls setting set to false"
    ],

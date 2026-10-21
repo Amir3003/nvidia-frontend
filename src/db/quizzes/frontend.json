@@ -16,7 +16,7 @@
    [
     "Lowercase names are reserved for class components",
     "Capital letters make the component render faster",
-    "React Hooks only work inside capitalized files"
+    "React Hooks only work inside files with capitalized names"
    ],
    "JSX treats <usercard /> as the string tag \"usercard\" passed to the DOM, while <UserCard /> refers to the variable UserCard."
   ],
@@ -54,9 +54,9 @@
    "A handler should add 3 to count by calling the state setter three times. Which change makes it work?",
    "Use the updater form setCount(c => c + 1) for each call",
    [
-    "Call setCount(count + 1) inside a setTimeout",
-    "Store count in a plain let variable instead",
-    "Wrap the three calls in a useMemo hook"
+    "Call setCount(count + 1) inside a setTimeout for each call",
+    "Store count in a plain let variable and increment it three times",
+    "Wrap the three setCount(count + 1) calls in a useMemo hook"
    ],
    "The updater function receives the latest pending state, so the three updates chain to 3. Since React 18, updates inside setTimeout are batched too, so that does not help."
   ],
@@ -74,9 +74,9 @@
    "When does the cleanup function returned from a useEffect callback run?",
    "Before the effect re-runs and when the component unmounts",
    [
-    "Only once, right after the first render",
-    "Before every render, even if deps are unchanged",
-    "Only when the page is reloaded"
+    "Only once, right after the first render of the component",
+    "Before every render, even if the dependencies are unchanged",
+    "Only when the page is reloaded or the browser tab is closed"
    ],
    "React runs the previous cleanup before running the effect again with new dependencies, and once more on unmount."
   ],
@@ -104,7 +104,7 @@
    "What is the virtual DOM in React?",
    "An in-memory tree of elements React compares to find DOM changes",
    [
-    "A browser API that renders pages off-screen for speed",
+    "A browser API that renders whole pages off-screen to make them faster",
     "The Shadow DOM that isolates each component's styles",
     "A copy of the rendered page that is stored on the server"
    ],
@@ -126,7 +126,7 @@
    [
     "It is kept, because Form is the same component",
     "It is kept, but Form's effects do not re-run",
-    "React throws an error about changing element types"
+    "React throws an error about changing element types at runtime"
    ],
    "When the element type at a position changes, React destroys the old subtree and builds a new one, so all state inside it resets."
   ],
@@ -176,7 +176,7 @@
    [
     "Caches the component's DOM nodes in localStorage",
     "Prevents the component's own state from changing",
-    "Renders the component only once for the app's life"
+    "Renders the component only once for the whole lifetime of the app"
    ],
    "React.memo compares previous and next props with Object.is per prop. State or context changes inside the component still trigger renders."
   ],
@@ -194,9 +194,9 @@
    "What does the \"use client\" directive at the top of a file do in a React Server Components setup?",
    "Marks the file as a boundary whose components run on the client",
    [
-    "Makes the component render only after a user clicks",
-    "Disables server-side HTML for the whole app",
-    "Imports React DOM automatically into the file"
+    "Makes the components in the file render only after the user clicks",
+    "Disables server-side HTML rendering for the whole application",
+    "Imports React DOM automatically into the file and its children"
    ],
    "\"use client\" marks a module, and everything it imports, as part of the client bundle. Client Components are still pre-rendered to HTML on the server in frameworks like Next.js."
   ]
@@ -216,7 +216,7 @@
    "In the Next.js Pages Router, when does getServerSideProps run?",
    "On the server, for every request to that page",
    [
-    "Once, at build time, for each page",
+    "On the server, once at build time for each page",
     "In the browser, right after hydration",
     "Only when the page is revalidated"
    ],
@@ -228,7 +228,7 @@
    [
     "Server-side rendering on every single request",
     "A full rebuild of the whole site every 60 seconds",
-    "Client-side refetching of the props every 60 seconds"
+    "Client-side refetching of the page props every 60 seconds"
    ],
    "With revalidate, Next.js serves the static page and regenerates it in the background on a request after the 60-second window expires."
   ],
@@ -237,7 +237,7 @@
    "Fetching data directly inside an async Server Component",
    [
     "Exporting getServerSideProps from page.tsx",
-    "Calling fetch inside useEffect in layout.tsx",
+    "Calling fetch inside a useEffect hook in the root layout.tsx",
     "Adding a getInitialProps method to the page"
    ],
    "In the App Router, Server Components can be async and await data directly. The Pages Router data functions are not supported in the app directory."
@@ -268,7 +268,7 @@
    [
     "Rename the file from page.tsx to page.jsx",
     "Move the component into the public folder",
-    "Wrap the component in a Suspense boundary"
+    "Wrap the component in a Suspense boundary in its layout"
    ],
    "Hooks such as useState need a Client Component. The \"use client\" directive marks the file as running in the browser too."
   ],
@@ -276,7 +276,7 @@
    "A Server Component renders <Button onClick={() => console.log(\"x\")} />, where Button is a Client Component. What happens?",
    "An error, as functions cannot be passed to Client Components",
    [
-    "The function is serialized and then runs in the browser",
+    "The function is serialized with the props and runs in the browser",
     "The click handler runs on the server whenever clicked",
     "The prop is dropped silently, with no message at all"
    ],
@@ -366,9 +366,9 @@
    "In a Client Component, a chart library accesses window at import time and crashes during server rendering. Which fix fits?",
    "const Chart = dynamic(() => import(\"./Chart\"), { ssr: false })",
    [
-    "const Chart = await import(\"./Chart\") at the top level",
-    "Wrap the import in a try/catch block",
-    "Rename the file to Chart.client.tsx"
+    "const Chart = await import(\"./Chart\") at the top level of the file",
+    "Wrap the import statement in a try/catch block in the file",
+    "Rename the file to Chart.client.tsx so it skips the server"
    ],
    "next/dynamic with ssr: false skips server rendering for that component and loads it only in the browser."
   ],
@@ -376,9 +376,9 @@
    "What does next/dynamic(() => import(\"./HeavyEditor\")) do for bundle size?",
    "Splits HeavyEditor into a chunk loaded when it renders",
    [
-    "Inlines HeavyEditor into the main bundle",
-    "Removes HeavyEditor from production builds",
-    "Moves HeavyEditor into a Web Worker"
+    "Inlines HeavyEditor into the main bundle for faster loads",
+    "Removes HeavyEditor from production builds entirely",
+    "Moves HeavyEditor into a Web Worker thread at runtime"
    ],
    "Dynamic imports create a separate JavaScript chunk, so pages that never render the component do not download its code."
   ],
@@ -408,7 +408,7 @@
    "In Vue 3, given const count = ref(0), how do you increment it inside <script setup>?",
    "count.value++",
    [
-    "count++",
+    "count += 1",
     "count.set(count + 1)",
     "this.count++"
    ],
@@ -438,9 +438,9 @@
    "What distinguishes computed() from a method in Vue?",
    "computed caches its result until reactive dependencies change",
    [
-    "computed runs on every render, methods are cached",
-    "computed can only return strings",
-    "computed runs only on the server"
+    "computed reruns on every render, while methods cache their result",
+    "computed can only return strings, never objects or arrays",
+    "computed runs only on the server, during SSR rendering"
    ],
    "A computed value re-evaluates only when something it read changes; a method called in a template runs again on every render."
   ],
@@ -488,7 +488,7 @@
    "A Vue template shows {{ html }} where html is \"<b>Hi</b>\". What appears on the page?",
    "The literal text <b>Hi</b>",
    [
-    "Hi in bold",
+    "The word Hi in bold text",
     "Nothing, the tags are stripped",
     "A Vue compilation error"
    ],
@@ -508,7 +508,7 @@
    "How does v-show differ from v-if when the condition is false?",
    "v-show keeps the element in the DOM and sets display: none",
    [
-    "v-show removes the element and destroys its state",
+    "v-show removes the element from the DOM and destroys its state",
     "v-show only works on components, not elements",
     "v-show evaluates its condition just once"
    ],
@@ -518,7 +518,7 @@
    "In Vue 3, an element has v-for=\"u in users\" and v-if=\"u.active\" together. What happens?",
    "v-if is evaluated first, so u is not defined yet",
    [
-    "Only active users are rendered as intended",
+    "Only active users are rendered, exactly as intended",
     "v-for runs first and filters the list",
     "Vue renders all users and ignores v-if"
    ],
@@ -528,8 +528,8 @@
    "In Vue 3, v-model=\"title\" on a custom component expands to which prop and event?",
    "modelValue and update:modelValue",
    [
-    "value and input",
-    "model and change",
+    "value and update:value",
+    "modelValue and change:modelValue",
     "title and update:title"
    ],
    "Vue 3 changed the defaults from Vue 2's value and input. The component must accept modelValue and emit update:modelValue."
@@ -538,9 +538,9 @@
    "What does the .lazy modifier change in <input v-model.lazy=\"name\">?",
    "It syncs on the change event instead of every input event",
    [
-    "It loads the input only when it becomes visible",
-    "It trims whitespace from the value",
-    "It converts the value to a number"
+    "It loads the input element only when it scrolls into view",
+    "It trims leading and trailing whitespace from the value",
+    "It converts the typed value to a number before syncing"
    ],
    "By default v-model syncs on input. .lazy syncs on change, such as when the field loses focus. .trim and .number are other modifiers."
   ],
@@ -568,7 +568,7 @@
    "With createWebHistory, refreshing /users/5 on a static host returns 404. What is the cause?",
    "The server has no fallback to index.html for that path",
    [
-    "Vue Router does not support numeric route params",
+    "Vue Router does not support numeric route params like /users/5",
     "The route was registered after app.mount() ran",
     "History mode only works on the dev server"
    ],
@@ -598,9 +598,9 @@
    "Compared to Vuex, which statement about Pinia is accurate?",
    "Actions can change state directly, with no mutations",
    [
-    "State can only change through committed mutations",
-    "Stores must be nested in one root module",
-    "It works only with the Options API"
+    "State can only change through mutations committed by actions",
+    "Stores must all be nested inside a single root module",
+    "It works only with the Options API, not with setup()"
    ],
    "Pinia dropped mutations: actions, or even components, modify state directly while devtools still track changes. It supports both APIs."
   ]
@@ -630,9 +630,9 @@
    "Which Nuxt 3 config renders /admin/** only on the client while other routes keep SSR?",
    "routeRules: { \"/admin/**\": { ssr: false } }",
    [
-    "ssr: { exclude: [\"/admin\"] }",
-    "pages: { admin: \"client\" }",
-    "nitro: { spa: \"/admin/**\" }"
+    "ssr: { exclude: [\"/admin/**\"], mode: \"spa\" }",
+    "pages: { \"/admin/**\": { mode: \"client\" } }",
+    "nitro: { routes: { \"/admin/**\": \"spa\" } }"
    ],
    "routeRules enables hybrid rendering, so each route pattern can choose SSR, client-only, prerendering or caching rules."
   ],
@@ -670,9 +670,9 @@
    "Nuxt has pages/parent.vue and pages/parent/child.vue. What must parent.vue contain for /parent/child to show the child?",
    "A <NuxtPage /> component where the child renders",
    [
-    "A <slot name=\"child\" /> element",
-    "An import of child.vue in its script",
-    "A children array in definePageMeta"
+    "A <slot name=\"child\" /> element where it renders",
+    "An import of child.vue at the top of its script",
+    "A children array listed in definePageMeta"
    ],
    "A file next to a folder of the same name becomes a parent route, and nested pages render in its <NuxtPage />."
   ],
@@ -682,7 +682,7 @@
    [
     "<Button from=\"base\" />",
     "<base-button-vue />",
-    "<Button /> after importing it"
+    "<Base.Button />"
    ],
    "Nuxt auto-imports components and prefixes the name with nested directory names, so base/Button.vue becomes BaseButton."
   ],
@@ -690,9 +690,9 @@
    "In Nuxt 3, which code is auto-imported by default with no import statement?",
    "Top-level files in composables/ and Vue APIs like ref",
    [
-    "Every .ts file anywhere in the project",
-    "Only files whose names start with use",
-    "Nothing, Nuxt requires explicit imports"
+    "Every .ts file anywhere in the project folder tree",
+    "Only files whose names start with the use prefix",
+    "Nothing, Nuxt requires explicit import statements everywhere"
    ],
    "Nuxt scans composables/ and utils/ at the top level, and auto-imports Vue APIs and Nuxt composables like useFetch. Nested composable folders are not scanned by default."
   ],
@@ -700,9 +700,9 @@
    "Which file makes the endpoint /api/hello in Nuxt 3?",
    "server/api/hello.ts exporting defineEventHandler",
    [
-    "pages/api/hello.vue with a server block",
-    "api/hello.ts exporting a GET function",
-    "server/hello.api.ts exporting handler()"
+    "pages/api/hello.vue with a <server> block inside",
+    "api/hello.ts at the root exporting a GET function",
+    "server/hello.api.ts exporting a handler() function"
    ],
    "Files in server/api are registered under /api, and each one default-exports a handler created with defineEventHandler."
   ],
@@ -731,7 +731,7 @@
    "const body = await readBody(event)",
    [
     "const body = event.body.json()",
-    "const body = useBody()",
+    "const body = useState(\"body\")",
     "const body = await fetch(event).json()"
    ],
    "readBody comes from h3, the HTTP framework under Nitro, and is auto-imported in the server directory. getQuery reads query parameters."
@@ -770,9 +770,9 @@
    "Why does useAsyncData(\"posts\", () => $fetch(\"/api/posts\")) take a key such as \"posts\"?",
    "To dedupe requests and reuse server data during hydration",
    [
-    "To name the API route that Nuxt should create",
-    "To encrypt the data on the way to the client",
-    "To store the result in localStorage"
+    "To name the server API route that Nuxt should generate for it",
+    "To encrypt the data on its way from server to client",
+    "To store the result in localStorage under that key"
    ],
    "Data fetched during SSR is sent to the client in the payload under that key, so the client reuses it instead of fetching again."
   ],
@@ -883,7 +883,7 @@
    "count.update(n => n + 1)",
    [
     "count.set(count + 1)",
-    "count.value++",
+    "count.value += 1",
     "count.subscribe(n => n + 1)"
    ],
    "update takes a function of the current value. count itself is the store object, so count + 1 does not produce a number."
@@ -902,8 +902,8 @@
    "Outside a component, how do you read the current value of a Svelte store just once?",
    "get(store) from svelte/store",
    [
-    "store.value",
-    "store.current()",
+    "store.value, read directly",
+    "store.current() from svelte/store",
     "$store in a plain .js file"
    ],
    "get subscribes, reads the value and unsubscribes immediately. The $ prefix only works inside components."
@@ -912,9 +912,9 @@
    "In Svelte, when does an onMount callback run?",
    "After the component is first rendered to the DOM",
    [
-    "Before the component's script runs",
-    "Every time any state changes",
-    "During server-side rendering only"
+    "Before the component's script block runs at all",
+    "Every time any reactive state in it changes",
+    "During server-side rendering only, never in the browser"
    ],
    "onMount runs once in the browser after the initial render. If it returns a function, that function runs when the component is destroyed."
   ],
@@ -924,7 +924,7 @@
    [
     "onMount runs before the server sends HTML",
     "SvelteKit polyfills window on the server",
-    "onMount runs inside a Web Worker"
+    "onMount runs inside a Web Worker that mocks the DOM"
    ],
    "Lifecycle functions other than onDestroy do not run on the server. Code that needs browser APIs belongs in onMount."
   ],
@@ -940,20 +940,20 @@
   ],
   [
    "In Svelte 4, how does a parent fill a named slot declared as <slot name=\"header\" /> in a Card component?",
-   "<h1 slot=\"header\">Title</h1> inside <Card>",
+   "<h1 slot=\"header\">Title</h1>",
    [
     "<Card header=\"<h1>Title</h1>\" />",
     "<Card:header>Title</Card:header>",
     "<template #header>Title</template>"
    ],
-   "Elements with slot=\"name\" go to the matching named slot. The #header syntax is Vue; Svelte 5 replaces slots with snippets."
+   "An element with slot=\"header\", placed inside <Card>, goes to the matching named slot. The #header syntax is Vue; Svelte 5 replaces slots with snippets."
   ],
   [
    "In Svelte 4, a Button has <slot>Click me</slot>. What renders for <Button />, with no content?",
    "The fallback text Click me",
    [
-    "An empty button",
-    "The word undefined",
+    "An empty button element",
+    "The text undefined as a label",
     "A compile error about a missing slot"
    ],
    "Content inside a <slot> element is fallback content, shown only when the parent provides nothing for that slot."
@@ -982,8 +982,8 @@
    "In SvelteKit, which file defines the page for the route /about?",
    "src/routes/about/+page.svelte",
    [
-    "src/pages/about.svelte",
-    "src/routes/about.svelte",
+    "src/pages/about/+page.svelte",
+    "src/routes/about/page.svelte",
     "src/routes/+about.svelte"
    ],
    "SvelteKit uses folders for routes and the +page.svelte file for the page component in each folder."
@@ -992,8 +992,8 @@
    "In SvelteKit, a load function uses a database password. Where should it be placed?",
    "In +page.server.js, so it runs only on the server",
    [
-    "In +page.js, which runs only on the server",
-    "In +page.svelte, inside onMount",
+    "In +page.js, which SvelteKit runs only on the server",
+    "In +page.svelte, inside an onMount callback",
     "In +layout.svelte, inside a script tag"
    ],
    "+page.server.js load functions never run in the browser. Universal +page.js load functions can run on both server and client."
@@ -1004,7 +1004,7 @@
    [
     "In a submit handler in +layout.js",
     "In a POST export from +page.svelte",
-    "In hooks.client.js"
+    "In hooks.client.js, in a handleSubmit export"
    ],
    "Form actions are exported as actions from +page.server.js and run on the server. They work even without JavaScript in the browser."
   ]
@@ -1036,7 +1036,7 @@
    [
     "platformBrowserDynamic().bootstrapModule(AppComponent)",
     "createApp(AppComponent).mount(\"#app\")",
-    "new AppComponent().bootstrap()"
+    "new AppComponent().bootstrap(appConfig)"
    ],
    "bootstrapApplication is the standalone entry point. bootstrapModule bootstraps an NgModule, not a component."
   ],
@@ -1044,9 +1044,9 @@
    "What does @Injectable({ providedIn: \"root\" }) on a service do?",
    "Registers one app-wide instance that can be tree-shaken",
    [
-    "Creates a new instance for every component",
-    "Makes the service available only in AppModule",
-    "Injects the service into every component"
+    "Creates a new instance for every component that injects it",
+    "Makes the service available only inside AppModule",
+    "Injects the service into every component automatically"
    ],
    "providedIn root registers the service with the root injector as a singleton. If nothing injects it, the build can remove it."
   ],
@@ -1072,7 +1072,7 @@
   ],
   [
    "An Angular component calls this.http.get(\"/api/users\") and never subscribes. What happens?",
-   "No HTTP request is sent",
+   "No HTTP request is sent at all",
    [
     "The request is sent and the result is cached",
     "The request is sent and the result discarded",
@@ -1096,7 +1096,7 @@
    [
     "It emits values only once and then completes immediately",
     "It can only be subscribed to a single time, then it errors",
-    "It runs all of its subscribers on a separate background thread"
+    "It runs all of its subscribers on a separate background worker thread"
    ],
    "A late subscriber to a Subject misses earlier values. A BehaviorSubject immediately emits its current value on subscribe."
   ],
@@ -1114,9 +1114,9 @@
    "In Angular, what does the @Input() decorator on a property do?",
    "Lets a parent bind a value to it in the template",
    [
-    "Reads a value from an HTML form field",
-    "Injects a service into the property",
-    "Emits an event to the parent component"
+    "Reads a value from an HTML form field on the page",
+    "Injects a service into the property at runtime",
+    "Emits an event up to the parent component"
    ],
    "@Input marks a property that a parent sets with property binding, such as [title]=\"x\". @Output with EventEmitter sends events up."
   ],
@@ -1124,9 +1124,9 @@
    "In Angular, a component has selector: \"app-card\". How is it used in another template?",
    "<app-card></app-card>",
    [
-    "<div component=\"app-card\"></div>",
-    "<AppCard />",
-    "{{ app-card }}"
+    "<div component=\"app-card\" />",
+    "<AppCard></AppCard>",
+    "<app-card-component />"
    ],
    "The selector tells Angular where to create the component. An element selector like app-card matches the custom tag."
   ],
@@ -1134,9 +1134,9 @@
    "Which decorator makes a method run when the browser window is resized?",
    "@HostListener(\"window:resize\", [\"$event\"])",
    [
-    "@Output(\"window:resize\")",
-    "@ViewChild(\"window:resize\")",
-    "@Input(\"window:resize\")"
+    "@Output(\"window:resize\", [\"$event\"])",
+    "@ViewChild(\"window:resize\", [\"$event\"])",
+    "@HostBinding(\"window:resize\", [\"$event\"])"
    ],
    "@HostListener subscribes a method to events on the host element or on global targets such as window and document."
   ],
@@ -1165,7 +1165,7 @@
    "Structural directives add or remove elements from the DOM",
    [
     "Structural directives only change CSS classes",
-    "Structural directives can only be used on components",
+    "Structural directives can only be used on components, not elements",
     "Structural directives run only on the server"
    ],
    "Structural directives shape the DOM by creating or destroying views. Attribute directives change the look or behavior of an existing element."
@@ -1185,7 +1185,7 @@
    "router.createUrlTree([\"/login\"])",
    [
     "window.location.assign(\"/login\")",
-    "new Error(\"/login\")",
+    "a new Error(\"/login\") object",
     "the string \"redirect:/login\""
    ],
    "Returning a UrlTree from a guard cancels the current navigation and starts one to that URL. Returning false only cancels."
@@ -1206,7 +1206,7 @@
    [
     "20",
     "undefined",
-    "An error, as computed values are fixed"
+    "It throws"
    ],
    "computed tracks the signals it reads. After a changes, the next read of b recomputes using the new value 3."
   ]
@@ -1236,9 +1236,9 @@
    "Why is <button> preferred over <div onclick=\"...\"> for a clickable control?",
    "It is focusable and works with the keyboard by default",
    [
-    "It loads faster than a div in every browser",
-    "It is the only element that accepts onclick",
-    "It blocks the click from bubbling up"
+    "It loads faster than a div in every modern browser",
+    "It is the only element that accepts an onclick handler",
+    "It blocks the click event from bubbling up the DOM"
    ],
    "Native buttons get focus, Enter and Space activation and the button role for free. A div needs all of that added by hand."
   ],
@@ -1256,9 +1256,9 @@
    "A developer uses <div role=\"button\"> instead of a native button. What must they also add?",
    "tabindex=\"0\" and handlers for the Enter and Space keys",
    [
-    "aria-hidden=\"true\" and a click handler",
-    "type=\"button\" and a name attribute",
-    "Nothing, the role adds full button behavior"
+    "aria-hidden=\"true\" and a click handler on the div",
+    "type=\"button\" and a name attribute so it submits forms",
+    "Nothing, the role adds full native button behavior"
    ],
    "ARIA roles change only what assistive tech announces, not behavior. Focus and keyboard support must be implemented manually."
   ],
@@ -1266,9 +1266,9 @@
    "What does aria-hidden=\"true\" do to an element?",
    "Hides it from assistive tech while it stays visible",
    [
-    "Hides it visually and from assistive tech",
-    "Prevents it from receiving mouse clicks",
-    "Removes it from the DOM after page load"
+    "Hides it visually and from assistive tech at once",
+    "Prevents it from receiving mouse clicks or taps",
+    "Removes it from the DOM entirely after the page loads"
    ],
    "aria-hidden removes the element from the accessibility tree only. Do not put it on focusable elements, or keyboard users reach invisible controls."
   ],
@@ -1276,9 +1276,9 @@
    "What alt value should a purely decorative image have?",
    "An empty alt attribute, alt=\"\"",
    [
-    "alt=\"decorative image\"",
-    "The image's file name",
-    "No alt attribute at all"
+    "A descriptive alt=\"decorative image\"",
+    "The image's file name as alt text",
+    "No alt attribute on the img at all"
    ],
    "An empty alt tells screen readers to skip the image. Leaving alt out entirely may make them read the file name."
   ],
@@ -1306,9 +1306,9 @@
    "The parser reads <table><tr><td>1</td></tr></table>. What is the parent of the tr element in the DOM?",
    "A tbody element that the parser inserts",
    [
-    "The table element itself",
-    "The td element",
-    "The document body"
+    "The table element itself, unchanged",
+    "The td element inside the row",
+    "The document body element"
    ],
    "HTML parsing rules insert an implied <tbody> around table rows, so selectors like table > tr do not match."
   ],
@@ -1346,7 +1346,7 @@
    "What happens when you click a <button> with no type attribute inside a <form>?",
    "It submits the form",
    [
-    "It does nothing until a click handler is added",
+    "It does nothing by default",
     "It resets all form fields",
     "It only focuses the first input"
    ],
@@ -1366,9 +1366,9 @@
    "A session cookie is set with the HttpOnly flag. What does that change?",
    "JavaScript cannot read it through document.cookie",
    [
-    "It is sent only over plain HTTP, not HTTPS",
-    "It is deleted when any page reloads",
-    "It can be read by any other website"
+    "It is sent only over plain HTTP connections, not over HTTPS",
+    "It is deleted whenever any page on the site reloads",
+    "It can be read by scripts on any other website"
    ],
    "HttpOnly hides the cookie from scripts, which limits damage from XSS. Secure restricts it to HTTPS."
   ],
@@ -1450,7 +1450,7 @@
    [
     "The horizontal axis",
     "Both axes equally",
-    "Neither, it is ignored in columns"
+    "Neither axis, it is ignored"
    ],
    "justify-content works on the main axis, which flex-direction sets. In a column, the main axis is vertical."
   ],
@@ -1478,9 +1478,9 @@
    "A flex row has many fixed-width items that overflow the container instead of moving to a new line. What fixes it?",
    "flex-wrap: wrap on the container",
    [
-    "flex-direction: row-reverse on the container",
+    "flex-direction: row-reverse",
     "align-items: stretch on the container",
-    "order: 1 on every item"
+    "order: 1 on every flex item"
    ],
    "Flex containers default to flex-wrap: nowrap, which forces all items onto one line."
   ],
@@ -1488,9 +1488,9 @@
    "What does grid-template-columns: repeat(3, 1fr) create?",
    "Three columns that share the free space equally",
    [
-    "Three rows of equal height",
-    "One column that is 3fr wide",
-    "Three columns each 1px wide"
+    "Three rows of equal height that share the free space",
+    "One column that is 3fr wide in total",
+    "Three columns that are each 1px wide"
    ],
    "repeat(3, 1fr) is shorthand for 1fr 1fr 1fr; the fr unit divides the remaining space in the grid container."
   ],
@@ -1508,9 +1508,9 @@
    "Which grid-template-columns value creates as many columns of at least 200px as fit, stretching to fill the row?",
    "repeat(auto-fill, minmax(200px, 1fr))",
    [
-    "repeat(200px, auto)",
-    "minmax(200px, repeat(1fr))",
-    "repeat(auto, 200px 1fr)"
+    "repeat(200px, minmax(auto, 1fr))",
+    "minmax(200px, repeat(auto-fill, 1fr))",
+    "repeat(auto-fill, 200px 1fr)"
    ],
    "auto-fill (or auto-fit) creates as many tracks as fit, and minmax keeps each column between 200px and an equal share of the space."
   ],
@@ -1528,9 +1528,9 @@
    "An element has position: sticky but does not stick, and its CSS sets no top, bottom, left or right. What fixes it?",
    "Add an offset such as top: 0",
    [
-    "Add z-index: 9999",
+    "Add z-index: 9999 to it",
     "Change display to inline",
-    "Add float: left"
+    "Add float: left to the element"
    ],
    "Sticky positioning needs a threshold offset. An ancestor with overflow: hidden can also stop it from working."
   ],
@@ -1539,7 +1539,7 @@
    "The transformed parent, not the viewport",
    [
     "The viewport, since transforms are ignored",
-    "The document root element",
+    "The document root html element",
     "The nearest scroll container"
    ],
    "A transform, filter or perspective on an ancestor creates a containing block for fixed descendants, a common cause of broken modals."
@@ -1549,8 +1549,8 @@
    "#header a",
    [
     ".menu .link a",
-    "Whichever rule has more lines",
-    "Neither, the browser default applies"
+    "The later rule",
+    "Browser default"
    ],
    "Specificity compares IDs first: #header a is (1,0,1) and .menu .link a is (0,2,1). One ID beats any number of classes."
   ],
@@ -1560,7 +1560,7 @@
    [
     "Blue",
     "Purple",
-    "The browser default"
+    "Black"
    ],
    "Important declarations from author stylesheets beat normal declarations, including inline styles without !important."
   ],
@@ -1568,9 +1568,9 @@
    "What is the specificity of :where(#main .card) p?",
    "(0,0,1), because :where() adds no specificity",
    [
-    "(1,1,1), counting all parts",
-    "(1,0,1), counting the ID only",
-    "(0,1,1), counting the class only"
+    "(1,1,1), because every part is counted",
+    "(1,0,1), because only the ID is counted",
+    "(0,1,1), because :where() counts only the class"
    ],
    ":where() always has zero specificity, which makes it useful for easy-to-override defaults. :is() takes its most specific argument."
   ],
@@ -1579,8 +1579,8 @@
    "8px",
    [
     "0",
-    "The browser's default padding",
-    "An invalid value, so no padding at all"
+    "auto",
+    "inherit"
    ],
    "The second argument of var() is a fallback used when the custom property is not defined."
   ],
@@ -1588,7 +1588,7 @@
    "Which JavaScript sets the CSS variable --accent to red on an element el?",
    "el.style.setProperty(\"--accent\", \"red\")",
    [
-    "el.style.accent = \"red\"",
+    "el.style[\"--accent\"] = \"red\"",
     "el.setAttribute(\"--accent\", \"red\")",
     "el.css.var(\"--accent\", \"red\")"
    ],
@@ -1599,7 +1599,7 @@
    "At viewport widths of 768px and wider",
    [
     "At viewport widths below 768px",
-    "Only at exactly 768px",
+    "Only at a width of exactly 768px",
     "Only on devices that report a tablet type"
    ],
    "min-width queries add styles as the screen grows, which is the mobile-first approach. max-width does the opposite."
@@ -1630,9 +1630,9 @@
    "What does the class combination flex items-center justify-between do?",
    "Makes a flex row, centers items vertically, spreads them apart",
    [
-    "Makes a grid and centers every item in its own cell",
-    "Centers text and adds space between the words",
-    "Makes a column with items packed at the top"
+    "Makes a grid, centers every item in its cell, adds gaps between them",
+    "Centers the text and adds equal space between the words",
+    "Makes a column with all items packed tightly at the top"
    ],
    "items-center sets align-items: center on the cross axis and justify-between sets justify-content: space-between on the main axis."
   ],
@@ -1682,7 +1682,7 @@
    [
     "A dark class on the html element",
     "A data-theme attribute on the body",
-    "A cookie named theme"
+    "A cookie named theme set by the page"
    ],
    "The v3 default strategy is media, which follows the operating system setting. Switching to class or selector enables manual toggling."
   ],
@@ -1690,9 +1690,9 @@
    "In Tailwind v4, how do you make dark: utilities depend on a .dark class instead of the OS setting?",
    "@custom-variant dark (&:where(.dark, .dark *)); in your CSS",
    [
-    "darkMode: \"class\" inside tailwind.config.js only",
-    "Adding the dark class to every element",
-    "@apply dark; at the top of your CSS"
+    "darkMode: \"class\" set inside the tailwind.config.js file only",
+    "Adding the dark class to every element on the page",
+    "@apply dark; at the very top of your main CSS file"
    ],
    "Tailwind v4 moved configuration into CSS. Overriding the dark variant with @custom-variant switches it to a class selector."
   ],
@@ -1750,9 +1750,9 @@
    "In Tailwind v3, classes used in src/components/Card.tsx get no styles in production. What is the likely cause?",
    "The file is not matched by the content paths in the config",
    [
-    "Tailwind ignores .tsx files without a plugin",
-    "Production builds remove all custom classes",
-    "Card.tsx is missing an @tailwind import"
+    "Tailwind ignores .tsx files unless a JSX plugin is installed first",
+    "Production builds strip out all custom class names",
+    "Card.tsx is missing an @tailwind import at the top"
    ],
    "Tailwind v3 generates CSS only for class names found in the files listed in content. Files outside those globs are not scanned."
   ],
@@ -1770,9 +1770,9 @@
    "In Tailwind v4, how do you add a brand color so that bg-brand works?",
    "Define --color-brand inside an @theme block in CSS",
    [
-    "Add brand to a colors.json file",
-    "Run npx tailwind add-color brand",
-    "Write .bg-brand in a <style> tag in HTML"
+    "Add a brand key to a colors.json file in the project root",
+    "Run npx tailwind add-color brand in the terminal",
+    "Write a .bg-brand rule in a <style> tag in the HTML"
    ],
    "In v4, theme variables live in CSS. A --color-* variable inside @theme generates the matching color utilities."
   ],
@@ -1780,9 +1780,9 @@
    "In React, className={\"text-\" + color + \"-500\"} gives no styles. Why?",
    "Tailwind only finds complete class names in source text",
    [
-    "Tailwind does not support React components",
-    "Dynamic classes need the !important modifier",
-    "The color scale stops at 400"
+    "Tailwind does not support class names inside React components",
+    "Dynamic classes need the !important modifier to apply",
+    "The default color scale stops at 400 for text colors"
    ],
    "Tailwind scans files as plain text and never runs your code. Map values to full strings, such as { red: \"text-red-500\" }."
   ],
@@ -1800,9 +1800,9 @@
    "How do you change a child's color in Tailwind when its parent card is hovered?",
    "Add group to the parent and group-hover:text-white to the child",
    [
-    "Add hover:children to the parent element",
-    "Add parent-hover:text-white to the child",
-    "Add peer to the child and hover:peer to the parent"
+    "Add hover:children to the parent and text-white to the child",
+    "Add parent-hover:text-white to the child and nothing to the parent",
+    "Add peer to the child and hover:peer to the parent element"
    ],
    "group marks the parent, and group-hover: styles descendants based on the parent's hover state. peer is for siblings."
   ],
@@ -1834,7 +1834,7 @@
    [
     "A texture and a light",
     "A camera and a scene",
-    "A shader and a renderer"
+    "A vertex shader and a renderer"
    ],
    "Geometry defines the shape (vertices), and material defines how its surface looks when rendered."
   ],
@@ -1842,8 +1842,8 @@
    "In Three.js, you create a mesh but forget scene.add(mesh). What happens?",
    "The mesh is not drawn",
    [
-    "It is drawn at the camera's position",
-    "Three.js adds it to the scene for you",
+    "It is drawn at the origin",
+    "Three.js adds it automatically",
     "The renderer throws an error"
    ],
    "The renderer only draws objects that are part of the scene graph passed to render()."
@@ -1882,9 +1882,9 @@
    "A cube is at the origin and the camera is left at its default position. Nothing is visible. Which fix fits?",
    "Move the camera back, for example camera.position.z = 5",
    [
-    "Set the cube's scale to 0",
-    "Call renderer.clear() each frame",
-    "Rotate the camera by 180 degrees on X"
+    "Shrink the cube, for example cube.scale.set(0, 0, 0)",
+    "Clear the canvas, for example renderer.clear() each frame",
+    "Turn the camera, for example camera.rotation.x = Math.PI"
    ],
    "Both start at (0, 0, 0), so the camera sits inside the cube. The camera looks down the negative Z axis by default."
   ],
@@ -1903,7 +1903,7 @@
    "renderer.setPixelRatio(window.devicePixelRatio)",
    [
     "renderer.setClearColor(window.devicePixelRatio)",
-    "renderer.setSize(1, 1)",
+    "renderer.setSize(window.devicePixelRatio)",
     "renderer.toneMapping = window.devicePixelRatio"
    ],
    "This renders at the device's real pixel density. Many apps cap it at 2 to limit GPU cost."
@@ -1922,9 +1922,9 @@
    "How does RawShaderMaterial differ from ShaderMaterial in Three.js?",
    "It does not prepend built-in uniforms and attributes",
    [
-    "It can only use textures, not colors",
-    "It runs shaders on the CPU instead",
-    "It cannot receive custom uniforms"
+    "It can only sample textures, not use plain colors",
+    "It compiles and runs its shaders on the CPU instead of the GPU",
+    "It cannot receive any custom uniforms from JavaScript"
    ],
    "ShaderMaterial injects definitions such as projectionMatrix and position for you; with RawShaderMaterial you declare everything yourself."
   ],
@@ -1953,7 +1953,7 @@
    "DirectionalLight",
    [
     "PointLight",
-    "AmbientLight",
+    "HemisphereLight",
     "RectAreaLight"
    ],
    "DirectionalLight behaves as if infinitely far away. PointLight spreads in all directions from a single point."
@@ -1962,7 +1962,7 @@
    "Lights and meshes have castShadow set, but no shadows appear. Which renderer setting is required?",
    "renderer.shadowMap.enabled = true",
    [
-    "renderer.shadows = \"on\"",
+    "renderer.shadows.enabled = \"on\"",
     "renderer.castShadow = true",
     "renderer.autoClear = false"
    ],
@@ -1973,8 +1973,8 @@
    "Scale the step by the time since the last frame",
    [
     "Call requestAnimationFrame twice per frame",
-    "Set renderer.fps = 60",
-    "Use degrees instead of radians"
+    "Set renderer.fps = 60 before the loop starts",
+    "Use degrees instead of radians for the rotation"
    ],
    "Frame-based steps depend on refresh rate. Multiplying a per-second speed by elapsed time, for example from THREE.Clock's getDelta(), keeps motion consistent."
   ],
@@ -2002,9 +2002,9 @@
    "GLTFLoader fails on a glTF file compressed with Draco. What is needed?",
    "A DRACOLoader passed to loader.setDRACOLoader()",
    [
-    "A TextureLoader passed to loader.setPath()",
-    "Setting renderer.compressed = true",
-    "Converting the file to OBJ first"
+    "A TextureLoader passed to loader.setPath() before loading",
+    "Setting renderer.compressed = true before loading",
+    "Converting the file to OBJ format first"
    ],
    "Draco-compressed geometry must be decoded by DRACOLoader, which needs the decoder files hosted at a path you set."
   ],
@@ -2012,7 +2012,7 @@
    "A loaded glTF has animations. Which approach plays the first clip?",
    "Use an AnimationMixer, play its clipAction, update it each frame",
    [
-    "Call gltf.animations[0].start() once after the model loads",
+    "Call gltf.animations[0].start() once, right after the model loads",
     "Set gltf.scene.animate = true and the loader plays it",
     "Call renderer.play(gltf.animations) inside the render loop"
    ],
@@ -2024,7 +2024,7 @@
    "How often does a vertex shader run?",
    "Once for each vertex in the draw call",
    [
-    "Once for each pixel on the canvas",
+    "Once for each pixel on the whole canvas",
     "Once per frame for the whole scene",
     "Once when the program is linked"
    ],
@@ -2074,9 +2074,9 @@
    "How does a WebGL 1 vertex shader pass a per-vertex color to the fragment shader?",
    "Through a varying, interpolated across the triangle",
    [
-    "Through a uniform set inside the shader",
-    "Through gl_FragColor in the vertex shader",
-    "Through a texture that it writes to"
+    "Through a uniform that is set inside the vertex shader",
+    "Through gl_FragColor written in the vertex shader",
+    "Through a texture that the vertex shader writes to"
    ],
    "varying values (in and out in GLSL ES 3.00) are written per vertex and interpolated for each fragment."
   ],
@@ -2094,9 +2094,9 @@
    "Which call uploads vertex positions into the currently bound WebGL buffer?",
    "gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW)",
    [
-    "gl.uniform3fv(gl.ARRAY_BUFFER, new Float32Array(data))",
-    "gl.vertexAttrib(gl.ARRAY_BUFFER, new Float32Array(data))",
-    "gl.texImage2D(gl.ARRAY_BUFFER, new Float32Array(data))"
+    "gl.uniform3fv(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW)",
+    "gl.vertexAttrib(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW)",
+    "gl.texImage2D(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW)"
    ],
    "bufferData copies typed array data into the buffer bound to the target. STATIC_DRAW hints that it will not change often."
   ],
@@ -2105,7 +2105,7 @@
    "Each vertex reads two components, such as x and y",
    [
     "The buffer contains two vertices in total",
-    "The attribute is stored at shader location 2",
+    "The attribute is stored at shader location number 2",
     "The data is read every second byte"
    ],
    "The size argument is the number of components per vertex (1 to 4). The attribute location is the first argument."
@@ -2115,7 +2115,7 @@
    "gl.enableVertexAttribArray(loc)",
    [
     "gl.enable(gl.DEPTH_TEST)",
-    "gl.clearColor(0, 0, 0, 1)",
+    "gl.vertexAttribDivisor(loc, 0)",
     "gl.linkProgram(program)"
    ],
    "A disabled attribute uses one constant value for every vertex instead of reading from the buffer."
@@ -2134,7 +2134,7 @@
    "To reuse shared vertices across triangles with an index list, which buffer target and draw call do you use?",
    "gl.ELEMENT_ARRAY_BUFFER with gl.drawElements",
    [
-    "gl.ARRAY_BUFFER with gl.drawArrays",
+    "gl.ARRAY_BUFFER with gl.drawArrays and an offset",
     "gl.INDEX_BUFFER with gl.drawIndexed",
     "gl.UNIFORM_BUFFER with gl.drawRange"
    ],
@@ -2144,9 +2144,9 @@
    "Which order matches the WebGL rendering pipeline?",
    "Vertex shader, rasterization, fragment shader, depth test and blending",
    [
-    "Fragment shader, vertex shader, rasterization, blending",
-    "Rasterization, vertex shader, blending, fragment shader",
-    "Depth test, vertex shader, fragment shader, rasterization"
+    "Fragment shader, vertex shader, rasterization, depth test and blending",
+    "Rasterization, vertex shader, depth test and blending, fragment shader",
+    "Depth test and blending, vertex shader, fragment shader, rasterization"
    ],
    "Vertices are transformed first, triangles are rasterized into fragments, fragments are shaded, then per-fragment tests and blending write pixels."
   ],
@@ -2155,7 +2155,7 @@
    "-1 to 1",
    [
     "0 to 1",
-    "0 to the canvas width in pixels",
+    "0 to canvas width",
     "-0.5 to 0.5"
    ],
    "Normalized device coordinates span -1 to 1 on each axis; the viewport transform maps them to canvas pixels."
@@ -2174,7 +2174,7 @@
    "gl.uniform1f(timeLoc, t) is called before gl.useProgram(program). What happens?",
    "It fails, since uniforms apply to the current program",
    [
-    "The value is queued until the program is used",
+    "The value is queued until the program is next made current",
     "The value applies to every linked program",
     "The value is stored in the location for later"
    ],
@@ -2195,8 +2195,8 @@
    "false",
    [
     "true",
-    "Any boolean value",
-    "The number of matrices"
+    "Either value",
+    "The matrix count"
    ],
    "WebGL 1 requires transpose to be false and generates an error otherwise, so matrices must be provided in column-major order."
   ],
@@ -2206,7 +2206,7 @@
    [
     "projection",
     "view",
-    "All are applied at the same moment"
+    "All at once"
    ],
    "With column vectors, the matrix closest to the vector applies first: model to world space, then view, then projection."
   ],
@@ -2256,9 +2256,9 @@
    "In a Vite 5 to 7 config, where do you set manual vendor chunk splitting?",
    "build.rollupOptions.output.manualChunks",
    [
-    "server.chunks.manual",
-    "optimizeDeps.manualChunks",
-    "resolve.chunks"
+    "server.rollupOptions.output.chunks",
+    "optimizeDeps.rollupOptions.manualChunks",
+    "build.output.manualChunks.vendor"
    ],
    "Vite passes rollupOptions through to Rollup, whose output.manualChunks controls how modules are grouped into chunks."
   ],
@@ -2266,7 +2266,7 @@
    "Where is the entry point of a standard Vite app?",
    "index.html at the project root",
    [
-    "public/index.html",
+    "index.html inside the public folder",
     "src/main.js as listed in package.json",
     "vite.config.js under the entry key"
    ],
@@ -2286,9 +2286,9 @@
    "In Vite, which code lets a module accept its own hot updates?",
    "if (import.meta.hot) { import.meta.hot.accept() }",
    [
-    "module.hot.enable(true)",
-    "vite.hmr.accept(import.meta.url)",
-    "window.HMR.accept()"
+    "if (module.hot) { module.hot.enable(true) }",
+    "if (vite.hmr) { vite.hmr.accept(import.meta.url) }",
+    "if (window.HMR) { window.HMR.accept() }"
    ],
    "import.meta.hot is the Vite HMR API. It is undefined in production, so the if check lets the code be removed."
   ],
@@ -2367,8 +2367,8 @@
    ".env.production.local",
    [
     ".env.development",
-    ".env.test",
-    ".env.staging"
+    ".env.test.local",
+    ".env.staging.local"
    ],
    "vite build uses production mode, loading .env, .env.local, .env.production and .env.production.local. *.local files are usually git-ignored."
   ],
@@ -2376,7 +2376,7 @@
    "Why is import.meta.env.VITE_API_URL undefined inside vite.config.ts?",
    "Vite does not load .env into the config; use loadEnv",
    [
-    "The config file is evaluated in the browser instead",
+    "The config file is evaluated in the browser instead of Node",
     "Env variables only work inside .vue or .jsx files",
     "Config variables must start with a CONFIG_ prefix"
    ],
@@ -2406,9 +2406,9 @@
    "What is vite preview intended for?",
    "Serving the built dist folder locally to check it",
    [
-    "Running a production server for real traffic",
-    "Starting the dev server with HMR",
-    "Printing the bundle size report"
+    "Running a production server that handles real user traffic",
+    "Starting the dev server with HMR on a free port",
+    "Printing the bundle size report for each chunk"
    ],
    "vite preview is a simple local static server for the build output. It is not designed as a production server."
   ],
@@ -2416,9 +2416,9 @@
    "What does a dynamic import(\"./Chart\") do in a Vite production build?",
    "Splits Chart into its own chunk, loaded on demand",
    [
-    "Inlines Chart into the main entry chunk",
-    "Excludes Chart from the production build",
-    "Loads Chart synchronously at app startup"
+    "Inlines Chart into the main entry chunk at build time",
+    "Excludes Chart from the production build output",
+    "Loads Chart synchronously during app startup"
    ],
    "Dynamic imports create split points, so the chunk downloads only when the import runs."
   ]
@@ -2448,7 +2448,7 @@
    "Why add [contenthash] to output.filename, as in \"[name].[contenthash].js\"?",
    "The name changes only with content, which helps caching",
    [
-    "It encrypts the bundle so it cannot be tampered with",
+    "It encrypts the bundle so that it cannot be tampered with in transit",
     "It shortens the file name to save network bandwidth",
     "It turns on source maps for the production build"
    ],
@@ -2458,9 +2458,9 @@
    "In webpack 5, what does output.clean: true do?",
    "Empties the output directory before each build",
    [
-    "Removes comments from the bundle",
-    "Deletes unused npm packages",
-    "Runs Prettier on the output files"
+    "Removes all comments from the emitted bundle files",
+    "Deletes unused npm packages from node_modules",
+    "Runs Prettier on the output files after each build"
    ],
    "It replaces plugins like clean-webpack-plugin for removing stale files from previous builds."
   ],
@@ -2479,8 +2479,8 @@
    "css-loader first, then style-loader",
    [
     "style-loader first, then css-loader",
-    "Both in parallel",
-    "Alphabetical order"
+    "Both at once, in parallel threads",
+    "In alphabetical order of loader name"
    ],
    "Loaders run from right to left (bottom to top). css-loader resolves imports and url(), and style-loader injects the CSS into the page."
   ],
@@ -2488,9 +2488,9 @@
    "Why is exclude: /node_modules/ commonly added to a babel-loader rule?",
    "To skip transpiling dependencies and speed up the build",
    [
-    "Because Babel cannot read files in node_modules",
-    "To remove dependencies from the bundle",
-    "To force dependencies to load from a CDN"
+    "Because Babel cannot read any files inside node_modules folders",
+    "To remove dependencies from the final bundle",
+    "To force dependencies to load from a public CDN"
    ],
    "Most packages ship already-compiled code, so running Babel on them wastes time."
   ],
@@ -2498,9 +2498,9 @@
    "What does HtmlWebpackPlugin do?",
    "Generates an HTML file with script tags for the bundles",
    [
-    "Converts HTML templates into JS modules",
-    "Minifies the HTML of every page on a server",
-    "Checks HTML for accessibility errors"
+    "Converts HTML templates into JavaScript modules at build time",
+    "Minifies the HTML of every page on the server",
+    "Checks the generated HTML for accessibility errors"
    ],
    "It creates index.html (optionally from a template) and injects the emitted bundles, including hashed names."
   ],
@@ -2508,9 +2508,9 @@
    "In a production build, which change extracts CSS into separate .css files instead of injecting style tags?",
    "Use MiniCssExtractPlugin's loader, not style-loader",
    [
-    "Add css-loader twice to the same rule",
-    "Set output.css to true in the config",
-    "Use type asset/inline for .css files"
+    "Add css-loader twice to the same rule for .css files",
+    "Set output.css to true in the webpack config",
+    "Use type asset/inline for all .css files"
    ],
    "MiniCssExtractPlugin emits CSS files that browsers can cache and load in parallel with JS."
   ],
@@ -2528,7 +2528,7 @@
    "How do loaders differ from plugins in webpack?",
    "Loaders transform files; plugins hook into the build",
    [
-    "Loaders run after the build, plugins run before it",
+    "Loaders run after the build finishes, plugins run before it starts",
     "Plugins only handle CSS, loaders only handle JS",
     "There is no real difference, the names are aliases"
    ],
@@ -2539,8 +2539,8 @@
    "Creates a separate chunk loaded when the import runs",
    [
     "Inlines chart.js into the entry bundle",
-    "Throws, since webpack forbids dynamic imports",
-    "Loads chart.js from npm at runtime"
+    "Throws an error, since webpack forbids dynamic imports",
+    "Loads chart.js from npm at runtime over the network"
    ],
    "Dynamic import() is a split point; webpack emits a chunk and loads it with a runtime request when needed."
   ],
@@ -2548,9 +2548,9 @@
    "Which optimization setting splits shared vendor code out of both initial and async chunks?",
    "optimization.splitChunks: { chunks: \"all\" }",
    [
-    "optimization.minimize: false",
-    "output.chunkFilename: \"vendor\"",
-    "resolve.splitChunks: true"
+    "optimization.minimize: { chunks: \"all\" }",
+    "output.chunkFilename: { chunks: \"vendor\" }",
+    "resolve.splitChunks: { chunks: \"all\" }"
    ],
    "SplitChunksPlugin defaults to async chunks only; chunks: \"all\" also deduplicates code shared by entry chunks."
   ],
@@ -2569,7 +2569,7 @@
    "ES imports are static, so unused exports are found at build time",
    [
     "require calls are blocked by webpack in production mode",
-    "import statements execute faster than require in Node.js",
+    "import statements execute much faster than require calls in Node.js",
     "Webpack cannot include require calls in a bundle at all"
    ],
    "Static import and export structure lets webpack mark unused exports, which the minifier removes in production mode."
@@ -2588,8 +2588,8 @@
    "A single-page app on webpack-dev-server shows 404 when refreshing /settings. Which option fixes it?",
    "devServer.historyApiFallback: true",
    [
-    "devServer.hot: false",
-    "output.clean: true",
+    "devServer.liveReload: true",
+    "output.publicPath: \"/settings\"",
     "devServer.compress: true"
    ],
    "historyApiFallback serves index.html for unknown paths, so the client-side router can handle the route."
@@ -2598,9 +2598,9 @@
    "During development, how do you forward /api requests from webpack-dev-server to a backend on port 4000 to avoid CORS?",
    "Configure devServer.proxy for /api to http://localhost:4000",
    [
-    "Set output.publicPath to http://localhost:4000",
-    "Set devServer.port to 4000",
-    "Use DefinePlugin to rewrite /api"
+    "Set output.publicPath to http://localhost:4000/api for all requests",
+    "Set devServer.port to 4000 so both share one port",
+    "Use DefinePlugin to rewrite /api to localhost:4000"
    ],
    "The dev server proxies matching requests, so the browser sees one origin and no CORS preflight is needed."
   ],
@@ -2608,9 +2608,9 @@
    "In webpack 5, what does a rule with type: \"asset/resource\" do for a .png import?",
    "Emits the file to the output and exports its URL",
    [
-    "Inlines the file as a base64 data URI",
-    "Exports the file contents as a string",
-    "Ignores the file entirely"
+    "Inlines the file into the bundle as a base64 data URI",
+    "Exports the file contents as a raw string",
+    "Ignores the file entirely during the build"
    ],
    "asset/resource replaces file-loader. asset/inline makes a data URI, and plain asset chooses between them by size (8 KB by default)."
   ],

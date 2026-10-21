@@ -6,7 +6,7 @@
    [
     "20",
     "12",
-    "It does not compile"
+    "10"
    ],
    "p + 2 points to the third element, a[2], because pointer arithmetic counts in elements, not bytes."
   ],
@@ -94,11 +94,11 @@
    "Which call reads a line into char buf[64] in C without risking a buffer overflow?",
    "fgets(buf, sizeof buf, stdin)",
    [
-    "gets(buf)",
-    "scanf(\"%s\", buf)",
-    "fscanf(stdin, \"%s\", buf)"
+    "scanf(\"%[^\\n]\", buf)",
+    "fscanf(stdin, \"%s\", buf)",
+    "gets(buf), then a strlen check"
    ],
-   "fgets writes at most sizeof buf - 1 characters plus the terminator. gets was removed in C11, and %s without a width has no limit."
+   "fgets writes at most sizeof buf - 1 characters plus the terminator. gets was removed in C11, and %s or %[^\\n] without a width has no limit."
   ],
   [
    "Which C declaration makes f a pointer to a function that takes two ints and returns an int?",
@@ -208,7 +208,7 @@
    [
     "Resources are allocated once at compile time and reused",
     "A garbage collector releases resources when memory is low",
-    "Resources are acquired lazily the first time they are used"
+    "Resources are acquired lazily the first time the program uses them"
    ],
    "Resource Acquisition Is Initialization: the constructor acquires the resource and the destructor releases it, so cleanup happens on every exit path."
   ],
@@ -218,7 +218,7 @@
    [
     "It makes the mutex faster by skipping kernel calls",
     "It lets several threads hold the same mutex at once",
-    "It detects deadlocks and throws an exception instead"
+    "It detects deadlocks at runtime and throws an exception instead"
    ],
    "lock_guard is an RAII wrapper: leaving the scope, normally or via an exception, runs the destructor, which releases the lock."
   ],
@@ -226,19 +226,19 @@
    "In C++, auto a = std::make_unique<int>(5); std::unique_ptr<int> b = a; What happens?",
    "Compilation fails, because unique_ptr cannot be copied",
    [
-    "b and a now share ownership of the same int",
-    "b gets a deep copy of the int with value 5",
-    "a is silently moved into b and set to null"
+    "b and a now share ownership of the same int object",
+    "b gets a deep copy of the int with the value 5",
+    "a is silently moved into b and a is then reset to nullptr"
    ],
    "unique_ptr's copy constructor is deleted to keep single ownership. Use std::unique_ptr<int> b = std::move(a); to transfer it."
   ],
   [
    "In C++, after std::unique_ptr<int> b = std::move(a); what does a hold?",
-   "nullptr",
+   "An empty pointer equal to nullptr",
    [
-    "The same pointer as b",
+    "The same address that b now holds",
     "A dangling pointer to freed memory",
-    "A copy of the original int"
+    "A copy of the original int value"
    ],
    "Moving a unique_ptr transfers ownership and the standard guarantees the source is left empty (equal to nullptr)."
   ],
@@ -246,7 +246,7 @@
    "Two C++ objects hold std::shared_ptr references to each other and nothing else refers to them. What happens?",
    "Neither is destroyed, because each keeps the other's count above 0",
    [
-    "Both are destroyed when the last outside pointer goes away",
+    "Both are destroyed automatically when the last outside pointer goes away",
     "The program throws std::bad_weak_ptr when the scope ends",
     "The runtime detects the cycle and frees the older object"
    ],
@@ -256,9 +256,9 @@
    "In C++, how do you safely use the object behind a std::weak_ptr<T> w?",
    "Call w.lock() and check the returned shared_ptr",
    [
-    "Dereference w directly with *w",
-    "Call w.get() and check for null",
-    "Cast w to a raw pointer with static_cast"
+    "Dereference w directly with *w inside a try block",
+    "Call w.get() and check the result for null",
+    "Cast w to a raw pointer with static_cast and check it"
    ],
    "lock() atomically returns a shared_ptr that keeps the object alive, or an empty one if it has already been destroyed. weak_ptr has no operator* or get()."
   ],
@@ -266,7 +266,7 @@
    "What does std::move(x) actually do in C++?",
    "It casts x to an rvalue reference so a move can be chosen",
    [
-    "It moves the bytes of x to a new memory location",
+    "It moves the bytes of x to a new memory location immediately",
     "It destroys x and returns a new copy of its value",
     "It swaps x with a default-constructed object"
    ],
@@ -286,19 +286,19 @@
    "Given template<typename T> T maxOf(T a, T b); what happens with the call maxOf(3, 4.5)?",
    "Compilation fails: T is deduced as both int and double",
    [
-    "T is deduced as double and 4.5 is returned",
-    "T is deduced as int and 4 is returned",
-    "T is deduced as auto and the call works"
+    "T is deduced as double, so 4.5 is returned as a double",
+    "T is deduced as int and 4 is returned after truncation",
+    "T is deduced as auto and the call works for both arguments"
    ],
    "Template argument deduction requires both deductions to agree. Fix it with maxOf<double>(3, 4.5) or by using two type parameters."
   ],
   [
    "In C++, Base* p = new Derived; p->f(); where f is NOT virtual in Base and Derived defines its own f. Which f runs?",
-   "Base::f",
+   "Base::f only",
    [
-    "Derived::f",
+    "Derived::f only",
     "Both, Base::f first",
-    "The call is ambiguous and fails"
+    "Neither; ambiguous call"
    ],
    "Without virtual, the call is bound statically using the pointer's static type, Base."
   ],
@@ -327,17 +327,17 @@
    "std::unordered_map",
    [
     "std::map",
-    "std::list",
-    "std::set"
+    "std::unordered_set",
+    "std::multimap"
    ],
-   "unordered_map is a hash table with average constant-time lookup. std::map is a balanced tree with O(log n) lookup and sorted keys."
+   "unordered_map is a hash table with average constant-time lookup. std::map and std::multimap are trees with O(log n) lookup, and unordered_set stores keys without values."
   ],
   [
    "In C++, a loop holds an iterator it into std::vector v and calls v.push_back(x) inside the loop. What is the risk?",
    "Reallocation can invalidate it, so using it is undefined",
    [
     "push_back throws if any iterator is still active",
-    "it automatically moves to point at the new element",
+    "it is automatically updated to point at the newly added element",
     "The new element is skipped, but it stays valid"
    ],
    "If push_back exceeds capacity, the vector reallocates and all iterators, pointers and references to its elements become invalid."
@@ -364,7 +364,7 @@
   ],
   [
    "In C++11 and later, what happens if an exception escapes a destructor that has no explicit noexcept(false)?",
-   "std::terminate is called",
+   "std::terminate is called and the program ends",
    [
     "The exception propagates to the caller normally",
     "The exception is silently discarded",
@@ -409,7 +409,7 @@
    "Compile error: borrow of moved value s1",
    [
     "It prints hi, because s2 is a copy of s1",
-    "It prints an empty string",
+    "It prints an empty string, since s1 was cleared",
     "It panics at runtime with a use-after-move"
    ],
    "String is not Copy, so let s2 = s1 moves ownership to s2 and s1 can no longer be used. The check happens at compile time."
@@ -438,9 +438,9 @@
    "In Rust, let mut v = vec![1]; let first = &v[0]; v.push(2); println!(\"{}\", first); Why does this fail to compile?",
    "v is borrowed mutably while first still borrows it",
    [
-    "vec! macros cannot be modified after creation",
-    "first must be declared with let mut",
-    "push requires v to be passed by value"
+    "Vectors from vec! cannot be modified after creation",
+    "first must be declared with let mut to allow this",
+    "push requires v to be moved in, not borrowed"
    ],
    "push needs &mut v, but the shared borrow first is still used afterwards. This prevents first from dangling if push reallocates."
   ],
@@ -448,9 +448,9 @@
    "Why does fn longest(x: &str, y: &str) -> &str { ... } fail to compile in Rust?",
    "The return lifetime cannot be inferred from two inputs",
    [
-    "Functions cannot return references in Rust",
-    "&str arguments must be passed as String",
-    "The function body must use unsafe code"
+    "Functions cannot return references at all in Rust",
+    "&str arguments must always be passed as owned String values",
+    "The function body must be wrapped in unsafe code"
    ],
    "With two reference inputs, elision rules cannot pick one. Writing fn longest<'a>(x: &'a str, y: &'a str) -> &'a str ties them together."
   ],
@@ -459,8 +459,8 @@
    "&'static str",
    [
     "String",
-    "&mut str",
-    "Box<str>"
+    "&'static String",
+    "&mut str"
    ],
    "String literals are stored in the binary and live for the whole program, so they are &'static str. String is an owned heap type."
   ],
@@ -468,9 +468,9 @@
    "In Rust, what does fn show<T>(x: T) where T: Clone + Debug require of T?",
    "T must implement both Clone and Debug",
    [
-    "T must implement Clone or Debug",
-    "T must be a struct deriving Clone",
-    "T must be a reference type"
+    "T must implement either Clone or Debug",
+    "T must be a struct that derives Clone and Debug",
+    "T must be a reference type such as &str"
    ],
    "A + in a trait bound combines bounds, so the type must satisfy all of them."
   ],
@@ -478,9 +478,9 @@
    "Can a Rust crate write impl std::fmt::Display for Vec<i32>?",
    "No, because both the trait and type are foreign",
    [
-    "Yes, any crate can implement any trait",
-    "Yes, but only inside an unsafe block",
-    "No, because Vec has no fields to print"
+    "Yes, any crate can implement any trait for any type",
+    "Yes, but only inside an unsafe impl block",
+    "No, because Vec has no fields that can be printed"
    ],
    "The orphan rule requires the trait or the type to be local to the crate. The usual workaround is a newtype like struct MyVec(Vec<i32>)."
   ],
@@ -500,7 +500,7 @@
    [
     "\"big\"",
     "\"small\"",
-    "It fails to compile"
+    "A compile error"
    ],
    "3..=5 is an inclusive range pattern, so 5 matches it. The _ arm would catch anything above 5."
   ],
@@ -508,9 +508,9 @@
    "In a Rust function returning Result<T, E>, what does let v = parse(s)?; do?",
    "Returns early with the converted Err, or unwraps Ok into v",
    [
-    "Panics on Err, or unwraps Ok into v",
-    "Converts Err into None and stores it in v",
-    "Retries parse(s) until it returns Ok"
+    "Panics on Err with a message, or unwraps Ok into v",
+    "Converts the Err into None and stores that None in v instead",
+    "Retries parse(s) in a loop until it returns Ok"
    ],
    "The ? operator propagates the error to the caller, converting it via From, and evaluates to the Ok value otherwise."
   ],
@@ -558,7 +558,7 @@
    "Why does std::thread::spawn(move || println!(\"{}\", rc)) fail to compile when rc is an Rc<i32>?",
    "Rc<i32> is not Send, so it cannot move to another thread",
    [
-    "Closures passed to spawn cannot capture variables",
+    "Closures passed to spawn can never capture any outer variables",
     "i32 values cannot be printed from other threads",
     "spawn requires the closure to return a Result"
    ],
@@ -588,9 +588,9 @@
    "Which Rust operation requires an unsafe block?",
    "Dereferencing a raw pointer",
    [
-    "Creating a raw pointer with as *const i32",
+    "Casting a reference to *const i32",
     "Calling a method on a Box",
-    "Indexing a Vec with []"
+    "Indexing a Vec with [] out of bounds"
    ],
    "Creating a raw pointer is safe; reading or writing through it is not, because the compiler cannot verify it is valid."
   ],
@@ -640,7 +640,7 @@
    "What happens in Zig when allocator.alloc cannot obtain memory?",
    "It returns error.OutOfMemory",
    [
-    "It returns a null slice",
+    "It returns an empty slice instead",
     "It aborts the program",
     "It throws an exception"
    ],
@@ -670,9 +670,9 @@
    "In Zig, why does a ++ b fail when a and b are slices whose lengths are only known at runtime?",
    "++ requires operands with comptime-known lengths",
    [
-    "++ is defined only for numeric types",
-    "++ needs both operands to be mutable",
-    "++ only works inside a defer block"
+    "++ is defined only for numeric types like integers",
+    "++ needs both operands to be mutable slices",
+    "++ only works on slices of the u8 byte type"
    ],
    "++ concatenates arrays at compile time. Runtime concatenation needs an allocator, for example std.mem.concat."
   ],
@@ -680,9 +680,9 @@
    "In a Zig function returning !void, what does try foo() do?",
    "Returns foo's error to the caller, or yields its value",
    [
-    "Retries foo until it succeeds",
-    "Converts the error into a panic",
-    "Ignores the error and continues"
+    "Retries foo until it succeeds or a limit is reached",
+    "Converts any error from foo into a panic",
+    "Ignores the error and continues with an undefined value"
    ],
    "try x is shorthand for x catch |err| return err. On success it evaluates to the payload."
   ],
@@ -700,9 +700,9 @@
    "When does a Zig errdefer statement run?",
    "Only when the scope exits by returning an error",
    [
-    "On every scope exit, like defer",
-    "Only when the program panics",
-    "Only at the end of the program"
+    "On every scope exit, exactly like a plain defer",
+    "Only when the program panics or hits unreachable",
+    "Only at the end of the program after main returns"
    ],
    "errdefer is used for cleanup that should happen only on failure, such as freeing a partially built object."
   ],
@@ -750,19 +750,19 @@
    "What is zig cc commonly used for?",
    "As a drop-in C compiler with easy cross-compilation",
    [
-    "As a converter from C source to Zig source",
-    "As a linter for Zig code style",
-    "As the Zig package registry client"
+    "As a converter from C source code to Zig source",
+    "As a linter that checks Zig code style rules",
+    "As the client for the official Zig package registry"
    ],
    "zig cc wraps Clang and ships libc headers for many targets, so it can compile C for other platforms without extra toolchains."
   ],
   [
    "In a Zig project, what is build.zig?",
-   "A Zig source file that defines the build, run by zig build",
+   "A Zig source file defining the build, run by zig build",
    [
-    "A JSON file listing compiler flags",
-    "A Makefile that zig build converts",
-    "A lock file of resolved package versions"
+    "A JSON file listing compiler flags for each target",
+    "A Makefile that zig build converts into Zig code first",
+    "A lock file that records every resolved package version"
    ],
    "The build is described in Zig itself. Package dependencies are declared separately in build.zig.zon."
   ],
@@ -790,9 +790,9 @@
    "In a Zig Debug build, what happens when code indexes a slice past its length?",
    "The program panics with an index out of bounds error",
    [
-    "It reads whatever memory lies after the slice",
-    "The index wraps around to the start",
-    "The slice grows to fit the index"
+    "It reads whatever memory lies after the end of the slice",
+    "The index wraps around to the start of the slice",
+    "The slice grows automatically to fit the index"
    ],
    "Safety checks are on in Debug and ReleaseSafe. In ReleaseFast they are removed and the access is undefined behavior."
   ],
@@ -882,9 +882,9 @@
    "What is the main benefit of placing Fortran subroutines inside a module and accessing them with use?",
    "Calls get an explicit interface, so arguments are checked",
    [
-    "The subroutines run in parallel automatically",
-    "The subroutines no longer need a call statement",
-    "Module variables are stored in double precision"
+    "The subroutines run in parallel automatically on all cores",
+    "The subroutines no longer need a call statement to run",
+    "Module variables are always stored in double precision"
    ],
    "Module procedures have explicit interfaces, so the compiler checks argument count, type and rank at each call. Old external procedures had none."
   ],
@@ -922,11 +922,11 @@
    "Which Fortran declaration portably requests a real with at least 15 significant decimal digits?",
    "real(selected_real_kind(15)) :: x",
    [
-    "real(kind=15) :: x",
-    "real*15 :: x",
+    "real(selected_int_kind(15)) :: x",
+    "real(kind=real15) :: x",
     "real(precision=15) :: x"
    ],
-   "Kind numbers are compiler-specific, so selected_real_kind(15) (or real64 from iso_fortran_env) is the portable choice."
+   "Kind numbers are compiler-specific, so selected_real_kind(15) (or real64 from iso_fortran_env) is the portable choice. selected_int_kind returns an integer kind, not a real one."
   ],
   [
    "In Fortran, x is declared real(real64) and the code does x = 0.1. What precision does x end up with?",
@@ -952,9 +952,9 @@
    "In Coarray Fortran, what does the statement sync all do?",
    "Waits until every image reaches this point",
    [
-    "Copies all coarrays to image 1",
-    "Ends execution on all images",
-    "Starts all images in parallel"
+    "Copies all coarrays to image 1 for printing results",
+    "Ends execution on all images at once",
+    "Starts all images running in parallel"
    ],
    "sync all is a barrier across all images, often used before reading data another image has written."
   ],
@@ -973,10 +973,10 @@
    "reduction(+:s)",
    [
     "private(s)",
-    "shared(s)",
-    "nowait"
+    "firstprivate(s)",
+    "shared(s)"
    ],
-   "reduction gives each thread a private copy of s and combines them at the end, removing the data race. private(s) would discard the results."
+   "reduction gives each thread a private copy of s and combines them at the end, removing the data race. private(s) and firstprivate(s) would discard the per-thread results."
   ],
   [
    "In legacy Fortran without implicit none, an undeclared variable named kount is used. What type does it get?",
@@ -992,8 +992,8 @@
    "In fixed-form FORTRAN 77 source, what does a non-blank character in column 6 mean?",
    "The line continues the previous statement",
    [
-    "The line is a comment",
-    "The line carries a statement label",
+    "The line is a comment to be ignored",
+    "The line carries a statement label for a goto",
     "The line is a compiler directive"
    ],
    "Columns 1 to 5 hold labels, column 6 marks continuation and statements go in columns 7 to 72. A C or * in column 1 marks a comment."
@@ -1054,9 +1054,9 @@
    "How long are AArch64 (A64) instructions compared with x86-64 instructions?",
    "A64 uses a fixed 32 bits; x86-64 varies from 1 to 15 bytes",
    [
-    "Both use a fixed length of 32 bits",
-    "A64 varies from 1 to 15 bytes; x86-64 uses 32 bits",
-    "Both vary from 2 to 8 bytes"
+    "Both use a fixed length of 32 bits per instruction",
+    "A64 varies from 1 to 15 bytes, while x86-64 always uses 32 bits",
+    "Both vary from 2 to 8 bytes depending on operands"
    ],
    "Fixed-length encoding simplifies decoding on ARM, while x86 uses variable-length instructions with prefixes."
   ],
@@ -1064,7 +1064,7 @@
    "On AArch64, where does the BL instruction store the return address?",
    "In X30, the link register",
    [
-    "On the stack at [SP]",
+    "On the stack, at the address in SP",
     "In X0, the first argument register",
     "In the program counter PC"
    ],
@@ -1094,8 +1094,8 @@
    "In Intel syntax, what does mov eax, [0x1000] put into EAX?",
    "The 4 bytes stored at address 0x1000",
    [
-    "The number 0x1000",
-    "The address of EAX",
+    "The immediate number 0x1000",
+    "The address where EAX is stored",
     "The 4 bytes at the address held in 0x1000"
    ],
    "Square brackets denote a memory operand (direct addressing). mov eax, 0x1000 without brackets would load the immediate value."
@@ -1115,8 +1115,8 @@
    "Pushes the return address and jumps to the target",
    [
     "Jumps to the target without saving anything",
-    "Saves all registers and jumps to the target",
-    "Pushes RBP and sets RBP to RSP"
+    "Saves all registers on the stack and jumps to the target",
+    "Pushes RBP, then sets RBP to RSP and jumps"
    ],
    "call pushes the address of the next instruction onto the stack, and ret pops it back into RIP."
   ],
@@ -1174,9 +1174,9 @@
    "What does cmp eax, ebx do on x86?",
    "Computes eax - ebx, sets flags, and discards the result",
    [
-    "Computes eax - ebx and stores it in eax",
-    "Copies ebx into eax if they differ",
-    "Swaps eax and ebx if eax is larger"
+    "Computes eax - ebx and stores the result in eax",
+    "Copies ebx into eax only if the two values differ",
+    "Swaps eax and ebx when eax is larger, then sets the flags"
    ],
    "cmp is a subtraction that only updates flags such as ZF, SF, CF and OF, which conditional jumps then test."
   ],
@@ -1256,9 +1256,9 @@
    "What does always @(*) if (en) q = d; synthesize to in Verilog?",
    "A latch, because q keeps its value when en is 0",
    [
-    "A flip-flop clocked by en",
-    "Pure combinational wiring from d to q",
-    "A tri-state buffer controlled by en"
+    "A flip-flop clocked by the en signal",
+    "Pure combinational wiring from d to q with no storage",
+    "A tri-state buffer on q controlled by en"
    ],
    "When en is 0 there is no assignment, so q must hold its value, which requires a latch. Add an else or a default assignment."
   ],
@@ -1268,7 +1268,7 @@
    [
     "Both get the old value of b",
     "Both get the old value of a",
-    "Only a changes"
+    "Only a changes value"
    ],
    "Non-blocking assignments read all right-hand sides first and update together at the end of the time step."
   ],
@@ -1276,9 +1276,9 @@
    "In a Verilog always @(posedge clk) block, a = b; b = a; runs on a clock edge. What happens?",
    "Both end up with the old value of b",
    [
-    "a and b swap values",
+    "a and b swap their values cleanly",
     "Both end up with the old value of a",
-    "Neither changes"
+    "Neither register changes value"
    ],
    "Blocking assignments execute in order: a takes b first, then b takes the new a, which is the old b."
   ],
@@ -1296,9 +1296,9 @@
    "A Verilog designer writes always @(posedge clk) begin q1 = d; q2 = q1; end intending a 2-stage shift register. What is built?",
    "One stage: q1 and q2 both take d at each edge",
    [
-    "A correct 2-stage shift register",
-    "A latch on q2 controlled by q1",
-    "No logic, since q2 is unused"
+    "A correct 2-stage shift register, as the designer intended",
+    "A latch on q2 that is controlled by q1",
+    "No logic at all, since q2 is never used"
    ],
    "With blocking assignments q2 reads the new q1, which is already d. Using q1 <= d; q2 <= q1; gives two stages."
   ],
@@ -1336,9 +1336,9 @@
    "What is typical of a Verilog testbench top module?",
    "It has no ports and drives the design from initial blocks",
    [
-    "It must be synthesizable into hardware",
-    "It has the same ports as the design under test",
-    "It contains only continuous assignments"
+    "It must be fully synthesizable into real hardware",
+    "It has exactly the same ports as the design under test",
+    "It contains only continuous assignments and no initial blocks"
    ],
    "A testbench wraps the design, generates stimulus and checks results in simulation only."
   ],
@@ -1358,7 +1358,7 @@
    [
     "A delay of 5 ps",
     "A delay of 5 clock cycles",
-    "A delay of 1 ns, rounded to 5 ps"
+    "A delay of 0.5 ns"
    ],
    "The first value sets the time unit for delays and the second sets the rounding precision."
   ],
@@ -1420,7 +1420,7 @@
    [
     "The entity holds the behavior; the architecture the ports",
     "The entity is a testbench; the architecture is the design",
-    "The entity lists libraries; the architecture lists signals"
+    "The entity lists libraries; the architecture lists internal signals"
    ],
    "The entity is the external interface, and an architecture body describes how the design works inside."
   ],
@@ -1428,9 +1428,9 @@
    "How many architectures can one VHDL entity have?",
    "One or more, and a configuration or binding picks one",
    [
-    "Exactly one, defined in the same file",
-    "Zero, since architectures replace entities",
-    "Exactly two: one behavioral, one structural"
+    "Exactly one, which must be defined in the same file",
+    "Zero, since architectures replace entities entirely",
+    "Exactly two: one behavioral model and one structural model"
    ],
    "An entity can have several architectures, such as a behavioral model and a structural one. By default the most recently analyzed one is used."
   ],
@@ -1438,8 +1438,8 @@
    "In VHDL-93, an architecture reads the value of a port declared with mode out. What happens?",
    "It is a compile error; VHDL-2008 allows reading it",
    [
-    "It always reads 'U' in simulation",
-    "It reads the value from the previous clock",
+    "It always reads the value 'U' in every simulation",
+    "It reads the value that was driven on the previous clock",
     "It works the same in all VHDL versions"
    ],
    "Before VHDL-2008, out ports could not be read inside the architecture, so designers used an internal signal or mode buffer."
@@ -1449,8 +1449,8 @@
    "A variable updates at once; a signal after the process suspends",
    [
     "A signal updates at once; a variable after the process suspends",
-    "Both update at once, in program order",
-    "Both update only at the next clock edge"
+    "Both update at once, in the order the statements are written",
+    "Both update only at the next rising clock edge of the process"
    ],
    "Variable assignment (:=) takes effect immediately. Signal assignment (<=) is scheduled and visible after a delta cycle."
   ],
@@ -1468,9 +1468,9 @@
    "Where are VHDL variables (other than shared variables) declared?",
    "In the declarative part of a process or subprogram",
    [
-    "In the entity's port list",
-    "In the architecture's declarative part",
-    "In the library clause"
+    "In the port list of the entity declaration",
+    "In the architecture's declarative part, before begin",
+    "In the library clause at the top of the design file"
    ],
    "Ordinary variables are local to a process, function or procedure. Signals are declared in the architecture."
   ],
@@ -1478,9 +1478,9 @@
    "A combinational VHDL process is written as process(a) but also reads b. What is the effect?",
    "Simulation misses changes on b, unlike the hardware",
    [
-    "Synthesis fails with a missing signal error",
-    "b is treated as a constant zero",
-    "The process runs on every delta cycle"
+    "Synthesis fails with a missing sensitivity signal error",
+    "b is treated as a constant zero during simulation",
+    "The process runs on every delta cycle instead"
    ],
    "The process wakes only on a. Synthesis usually ignores the list and builds logic using b, so simulation and hardware disagree."
   ],
@@ -1489,7 +1489,7 @@
    "The process is sensitive to every signal it reads",
    [
     "The process runs once at time zero",
-    "The process drives every signal in the design",
+    "The process drives every signal declared in the design",
     "The process waits on all clocks in the design"
    ],
    "process(all) removes the risk of incomplete sensitivity lists in combinational logic."
@@ -1498,9 +1498,9 @@
    "What happens in simulation to a VHDL process that has neither a sensitivity list nor any wait statement?",
    "It loops forever at time zero and the simulation hangs",
    [
-    "It runs once and then stops for good",
-    "It runs once on every clock edge",
-    "It is removed by the simulator"
+    "It runs once and then stops for good, like an initial block",
+    "It runs once on every clock edge of the design",
+    "It is removed by the simulator during elaboration"
    ],
    "A process repeats from the top when it ends, and only a wait (or a sensitivity list) can suspend it."
   ],
@@ -1518,9 +1518,9 @@
    "In a VHDL architecture body, two concurrent signal assignments appear outside any process. Does their order matter?",
    "No, both describe hardware that is active in parallel",
    [
-    "Yes, the first one is evaluated first",
-    "Yes, the last one overrides the first",
-    "Only if they drive different signals"
+    "Yes, the first one is always evaluated first",
+    "Yes, the last one overrides the first one written",
+    "Only if they drive different signals in the same architecture"
    ],
    "Concurrent statements execute whenever their inputs change, regardless of their position in the code."
   ],
@@ -1528,8 +1528,8 @@
    "In VHDL-93, which statement can appear directly in an architecture body outside any process?",
    "y <= a when sel = '1' else b;",
    [
-    "if sel = '1' then y <= a; else y <= b; end if;",
-    "case sel is when '1' => y <= a; when others => y <= b; end case;",
+    "if sel = '1' then y <= a; end if;",
+    "case sel is when others => y <= b; end case;",
     "for i in 0 to 3 loop y(i) <= a(i); end loop;"
    ],
    "when/else is a concurrent conditional assignment. if, case and loop statements are sequential and belong inside a process."
@@ -1548,9 +1548,9 @@
    "What is a VHDL generic, such as generic (WIDTH : integer := 8)?",
    "A constant parameter set when the entity is instantiated",
    [
-    "A signal shared by all entities in the design",
-    "A variable that changes during simulation",
-    "A library that defines generic data types"
+    "A signal shared by all entities in the whole design",
+    "A variable that changes value during simulation runs",
+    "A library that defines generic data types for the entity"
    ],
    "Generics parameterize an entity, for example bus width, and can be overridden per instance with a generic map."
   ],
@@ -1568,9 +1568,9 @@
    "What does u1: and2 port map (a => x, b => y, c => z); use for connecting ports in VHDL?",
    "Named association, mapping formal ports to actual signals",
    [
-    "Positional association, by order of declaration",
-    "Generic association, with constant values",
-    "Implicit association, by matching signal names"
+    "Positional association, by the order of declaration",
+    "Generic association, connecting ports to constant values",
+    "Implicit association, matching ports by their signal names"
    ],
    "formal => actual connects each port by name, so the order of the list does not matter."
   ],
@@ -1578,8 +1578,8 @@
    "What does direct entity instantiation, u1: entity work.and2 port map (...);, avoid in VHDL-93?",
    "The need for a separate component declaration",
    [
-    "The need for a port map",
-    "The need to compile the entity first",
+    "The need for a port map in the instance",
+    "The need to compile the entity before using it",
     "The need for a library clause for ieee"
    ],
    "Component instantiation requires a matching component declaration; direct entity instantiation refers to the compiled entity in a library."

@@ -35,7 +35,7 @@
    "tf.Tensor(3, shape=(), dtype=int32)",
    [
     "Tensor(\"Add:0\", shape=(), dtype=int32)",
-    "3.0",
+    "tf.Tensor(3.0, shape=(), dtype=float32)",
     "An error saying a Session is required"
    ],
    "Eager execution is the default in TF 2.x, so operations run immediately and return concrete tensors with values. The symbolic Add:0 form belongs to graph mode."
@@ -52,11 +52,11 @@
   ],
   [
    "In TensorFlow 2.x, what happens when you run tf.constant(1) + tf.constant(1.5)?",
-   "It raises an InvalidArgumentError because int32 and float32 do not match",
+   "It raises an InvalidArgumentError since int32 and float32 differ",
    [
-    "It returns 2.5 as a float32 tensor",
-    "It returns 2 as an int32 tensor",
-    "It returns 2.5 as a float64 tensor"
+    "It returns 2.5 as a float32 tensor after promoting the int32 input",
+    "It returns 2 as an int32 tensor after truncating the float input",
+    "It returns 2.5 as a float64 tensor, the wider of the two dtypes"
    ],
    "By default TensorFlow does not promote dtypes automatically, so mixing int32 and float32 in one op fails. Cast one side with tf.cast first."
   ],
@@ -96,7 +96,7 @@
    [
     "tf.where",
     "tf.switch_case",
-    "A Python if evaluated once at trace time"
+    "tf.while_loop"
    ],
    "AutoGraph rewrites Python if statements whose condition is a tensor into tf.cond, so the branch is chosen at run time. A condition on a plain Python value is evaluated during tracing."
   ],
@@ -114,9 +114,9 @@
    "What is the purpose of passing input_signature=[tf.TensorSpec(shape=[None], dtype=tf.float32)] to tf.function?",
    "To fix the accepted input spec so the function is traced only once",
    [
-    "To make the function run eagerly for easier debugging",
-    "To convert the function into a Keras layer",
-    "To force the inputs to be placed on a GPU"
+    "To make the function run eagerly so you can debug it step by step",
+    "To convert the function into a Keras layer with that input shape",
+    "To force the inputs to be placed on a GPU before the graph runs"
    ],
    "An input_signature declares the shape and dtype the function accepts, so it builds one graph and does not retrace for different batch sizes."
   ],
@@ -144,9 +144,9 @@
    "Your GPU sits idle while the CPU decodes and resizes images in ds.map(decode). Which change is the most direct fix in tf.data?",
    "Use ds.map(decode, num_parallel_calls=tf.data.AUTOTUNE)",
    [
-    "Use ds.map(decode).repeat(2)",
-    "Use ds.map(decode).take(1)",
-    "Use ds.unbatch().map(decode)"
+    "Use ds.map(decode).repeat(2) so each batch is reused",
+    "Use ds.map(decode).take(1) to decode only the first batch",
+    "Use ds.unbatch().map(decode) to decode one image at a time"
    ],
    "num_parallel_calls runs the map function on several CPU threads at once. Adding .prefetch(tf.data.AUTOTUNE) at the end also overlaps input work with training."
   ],
@@ -164,8 +164,8 @@
    "In a custom tf.keras Layer whose weight shapes depend on the input size, where should you create those weights?",
    "In build(input_shape)",
    [
-    "In __init__()",
-    "In call(inputs)",
+    "In __init__(self, units)",
+    "In call(inputs, training)",
     "In get_config()"
    ],
    "Keras calls build once with the input shape before the first call, which is the place for shape-dependent add_weight calls. Creating weights in call would recreate them on every step."
@@ -175,8 +175,8 @@
    "self.add_weight(shape=(4, 8), trainable=True)",
    [
     "self.w = tf.constant(tf.zeros((4, 8)))",
-    "self.w = np.zeros((4, 8))",
-    "self.w = [tf.zeros((4, 8))]"
+    "self.w = np.zeros((4, 8), dtype=np.float32)",
+    "self.w = [tf.zeros((4, 8)) for _ in range(2)]"
    ],
    "add_weight creates a tf.Variable registered in layer.trainable_weights, so the optimizer updates it. Constants and NumPy arrays are not trainable."
   ],
@@ -206,9 +206,9 @@
    "Which statement about keras.Sequential models is true?",
    "Each layer has exactly one input tensor and one output tensor",
    [
-    "It supports multiple inputs if you pass a list of layers",
-    "It supports branches that share layers",
-    "It requires you to write a call() method"
+    "It supports multiple inputs if you pass a list of layers to it",
+    "It supports branches that share layers, like a Siamese network",
+    "It requires you to write a call() method for the forward pass"
    ],
    "Sequential is a plain stack of layers. Multiple inputs, multiple outputs or branching topologies need the Functional API or subclassing."
   ],
@@ -227,8 +227,8 @@
    "The Functional API",
    [
     "The Sequential API",
-    "A Sequential model with two Input layers",
-    "A single Dense layer with two inputs"
+    "Sequential with two Inputs",
+    "A Dense layer with 2 inputs"
    ],
    "The Functional API builds a graph of layers, so it handles several inputs and merging naturally. Sequential models accept a single input stream only."
   ],
@@ -236,7 +236,7 @@
    "In the Functional API, you apply the same Dense layer instance to two different inputs. What happens to its weights?",
    "Both branches share the same weights",
    [
-    "Keras creates a separate copy of the weights per input",
+    "Keras copies the weights for each input",
     "Keras raises an error about reusing a layer",
     "Only the first branch is trained"
    ],
@@ -254,21 +254,21 @@
   ],
   [
    "Compared with a Functional model, what is a known limitation of a subclassed keras.Model?",
-   "Its layer connectivity lives in Python code, so Keras cannot inspect or plot the graph",
+   "Keras cannot inspect or plot its layer graph",
    [
-    "It cannot be trained with model.fit",
+    "It cannot be trained with the built-in model.fit",
     "It cannot contain Dropout or BatchNormalization",
-    "It cannot use custom loss functions"
+    "It cannot be compiled with a custom loss function"
    ],
    "A subclassed model's topology exists only inside call, so tools like plot_model and automatic shape checks are limited. It still trains with fit and supports any layers or losses."
   ],
   [
    "You pass keras.callbacks.EarlyStopping(monitor=\"val_loss\", patience=3, restore_best_weights=True) to fit. What does it do?",
-   "Stops after 3 epochs without val_loss improvement and restores the best weights",
+   "Stops after 3 epochs without improvement and restores the best weights",
    [
-    "Stops after exactly 3 epochs and keeps the final weights",
-    "Lowers the learning rate after 3 epochs without improvement",
-    "Saves a checkpoint every 3 epochs"
+    "Stops after exactly 3 epochs of training and keeps the final weights",
+    "Lowers the learning rate after 3 epochs without val_loss improvement",
+    "Saves a checkpoint every 3 epochs and reloads the best one at the end"
    ],
    "patience counts epochs with no improvement in the monitored metric. restore_best_weights reloads the weights from the best epoch instead of the last one."
   ],
@@ -306,29 +306,29 @@
    "To write a custom stateful metric by subclassing keras.metrics.Metric, which methods do you implement?",
    "update_state, result and reset_state",
    [
-    "fit, transform and score",
-    "call, build and get_config",
-    "forward, backward and step"
+    "build_state, call and get_config",
+    "forward, backward and zero_grad",
+    "fit, transform and fit_transform"
    ],
    "update_state accumulates statistics per batch, result computes the metric from them, and reset_state clears them between epochs."
   ],
   [
    "Why implement precision as a stateful keras.metrics.Metric rather than a plain function computed per batch?",
-   "Averaging per-batch precision differs from precision over the whole epoch",
+   "Per-batch averages of precision differ from epoch-level precision",
    [
-    "Plain metric functions cannot be passed to compile",
-    "Stateful metrics run on the GPU while functions cannot",
-    "Plain functions are only evaluated on the validation set"
+    "Plain metric functions cannot be passed to model.compile at all",
+    "Stateful metrics run on the GPU, while plain functions cannot",
+    "Plain functions are only evaluated on the validation set, not training"
    ],
    "Precision is a ratio of totals, so it must accumulate true and false positives across batches. A function metric is averaged batch by batch, which gives a different and less accurate value."
   ],
   [
    "What does calling layer.adapt(train_features) on a keras.layers.Normalization layer do?",
-   "Computes the mean and variance of the data and stores them in the layer",
+   "Computes the data's mean and variance and stores them in the layer",
    [
-    "Trains the layer weights with gradient descent",
-    "Scales every feature into the range 0 to 1",
-    "Removes outliers from the training features"
+    "Trains the layer's scale and offset weights with gradient descent steps",
+    "Scales every feature into the range 0 to 1 using its min and max",
+    "Removes outlier rows from the training features before fit runs"
    ],
    "adapt computes statistics from the data once before training. The layer then subtracts the mean and divides by the standard deviation for every input."
   ],
@@ -366,19 +366,19 @@
    "In Keras, what does model.fit(x, y, validation_split=0.2) use as validation data?",
    "The last 20% of the samples in x and y, taken before shuffling",
    [
-    "A random 20% of the samples, chosen again each epoch",
+    "A random 20% of the samples, chosen again at the start of each epoch",
     "The first 20% of the samples, taken after shuffling",
-    "20% of each batch, chosen at random"
+    "20% of each batch, chosen at random during every step"
    ],
    "Keras holds out the last fraction of the arrays before any shuffling. If the data is sorted, for example by class, shuffle it first. validation_split is not supported for tf.data datasets."
   ],
   [
    "What does model.fit return in Keras?",
-   "A History object whose history dict holds per-epoch metrics",
+   "A History object holding per-epoch metrics",
    [
     "The trained model with updated weights",
     "A list of predictions for the training data",
-    "The final loss value as a float"
+    "The final training loss value as a float"
    ],
    "History.history maps names like loss and val_loss to lists with one value per epoch, which is handy for plotting learning curves."
   ],
@@ -394,10 +394,10 @@
   ],
   [
    "You call model.fit(dataset, epochs=5) where dataset is a tf.data.Dataset yielding (features, labels) batches of 32. How should you set batch_size?",
-   "Do not pass batch_size, since the dataset already defines batches",
+   "Do not pass it, since the dataset already defines batches",
    [
-    "Pass batch_size=32 so Keras matches the dataset",
-    "Pass batch_size=1 to avoid batching twice",
+    "Pass batch_size=32 so Keras matches the batches in the dataset",
+    "Pass batch_size=1 to avoid batching the data twice",
     "Pass batch_size=None and also set steps_per_epoch=32"
    ],
    "When x is a dataset, Keras uses its batches as they are, and the docs say not to specify batch_size. Batching is controlled in the pipeline with dataset.batch."
@@ -418,9 +418,9 @@
    "You call jax.grad(f) where f returns a vector of shape (3,). What happens when the gradient function runs?",
    "It raises a TypeError, since grad needs a scalar output",
    [
-    "It returns the full 3 by 3 Jacobian",
-    "It returns the gradient of the sum of outputs",
-    "It returns the gradient of the first output"
+    "It returns the full 3 by 3 Jacobian of f at the input",
+    "It returns the gradient of the sum of the three outputs",
+    "It returns the gradient of the first output element only"
    ],
    "jax.grad is defined only for scalar-output functions. Use jax.jacfwd or jax.jacrev for a Jacobian, or reduce the output to a scalar such as a loss."
   ],
@@ -438,9 +438,9 @@
    "What happens when you run jax.grad(lambda x: x ** 2)(3) with the integer 3 in JAX?",
    "It raises a TypeError because grad needs a float input",
    [
-    "It returns the integer 6",
-    "It returns 6.0 after an automatic cast",
-    "It returns 0 because integers are constant"
+    "It returns the integer 6, keeping the input dtype",
+    "It returns 6.0 after automatically casting 3 to float32",
+    "It returns 0, because integers are treated as constants"
    ],
    "JAX requires real or complex inputs for differentiation and rejects integer dtypes. Pass 3.0 instead."
   ],
@@ -458,29 +458,29 @@
    "You define @jax.jit def f(x): print(x); return x + 1, then call f(1.0) and f(2.0). What does print show?",
    "A tracer object, once, during the first call",
    [
-    "1.0 and then 2.0",
+    "The values 1.0 and then 2.0, one per call",
     "Nothing, because print is removed by jit",
-    "A tracer object on each of the two calls"
+    "A tracer object on each of the two separate calls"
    ],
    "Python side effects run only while JAX traces the function. The second call reuses the compiled version. Use jax.debug.print to see runtime values."
   ],
   [
    "Inside a jax.jit function, you write if x > 0: where x is a traced array argument. What happens?",
-   "JAX raises an error because the tracer has no concrete boolean value",
+   "JAX raises an error, since the tracer has no concrete bool value",
    [
-    "JAX converts the if into lax.cond automatically",
-    "JAX evaluates the condition once using x = 0",
-    "The branch is always taken because tracers are truthy"
+    "JAX converts the if statement into lax.cond automatically at trace time",
+    "JAX evaluates the condition once using x = 0 and keeps that branch",
+    "The true branch is taken on every call, because tracers are truthy"
    ],
    "Under jit, arguments are abstract tracers, so Python control flow cannot depend on their values. Use jnp.where or jax.lax.cond, or mark the argument static."
   ],
   [
    "What does jax.jit(f, static_argnums=1) do with the second argument of f?",
-   "Treats it as a compile-time constant and recompiles for each new value",
+   "Treats it as a compile-time constant, recompiling for each new value",
    [
-    "Traces it as an array so its value can change freely",
-    "Moves it to the host CPU for every call",
-    "Excludes it from gradient computation"
+    "Traces it as an abstract array so its value can change freely between calls",
+    "Moves it to the host CPU and copies it back for every call",
+    "Excludes it from gradient computation but still traces it as an array"
    ],
    "Static arguments are baked into the compiled program and must be hashable. Each distinct value triggers a new compilation, so use them for things like flags or sizes."
   ],
@@ -488,8 +488,8 @@
    "A jax.jit function is called first with an array of shape (10,) and then with shape (20,). What happens on the second call?",
    "JAX traces and compiles the function again for the new shape",
    [
-    "JAX reuses the compiled code and pads the input",
-    "JAX raises a shape mismatch error",
+    "JAX reuses the first compiled code and truncates the input to (10,)",
+    "JAX raises a shape mismatch error against the first call",
     "JAX falls back to running the function without compilation"
    ],
    "Compiled programs are specialized on input shapes and dtypes. A new shape triggers retracing and recompiling, so varying shapes in a loop can be slow."
@@ -516,11 +516,11 @@
   ],
   [
    "What does jax.vmap(f, in_axes=(0, None))(xs, w) do?",
-   "Maps f over the first axis of xs while passing the same w to every call",
+   "Maps f over axis 0 of xs, passing the same w to every call",
    [
-    "Maps f over the first axis of both xs and w",
-    "Maps f over w while keeping xs fixed",
-    "Runs f once on xs and w with no mapping"
+    "Maps f over axis 0 of both xs and w, pairing their rows",
+    "Maps f over axis 0 of w, passing the same xs to every call",
+    "Runs f once on the full xs and w, with no mapping at all"
    ],
    "in_axes gives one entry per argument. 0 maps along axis 0 and None broadcasts the argument unchanged to every mapped call, which suits shared weights."
   ],
@@ -528,9 +528,9 @@
    "What constraint does jax.pmap place on the size of the mapped leading axis?",
    "It must not exceed the number of available devices",
    [
-    "It must be a power of two",
-    "It must equal the batch size used by jit",
-    "It must be exactly one per CPU core"
+    "It must be a power of two, such as 2, 4 or 8",
+    "It must equal the batch size used by the jitted step",
+    "It must be exactly one entry per CPU core"
    ],
    "pmap runs one slice of the mapped axis on each device in parallel, so the axis size is limited by the device count. Newer JAX code often uses jit with sharding for the same goal."
   ],
@@ -546,11 +546,11 @@
   ],
   [
    "In JAX, x = jnp.zeros(3). What happens when you run x[0] = 1.0?",
-   "It raises a TypeError because JAX arrays are immutable",
+   "It raises a TypeError, since JAX arrays are immutable",
    [
-    "It sets the first element to 1.0 in place",
-    "It silently does nothing",
-    "It returns a copy with the first element set"
+    "It sets the first element to 1.0 in place, like NumPy",
+    "It silently does nothing, and x keeps its three zeros",
+    "It returns a copy of x with the first element set"
    ],
    "JAX arrays cannot be modified in place, which keeps functions pure. Use x.at[0].set(1.0), which returns a new array."
   ],
@@ -576,11 +576,11 @@
   ],
   [
    "What is the recommended way in JAX to get fresh random numbers for each step of a loop?",
-   "key, subkey = jax.random.split(key), then pass subkey to the sampler",
+   "key, subkey = jax.random.split(key); sample with subkey",
    [
-    "Call jax.random.seed() at the start of each step",
+    "Call jax.random.seed(step) at the start of each loop step",
     "Reuse the same key and add the step number to the output",
-    "Call np.random.seed inside the jitted function"
+    "Call np.random.seed(step) inside the jitted function"
    ],
    "split derives new independent keys from an existing one. Keep one key to split again and consume the subkey, so no key is reused."
   ],
@@ -598,9 +598,9 @@
    "You time a JAX computation with time.time() before and after y = f(x), and it looks suspiciously fast. What is the usual fix?",
    "Call y.block_until_ready() before stopping the timer",
    [
-    "Convert x to a Python list before the call",
-    "Disable jit so the timing is exact",
-    "Run the computation inside jax.vmap"
+    "Convert x to a Python list before calling f on it",
+    "Disable jit with jax.disable_jit() so timing is exact",
+    "Run the computation inside jax.vmap to batch it"
    ],
    "JAX dispatches work asynchronously, so f returns before the device finishes. block_until_ready waits for the result, giving an honest timing."
   ]
@@ -620,9 +620,9 @@
    "In PyTorch Lightning, what should configure_optimizers return?",
    "The optimizer, optionally with learning rate schedulers",
    [
-    "The loss function used for training",
-    "A DataLoader for the training set",
-    "The list of callbacks for the Trainer"
+    "The loss function, optionally with class weights for training",
+    "A DataLoader for the training set, optionally with a sampler",
+    "The list of callbacks, optionally with the Trainer settings"
    ],
    "configure_optimizers returns one or more optimizers and optional scheduler configs. Lightning then handles zero_grad, backward and step for you."
   ],
@@ -631,8 +631,8 @@
    "Return it, and let Lightning run backward and the optimizer step",
    [
     "Call loss.backward() and optimizer.step() before returning it",
-    "Store it in self.loss and return None",
-    "Call self.trainer.fit(loss) to apply it"
+    "Store it in self.loss and return None, so the Trainer reads it later",
+    "Call self.trainer.fit(loss) to apply the gradient update to it"
    ],
    "Under automatic optimization, Lightning performs zero_grad, backward and step itself. Calling them manually as well would apply updates twice or fail."
   ],
@@ -650,9 +650,9 @@
    "What does Lightning do around validation_step during the validation loop?",
    "Puts the module in eval mode and disables gradient computation",
    [
-    "Keeps train mode on so Dropout stays active",
-    "Freezes the optimizer and keeps gradients enabled",
-    "Moves the model to CPU to save GPU memory"
+    "Keeps train mode on so Dropout stays active during validation",
+    "Freezes the optimizer state but keeps gradient tracking enabled",
+    "Moves the model to the CPU to save GPU memory during validation"
    ],
    "Lightning switches to eval mode and disables gradients for validation, then restores train mode afterward. You do not need model.eval() or torch.no_grad() yourself."
   ],
@@ -660,9 +660,9 @@
    "What does Trainer(fast_dev_run=True) do in PyTorch Lightning?",
    "Runs a single batch of training and validation to catch bugs quickly",
    [
-    "Trains for one full epoch using mixed precision",
-    "Skips validation and trains with the largest batch size",
-    "Compiles the model with torch.compile before training"
+    "Trains for one full epoch using mixed precision to finish faster",
+    "Skips validation entirely and trains with the largest batch size",
+    "Compiles the model with torch.compile before training to save time"
    ],
    "fast_dev_run runs one batch through the loops (or n batches if you pass an int) and disables logging and checkpointing, so it is a quick smoke test."
   ],
@@ -670,9 +670,9 @@
    "In PyTorch Lightning, what does Trainer(accumulate_grad_batches=4) do?",
    "Accumulates gradients over 4 batches before each optimizer step",
    [
-    "Splits each batch into 4 smaller micro-batches",
-    "Runs 4 optimizer steps on every batch",
-    "Uses 4 GPUs to process each batch"
+    "Splits each batch into 4 smaller micro-batches processed in parallel",
+    "Runs 4 optimizer steps on every batch to speed up convergence",
+    "Uses 4 GPUs to process each batch, one quarter per device"
    ],
    "Gradient accumulation sums gradients from several batches before stepping, which simulates a larger effective batch without extra memory."
   ],
@@ -701,18 +701,18 @@
    "128",
    [
     "32",
-    "8",
+    "256",
     "64"
    ],
    "Each of the 4 processes loads its own batch of 32, and gradients are averaged across them, so one step covers 128 samples."
   ],
   [
    "Under DDP, what does PyTorch Lightning do with your training DataLoader's sampler by default?",
-   "Replaces it with a DistributedSampler so each process sees different data",
+   "Swaps in a DistributedSampler so each process sees different data",
    [
-    "Leaves it unchanged so each process sees all the data",
-    "Sends the full dataset to rank 0 only",
-    "Doubles the batch size on each process"
+    "Leaves it unchanged so each process sees all of the data every epoch",
+    "Sends the full dataset to rank 0, which then broadcasts each batch",
+    "Doubles the batch size on each process to match the GPU count"
    ],
    "By default Lightning injects a DistributedSampler, so each process works on a distinct shard of the dataset. This can be turned off if you provide your own distributed sampler."
   ],
@@ -730,9 +730,9 @@
    "Under DDP, you assign self.train_ds inside prepare_data of a LightningDataModule. What goes wrong?",
    "Other processes never run prepare_data, so they lack self.train_ds",
    [
-    "Every process downloads the data four times",
-    "The dataset is copied to the GPU twice",
-    "The Trainer refuses to start with a DataModule"
+    "Every process downloads and writes the data, four times over",
+    "The dataset is copied to the GPU twice and runs out of memory",
+    "The Trainer refuses to start when a DataModule defines prepare_data"
    ],
    "prepare_data is not called on every process, so state set there is missing elsewhere. Assign datasets in setup(stage), which runs on every process."
   ],
@@ -750,9 +750,9 @@
    "In PyTorch Lightning 2.0, training_epoch_end(self, outputs) was removed. What replaces it?",
    "on_train_epoch_end, storing any needed step outputs yourself",
    [
-    "training_step_end, which now receives all outputs",
-    "on_fit_end, which runs after every epoch",
-    "validation_epoch_end, renamed for training"
+    "training_step_end, which now receives all outputs of the epoch",
+    "on_fit_end, which now runs once after every training epoch",
+    "validation_epoch_end, which was renamed to cover training"
    ],
    "Lightning 2.0 no longer collects step outputs automatically. Append what you need to a list in training_step and process it in on_train_epoch_end."
   ],
@@ -780,9 +780,9 @@
    "In PyTorch Lightning, you call self.log(\"val_loss\", loss) inside validation_step with default arguments. What is logged?",
    "One value per epoch, averaged over the validation batches",
    [
-    "One value for each validation batch",
-    "Only the value from the last validation batch",
-    "The sum of losses over all validation batches"
+    "One value for each validation batch, with no reduction at all",
+    "Only the value from the last validation batch of the epoch",
+    "The sum of losses over all validation batches in the epoch"
    ],
    "In validation_step, self.log defaults to on_step=False and on_epoch=True, so values are reduced with a mean across the epoch. In training_step the default is on_step=True."
   ],
@@ -800,8 +800,8 @@
    "Inside training_step of a LightningModule, you need a new zero tensor that works on any device. Which line is correct?",
    "torch.zeros(3, device=self.device)",
    [
-    "torch.zeros(3).cuda()",
-    "torch.zeros(3).to(\"cuda:0\")",
+    "torch.zeros(3).cuda(self.global_rank)",
+    "torch.zeros(3).to(device=\"cuda:0\")",
     "torch.zeros(3, device=\"gpu\")"
    ],
    "self.device always reflects where Lightning placed the module, so the code runs on CPU, one GPU or several. Hardcoding cuda breaks CPU runs and multi-GPU placement."
@@ -810,11 +810,11 @@
  "scikit-learn": [
   [
    "Why should a StandardScaler be inside a scikit-learn Pipeline when you run cross-validation?",
-   "So the scaler is fit only on each training fold, avoiding data leakage",
+   "So the scaler is fit only on each training fold, avoiding leakage",
    [
-    "So the scaler runs faster with parallel jobs",
-    "So the scaler can handle categorical columns",
-    "So the scaler is fit once on the whole dataset"
+    "So the scaler runs faster by using parallel jobs across all folds",
+    "So the scaler can handle categorical columns without an encoder step",
+    "So the scaler is fit once on the whole dataset before any splitting"
    ],
    "Fitting the scaler on all data leaks validation statistics into training. Inside a Pipeline, cross_val_score refits the scaler on each training fold only."
   ],
@@ -844,7 +844,7 @@
    [
     "FeatureUnion",
     "FunctionTransformer",
-    "TransformedTargetRegressor"
+    "make_pipeline"
    ],
    "ColumnTransformer routes selected columns to different transformers and concatenates the results. FeatureUnion applies every transformer to all columns."
   ],
@@ -874,7 +874,7 @@
    [
     "An error naming the unknown category",
     "A new extra column for the category",
-    "The column of the most frequent category"
+    "The column of the most frequent category seen in fit"
    ],
    "With handle_unknown=\"ignore\", unknown categories encode as all zeros. The default, handle_unknown=\"error\", raises an error instead."
   ],
@@ -892,7 +892,7 @@
    "In scikit-learn, what does a trailing underscore in an attribute name such as coef_ or classes_ indicate?",
    "The attribute is learned during fit",
    [
-    "The attribute is private and should not be used",
+    "The attribute is private and internal",
     "The attribute is a constructor parameter",
     "The attribute is deprecated"
    ],
@@ -913,7 +913,7 @@
    "GroupKFold with patient IDs as groups",
    [
     "StratifiedKFold on the diagnosis labels",
-    "KFold with shuffle=True",
+    "KFold with shuffle=True on the scans",
     "LeaveOneOut on individual scans"
    ],
    "GroupKFold keeps all samples of a group in the same fold, so the model is evaluated on unseen patients rather than on scans of patients it has already seen."
@@ -950,13 +950,13 @@
   ],
   [
    "How does scikit-learn's RFE (recursive feature elimination) choose which features to drop?",
-   "It refits the estimator and drops the weakest features by coef_ or feature_importances_",
+   "It refits the model and drops the features it ranks least important",
    [
-    "It drops the features with the lowest variance first",
-    "It drops features at random and keeps the best subset",
-    "It drops features with the most missing values first"
+    "It drops the features with the lowest variance first, then refits",
+    "It drops features at random and keeps the best-scoring subset",
+    "It drops the features with the most missing values first, then refits"
    ],
-   "RFE repeatedly fits the model, removes the least important features according to the model, and repeats until n_features_to_select remain."
+   "RFE repeatedly fits the model, removes the least important features according to coef_ or feature_importances_, and repeats until n_features_to_select remain."
   ],
   [
    "Which scikit-learn tool keeps the features whose coefficients from a fitted Lasso model are nonzero?",
@@ -980,11 +980,11 @@
   ],
   [
    "What is the main advantage of RandomizedSearchCV over GridSearchCV in scikit-learn?",
-   "A fixed budget of n_iter candidates, sampled even from continuous distributions",
+   "It tries a fixed n_iter candidates and can sample continuous ranges",
    [
-    "It always finds the global optimum of the hyperparameters",
-    "It does not need cross-validation to score candidates",
-    "It tunes the model on the test set for higher accuracy"
+    "It always finds the global optimum of the hyperparameter space",
+    "It does not need cross-validation to score the sampled candidates",
+    "It tunes the model on the test set to reach a higher final accuracy"
    ],
    "Randomized search samples n_iter settings, so cost does not explode with grid size and you can sample from distributions such as scipy.stats.loguniform."
   ],
@@ -992,19 +992,19 @@
    "After GridSearchCV(est, grid, refit=True).fit(X, y), what does calling search.predict(X_new) use?",
    "best_estimator_, refit on all of X and y with the best parameters",
    [
-    "The model trained on the last cross-validation fold",
-    "An average of the models from all folds",
-    "The estimator with its original default parameters"
+    "The model trained on the last cross-validation fold of the search",
+    "An average of the fitted models from all cross-validation folds",
+    "The estimator with its original default parameters, refit on X"
    ],
    "With refit=True (the default), the search retrains the best configuration on the full training data and exposes it as best_estimator_."
   ],
   [
    "In scikit-learn, what does GridSearchCV.best_score_ hold?",
-   "The mean cross-validated score of the best parameter combination",
+   "The mean cross-validated score of the best candidate",
    [
-    "The score of the best model on the test set",
-    "The highest single-fold score seen during the search",
-    "The training score of the refit best model"
+    "The score of the refit best model on the held-out test set",
+    "The highest single-fold score seen during the whole search",
+    "The training score of the refit best model on all of X and y"
    ],
    "best_score_ is the mean validation score across folds for the best candidate. It is not a test-set score, so keep a separate holdout for a final estimate."
   ]
@@ -1014,7 +1014,7 @@
    "In gradient boosting as used by XGBoost, what does each new tree try to fit?",
    "The loss gradient with respect to current predictions",
    [
-    "The original target values, refit from scratch",
+    "The original target values, refit from scratch each round",
     "A random subset of the original input features",
     "The raw predictions made by the previous tree"
    ],
@@ -1034,9 +1034,9 @@
    "In XGBoost, how are the predictions of the trees combined into the final raw score?",
    "They are summed, each scaled by the learning rate",
    [
-    "They are averaged with equal weight",
+    "They are averaged with equal weight across trees",
     "The most common tree prediction is chosen",
-    "Only the prediction of the last tree is used"
+    "Only the prediction of the last tree is kept as the score"
    ],
    "Boosting is additive: each tree's output, shrunk by eta, is added to the running score. For classification, a link function such as sigmoid turns that score into a probability."
   ],
@@ -1054,7 +1054,7 @@
    "What does increasing max_depth in XGBoost generally do?",
    "Captures more complex interactions, with more overfitting risk",
    [
-    "Makes each tree simpler and reduces model variance",
+    "Makes each tree shallower and simpler, which reduces model variance",
     "Lowers the learning rate automatically to compensate",
     "Limits the total number of boosting rounds allowed"
    ],
@@ -1066,7 +1066,7 @@
    [
     "The L2 penalty applied to the leaf weights",
     "The fraction of training rows sampled per tree",
-    "The step size shrinkage applied to each new tree"
+    "The step size shrinkage that is applied to each new tree"
    ],
    "A split is kept only if its gain exceeds gamma, so larger gamma makes the algorithm more conservative and produces smaller trees."
   ],
@@ -1074,9 +1074,9 @@
    "How does XGBoost prune trees with its default depthwise growth?",
    "It grows to max_depth, then removes splits whose gain is below gamma",
    [
-    "It stops growing as soon as one split has negative gain",
-    "It prunes by cross-validating each tree separately",
-    "It removes the oldest trees after each round"
+    "It stops growing a branch as soon as one split has negative gain",
+    "It prunes each tree by cross-validating it separately on held-out rows",
+    "It removes the oldest trees from the ensemble after each round"
    ],
    "Growing fully and then pruning backward lets XGBoost keep a split with small gain if a later split below it gains a lot, which greedy early stopping would miss."
   ],
@@ -1096,7 +1096,7 @@
    [
     "The minimum number of trees kept in the ensemble",
     "The weight given to the positive class in the loss",
-    "The minimum tree depth reached before pruning starts"
+    "The minimum tree depth that must be reached before pruning starts"
    ],
    "A split is rejected if a child's summed Hessian is below min_child_weight. For squared error this equals a minimum number of samples, so larger values make trees more conservative."
   ],
@@ -1104,7 +1104,7 @@
    "An XGBoost model overfits badly. Which parameter change most directly adds randomness to reduce overfitting?",
    "Set subsample=0.8 and colsample_bytree=0.8",
    [
-    "Set eta=1.0 and max_depth=12",
+    "Set eta=1.0, max_depth=12 and subsample=1.0",
     "Set min_child_weight=0 and gamma=0",
     "Set reg_lambda=0 and reg_alpha=0"
    ],
@@ -1122,11 +1122,11 @@
   ],
   [
    "In XGBoost, what is the difference between the multi:softmax and multi:softprob objectives?",
-   "softmax returns class labels, softprob returns class probabilities",
+   "softmax returns class labels, softprob returns probabilities",
    [
-    "softmax is for binary tasks, softprob for multiclass",
-    "softmax trains faster, softprob trains on the GPU only",
-    "softmax needs num_class, softprob does not"
+    "softmax is for binary tasks, while softprob is for multiclass",
+    "softmax trains faster, while softprob only trains on the GPU",
+    "softmax needs num_class, while softprob infers it from labels"
    ],
    "Both are multiclass objectives and both require num_class. softprob returns a probability matrix with one column per class, while softmax returns the argmax class."
   ],
@@ -1175,18 +1175,18 @@
    "num_boost_round",
    [
     "n_estimators",
-    "max_rounds",
-    "n_trees"
+    "num_iterations",
+    "max_boost_rounds"
    ],
    "num_boost_round sets how many trees are built in the native API. n_estimators is the equivalent name in the scikit-learn wrappers such as XGBClassifier."
   ],
   [
    "In xgb.train, you pass evals=[(dval, \"val\")] and early_stopping_rounds=50. What happens?",
-   "Training stops if the validation metric has not improved for 50 rounds",
+   "Training stops after 50 rounds without validation improvement",
    [
-    "Training runs exactly 50 rounds and then stops",
-    "The first 50 rounds are skipped from evaluation",
-    "The validation set is used for training after 50 rounds"
+    "Training runs exactly 50 rounds on dtrain and then stops",
+    "The first 50 rounds are skipped when evaluating on dval",
+    "The validation set is merged into the training data after 50 rounds"
    ],
    "Early stopping watches the last dataset in evals and stops after 50 rounds without improvement. The best iteration is recorded in best_iteration."
   ],
@@ -1216,7 +1216,7 @@
    "How does LightGBM grow its decision trees by default?",
    "Leaf-wise: it splits the leaf with the largest loss reduction",
    [
-    "Level-wise: it splits every leaf at the current depth",
+    "Level-wise: it splits every leaf at a depth before going deeper",
     "Symmetric: it uses one split condition per depth",
     "Randomly: it splits a randomly chosen leaf"
    ],
@@ -1246,8 +1246,8 @@
    "In LightGBM you set max_depth=6. Why should num_leaves usually stay below 64?",
    "A depth-6 tree has at most 64 leaves, so lower values regularize",
    [
-    "num_leaves must equal max_depth squared or training fails",
-    "num_leaves above 64 disables histogram-based splitting",
+    "num_leaves must equal max_depth squared, or else training fails",
+    "num_leaves above 64 disables histogram-based splitting for that tree",
     "LightGBM ignores max_depth whenever num_leaves is below 64"
    ],
    "A tree of depth d has at most 2 to the power d leaves. Setting num_leaves well below that bound keeps leaf-wise trees from becoming too complex."
@@ -1267,7 +1267,7 @@
    "The maximum number of bins each feature is bucketed into",
    [
     "The maximum number of trees built in the model",
-    "The maximum number of leaves allowed in each tree",
+    "The maximum number of leaves allowed in each individual tree",
     "The maximum number of rows in each histogram batch"
    ],
    "Continuous values are discretized into at most max_bin bins before training. Fewer bins speed up training and add regularization; more bins give finer splits."
@@ -1278,7 +1278,7 @@
    [
     "It sorts every feature again before each new split",
     "It evaluates only one random feature at each split",
-    "It skips computing gradients for most training samples"
+    "It skips computing gradients for most of the training samples each round"
    ],
    "After binning, the cost of finding the best split depends on the number of bins rather than the number of samples, and binned data uses less memory."
   ],
@@ -1287,7 +1287,7 @@
    "One child's histogram equals the parent's histogram minus its sibling's",
    [
     "Each histogram is built on half the features to save time",
-    "Histograms of adjacent trees are subtracted to find residuals",
+    "Histograms of adjacent trees are subtracted from each other to find residuals",
     "Bins with negative gradients are removed from the histogram"
    ],
    "LightGBM builds the histogram only for the smaller child and derives the larger one by subtraction, which roughly halves histogram construction work."
@@ -1297,7 +1297,7 @@
    "Keeps all large-gradient samples and samples the small-gradient ones",
    [
     "Keeps all small-gradient samples and drops the large ones",
-    "Samples features in proportion to the size of their gradients",
+    "Samples features in proportion to the size of their absolute gradients",
     "Samples only one side of each candidate split at random"
    ],
    "Samples with large gradients are poorly fit and most informative, so GOSS keeps them all. A random portion of the well-fit samples is kept to preserve the distribution."
@@ -1306,9 +1306,9 @@
    "In GOSS, why does LightGBM multiply the sampled small-gradient instances by a constant weight?",
    "To keep the information gain estimate close to unbiased",
    [
-    "To make the learning rate adapt automatically",
-    "To give rare classes a larger influence",
-    "To prevent histograms from overflowing"
+    "To make the learning rate adapt automatically to each round",
+    "To give rare classes a larger influence on the split gains",
+    "To prevent histogram bins from overflowing in float32"
    ],
    "Dropping most small-gradient samples would shift the data distribution. Up-weighting the sampled ones by (1 - a) / b compensates, so the gain estimate stays accurate."
   ],
@@ -1316,9 +1316,9 @@
    "In LightGBM's GOSS, what do the top_rate and other_rate parameters set?",
    "The kept share of large-gradient and of small-gradient samples",
    [
-    "The learning rates for the first and later trees",
-    "The fraction of features and of rows used per tree",
-    "The share of leaves split on each side of the tree"
+    "The learning rates used for the first trees and for later trees",
+    "The fraction of features and of rows used for each new tree",
+    "The share of leaves split on each side of every tree"
    ],
    "top_rate is the retained share of samples with the largest gradients, and other_rate is the sampled share of the rest."
   ],
@@ -1326,7 +1326,7 @@
    "In LightGBM 4.x, which parameter setting enables GOSS?",
    "data_sample_strategy=\"goss\"",
    [
-    "boosting=\"dart\"",
+    "boosting=\"dart\", drop_rate=0.1",
     "tree_learner=\"goss\"",
     "bagging_fraction=\"goss\""
    ],
@@ -1334,11 +1334,11 @@
   ],
   [
    "What does EFB (Exclusive Feature Bundling) in LightGBM do?",
-   "Bundles sparse features that are rarely nonzero together into one feature",
+   "Bundles mutually exclusive sparse features into a single feature",
    [
-    "Removes features that are highly correlated with each other",
-    "Splits each feature into several exclusive bins",
-    "Bundles rows with identical feature values"
+    "Removes features that are highly correlated with each other first",
+    "Splits each feature into several mutually exclusive bins",
+    "Bundles rows with identical feature values into a single row"
    ],
    "Many sparse features, such as one-hot columns, are almost never nonzero at the same time. EFB merges them into a single feature with offset bins, reducing the feature count."
   ],
@@ -1347,7 +1347,7 @@
    "High-dimensional sparse data, such as many one-hot columns",
    [
     "Dense tabular data with only a few numeric columns",
-    "Time series data with a single target column",
+    "Time series data with a single target column and a few lag features",
     "Image data stored as raw, uncompressed pixel tensors"
    ],
    "Histogram building costs scale with the number of features. Bundling many mutually exclusive sparse features cuts that number sharply."
@@ -1356,7 +1356,7 @@
    "Finding the optimal feature bundles for EFB is NP-hard. How does LightGBM approach it?",
    "With a greedy algorithm related to graph coloring",
    [
-    "With an exact integer linear program per tree",
+    "With an exact integer linear program solved for each tree",
     "With exhaustive search over all feature pairs",
     "With a neural network that predicts bundles"
    ],
@@ -1384,11 +1384,11 @@
   ],
   [
    "What does the LightGBM parameter max_cat_to_onehot do?",
-   "Uses one-vs-rest splits when a feature has this many categories or fewer",
+   "Uses one-vs-rest splits for features with at most this many categories",
    [
-    "Limits how many categorical features the model may use",
-    "Converts all categorical columns to one-hot before training",
-    "Caps the number of categories kept per feature"
+    "Limits how many categorical features the model may use in total",
+    "Converts every categorical column to one-hot columns before training starts",
+    "Caps the number of categories kept per feature, dropping the rest"
    ],
    "For features with few categories, a one-vs-rest split is simple and effective. Above this threshold, LightGBM uses its sorted many-vs-many split."
   ],
@@ -1396,9 +1396,9 @@
    "In LightGBM, you set bagging_fraction=0.8 but leave bagging_freq at its default of 0. What happens?",
    "Bagging stays disabled, since bagging_freq must be above 0",
    [
-    "80% of rows are sampled for every tree",
-    "80% of features are sampled for every tree",
-    "Training fails with a parameter conflict error"
+    "80% of rows are sampled for every tree, without replacement",
+    "80% of features are sampled for every tree instead of rows",
+    "Training fails with a parameter conflict error at startup"
    ],
    "LightGBM performs bagging only when bagging_freq is a positive number, which sets how often rows are resampled. feature_fraction is the column-sampling parameter."
   ],
@@ -1407,7 +1407,7 @@
    "callbacks=[lgb.early_stopping(stopping_rounds=50)]",
    [
     "early_stopping_rounds=50 as a keyword of lgb.train",
-    "lgb.train(..., stop_after=50)",
+    "lgb.train(..., stop_after=50, valid_sets=[dval])",
     "params[\"early_stop\"] = True with no validation set"
    ],
    "LightGBM 4.0 removed the early_stopping_rounds argument from lgb.train in favor of the early_stopping callback, which also needs valid_sets."
@@ -1436,11 +1436,11 @@
   ],
   [
    "Why are CatBoost's symmetric trees fast at prediction time?",
-   "The leaf index is a binary number built from one comparison per level",
+   "The leaf index is a binary number from one comparison per level",
    [
-    "Each tree is evaluated only for half of the samples",
-    "Predictions are cached for every training sample",
-    "Trees are converted to linear models before inference"
+    "Each tree is evaluated only for half of the samples in a batch",
+    "Predictions are cached for every training sample and reused later",
+    "Trees are converted to linear models before inference to save time"
    ],
    "The answers to the depth-many conditions form the bits of the leaf index directly, which is simple to vectorize on CPUs and GPUs."
   ],
@@ -1450,7 +1450,7 @@
    [
     "tree_type",
     "boosting_type",
-    "leaf_estimation_method"
+    "growth_mode"
    ],
    "grow_policy defaults to SymmetricTree. Depthwise and Lossguide build regular non-oblivious trees, similar to XGBoost and LightGBM growth."
   ],
@@ -1468,59 +1468,59 @@
    "Why does plain mean target encoding of a categorical feature cause problems that CatBoost tries to avoid?",
    "A sample's own target leaks into its encoding, causing overfitting",
    [
-    "It produces too many columns for high-cardinality features",
-    "It cannot be computed for numeric targets",
+    "It produces far too many new columns for high-cardinality features",
+    "It cannot be computed at all when the target is numeric",
     "It requires the categories to be sorted alphabetically"
    ],
    "If the category mean includes the sample's own label, the feature partly reveals the target, so training scores look great but test scores drop. One-hot encoding, not target encoding, is the one that creates many columns."
   ],
   [
    "How does CatBoost compute ordered target statistics for a categorical value?",
-   "Using only targets of samples before the current one in a random permutation",
+   "Using only targets of samples earlier in a random permutation",
    [
     "Using the targets of all samples, including the current one",
-    "Using targets from the validation set only",
-    "Using the median target of the whole column"
+    "Using targets from the held-out validation set only",
+    "Using the median target of the whole column in the training set"
    ],
    "Each sample's encoding comes from earlier samples in a random order, plus a prior, so its own label is never used. This mimics how encodings behave on unseen data."
   ],
   [
    "Besides encoding single categorical features, what does CatBoost do automatically to capture interactions?",
-   "It builds combinations of categorical features greedily during tree building",
+   "It greedily combines categorical features while building trees",
    [
-    "It multiplies every pair of numeric features",
-    "It trains a separate model for each category pair",
+    "It multiplies every pair of numeric features into new columns",
+    "It trains a separate small model for each pair of category values",
     "It one-hot encodes the full cross product of all categories"
    ],
    "When building splits, CatBoost combines categorical features already used in the tree with others and encodes the combination, which captures interactions cheaply."
   ],
   [
    "What does the CatBoost parameter one_hot_max_size do?",
-   "One-hot encodes categorical features with at most this many distinct values",
+   "One-hot encodes categorical features with at most this many values",
    [
-    "Limits how many one-hot columns the dataset may contain",
-    "Caps the depth of trees that split on one-hot features",
-    "Sets the number of bins for numeric features"
+    "Limits how many one-hot columns the whole dataset may contain",
+    "Caps the depth of trees that split on one-hot encoded features",
+    "Sets the number of bins used for numeric features with many values"
    ],
    "Low-cardinality categories are often best one-hot encoded. Features with more distinct values than this threshold use target statistics instead."
   ],
   [
    "CatBoost raises an error that a categorical feature has an invalid type because it contains floats such as 3.0 and NaN. What is the usual fix?",
-   "Convert that column to strings or integers, replacing NaN with a placeholder",
+   "Convert the column to strings or integers, filling NaN first",
    [
-    "Remove the column from cat_features and scale it",
-    "Set one_hot_max_size to 0 for that column",
+    "Remove the column from cat_features and scale it as numeric",
+    "Set one_hot_max_size to 0 for that column in the fit call",
     "Switch task_type to GPU, which accepts float categories"
    ],
    "CatBoost requires categorical values to be integers or strings. Converting the column, for example with astype(str) after filling NaN, resolves the error."
   ],
   [
    "You pass eval_set to CatBoost fit with early_stopping_rounds=50. What does this do?",
-   "Stops training if the eval metric has not improved for 50 iterations",
+   "Stops if the eval metric has not improved for 50 iterations",
    [
-    "Trains for exactly 50 iterations and then stops",
-    "Evaluates the model only every 50 iterations",
-    "Removes the 50 weakest trees after training"
+    "Trains for exactly 50 iterations on the training set and then stops",
+    "Evaluates the model on eval_set only every 50 iterations",
+    "Removes the 50 weakest trees from the model after training"
    ],
    "The overfitting detector watches the validation metric. With an eval_set, use_best_model is on by default, so the model is shrunk back to the best iteration."
   ],
@@ -1559,8 +1559,8 @@
    "Set task_type=\"GPU\" and optionally devices=\"0:1\"",
    [
     "Set device=\"cuda\" in the Pool object",
-    "Set boosting_type=\"GPU\"",
-    "Wrap the model with torch.nn.DataParallel"
+    "Set boosting_type=\"GPU\" in the model params",
+    "Wrap the model with torch.nn.DataParallel before fit"
    ],
    "task_type=\"GPU\" switches training to CUDA, and devices selects GPU indices, for example \"0:1\" for the first two GPUs."
   ],
@@ -1570,19 +1570,19 @@
    [
     "On tiny datasets of a few hundred rows",
     "When the model has only one tree",
-    "When all features are categorical strings with one value"
+    "When every feature is a constant string"
    ],
    "GPU overhead dominates on small data. With hundreds of thousands of rows or more, the parallel histogram and split computations pay off."
   ],
   [
    "What problem does CatBoost's ordered boosting address?",
-   "Prediction shift from computing gradients on the same samples the model was fit on",
+   "Bias from computing gradients on the same samples used to fit the model",
    [
-    "Slow inference caused by deep asymmetric trees",
-    "Missing values in numeric features",
-    "Class imbalance in binary classification"
+    "Slow inference caused by deep asymmetric trees with many leaf nodes",
+    "Missing values in numeric features that would otherwise be dropped",
+    "Class imbalance in binary classification with rare positive labels"
    ],
-   "Gradients estimated on samples already used for fitting are biased. Ordered boosting computes each sample's residual with a model trained only on earlier samples in a permutation."
+   "Gradients estimated on samples already used for fitting are biased, which is called prediction shift. Ordered boosting computes each sample's residual with a model trained only on earlier samples in a permutation."
   ],
   [
    "Which CatBoost parameter chooses between ordered boosting and the classic scheme?",
@@ -1606,11 +1606,11 @@
   ],
   [
    "What does catboost.Pool hold?",
-   "Feature data, labels and metadata such as which columns are categorical",
+   "Feature data, labels and metadata such as the categorical columns",
    [
-    "A pool of worker processes for distributed training",
-    "A collection of trained models for ensembling",
-    "A cache of predictions from previous iterations"
+    "A pool of worker processes used for distributed CatBoost training",
+    "A collection of trained models that are combined for ensembling",
+    "A cache of predictions from previous boosting iterations for reuse"
    ],
    "Pool bundles data with labels, cat_features, weights and other metadata so it can be reused for fit, eval_set and prediction."
   ]
@@ -1618,21 +1618,21 @@
  "onnx": [
   [
    "What is an ONNX model file at its core?",
-   "A protobuf-serialized computation graph of standard operators and weights",
+   "A protobuf-serialized graph of standard operators and weights",
    [
-    "A Python pickle of a trained PyTorch module",
-    "A compiled GPU binary for one specific device",
-    "A JSON file listing hyperparameters only"
+    "A Python pickle of a trained PyTorch module and its optimizer",
+    "A compiled GPU binary built for one specific device and driver",
+    "A JSON file that lists the model's hyperparameters only"
    ],
    "ONNX defines a graph of nodes that use standard operators, with weights stored as initializers, so many frameworks and runtimes can load the same model."
   ],
   [
    "Which statement best describes the purpose of ONNX?",
-   "An open format so models trained in one framework run in other tools and runtimes",
+   "An open format so models from one framework run in other runtimes",
    [
-    "A training framework that replaces PyTorch and TensorFlow",
-    "A cloud service for hosting trained models",
-    "A dataset format for storing labeled images"
+    "A training framework that replaces both PyTorch and TensorFlow",
+    "A managed cloud service for hosting and scaling trained models",
+    "A dataset format for storing labeled images and their annotations"
    ],
    "ONNX decouples training from deployment: you can train in PyTorch or TensorFlow and serve with ONNX Runtime, TensorRT or other runtimes."
   ],
@@ -1640,9 +1640,9 @@
    "What does the opset_version argument of torch.onnx.export control?",
    "Which version of the ONNX operator set the exported graph targets",
    [
-    "The version of PyTorch used to train the model",
-    "The ONNX Runtime version that must run the model",
-    "The numeric precision of the exported weights"
+    "The version of PyTorch that the exported model must be loaded with",
+    "The ONNX Runtime release that is required to run the exported model",
+    "The numeric precision of the weights stored in the exported file"
    ],
    "Each opset version defines the available operators and their semantics. Newer opsets add operators, but the target runtime must support the chosen opset."
   ],
@@ -1651,8 +1651,8 @@
    "onnx.checker.check_model(onnx.load(\"model.onnx\"))",
    [
     "onnx.validate(\"model.onnx\", strict=True)",
-    "onnxruntime.check(\"model.onnx\")",
-    "torch.onnx.verify(\"model.onnx\")"
+    "onnxruntime.check_model(\"model.onnx\", full=True)",
+    "torch.onnx.verify(onnx.load(\"model.onnx\"))"
    ],
    "The checker verifies the graph structure, types and operator usage against the ONNX specification."
   ],
@@ -1661,8 +1661,8 @@
    "It runs the model on the input to trace the operations it performs",
    [
     "It stores the input as the default value for inference",
-    "It uses the input to quantize the weights",
-    "It checks that the model's accuracy is above a threshold"
+    "It uses the input values to quantize the weights to int8",
+    "It checks that the model's accuracy on that input is above a threshold"
    ],
    "The TorchScript-based exporter traces the model with the example input and records the executed operations into the ONNX graph."
   ],
@@ -1680,9 +1680,9 @@
    "You export a PyTorch model to ONNX with a dummy input of batch size 1 and no dynamic_axes. What happens when you run it with batch size 8?",
    "ONNX Runtime fails because the input dimension is fixed at 1",
    [
-    "It runs and returns results for all 8 samples",
-    "It runs on the first sample and ignores the rest",
-    "It splits the batch into 8 separate runs"
+    "It runs and returns correct results for all 8 samples",
+    "It runs on the first sample only and silently ignores the rest",
+    "It splits the batch into 8 separate runs of batch size 1"
    ],
    "Without dynamic axes, the exported input shape is fixed to the example's shape, so the runtime rejects other batch sizes."
   ],
@@ -1761,7 +1761,7 @@
    "Constant folding",
    [
     "Dynamic quantization",
-    "Operator pruning by accuracy",
+    "Operator pruning",
     "Memory pinning"
    ],
    "Constant folding evaluates subgraphs whose inputs are all constants once at load time and replaces them with the result, saving work at every inference."
@@ -1778,21 +1778,21 @@
   ],
   [
    "How can you save the graph after ONNX Runtime applies its optimizations, to avoid repeating them at every startup?",
-   "Set SessionOptions.optimized_model_filepath before creating the session",
+   "Set SessionOptions.optimized_model_filepath when creating the session",
    [
-    "Call session.save(\"optimized.onnx\") after the first run",
-    "Pass save=True to session.run",
-    "Use onnx.checker with the optimize flag"
+    "Call session.save(\"optimized.onnx\") once the first inference run ends",
+    "Pass save=True to session.run so it writes the optimized graph",
+    "Run onnx.checker.check_model with its optimize flag set to True"
    ],
    "With optimized_model_filepath set, the session writes the optimized model to disk, which can then be loaded with optimizations disabled for faster startup."
   ],
   [
    "What does onnxruntime.quantization.quantize_dynamic do to a model?",
-   "Quantizes weights to 8-bit and quantizes activations on the fly at runtime",
+   "Quantizes weights to 8-bit and computes activation scales at runtime",
    [
-    "Quantizes weights and activations using a calibration dataset",
-    "Converts the whole model to float16 for GPUs",
-    "Prunes the smallest weights to zero"
+    "Quantizes weights and activations ahead of time using a calibration dataset",
+    "Converts the whole model to float16 so it runs faster on GPUs",
+    "Prunes the smallest weights to zero and stores the model as sparse"
    ],
    "Dynamic quantization needs no calibration data because activation scales are computed during inference. It works well for transformer and LSTM models."
   ],
@@ -1800,19 +1800,19 @@
    "Why does static quantization in ONNX Runtime require a calibration data reader?",
    "To measure activation ranges ahead of time on representative inputs",
    [
-    "To retrain the model weights at lower precision",
-    "To verify that the model file is valid",
+    "To retrain the model weights at lower precision on that data",
+    "To verify that the model file is valid before quantizing",
     "To choose the best execution provider for the device"
    ],
    "Static quantization fixes activation scales and zero points in advance, so it runs representative data through the model to observe value ranges."
   ],
   [
    "What is the QDQ format used for quantized ONNX models?",
-   "QuantizeLinear and DequantizeLinear node pairs inserted around operators",
+   "QuantizeLinear and DequantizeLinear node pairs around operators",
    [
-    "A separate file that stores quantized weights",
-    "A runtime flag that quantizes all inputs",
-    "A compressed archive of the original float model"
+    "A separate side file that stores the quantized weights of the model",
+    "A runtime flag that quantizes all inputs before the first operator",
+    "A compressed archive of the original float model and its scales"
    ],
    "QDQ represents quantization explicitly in the graph. Runtimes like ONNX Runtime and TensorRT detect these patterns and run the wrapped operators in integer precision."
   ]

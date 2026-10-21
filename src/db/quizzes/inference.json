@@ -75,7 +75,7 @@
    "--tensor-parallel-size 4",
    [
     "--pipeline-parallel-size 4",
-    "--gpu-count 4",
+    "--num-gpus-per-model 4",
     "--num-shards 4"
    ],
    "--tensor-parallel-size splits each layer across GPUs; --pipeline-parallel-size would split by layers instead."
@@ -186,17 +186,17 @@
    [
     "/api/chat",
     "/generate_stream",
-    "/v2/models/infer"
+    "/v1/completions/chat"
    ],
-   "vLLM mirrors the OpenAI API paths; /api/chat is Ollama, /generate_stream is TGI, and /v2/models/.../infer is the KServe style used by Triton."
+   "vLLM mirrors the OpenAI API paths, and chat clients use /v1/chat/completions; /api/chat is Ollama, /generate_stream is TGI, and /v1/completions/chat does not exist."
   ],
   [
    "A vLLM server was started with --api-key secret. What must a client using the official openai Python SDK set?",
    "base_url to the server's /v1 URL and api_key to secret",
    [
-    "Only the model name, since keys are ignored",
-    "An OPENAI_ORG header set to the server port",
-    "A Hugging Face token instead of an API key"
+    "Only the model name, since the server ignores API keys",
+    "An OPENAI_ORG header set to the server's port number",
+    "A Hugging Face token in place of the OpenAI API key"
    ],
    "The SDK needs the server address (for example http://localhost:8000/v1) and must send the configured key as a Bearer token."
   ]
@@ -217,7 +217,7 @@
    "/generate_stream",
    [
     "/generate_sse",
-    "/stream_tokens",
+    "/generate_tokens",
     "/v1/stream"
    ],
    "/generate_stream returns tokens as Server-Sent Events; /generate returns the full result in one response."
@@ -237,7 +237,7 @@
    "/v1/chat/completions",
    [
     "/v1/messages",
-    "/chat",
+    "/v1/chat/messages",
     "/api/generate"
    ],
    "TGI implements the OpenAI chat completions format at /v1/chat/completions, so OpenAI client libraries can talk to it."
@@ -248,7 +248,7 @@
    [
     "WebSockets",
     "Long polling",
-    "Raw TCP sockets"
+    "Raw binary TCP sockets"
    ],
    "Streaming endpoints send a text/event-stream response where each event carries a new token."
   ],
@@ -297,7 +297,7 @@
    "Input plus generated tokens of one request",
    [
     "Tokens across all requests in a batch",
-    "Tokens generated per second by the server",
+    "Tokens generated per second by the whole server",
     "Tokens held in the prefix cache at once"
    ],
    "It is a per-request ceiling on prompt length plus new tokens, which sets the memory budget each client can use."
@@ -326,7 +326,7 @@
    "What does FlashAttention speed up in TGI?",
    "Attention, by tiling to cut memory traffic",
    [
-    "Tokenization, by caching vocab lookups",
+    "Tokenization, by caching vocabulary lookups",
     "Weight loading, by compressing files",
     "Token streaming, by batching events"
    ],
@@ -344,11 +344,11 @@
   ],
   [
    "How does FlashAttention's extra memory for attention scale with sequence length N?",
-   "Linearly, since the N x N matrix is never stored",
+   "Linearly, as the N x N matrix is never stored",
    [
-    "Quadratically, like standard attention",
-    "Cubically, because of tiling overhead",
-    "It stays constant for any value of N"
+    "Quadratically, just like standard attention does",
+    "Cubically, because of the tiling overhead",
+    "It stays constant for any sequence length N"
    ],
    "Scores are computed tile by tile and never materialized as a full N x N matrix, so memory grows linearly instead of quadratically."
   ],
@@ -356,9 +356,9 @@
    "Which TGI launcher option quantizes a model on the fly to 4-bit NF4 with bitsandbytes?",
    "--quantize bitsandbytes-nf4",
    [
-    "--dtype nf4",
-    "--load-in-4bit true",
-    "--quant nf4-auto"
+    "--dtype nf4-bitsandbytes",
+    "--load-in-4bit bitsandbytes",
+    "--quantization nf4-auto"
    ],
    "TGI selects quantization with --quantize; bitsandbytes-nf4 converts weights to 4-bit NF4 at load time."
   ],
@@ -376,9 +376,9 @@
    "What is the main trade-off of serving a 4-bit quantized LLM instead of FP16?",
    "Less memory, with some possible quality loss",
    [
-    "More accuracy, but higher memory use",
-    "Faster training, but no inference",
-    "Larger vocabulary, but more latency"
+    "More accuracy, but much higher memory use",
+    "Faster training, but no inference support",
+    "Larger vocabulary, but more latency per token"
    ],
    "4-bit weights take about a quarter of FP16 memory, which lets bigger models fit, at the cost of some accuracy."
   ],
@@ -429,7 +429,7 @@
    "11434",
    [
     "8000",
-    "8080",
+    "11343",
     "5000"
    ],
    "Ollama serves its API at http://localhost:11434 unless OLLAMA_HOST says otherwise."
@@ -469,7 +469,7 @@
    "PARAMETER num_ctx 8192",
    [
     "PARAMETER context 8192",
-    "CONTEXT 8192",
+    "SET num_ctx 8192",
     "PARAMETER max_tokens 8192"
    ],
    "num_ctx is the Ollama parameter for context length; options are set with PARAMETER <name> <value>."
@@ -500,7 +500,7 @@
    [
     "LORA",
     "MERGE",
-    "PATCH"
+    "FINETUNE"
    ],
    "ADAPTER points to LoRA weights that are applied on top of the FROM model."
   ],
@@ -570,7 +570,7 @@
    [
     "ONNX",
     "TorchScript",
-    "TensorFlow SavedModel"
+    "SavedModel"
    ],
    "Ollama builds on the llama.cpp and GGML ecosystem and stores quantized weights as GGUF."
   ],
@@ -578,9 +578,9 @@
    "What does the tag in llama3.1:8b-instruct-q4_K_M describe?",
    "An 8B instruct model with 4-bit K-quant (medium) weights",
    [
-    "An 8B model trained for 4 epochs in K mode",
-    "A model sharded over 4 GPUs with medium memory",
-    "Version 4 of the model's key-value cache"
+    "An 8B model trained for 4 epochs in the K training mode",
+    "A model that is sharded over 4 GPUs with a medium memory budget",
+    "Version 4 of the model's key-value cache in medium size"
    ],
    "Tags encode size, variant and quantization; q4_K_M is the 4-bit k-quant medium mix from llama.cpp."
   ],
@@ -588,19 +588,19 @@
    "You have a local file model.gguf. How do you make it available in Ollama?",
    "Put FROM ./model.gguf in a Modelfile, then run ollama create",
    [
-    "Copy it into ~/.ollama, then run ollama refresh",
-    "Run ollama pull file://model.gguf",
-    "Convert it to safetensors, then run ollama load"
+    "Copy it into the ~/.ollama/models folder, then run ollama refresh",
+    "Run ollama pull file://model.gguf to import the local file",
+    "Convert it to safetensors first, then run ollama load on it"
    ],
    "A Modelfile can point FROM at a local GGUF file, and ollama create imports it as a named model."
   ],
   [
    "Why does the q8_0 variant of a model need more memory than its q4_K_M variant?",
-   "Its weights use about 8 bits each instead of about 4",
+   "Its weights use about 8 bits each, not about 4",
    [
-    "It keeps a larger vocabulary in memory",
-    "It is forced to run fully on the CPU",
-    "It stores more chat history in RAM"
+    "It keeps a much larger token vocabulary in memory",
+    "It is forced to run fully on the CPU instead",
+    "It stores more of the chat history in RAM"
    ],
    "Memory scales with bits per weight, so 8-bit weights take roughly twice the space of 4-bit ones, with less quality loss."
   ]
@@ -611,7 +611,7 @@
    "A single file with weights plus metadata",
    [
     "A GPU kernel library for Apple chips",
-    "A checkpoint of optimizer and gradients",
+    "A checkpoint of optimizer states and gradients",
     "A JSON schema describing chat templates"
    ],
    "GGUF packs tensors with metadata such as architecture, hyperparameters and tokenizer, so one file is enough to run the model."
@@ -658,19 +658,19 @@
   ],
   [
    "Which llama.cpp flag sets how many model layers are offloaded to the GPU?",
-   "-ngl",
+   "--n-gpu-layers",
    [
-    "-t",
-    "-c",
-    "-b"
+    "--threads-batch",
+    "--ctx-size",
+    "--batch-size"
    ],
-   "-ngl (--n-gpu-layers) sets the number of layers on the GPU; -t sets threads, -c context size and -b batch size."
+   "--n-gpu-layers (-ngl) sets the number of layers on the GPU; --threads-batch sets threads for prompt processing, --ctx-size the context size and --batch-size the batch size."
   ],
   [
    "You run a 32-layer model with -ngl 20 on a GPU that cannot fit the whole model. What happens?",
    "20 layers run on the GPU and 12 on the CPU",
    [
-    "All 32 layers run on the GPU in 20 passes",
+    "All 32 layers run on the GPU in 20 sequential passes",
     "The model is spread across 20 GPUs",
     "20 percent of each layer runs on the GPU"
    ],
@@ -700,9 +700,9 @@
    "Besides saving RAM, why does quantization make llama.cpp token generation faster on a CPU?",
    "Decoding is bandwidth bound, so smaller weights load faster",
    [
-    "Quantized models skip the attention step",
-    "Integer weights let the CPU skip softmax",
-    "Smaller weights unlock more CPU threads"
+    "Quantized models skip the attention step entirely during decoding",
+    "Integer weights let the CPU skip the softmax computation",
+    "Smaller weights unlock more CPU threads for each token"
    ],
    "Each new token reads all weights from memory, so fewer bytes per weight directly raises tokens per second."
   ],
@@ -720,7 +720,7 @@
    "By default llama.cpp memory-maps the GGUF file. What is a key benefit?",
    "Fast startup, with pages read from disk on demand",
    [
-    "Weights are encrypted while they sit in RAM",
+    "Weights are encrypted while they sit in RAM and on disk",
     "The whole model is forced into GPU memory",
     "Quantization happens during model loading"
    ],
@@ -730,7 +730,7 @@
    "What does the --mlock option do in llama.cpp?",
    "Locks the model in RAM so it is not swapped out",
    [
-    "Locks the GGUF file against other writers",
+    "Locks the GGUF file against other writers on the disk",
     "Pins the process to a single CPU core",
     "Prevents layers from going to the GPU"
    ],
@@ -770,9 +770,9 @@
    "What separates Q4_K_M from Q4_K_S in llama.cpp?",
    "M keeps some tensors at higher precision, so it is larger",
    [
-    "M targets multiple GPUs and S a single GPU",
-    "M is for Apple Metal and S is for servers",
-    "M uses model parallelism and S is sequential"
+    "M targets multiple GPUs, while S targets a single GPU",
+    "M is built for Apple Metal, while S is built for Linux servers",
+    "M uses model parallelism, while S runs sequentially"
    ],
    "S (small) and M (medium) are mixes: M quantizes some sensitive tensors with more bits, trading size for quality."
   ],
@@ -780,9 +780,9 @@
    "What is an importance matrix (imatrix) used for in llama.cpp?",
    "Improving low-bit quantization with calibration data",
    [
-    "Choosing which layers go to the GPU first",
-    "Sorting vocabulary tokens by frequency",
-    "Scheduling threads across CPU cores"
+    "Choosing which layers are offloaded to the GPU first",
+    "Sorting the vocabulary tokens by their frequency",
+    "Scheduling worker threads across the CPU cores"
    ],
    "llama-imatrix collects activation statistics on sample text, and llama-quantize uses them to keep important weights more accurate."
   ],
@@ -790,7 +790,7 @@
    "What does -n 64 do in llama-cli -m model.gguf -p \"Hello\" -n 64?",
    "Limits output to 64 new tokens",
    [
-    "Uses 64 CPU threads",
+    "Uses 64 CPU threads for decoding",
     "Sets the context to 64 tokens",
     "Offloads 64 layers to the GPU"
    ],
@@ -830,11 +830,11 @@
   ],
   [
    "In which format is a Triton config.pbtxt written?",
-   "Protocol Buffers text format",
+   "Protobuf text format",
    [
-    "YAML",
-    "TOML",
-    "JSON Lines"
+    "YAML document format",
+    "TOML config format",
+    "JSON Lines format"
    ],
    "The file is the text form of the ModelConfig protobuf message."
   ],
@@ -844,7 +844,7 @@
    [
     "All three versions",
     "Only version 1",
-    "The most recently modified folder"
+    "The last modified folder"
    ],
    "The default policy is latest with num_versions 1, so only the highest-numbered version is loaded."
   ],
@@ -863,7 +863,7 @@
    "tritonserver --model-repository=/models",
    [
     "triton start --repo /models",
-    "tritonserver serve --models /models",
+    "tritonserver serve --model-store /models",
     "triton-run --model-dir /models"
    ],
    "The tritonserver binary takes --model-repository pointing at the repository root."
@@ -872,7 +872,7 @@
    "How do you enable the dynamic batcher for a model in Triton?",
    "Add a dynamic_batching block to config.pbtxt",
    [
-    "Pass --dynamic-batching to the client SDK",
+    "Pass --dynamic-batching to the client SDK call",
     "Send batch_size: dynamic in each request",
     "Name the version folder batched"
    ],
@@ -882,9 +882,9 @@
    "What does max_queue_delay_microseconds do in Triton's dynamic_batching settings?",
    "Lets requests wait that long to form a bigger batch",
    [
-    "Drops any request older than that value",
-    "Delays server startup by that amount",
-    "Sets the client-side request timeout"
+    "Drops any queued request older than that value",
+    "Delays the server's startup by that many microseconds",
+    "Sets the client-side request timeout to that value"
    ],
    "The scheduler may hold requests up to this delay to combine more of them, trading a little latency for throughput."
   ],
@@ -892,9 +892,9 @@
    "A Triton config.pbtxt sets max_batch_size: 0. What does that mean?",
    "Triton does not batch it, and dims have no batch axis",
    [
-    "Triton picks the biggest batch that fits",
-    "Batch size has no upper limit at all",
-    "The model stays disabled until reload"
+    "Triton picks the biggest batch that fits in GPU memory",
+    "Batch size has no upper limit at all for that model",
+    "The model stays disabled until the next explicit reload"
    ],
    "With 0, Triton does not add an implicit batch dimension or batch requests, so declared dims are the full tensor shapes."
   ],
@@ -912,7 +912,7 @@
    "Which config.pbtxt setting runs two copies of a model on the same GPU in Triton?",
    "instance_group [ { count: 2, kind: KIND_GPU } ]",
    [
-    "max_batch_size: 2",
+    "model_warmup [ { count: 2, batch_size: 1 } ]",
     "version_policy: { latest: { num_versions: 2 } }",
     "dynamic_batching { preferred_batch_size: [ 2 ] }"
    ],
@@ -942,7 +942,7 @@
    "What is an ensemble model in Triton Inference Server?",
    "A pipeline of models wired by their tensors",
    [
-    "An average of several models' outputs",
+    "An average of several different models' outputs",
     "A set of versions of a single model",
     "A group of GPUs sharing one model"
    ],
@@ -982,9 +982,9 @@
    "Inside a Triton BLS model, how do you call another model through the BLS API?",
    "Build pb_utils.InferenceRequest and call exec()",
    [
-    "Import the other model's model.py file",
-    "List it under ensemble_scheduling steps",
-    "Write its name into the output tensor"
+    "Import the other model's model.py file directly",
+    "List it under the ensemble_scheduling steps",
+    "Write its name into the request's output tensor"
    ],
    "pb_utils.InferenceRequest(model_name=..., ...).exec() runs the target model in the same server; async_exec() is the async variant."
   ],
@@ -1012,11 +1012,11 @@
  "deepspeed": [
   [
    "What does ZeRO stage 1 partition across data-parallel GPUs?",
-   "Optimizer states",
+   "Optimizer states only",
    [
     "Optimizer states and gradients",
-    "Optimizer states, gradients and parameters",
-    "Activations only"
+    "States, gradients and parameters",
+    "Activations and gradients"
    ],
    "ZeRO-1 shards optimizer states; ZeRO-2 adds gradients and ZeRO-3 adds parameters."
   ],
@@ -1025,7 +1025,7 @@
    "Optimizer states and gradients",
    [
     "Optimizer states only",
-    "Optimizer states, gradients and parameters",
+    "States, gradients and parameters",
     "Parameters and activations"
    ],
    "Stage 2 shards optimizer states plus gradients, while each GPU still holds the full parameters."
@@ -1044,9 +1044,9 @@
    "Which DeepSpeed config snippet enables ZeRO stage 2?",
    "\"zero_optimization\": {\"stage\": 2}",
    [
-    "\"zero\": 2",
+    "\"zero_config\": {\"level\": 2}",
     "\"optimizer\": {\"zero_stage\": 2}",
-    "\"stage2\": true"
+    "\"stage2\": {\"enabled\": true}"
    ],
    "ZeRO is configured under the zero_optimization key with a stage field."
   ],
@@ -1065,7 +1065,7 @@
    "All-gathering each layer's parameters when needed",
    [
     "Recomputing every activation two times",
-    "Keeping a full optimizer copy on each GPU",
+    "Keeping a full optimizer state copy on every single GPU",
     "Running all GPUs as one serial pipeline"
    ],
    "Since parameters are sharded, each layer's weights must be gathered for forward and backward, which adds communication."
@@ -1076,7 +1076,7 @@
    [
     "\"optimizer\": {\"device\": \"cpu\"} at the top level",
     "\"offload\": {\"target\": \"optimizer\"} at the top level",
-    "\"zero_optimization\": {\"cpu\": true}"
+    "\"zero_optimization\": {\"optimizer_device\": \"cpu\"}"
    ],
    "offload_optimizer lives inside zero_optimization and accepts cpu or nvme as the device."
   ],
@@ -1104,7 +1104,7 @@
    "What is the main downside of DeepSpeed CPU offloading?",
    "Slower steps from PCIe transfers and CPU work",
    [
-    "Lower final accuracy of the trained model",
+    "Lower final accuracy of the trained model weights",
     "No support for mixed precision training",
     "A need for more GPUs to hold the model"
    ],
@@ -1114,7 +1114,7 @@
    "How must a model be expressed to use DeepSpeed's pipeline parallelism engine?",
    "As a PipelineModule built from a list of layers",
    [
-    "As one nn.Module with a pipeline=True flag",
+    "As one nn.Module with a pipeline=True flag set on it",
     "As an ONNX graph exported before training",
     "As separate training scripts for each GPU"
    ],
@@ -1154,9 +1154,9 @@
    "What does activation checkpointing trade off during training?",
    "More compute for less activation memory",
    [
-    "Lower accuracy for higher speed",
-    "More memory for less compute",
-    "Disk space for faster startup"
+    "Lower accuracy for higher training speed",
+    "More memory for less compute per step",
+    "Disk space for faster training startup"
    ],
    "Only some activations are stored; the rest are recomputed in the backward pass, which saves memory at the cost of extra forward work."
   ],
@@ -1165,10 +1165,10 @@
    "partition_activations",
    [
     "cpu_checkpointing",
-    "contiguous_memory_optimization",
-    "synchronize_checkpoint_boundary"
+    "number_checkpoints",
+    "checkpoint_in_cpu"
    ],
-   "partition_activations shards them across model-parallel ranks; cpu_checkpointing moves them to CPU memory instead."
+   "partition_activations shards them across model-parallel ranks; cpu_checkpointing and checkpoint_in_cpu move them to CPU memory, and number_checkpoints only sets how many are kept."
   ],
   [
    "Why does FP16 mixed-precision training use loss scaling?",
@@ -1176,7 +1176,7 @@
    [
     "To prevent overflow in BF16 tensors",
     "To speed up the optimizer update step",
-    "To normalize the learning rate schedule"
+    "To normalize the learning rate schedule across steps"
    ],
    "Multiplying the loss shifts gradients into FP16's representable range; they are unscaled before the update."
   ],
@@ -1184,7 +1184,7 @@
    "Why does BF16 training usually not need loss scaling?",
    "It has the same exponent range as FP32",
    [
-    "It has more mantissa bits than FP16",
+    "It has more mantissa bits of precision than FP16",
     "It keeps all gradients in FP64",
     "It only runs on CPUs, not GPUs"
    ],
@@ -1204,7 +1204,7 @@
    "Which command launches a DeepSpeed training script on 4 GPUs of one machine?",
    "deepspeed --num_gpus 4 train.py --deepspeed_config ds.json",
    [
-    "python -m deepspeed.zero train.py --gpus 4 ds.json",
+    "python -m deepspeed.zero train.py --gpus 4 --config ds.json",
     "ds-run --gpus 4 train.py --config ds.json",
     "torchrun --deepspeed 4 train.py ds.json"
    ],
@@ -1256,9 +1256,9 @@
    "Why is Megatron tensor parallelism usually kept within a single node?",
    "It communicates every layer and needs NVLink-class bandwidth",
    [
-    "It cannot run over InfiniBand at all",
-    "Nodes are unable to share gradients",
-    "It needs identical CPUs on every node"
+    "It cannot run over InfiniBand or any other network fabric",
+    "Separate nodes are unable to exchange gradients during training",
+    "It needs identical CPU models and memory on every node"
    ],
    "Tensor parallelism all-reduces activations in every layer, so slower inter-node links quickly become the bottleneck."
   ],
@@ -1267,8 +1267,8 @@
    "--tensor-model-parallel-size",
    [
     "--tensor-parallel-size",
-    "--tp-degree",
-    "--model-parallel-gpus"
+    "--tensor-parallel-degree",
+    "--model-parallel-tensor-size"
    ],
    "Megatron uses --tensor-model-parallel-size; --tensor-parallel-size is the vLLM spelling."
   ],
@@ -1276,9 +1276,9 @@
    "Which Megatron-LM argument sets the number of pipeline stages?",
    "--pipeline-model-parallel-size",
    [
-    "--pipeline-stages",
-    "--num-pipeline-gpus",
-    "--pp-degree"
+    "--pipeline-model-parallel-stages",
+    "--num-pipeline-stage-gpus",
+    "--pipeline-parallel-degree"
    ],
    "--pipeline-model-parallel-size splits the layers into that many stages on different GPUs."
   ],
@@ -1316,9 +1316,9 @@
    "In Megatron-LM, what does sequence parallelism partition?",
    "LayerNorm and dropout activations along the sequence",
    [
-    "Attention heads across all the GPUs",
-    "The vocabulary embedding table rows",
-    "Optimizer states across data ranks"
+    "Attention heads across all of the tensor-parallel GPUs",
+    "The rows of the vocabulary embedding table",
+    "Optimizer states across the data-parallel ranks"
    ],
    "Ops outside the tensor-parallel GEMMs are split along the sequence dimension, so their activations are not replicated."
   ],
@@ -1326,9 +1326,9 @@
    "Megatron-LM's sequence parallelism (--sequence-parallel) is used together with what?",
    "Tensor parallelism, on the same GPUs",
    [
-    "Only pipeline parallelism",
-    "Only single-GPU training",
-    "Only CPU offloading"
+    "Only pipeline parallelism, across nodes",
+    "Only single-GPU training runs",
+    "Only CPU optimizer offloading"
    ],
    "Sequence parallelism extends tensor parallelism to the remaining layers and needs a tensor parallel size above 1."
   ],
@@ -1336,9 +1336,9 @@
    "With sequence parallelism enabled, what replaces each tensor-parallel all-reduce in Megatron?",
    "A reduce-scatter and an all-gather",
    [
-    "Two separate all-reduces",
-    "A single broadcast operation",
-    "No communication at all"
+    "Two separate all-reduce operations",
+    "A single broadcast from rank zero",
+    "No communication at all between ranks"
    ],
    "An all-reduce equals a reduce-scatter plus an all-gather, so the communication volume stays the same while activation memory drops."
   ],
@@ -1346,9 +1346,9 @@
    "What does 3D parallelism mean in Megatron-style training?",
    "Combining data, tensor and pipeline parallelism",
    [
-    "Spreading work across three GPU vendors",
-    "Splitting each tensor along three axes",
-    "Running three replicas of the model"
+    "Spreading the work across three GPU vendors",
+    "Splitting each weight tensor along three separate axes",
+    "Running three full replicas of the same model"
    ],
    "Large models combine all three: tensor within a node, pipeline across nodes and data parallelism to scale out."
   ],
@@ -1366,9 +1366,9 @@
    "What does Megatron-LM's selective activation recomputation (--recompute-granularity selective) recompute?",
    "Parts of attention that use much memory but little compute",
    [
-    "Every layer of the model in the backward pass",
-    "Only the embedding and the output layer",
-    "The optimizer step for each micro-batch"
+    "Every transformer layer of the model again during the backward pass",
+    "Only the embedding layer and the final output layer",
+    "The optimizer step once again for each micro-batch"
    ],
    "Selective recomputation targets attention pieces like the softmax and score matrix, which save the most memory for the least extra compute."
   ],
@@ -1396,9 +1396,9 @@
    "What is Megatron Core (megatron.core)?",
    "A library of GPU-optimized parts for transformer training",
    [
-    "A CPU-only runtime for running inference",
-    "A large web-text dataset for pretraining",
-    "A Kubernetes operator for GPU clusters"
+    "A CPU-only runtime for running model inference at the edge",
+    "A large web-text dataset that is used for pretraining",
+    "A Kubernetes operator for scheduling GPU clusters"
    ],
    "Megatron Core packages parallelism, kernels and transformer layers as composable building blocks used by frameworks like NeMo."
   ],
@@ -1406,9 +1406,9 @@
    "Why does Megatron-LM pad the vocabulary (--make-vocab-size-divisible-by)?",
    "So the embedding splits evenly and runs fast",
    [
-    "To add special tokens for each GPU",
-    "To match the model's sequence length",
-    "To let the tokenizer learn new words"
+    "To add special reserved tokens for each GPU",
+    "To match the model's maximum sequence length",
+    "To let the tokenizer learn new words during training"
    ],
    "The padded vocabulary splits cleanly across tensor-parallel ranks, and aligned sizes give more efficient GEMMs."
   ]
@@ -1468,9 +1468,9 @@
    "A kernel runs if (threadIdx.x % 2 == 0) A(); else B();. How does a warp execute it?",
    "It runs both paths in turn, masking idle threads",
    [
-    "It runs only A for the whole warp",
-    "It splits into two warps of 16 threads",
-    "It runs A and B at the same time"
+    "It runs only path A for every thread of the warp",
+    "It splits into two separate warps of 16 threads each",
+    "It runs A and B at the same time on separate cores"
    ],
    "This is warp divergence: threads of one warp take different paths, so the paths are executed serially, lowering efficiency."
   ],
@@ -1479,10 +1479,10 @@
    "if ((threadIdx.x / 32) % 2 == 0)",
    [
     "if (threadIdx.x % 2 == 0)",
-    "if (threadIdx.x % 16 == 0)",
+    "if ((threadIdx.x / 16) % 2 == 0)",
     "if (threadIdx.x < 48)"
    ],
-   "threadIdx.x / 32 is the warp index, so all threads of a warp agree; threadIdx.x < 48 splits the second warp."
+   "threadIdx.x / 32 is the warp index, so all threads of a warp agree; (threadIdx.x / 16) % 2 splits every warp in half, and threadIdx.x < 48 splits the second warp."
   ],
   [
    "Which qualifier declares a variable in CUDA shared memory?",
@@ -1508,9 +1508,9 @@
    "Why do tiled matrix multiplication kernels load tiles into shared memory?",
    "To reuse each loaded value many times",
    [
-    "To make global memory larger",
-    "To avoid launching more blocks",
-    "To skip the need for syncing"
+    "To make the global memory pool larger",
+    "To avoid launching more thread blocks",
+    "To skip the need for thread syncing"
    ],
    "Each element is read from slow global memory once per tile and then reused by many threads from fast shared memory."
   ],
@@ -1529,7 +1529,7 @@
    "Consecutive threads read consecutive addresses",
    [
     "Each thread reads a random address",
-    "Threads read with a stride of 32 floats",
+    "Threads read addresses with a stride of 32 floats",
     "A single thread reads all the values"
    ],
    "Coalesced accesses let a warp's loads combine into few memory transactions."
@@ -1550,7 +1550,7 @@
    [
     "Yes, a launch blocks until it ends",
     "Yes, unless the kernel has an error",
-    "No, it starts only on the next launch"
+    "No, it starts only when the next launch is made"
    ],
    "The host continues immediately; use cudaDeviceSynchronize or a blocking copy to wait for the result."
   ],
@@ -1588,9 +1588,9 @@
    "What does __syncthreads() do in a CUDA kernel?",
    "Waits until all threads of the block reach it",
    [
-    "Waits for every block in the grid",
-    "Syncs the host with the device",
-    "Syncs only threads in one warp"
+    "Waits for every block in the whole grid to reach it",
+    "Syncs the host thread with the device",
+    "Syncs only the threads in one single warp"
    ],
    "It is a block-level barrier that also makes earlier shared memory writes visible to the block."
   ],
@@ -1598,9 +1598,9 @@
    "What is wrong with calling __syncthreads() inside if (threadIdx.x < 16) in a block of 256 threads?",
    "Not all threads reach the barrier, causing a hang or UB",
    [
-    "It is fine, the barrier only waits for 16",
-    "It synchronizes the whole grid instead",
-    "It turns into a no-op inside a branch"
+    "It is fine, since the barrier only waits for those 16",
+    "It synchronizes every block in the whole grid instead",
+    "It turns into a no-op when it is placed inside a branch"
    ],
    "__syncthreads must be reached by every thread of the block; calling it in divergent code is undefined behavior and can deadlock."
   ],
@@ -1608,7 +1608,7 @@
    "Many threads increment counters in a shared histogram array. Which update is correct?",
    "atomicAdd(&hist[bin], 1)",
    [
-    "hist[bin]++ after __syncthreads()",
+    "__syncthreads(); hist[bin]++",
     "__threadfence(); hist[bin]++",
     "volatile hist[bin]++"
    ],
@@ -1620,7 +1620,7 @@
    "What is NVIDIA cuDNN?",
    "A GPU library of deep learning primitives",
    [
-    "A deep learning framework like PyTorch",
+    "A deep learning framework similar to PyTorch",
     "A compiler that turns C++ into CUDA",
     "A file format for trained networks"
    ],
@@ -1630,9 +1630,9 @@
    "Which set of operations is a core part of what cuDNN accelerates?",
    "Convolution, pooling, normalization and activation",
    [
-    "Tokenization, sampling and beam search",
-    "JPEG decoding and image resizing",
-    "Graph traversal and sorting"
+    "Tokenization, top-k sampling and beam search decoding",
+    "JPEG decoding, image resizing and cropping",
+    "Graph traversal, sorting and hashing"
    ],
    "cuDNN targets CNN and RNN building blocks (and attention in newer versions); image decoding is handled by libraries like nvJPEG."
   ],
@@ -1670,7 +1670,7 @@
    "What does torch.backends.cudnn.deterministic = True do?",
    "Limits cuDNN to deterministic algorithms",
    [
-    "Makes cuDNN pick the fastest algorithm",
+    "Makes cuDNN pick the fastest available algorithm",
     "Turns off cuDNN for all layers",
     "Fixes the random seed for dropout"
    ],
@@ -1690,7 +1690,7 @@
    "Why can FFT-based convolution be faster for large filters?",
    "Convolution becomes elementwise products",
    [
-    "FFT needs no extra workspace memory",
+    "FFT needs no extra workspace memory at all",
     "FFT works only with 1x1 filters",
     "FFT skips the bias and activation"
    ],
@@ -1700,7 +1700,7 @@
    "What is the implicit GEMM approach to convolution in cuDNN?",
    "Matrix multiply without building im2col",
    [
-    "Running convolution on the CPU first",
+    "Running the convolution on the CPU first",
     "Replacing convolution with pooling",
     "Converting the input to FP64"
    ],
@@ -1710,9 +1710,9 @@
    "Some cuDNN convolution algorithms need a workspace. What happens if you give cuDNN a very small workspace limit?",
    "Faster algorithms that need more scratch are excluded",
    [
-    "The convolution result becomes less accurate",
-    "cuDNN copies the whole tensor to the CPU",
-    "The layer silently runs as a 1x1 conv"
+    "The convolution result becomes less accurate overall",
+    "cuDNN copies the whole tensor to the CPU to save room",
+    "The layer silently runs as a 1x1 convolution instead"
    ],
    "Workspace is temporary GPU memory; algorithms needing more than allowed cannot be chosen, which may slow things down."
   ],
@@ -1750,9 +1750,9 @@
    "At inference, why can a BatchNorm that follows a convolution be folded into that convolution?",
    "BN becomes a fixed per-channel scale and shift",
    [
-    "BN has no effect at inference time",
-    "BN and conv use the same kernel code",
-    "BN only changes the tensor layout"
+    "BN has no effect at all at inference time",
+    "BN and conv share the same kernel code path",
+    "BN only changes the memory layout of the tensor"
    ],
    "With frozen statistics, BN is affine per channel, so its scale and shift can be merged into the conv weights and bias."
   ],
@@ -1802,7 +1802,7 @@
    [
     "CUDNN_ACTIVATION_ELU",
     "CUDNN_ACTIVATION_TANH",
-    "CUDNN_ACTIVATION_SIGMOID"
+    "CUDNN_ACTIVATION_IDENTITY"
    ],
    "Clipped ReLU computes min(max(x, 0), coef), so a coefficient of 6 gives ReLU6."
   ],
@@ -1822,7 +1822,7 @@
    "What does TensorRT produce from a trained network?",
    "An optimized engine for a target GPU",
    [
-    "A new set of retrained weights",
+    "A new set of retrained weights for the model",
     "A Python package for training",
     "A dataset for calibration only"
    ],
@@ -1832,9 +1832,9 @@
    "By default, can a TensorRT engine built on one GPU architecture run on a different architecture?",
    "No, it is tied to the GPU and TensorRT version",
    [
-    "Yes, engines run on any NVIDIA GPU",
-    "Yes, if both GPUs have equal memory",
-    "Only if it was built with FP32"
+    "Yes, engines run on any NVIDIA GPU with CUDA",
+    "Yes, if both GPUs have the same amount of memory",
+    "Only if it was built with FP32 precision"
    ],
    "Kernels are chosen for the build GPU; newer releases offer an opt-in hardware compatibility mode, but it is not the default."
   ],
@@ -1842,7 +1842,7 @@
    "What does trtexec --onnx=model.onnx --saveEngine=model.plan do?",
    "Builds an engine from the ONNX file and saves it",
    [
-    "Converts the engine back into ONNX format",
+    "Converts an existing engine back into the ONNX format",
     "Validates the ONNX file without building",
     "Quantizes the ONNX file to INT8 in place"
    ],
@@ -1873,7 +1873,7 @@
    "Precomputing parts that depend only on constants",
    [
     "Merging all the weights into one tensor",
-    "Replacing every layer with constant output",
+    "Replacing every layer with a constant output value",
     "Turning dynamic shapes into fixed shapes"
    ],
    "Subgraphs whose inputs are all constants are evaluated at build time, so they cost nothing at runtime."
@@ -1883,7 +1883,7 @@
    "One kernel and no intermediate tensors in memory",
    [
     "Fewer trainable weights in the network",
-    "Higher numeric precision for ReLU output",
+    "Higher numeric precision for the ReLU output values",
     "Automatic support for new GPU types"
    ],
    "Fusion reduces kernel launches and memory traffic, which is often the bottleneck for small layers."
@@ -1892,8 +1892,8 @@
    "What does horizontal layer fusion in TensorRT do?",
    "Merges parallel layers on one input into a wider kernel",
    [
-    "Merges consecutive layers into a single kernel",
-    "Splits one layer across several GPUs",
+    "Merges consecutive layers into a single combined kernel",
+    "Splits one layer across several GPUs at runtime",
     "Swaps the order of two adjacent layers"
    ],
    "Layers with the same input and similar shape, like parallel 1x1 convolutions, are combined; merging consecutive layers is vertical fusion."
@@ -1902,9 +1902,9 @@
    "Why does TensorRT run INT8 calibration?",
    "To find scale factors from representative data",
    [
-    "To retrain the network in INT8 format",
-    "To check the ONNX file for errors",
-    "To pick the batch size for the engine"
+    "To retrain the network weights in INT8 format",
+    "To check the ONNX file for errors before parsing it",
+    "To pick the best batch size for the engine"
    ],
    "Calibration runs sample inputs to measure activation ranges, which set the scales used to map values to INT8."
   ],
@@ -1912,9 +1912,9 @@
    "What data should you use for TensorRT INT8 calibration?",
    "Samples that match real inference inputs",
    [
-    "Random noise in the input shape",
-    "Only the test set labels",
-    "One image repeated many times"
+    "Random noise generated in the model's input shape",
+    "Only the labels from the test set",
+    "One sample image repeated many times"
    ],
    "Scales are only as good as the ranges observed, so the calibration set should reflect real data, typically a few hundred samples."
   ],
@@ -1922,7 +1922,7 @@
    "In TensorRT's implicit INT8 quantization, what does IInt8EntropyCalibrator2 choose?",
    "Ranges that minimize information loss (KL)",
    [
-    "The fastest kernel for each INT8 layer",
+    "The fastest kernel to run each INT8 layer with",
     "The batch size that fits in memory",
     "Layers that should stay in FP32"
    ],
@@ -1932,7 +1932,7 @@
    "An ONNX model from quantization-aware training contains QuantizeLinear and DequantizeLinear nodes. How does TensorRT treat it?",
    "It uses their scales, with no calibrator needed",
    [
-    "It strips the nodes and runs in plain FP32",
+    "It strips the Q/DQ nodes and runs in plain FP32",
     "It rejects the model as unsupported input",
     "It calibrates again and ignores the scales"
    ],
@@ -1952,9 +1952,9 @@
    "An ONNX model has a dynamic batch dimension. What must you provide when building the TensorRT engine?",
    "An optimization profile with min, opt and max shapes",
    [
-    "A fixed batch size written into the engine",
-    "A separate engine for every possible batch",
-    "A plugin that pads inputs to the max batch"
+    "A fixed batch size that is hard-coded into the engine file",
+    "A separate engine for every possible batch size",
+    "A plugin that pads all inputs up to the max batch"
    ],
    "Profiles tell the builder the range of shapes to support and which shape to tune for."
   ],
@@ -1990,13 +1990,13 @@
   ],
   [
    "In TensorRT 10, which parser imports trained models from other frameworks?",
-   "The ONNX parser (nvonnxparser)",
+   "The ONNX parser",
    [
     "The UFF parser",
     "The Caffe parser",
     "The TorchScript parser"
    ],
-   "The UFF and Caffe parsers were removed by TensorRT 10, leaving ONNX as the standard import path."
+   "The ONNX parser (nvonnxparser) is the standard import path; the UFF and Caffe parsers were removed by TensorRT 10."
   ],
   [
    "Your ONNX model uses an operator that TensorRT does not support. What is the standard fix?",
@@ -2024,7 +2024,7 @@
    "What is TensorRT-LLM?",
    "NVIDIA's open-source library for fast LLM inference",
    [
-    "A dataset for training large language models",
+    "A curated dataset for training large language models",
     "A cloud service for hosting chat apps",
     "A tokenizer library for Hugging Face"
    ],
@@ -2036,7 +2036,7 @@
    [
     "Batches are built only on a fixed timer",
     "Each GPU serves just one request at once",
-    "Requests are sorted by prompt length first"
+    "Requests are sorted by their prompt length first"
    ],
    "In-flight batching is NVIDIA's name for continuous batching, scheduling at the level of each generation iteration."
   ],
@@ -2046,7 +2046,7 @@
    [
     "The batch waits for all requests to finish",
     "The whole batch stops and restarts again",
-    "The request keeps generating padding tokens"
+    "The finished request keeps generating padding tokens"
    ],
    "Finished requests are removed right away, so the GPU keeps working on a full batch."
   ],
@@ -2064,9 +2064,9 @@
    "What does KV cache reuse in TensorRT-LLM help with?",
    "Requests that share a prefix, like a system prompt",
    [
-    "Requests that need a different model each",
-    "Prompts that are shorter than one block",
-    "Batches that contain only one request"
+    "Requests that each need a different model loaded",
+    "Prompts that are shorter than a single cache block",
+    "Batches that contain only one request at a time"
    ],
    "Blocks computed for a common prefix are kept and reused, skipping repeated prefill work."
   ],
@@ -2084,7 +2084,7 @@
    "How does KV cache memory grow during LLM serving?",
    "Linearly with sequence length and batch size",
    [
-    "Quadratically with the vocabulary size",
+    "Quadratically with the size of the vocabulary",
     "Only with the number of model weights",
     "It stays fixed once the model loads"
    ],
@@ -2096,7 +2096,7 @@
    [
     "They store keys but never store values",
     "They use a smaller vocabulary than MHA",
-    "They cache only the final layer's outputs"
+    "They cache only the final layer's output vectors"
    ],
    "With fewer KV heads than query heads, fewer keys and values are stored per token."
   ],
@@ -2104,9 +2104,9 @@
    "In TensorRT-LLM's KvCacheConfig, what does free_gpu_memory_fraction set?",
    "Share of free memory after loading used for KV cache",
    [
-    "Share of model weights moved to the CPU",
-    "Share of requests rejected when busy",
-    "Share of GPU cores held for attention"
+    "Share of the model weights offloaded to CPU memory at load",
+    "Share of incoming requests rejected when busy",
+    "Share of GPU cores held back for attention"
    ],
    "After the model loads, this fraction of the remaining free GPU memory is allocated to the KV cache pool."
   ],
@@ -2154,9 +2154,9 @@
    "How does the context (prefill) phase differ from the generation phase in LLM inference?",
    "Prefill handles all prompt tokens in one pass",
    [
-    "Prefill generates one token per step",
-    "Prefill runs only on the CPU",
-    "Prefill skips the attention layers"
+    "Prefill generates one new token per step",
+    "Prefill runs only on the CPU, not the GPU",
+    "Prefill skips all of the attention layers in the model"
    ],
    "Prefill processes the prompt in parallel and fills the KV cache; generation then adds one token per sequence per step."
   ],
@@ -2164,9 +2164,9 @@
    "Why is the generation (decode) phase of LLM inference usually memory-bandwidth bound?",
    "Each step reads all weights for one token per sequence",
    [
-    "Each step trains the weights a little more",
-    "Each step reloads the tokenizer from disk",
-    "Each step sorts the entire vocabulary"
+    "Each step trains the weights a little more on new data",
+    "Each step reloads the tokenizer files from disk again",
+    "Each step sorts the entire vocabulary by probability"
    ],
    "Little math is done per byte of weights loaded, so memory bandwidth, not compute, limits decoding speed."
   ],
@@ -2174,7 +2174,7 @@
    "Why does weight-only INT4 quantization (such as AWQ) speed up decoding in TensorRT-LLM?",
    "Less weight data is read from memory per step",
    [
-    "Activations are cut to 4 bits for compute",
+    "Activations are cut to 4 bits for all of the compute",
     "The model needs fewer transformer layers",
     "Attention is skipped for repeated tokens"
    ],
@@ -2184,9 +2184,9 @@
    "What is the basic idea of speculative decoding?",
    "A cheap draft proposes tokens; the target verifies them",
    [
-    "Two models vote on every token they generate",
-    "The model skips layers for easy tokens",
-    "The server guesses prompts before they arrive"
+    "Two separate models vote on every token that they generate",
+    "The model skips several layers for the easy tokens",
+    "The server guesses incoming prompts before they arrive"
    ],
    "Verifying several drafted tokens in one target forward pass can produce multiple tokens per step."
   ],
@@ -2226,9 +2226,9 @@
    "What is NVIDIA NIM?",
    "Prebuilt containers serving optimized models via APIs",
    [
-    "A GPU driver package for Linux servers",
-    "A training framework for speech models",
-    "A dataset hub for computer vision data"
+    "A GPU driver and firmware package for Linux data center servers",
+    "A training framework for speech recognition models",
+    "A dataset hub for computer vision training data"
    ],
    "NIM microservices package a model, an optimized runtime and an API server into one container."
   ],
@@ -2236,9 +2236,9 @@
    "How is a NIM microservice delivered for self-hosting?",
    "As a container image from NGC (nvcr.io)",
    [
-    "As a pip package from PyPI",
-    "As a VM image for one cloud",
-    "As a browser extension"
+    "As a pip package that you install from PyPI",
+    "As a VM image for one specific cloud provider",
+    "As a browser extension for the NGC website"
    ],
    "NIM images are pulled from the NVIDIA NGC registry and run with Docker or Kubernetes."
   ],
@@ -2246,7 +2246,7 @@
    "Which login is used to pull NIM images from nvcr.io with Docker?",
    "User $oauthtoken with your NGC API key",
    [
-    "Your Docker Hub user and password",
+    "Your Docker Hub username and its account password",
     "User admin with your GPU serial",
     "No login, images are fully public"
    ],
@@ -2266,9 +2266,9 @@
    "Why do NIM quick starts mount a local cache directory into the container?",
    "So model files persist and are not downloaded again",
    [
-    "So the container can write its GPU drivers",
-    "So logs are pushed to NVIDIA by default",
-    "So the API key is stored in plain text"
+    "So the container can install and write its GPU drivers",
+    "So logs are pushed to NVIDIA servers by default",
+    "So the API key is stored on disk in plain text"
    ],
    "Mounting a host folder at the container's cache path keeps downloaded weights and engines between restarts."
   ],
@@ -2296,7 +2296,7 @@
    "When an LLM NIM starts, how does it choose how to run the model?",
    "It picks an optimized profile for the detected GPU",
    [
-    "It always compiles a new engine from scratch",
+    "It always compiles a brand new engine from scratch",
     "It asks the user to choose a CUDA kernel",
     "It runs a CPU build until a GPU is found"
    ],
@@ -2306,7 +2306,7 @@
    "How can you see which model profiles a NIM container supports?",
    "Run list-model-profiles inside the container",
    [
-    "Open nvidia-smi and read the profiles tab",
+    "Open nvidia-smi and read the model profiles tab",
     "Read the profiles from the image's tag",
     "Call GET /v1/profiles from the client"
    ],
@@ -2318,7 +2318,7 @@
    [
     "It removes the need for any GPU hardware",
     "It lets you train models inside the API",
-    "It guarantees zero latency on all requests"
+    "It guarantees zero latency on all incoming requests"
    ],
    "NIM ships models already optimized with NVIDIA runtimes, so you skip engine building and server tuning."
   ],
@@ -2326,9 +2326,9 @@
    "Before deploying NIM on Kubernetes, which NVIDIA component typically installs GPU drivers and the device plugin on the nodes?",
    "NVIDIA GPU Operator",
    [
-    "NVIDIA DALI",
-    "NVIDIA Nsight",
-    "NVIDIA RAPIDS"
+    "NVIDIA DALI pipeline",
+    "NVIDIA Nsight Systems",
+    "NVIDIA RAPIDS suite"
    ],
    "The GPU Operator automates drivers, container toolkit and device plugin so pods can request GPUs."
   ],
@@ -2356,9 +2356,9 @@
    "Which API style does an LLM NIM expose for chat?",
    "OpenAI-compatible, at /v1/chat/completions",
    [
-    "gRPC only, with a custom schema",
-    "SOAP with XML request bodies",
-    "GraphQL at /graphql"
+    "gRPC only, with a custom protobuf schema",
+    "SOAP, with XML request and response bodies over HTTP",
+    "GraphQL, served at the /graphql endpoint"
    ],
    "LLM NIMs follow the OpenAI API, so existing OpenAI client code works by changing the base URL."
   ],
@@ -2406,9 +2406,9 @@
    "Besides model weights, what mainly drives the GPU memory an LLM NIM needs?",
    "The KV cache for context length and concurrency",
    [
-    "The size of the container image on disk",
-    "The number of CPU cores on the host",
-    "The length of the API key string"
+    "The size of the container image that is stored on disk",
+    "The number of CPU cores available on the host",
+    "The length of the NGC API key string"
    ],
    "Longer contexts and more simultaneous requests need more KV cache, so sizing must leave room beyond the weights."
   ],
@@ -2428,9 +2428,9 @@
    "What is NVIDIA NeMo?",
    "An open-source framework for generative AI and speech models",
    [
-    "A closed GPU driver for data center servers",
-    "A vector database for retrieval apps",
-    "A browser tool for labeling audio files"
+    "A closed-source GPU driver for data center and cloud servers",
+    "A vector database for retrieval-augmented generation apps",
+    "A browser tool for labeling and transcribing audio files"
    ],
    "NeMo provides models, recipes and tools to build, train and customize LLMs, ASR, TTS and other models."
   ],
@@ -2438,9 +2438,9 @@
    "Which kinds of models does the NeMo framework cover?",
    "LLMs, speech recognition and text-to-speech",
    [
-    "Only image classification models",
-    "Only tabular gradient-boosted trees",
-    "Only reinforcement learning agents"
+    "Only image classification and detection models",
+    "Only tabular gradient-boosted tree models",
+    "Only reinforcement learning agents for games"
    ],
    "NeMo spans language models and speech AI, including ASR, TTS and speaker tasks."
   ],
@@ -2448,9 +2448,9 @@
    "In NeMo 2.0, how are experiments mainly configured?",
    "With Python-based configs, often run with NeMo-Run",
    [
-    "With XML files stored in the model folder",
-    "With a graphical wizard in the browser",
-    "With shell variables passed to Docker"
+    "With XML files stored inside the model folder",
+    "With a graphical setup wizard in the web browser",
+    "With shell environment variables that are passed to Docker"
    ],
    "NeMo 2.0 moved from YAML (Hydra) to Python configuration, which NeMo-Run can launch locally or on clusters."
   ],
@@ -2458,9 +2458,9 @@
    "Which training library does NeMo build on for its training loop, checkpointing and multi-GPU strategies?",
    "PyTorch Lightning",
    [
-    "Keras",
-    "JAX Flax",
-    "scikit-learn"
+    "TensorFlow Keras",
+    "JAX with Flax",
+    "Hugging Face Accelerate"
    ],
    "NeMo models are Lightning modules, and its trainer and strategies handle distributed training."
   ],
@@ -2488,9 +2488,9 @@
    "Why do many NeMo ASR models train with CTC loss?",
    "It needs no frame-level alignment of audio and text",
    [
-    "It forces the output to a fixed length",
-    "It needs a phoneme label for each frame",
-    "It works only with very short audio clips"
+    "It forces the output to a fixed number of tokens",
+    "It needs a phoneme label for every audio frame",
+    "It works only with very short audio clips of speech"
    ],
    "CTC sums over all possible alignments, so models learn from audio and transcript pairs without labeled timings."
   ],
@@ -2498,9 +2498,9 @@
    "How is word error rate (WER) computed for ASR?",
    "(Substitutions + deletions + insertions) / reference words",
    [
-    "Correct words / words in the model output",
-    "Wrong characters / characters in the audio",
-    "Words per second of transcribed audio"
+    "(Correct words + inserted words) / words in the model output",
+    "(Wrong characters) / characters in the reference audio",
+    "Transcribed words per second of reference audio"
    ],
    "WER counts the edits needed to turn the hypothesis into the reference, divided by the reference length; lower is better."
   ],
@@ -2508,9 +2508,9 @@
    "What characterizes the Conformer architecture used in many NeMo ASR models?",
    "It combines convolution with self-attention",
    [
-    "It uses only recurrent LSTM layers",
-    "It uses only fully connected layers",
-    "It decodes audio with a GAN"
+    "It uses only stacked recurrent LSTM layers",
+    "It uses only fully connected feed-forward layers",
+    "It decodes the audio with a trained GAN"
    ],
    "Convolution captures local acoustic patterns and self-attention captures long-range context."
   ],
@@ -2518,7 +2518,7 @@
    "What is a .nemo file?",
    "An archive with a model's config and weights",
    [
-    "A dataset manifest of audio file paths",
+    "A dataset manifest that lists the audio file paths",
     "A compiled TensorRT engine for GPUs",
     "A log file written during training"
    ],
@@ -2558,9 +2558,9 @@
    "What is NeMo Curator used for?",
    "Preparing large text datasets for LLM training",
    [
-    "Serving LLMs behind an OpenAI API",
-    "Tracking experiments and metrics",
-    "Labeling images for detection"
+    "Serving LLMs behind an OpenAI-compatible API",
+    "Tracking training experiments and their metrics",
+    "Labeling images for object detection tasks"
    ],
    "Curator provides scalable steps such as language ID, quality filtering, deduplication and PII removal."
   ],
@@ -2578,9 +2578,9 @@
    "Why does NeMo Curator apply quality filtering to pretraining text?",
    "To drop low-quality text that hurts the model",
    [
-    "To translate all text into English",
-    "To shorten documents to one sentence",
-    "To add labels for supervised tuning"
+    "To translate all of the text into English",
+    "To shorten every document to a single sentence",
+    "To add labels for supervised fine-tuning"
    ],
    "Heuristic and classifier filters remove spam, boilerplate and garbled text, which improves model quality per token."
   ],
@@ -2610,7 +2610,7 @@
    [
     "pipeline_model_parallel_size",
     "devices_per_layer",
-    "num_shards"
+    "num_tensor_shards"
    ],
    "tensor_model_parallel_size sets tensor parallelism; pipeline_model_parallel_size splits the model by layers instead."
   ],
@@ -2618,9 +2618,9 @@
    "Why would you import a Hugging Face LLM checkpoint into NeMo format before fine-tuning in NeMo?",
    "To train it with NeMo's Megatron-based parallelism",
    [
-    "To shrink it into a smaller model",
-    "To turn it into a speech model",
-    "To remove its tokenizer files"
+    "To shrink it into a smaller distilled model",
+    "To turn it into a speech recognition model",
+    "To strip out its tokenizer, vocabulary and config files"
    ],
    "Conversion maps weights into NeMo and Megatron Core layouts so the recipes and parallel strategies can be used."
   ]
@@ -2640,9 +2640,9 @@
    "When does Numba compile a function decorated with @njit and no signature?",
    "On its first call, for the argument types used",
    [
-    "When the module is first imported",
-    "When the package is installed",
-    "Before every single call"
+    "When the module that defines it is first imported",
+    "When the package is installed with pip",
+    "Before every single call to the function"
    ],
    "Compilation is lazy: the first call with new argument types triggers compiling a specialized version."
   ],
@@ -2650,7 +2650,7 @@
    "A @njit function f is called as f(1) and then as f(1.0). What happens?",
    "A second version is compiled for float64",
    [
-    "The float is cast to int64 silently",
+    "The float is silently cast to int64 and reused",
     "The second call raises a TypeError",
     "Both calls run in pure Python"
    ],
@@ -2660,7 +2660,7 @@
    "Which code inside a @njit function will fail to compile?",
    "Calling a pandas DataFrame method",
    [
-    "Looping over a NumPy array",
+    "Looping over the elements of a NumPy array",
     "Calling math.sqrt on a float",
     "Creating an array with np.zeros"
    ],
@@ -2681,7 +2681,7 @@
    "The first call includes compile time",
    [
     "The first call runs on the GPU",
-    "The second call uses more threads",
+    "The second call uses more CPU threads",
     "The first call skips all loops"
    ],
    "The first call compiles the function, so timing it mixes compilation cost with run time."
@@ -2690,9 +2690,9 @@
    "What does using prange inside a @njit(parallel=True) function do?",
    "Runs loop iterations across threads",
    [
-    "Runs the loop on the GPU",
-    "Unrolls the loop at compile time",
-    "Reverses the loop order"
+    "Runs the loop on the GPU instead",
+    "Unrolls the whole loop at compile time",
+    "Reverses the loop's iteration order"
    ],
    "prange marks a loop whose iterations can run in parallel on CPU threads."
   ],
@@ -2700,7 +2700,7 @@
    "What happens if you use prange in a function decorated with @njit but without parallel=True?",
    "It behaves like an ordinary range",
    [
-    "It raises a compile-time error",
+    "It raises a compile-time typing error",
     "It launches threads anyway",
     "It moves the loop to a GPU"
    ],
@@ -2710,9 +2710,9 @@
    "In @njit(parallel=True), a prange loop does s += a[i] on a scalar s. What does Numba do?",
    "Treats it as a reduction and combines it safely",
    [
-    "Raises an error about shared variables",
-    "Keeps only the last thread's value",
-    "Runs that loop serially without notice"
+    "Raises an error about shared variables in prange",
+    "Keeps only the last thread's value for s",
+    "Runs that loop serially without any notice"
    ],
    "Numba detects scalar reductions like += and gives each thread a private partial sum that is combined at the end."
   ],
@@ -2750,9 +2750,9 @@
    "How do you launch a Numba CUDA kernel named add on 64 blocks of 256 threads?",
    "add[64, 256](x, y, out)",
    [
-    "add(x, y, out, blocks=64, threads=256)",
+    "add(x, y, out, grid=(64, 256))",
     "add<<<64, 256>>>(x, y, out)",
-    "cuda.launch(add, 64, 256, x, y, out)"
+    "cuda.launch(add, 64, 256)(x, y, out)"
    ],
    "Numba uses square brackets for the launch configuration: kernel[blocks, threads](args)."
   ],
@@ -2770,9 +2770,9 @@
    "How does a Numba CUDA kernel give results back to the host?",
    "It writes into an output array argument",
    [
-    "It returns a value with return",
-    "It prints values to the console",
-    "It sets a global Python variable"
+    "It returns a value with a return statement",
+    "It prints the values to the console",
+    "It sets a global Python variable on the host"
    ],
    "Kernels cannot return values, so results are written into arrays passed as arguments."
   ],
@@ -2790,9 +2790,9 @@
    "Which method shows the types Numba inferred for each variable of a compiled function f?",
    "f.inspect_types()",
    [
-    "f.show_types()",
-    "f.typeof()",
-    "f.describe()"
+    "f.describe_types()",
+    "f.get_types()",
+    "f.signatures()"
    ],
    "inspect_types prints the annotated source with the inferred type of each variable."
   ],
@@ -2800,7 +2800,7 @@
    "What does giving an explicit signature, as in @njit(\"float64(float64[:])\"), change?",
    "The function compiles eagerly for that type",
    [
-    "The function runs in object mode only",
+    "The function runs in object mode only from then on",
     "The function accepts any input type",
     "The function compiles at install time"
    ],
@@ -2820,9 +2820,9 @@
    "Inside a @njit function, how does np.empty(n) differ from np.zeros(n)?",
    "np.empty skips initialization, so values are arbitrary",
    [
-    "np.empty returns a list instead of an array",
-    "np.empty allocates memory on the GPU only",
-    "np.empty is not supported by Numba at all"
+    "np.empty returns a Python list instead of an array",
+    "np.empty allocates its memory on the GPU instead of the CPU",
+    "np.empty is not supported inside Numba code at all"
    ],
    "np.empty is slightly faster but contains leftover memory; use it only when every element will be written."
   ]
