@@ -336,7 +336,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
       // A skipped or failed scheduled run must not show an expired deadline.
       const today = new Date().toISOString().slice(0, 10);
-      const currentResults = results.filter((item) => !item.deadline || item.deadline >= today);
+      const currentResults = results.filter((item) =>
+        item.deadline && /^\d{4}-\d{2}-\d{2}$/.test(item.deadline) && item.deadline >= today &&
+        item.organization && !/^unknown$/i.test(item.organization.trim()) &&
+        item.title && !/^unknown$/i.test(item.title.trim()) &&
+        /^https:\/\/[^\s]+$/i.test(item.url || ''));
       // Older feeds could contain duplicate ids; React needs unique keys.
       const seenIds = new Set<string>();
       const uniqueId = (id: string) => {

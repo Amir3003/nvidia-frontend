@@ -2,6 +2,7 @@ import http from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { opportunityId } from './merge.mjs';
+import { confirmedDeadline, publishable } from './radar-quality.mjs';
 
 const dataFile = path.resolve('backend/data/opportunities.json');
 const sourcesFile = path.resolve('backend/data/sources.json');
@@ -28,20 +29,18 @@ async function postJson(url, key, body) {
   return response.json();
 }
 
-function validate(items, sources) {
+export function validate(items, sources, today = new Date().toISOString().slice(0, 10)) {
   if (!Array.isArray(items)) throw new Error('Model response was not a JSON array');
-  const today = new Date().toISOString().slice(0, 10);
   return items.slice(0, 15).flatMap((item) => {
     if (!item || typeof item !== 'object') return [];
     const url = String(item.url || '');
     const source = sources.get(url);
     const title = String(item.title || '').trim().slice(0, 160);
-    if (!source || !title || !/^https?:\/\//.test(url)) return [];
+    if (!source || !title || !/^https:\/\//.test(url) || !source.toLowerCase().includes(title.toLowerCase())) return [];
     const quote = String(item.deadline_quote || '').trim();
     const deadline = String(item.deadline || '');
-    const hasDeadlineEvidence = quote && source.toLowerCase().includes(quote.toLowerCase()) &&
-      /deadline|registration|apply|applications|submit|clos(e|es|ing)|due|until|last date/i.test(quote) &&
-      /^\d{4}-\d{2}-\d{2}$/.test(deadline) && !Number.isNaN(Date.parse(`${deadline}T00:00:00Z`)) && deadline >= today;
+    const hasDeadlineEvidence = confirmedDeadline(deadline, quote, source, today);
+    if (!hasDeadlineEvidence) return [];
     const eligibilityQuote = String(item.eligibility_quote || '').trim();
     const eligibility = eligibilityQuote && source.toLowerCase().includes(eligibilityQuote.toLowerCase())
       ? eligibilityQuote.slice(0, 500) : '';
@@ -59,11 +58,11 @@ function validate(items, sources) {
       typeof c === 'string' && c.length > 1 && c.length < 40 && lower.includes(c.toLowerCase())))].slice(0, 30) : [];
     if (!['HACKATHON', 'GRANT', 'INTERNSHIP'].includes(item.type)) return [];
     const type = item.type;
-    return [{ id: opportunityId(url), type, title, summary, location, countries,
-      organization: String(item.organization || 'Unknown').slice(0, 100), url,
-      deadline: hasDeadlineEvidence ? deadline : null,
-      deadlineEvidence: hasDeadlineEvidence ? quote : null,
-      eligibility: eligibility || 'check source', skills }];
+    const result = { id: opportunityId(url), type, title, summary, location, countries,
+      organization: String(item.organization || '').trim().slice(0, 100), url,
+      deadline, deadlineEvidence: quote,
+      eligibility: eligibility || 'check source', skills };
+    return publishable(result, today) ? [result] : [];
   });
 }
 
