@@ -1,0 +1,54 @@
+{
+ "react": [
+  "React docs: Learn React",
+  "https://react.dev/learn"
+ ],
+ "nextjs": [
+  "Next.js Documentation",
+  "https://nextjs.org/docs"
+ ],
+ "vue": [
+  "Vue.js Guide",
+  "https://vuejs.org/guide/introduction.html"
+ ],
+ "nuxt": [
+  "Nuxt Documentation",
+  "https://nuxt.com/docs"
+ ],
+ "svelte": [
+  "Svelte Documentation",
+  "https://svelte.dev/docs"
+ ],
+ "angular": [
+  "Angular Documentation",
+  "https://angular.dev/overview"
+ ],
+ "html": [
+  "MDN Web Docs: HTML",
+  "https://developer.mozilla.org/en-US/docs/Web/HTML"
+ ],
+ "css": [
+  "MDN Web Docs: CSS",
+  "https://developer.mozilla.org/en-US/docs/Web/CSS"
+ ],
+ "tailwind-css": [
+  "Tailwind CSS Documentation",
+  "https://tailwindcss.com/docs"
+ ],
+ "threejs": [
+  "Three.js Manual",
+  "https://threejs.org/manual/"
+ ],
+ "webgl": [
+  "MDN WebGL Tutorial",
+  "https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial"
+ ],
+ "vite": [
+  "Vite Guide",
+  "https://vite.dev/guide/"
+ ],
+ "webpack": [
+  "webpack Concepts",
+  "https://webpack.js.org/concepts/"
+ ]
+}

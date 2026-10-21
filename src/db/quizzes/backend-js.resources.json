@@ -1,0 +1,38 @@
+{
+ "nodejs": [
+  "Node.js Learn (official guides)",
+  "https://nodejs.org/en/learn"
+ ],
+ "express": [
+  "Express Guide: Routing and Middleware",
+  "https://expressjs.com/en/guide/routing.html"
+ ],
+ "nestjs": [
+  "NestJS Documentation",
+  "https://docs.nestjs.com/"
+ ],
+ "deno": [
+  "Deno Documentation",
+  "https://docs.deno.com/"
+ ],
+ "bun": [
+  "Bun Documentation",
+  "https://bun.sh/docs"
+ ],
+ "graphql": [
+  "Learn GraphQL (graphql.org)",
+  "https://graphql.org/learn/"
+ ],
+ "rest-apis": [
+  "MDN Web Docs: HTTP",
+  "https://developer.mozilla.org/en-US/docs/Web/HTTP"
+ ],
+ "grpc": [
+  "gRPC: Introduction and Core Concepts",
+  "https://grpc.io/docs/what-is-grpc/introduction/"
+ ],
+ "websockets": [
+  "MDN Web Docs: The WebSocket API",
+  "https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API"
+ ]
+}

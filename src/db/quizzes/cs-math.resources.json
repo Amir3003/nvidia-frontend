@@ -1,0 +1,38 @@
+{
+ "algorithms": [
+  "MIT 6.006 Introduction to Algorithms (OpenCourseWare)",
+  "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/"
+ ],
+ "data-structures": [
+  "Open Data Structures (free textbook)",
+  "https://opendatastructures.org/"
+ ],
+ "competitive-programming": [
+  "CP-Algorithms",
+  "https://cp-algorithms.com/"
+ ],
+ "unit-testing": [
+  "The Practical Test Pyramid (Martin Fowler)",
+  "https://martinfowler.com/articles/practical-test-pyramid.html"
+ ],
+ "linear-algebra": [
+  "MIT 18.06 Linear Algebra (OpenCourseWare)",
+  "https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/"
+ ],
+ "statistics": [
+  "OpenIntro Statistics (free textbook)",
+  "https://www.openintro.org/book/os/"
+ ],
+ "probability": [
+  "MIT 18.05 Introduction to Probability and Statistics (OpenCourseWare)",
+  "https://ocw.mit.edu/courses/18-05-introduction-to-probability-and-statistics-spring-2022/"
+ ],
+ "calculus": [
+  "OpenStax Calculus Volume 3 (multivariable)",
+  "https://openstax.org/details/books/calculus-volume-3"
+ ],
+ "optimization": [
+  "Convex Optimization (Boyd and Vandenberghe, free book)",
+  "https://web.stanford.edu/~boyd/cvxbook/"
+ ]
+}

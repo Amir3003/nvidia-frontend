@@ -1,0 +1,46 @@
+{
+ "langchain": [
+  "LangChain Python documentation",
+  "https://python.langchain.com/docs/introduction/"
+ ],
+ "llamaindex": [
+  "LlamaIndex documentation",
+  "https://docs.llamaindex.ai/en/stable/"
+ ],
+ "langgraph": [
+  "LangGraph documentation",
+  "https://langchain-ai.github.io/langgraph/"
+ ],
+ "dspy": [
+  "DSPy documentation",
+  "https://dspy.ai/"
+ ],
+ "crewai": [
+  "CrewAI documentation",
+  "https://docs.crewai.com/"
+ ],
+ "autogen": [
+  "AutoGen documentation",
+  "https://microsoft.github.io/autogen/stable/"
+ ],
+ "semantic-kernel": [
+  "Semantic Kernel documentation (Microsoft Learn)",
+  "https://learn.microsoft.com/en-us/semantic-kernel/overview/"
+ ],
+ "haystack": [
+  "Haystack documentation",
+  "https://docs.haystack.deepset.ai/docs/intro"
+ ],
+ "openai-api": [
+  "OpenAI API documentation",
+  "https://platform.openai.com/docs/"
+ ],
+ "anthropic-api": [
+  "Claude API documentation",
+  "https://docs.anthropic.com/en/api/messages"
+ ],
+ "gemini-api": [
+  "Gemini API documentation",
+  "https://ai.google.dev/gemini-api/docs"
+ ]
+}

@@ -1,0 +1,1214 @@
+{
+ "csharp": [
+  [
+   "By default, what does the C# compiler (Roslyn) emit into a .dll assembly?",
+   "IL (CIL) code that the JIT compiles at run time",
+   [
+    "Native x86 machine code ready to execute",
+    "Java bytecode for a JVM to interpret",
+    "Plain source text parsed on every launch"
+   ],
+   "C# compiles to Common Intermediate Language plus metadata; the CLR's JIT compiler turns IL into native code when methods are first called (ahead-of-time options exist but are not the default)."
+  ],
+  [
+   "In .NET, from what object size are allocations placed on the Large Object Heap by default?",
+   "85,000 bytes or larger",
+   [
+    "1 MB or larger",
+    "4,096 bytes or larger",
+    "65,536 bytes or larger"
+   ],
+   "Objects of 85,000 bytes or more go to the LOH, which is collected with generation 2 and is not compacted by default, so frequent large allocations can cause fragmentation."
+  ],
+  [
+   "What happens when a C# async method reaches await on a Task that has not completed yet?",
+   "It returns to its caller and resumes when the task completes",
+   [
+    "It blocks the current thread until the task completes",
+    "It starts a new thread and moves the method onto it",
+    "It throws InvalidOperationException immediately"
+   ],
+   "await on an incomplete task registers a continuation and returns control to the caller; no thread is blocked while waiting."
+  ],
+  [
+   "Why is async void discouraged in C# except for event handlers?",
+   "Callers cannot await it or catch its exceptions",
+   [
+    "It forces the method to run synchronously on the UI thread",
+    "It cannot contain more than one await expression",
+    "It is compiled into a blocking Thread.Sleep call"
+   ],
+   "An async void method gives the caller no Task to await, and an exception thrown inside it is raised on the SynchronizationContext, where it usually crashes the process."
+  ],
+  [
+   "In a WinForms or classic ASP.NET app, the UI thread calls GetDataAsync().Result, and GetDataAsync awaits without ConfigureAwait(false). What typically happens?",
+   "A deadlock: the continuation waits for the blocked UI thread",
+   [
+    "A compile error, because Result is not allowed on Task<T>",
+    "The call silently moves to a background thread and succeeds",
+    "The compiler rewrites the Result call into an await"
+   ],
+   "The continuation is posted back to the UI SynchronizationContext, but that thread is blocked on .Result, so neither can proceed. Use await all the way up instead."
+  ],
+  [
+   "In C#: var nums = new List<int> { 1, 2 }; var q = nums.Where(n => n > 0); nums.Add(3); What does q.Count() return?",
+   "3",
+   [
+    "2",
+    "0",
+    "1"
+   ],
+   "LINQ queries use deferred execution: Where only runs when q is enumerated by Count(), which happens after 3 was added."
+  ],
+  [
+   "What does new[] { 1, 2, 3, 4 }.Where(x => x % 2 == 0).Select(x => x * 10).Sum() return in C#?",
+   "60",
+   [
+    "40",
+    "100",
+    "20"
+   ],
+   "Where keeps 2 and 4, Select turns them into 20 and 40, and Sum adds them to 60."
+  ],
+  [
+   "What is the most a single C# class can inherit from or implement?",
+   "One base class plus any number of interfaces",
+   [
+    "Two base classes plus any number of interfaces",
+    "Any number of base classes but one interface",
+    "One base class and at most one interface"
+   ],
+   "C# allows single class inheritance but multiple interface implementation, so a class can extend one abstract class and implement many interfaces."
+  ],
+  [
+   "What is the main restriction the event keyword adds compared with a public delegate field in C#?",
+   "Outside code can only subscribe or unsubscribe, not invoke it",
+   [
+    "Outside code can invoke it but cannot subscribe to it",
+    "It can hold only one handler at a time",
+    "Its handlers must be static methods"
+   ],
+   "An event exposes only += and -= to other classes; only the declaring class can raise it or replace the handler list."
+  ],
+  [
+   "In C#: Action<int> a = x => Console.Write(x); a += x => Console.Write(x * 2); a(5); What is printed?",
+   "510",
+   [
+    "10",
+    "5",
+    "105"
+   ],
+   "Delegates are multicast: += adds a second handler, and invoking a runs both in order, printing 5 and then 10."
+  ],
+  [
+   "What does the constraint where T : new() require in a C# generic method?",
+   "T must have a public parameterless constructor",
+   [
+    "T must be a reference type created with new",
+    "T must be a type declared in the same assembly",
+    "T must implement an interface named INew"
+   ],
+   "The new() constraint lets the generic code write new T(), so the type argument must expose a public parameterless constructor."
+  ],
+  [
+   "Why can IEnumerable<string> be assigned to IEnumerable<object> in C#, while List<string> cannot be assigned to List<object>?",
+   "IEnumerable<T> declares T as covariant (out T)",
+   [
+    "List<T> is sealed, which blocks all conversions",
+    "string is a value type that boxes to object",
+    "IEnumerable<T> is not really a generic interface"
+   ],
+   "IEnumerable<out T> only returns T, so covariance is safe. List<T> also accepts T in Add, so it is invariant; allowing the conversion would let you add a non-string."
+  ],
+  [
+   "In C#, given record Point(int X, int Y); var a = new Point(1, 2); var b = new Point(1, 2); What does a == b return?",
+   "true",
+   [
+    "false",
+    "A compile error",
+    "It depends on the hash codes"
+   ],
+   "Records get compiler-generated value equality, so two instances with equal property values compare equal with ==, unlike ordinary classes."
+  ],
+  [
+   "In C#, a struct type has a mutable field X. After var b = a; b.X = 5; what is true about a.X?",
+   "It is unchanged, because b is a copy of a",
+   [
+    "It is 5, because a and b share one object",
+    "The code fails, because structs are immutable",
+    "The code fails, because structs cannot be copied"
+   ],
+   "Structs are value types, so assignment copies the whole value; changing b does not affect a. A class instance would be shared instead."
+  ],
+  [
+   "In ASP.NET Core dependency injection, which service lifetime creates one instance per HTTP request?",
+   "Scoped",
+   [
+    "Singleton",
+    "Transient",
+    "Pooled"
+   ],
+   "Scoped services live for one scope, and ASP.NET Core creates a scope per request. Transient creates a new instance every time it is resolved."
+  ],
+  [
+   "In ASP.NET Core, what goes wrong when a singleton service takes a scoped service such as a DbContext in its constructor?",
+   "The scoped instance is captured and outlives its scope",
+   [
+    "The scoped service is recreated on every method call",
+    "The singleton is rebuilt once per HTTP request",
+    "The container turns the singleton into a transient"
+   ],
+   "This is a captive dependency: the singleton keeps the first scoped instance forever, which is unsafe for DbContext. Scope validation in Development throws an error for it."
+  ],
+  [
+   "With nullable reference types enabled in C#, what does string? name declare?",
+   "A string that may be null, tracked by compiler warnings",
+   [
+    "A Nullable<string> struct wrapping the value",
+    "A string that throws at run time when set to null",
+    "A string that defaults to empty instead of null"
+   ],
+   "For reference types, ? is a compile-time annotation: the compiler warns about unsafe dereferences. Nothing changes at run time, and Nullable<T> applies only to value types."
+  ],
+  [
+   "Which C# expression gets the System.Type object for a class named Order without needing an instance?",
+   "typeof(Order)",
+   [
+    "Order.GetType()",
+    "nameof(Order)",
+    "Type.Of<Order>()"
+   ],
+   "typeof is evaluated at compile time for a type name. GetType() is an instance method, and nameof returns only the string \"Order\"."
+  ],
+  [
+   "What does a C# using statement such as using (var f = File.OpenRead(path)) { ... } guarantee?",
+   "f.Dispose() is called when the block exits, even on exceptions",
+   [
+    "f is garbage collected right after the block ends",
+    "f is reopened automatically if an exception occurs",
+    "f can be shared safely across several threads"
+   ],
+   "using compiles to try/finally that calls Dispose, so the file handle is released deterministically. Memory is still reclaimed later by the GC."
+  ],
+  [
+   "In the .NET dispose pattern, why does Dispose() call GC.SuppressFinalize(this)?",
+   "Cleanup is already done, so the finalizer need not run",
+   [
+    "It forces an immediate garbage collection",
+    "It prevents Dispose from being called twice",
+    "It frees the managed memory of the object"
+   ],
+   "Objects with finalizers survive an extra GC and go through the finalization queue. After explicit cleanup, SuppressFinalize removes that cost."
+  ]
+ ],
+ "java": [
+  [
+   "What does javac produce from a .java source file?",
+   ".class files containing JVM bytecode",
+   [
+    "Native executables for the host OS",
+    ".jar files containing C++ object code",
+    "Script files run by the JRE shell"
+   ],
+   "javac compiles source to platform-independent bytecode in .class files, which any JVM can load and run. A .jar is just an archive of such files."
+  ],
+  [
+   "Which JVM component turns frequently executed bytecode into native machine code at run time?",
+   "The JIT compiler",
+   [
+    "The class loader",
+    "The bytecode verifier",
+    "The garbage collector"
+   ],
+   "HotSpot first interprets bytecode, then the Just-In-Time compiler compiles hot methods to native code. The class loader only loads and links classes."
+  ],
+  [
+   "Which garbage collector does the HotSpot JVM use by default on server-class machines since Java 9?",
+   "G1 (Garbage-First)",
+   [
+    "Serial",
+    "Parallel",
+    "CMS"
+   ],
+   "JEP 248 made G1 the default in Java 9. Parallel was the previous default, and CMS was later removed in Java 14."
+  ],
+  [
+   "What is the main design goal of ZGC in modern Java (JDK 15 and later)?",
+   "Very short pauses that do not grow with heap size",
+   [
+    "Maximum throughput with long stop-the-world pauses",
+    "Minimal memory use on single-core devices",
+    "Reference counting to free objects instantly"
+   ],
+   "ZGC does most of its work concurrently with the application, keeping pauses in the millisecond range even for very large heaps."
+  ],
+  [
+   "What does the volatile keyword guarantee for a Java field?",
+   "A write by one thread is visible to later reads by others",
+   [
+    "Compound actions like count++ on it become atomic",
+    "Only one thread at a time can access the field",
+    "The field is kept in a CPU register for speed"
+   ],
+   "volatile gives visibility and ordering (happens-before) but not atomicity of read-modify-write. count++ on a volatile int can still lose updates."
+  ],
+  [
+   "Two Java threads each run count++ 1000 times on a shared int field with no synchronization. What is the final value of count?",
+   "It may be less than 2000, because count++ is not atomic",
+   [
+    "Exactly 2000, because int writes are atomic",
+    "Exactly 1000, because the threads overwrite each other",
+    "A compile error, because the field is not volatile"
+   ],
+   "count++ is read, add, write; interleaved threads can overwrite each other's updates. Use AtomicInteger or synchronized to get exactly 2000."
+  ],
+  [
+   "A ThreadPoolExecutor has corePoolSize 2, maximumPoolSize 4 and an unbounded LinkedBlockingQueue. How many worker threads run under heavy load?",
+   "2, because extra tasks wait in the unbounded queue",
+   [
+    "4, because the pool grows to its maximum when busy",
+    "Unlimited, because the queue has no capacity limit",
+    "1, because only one thread polls the queue"
+   ],
+   "New threads beyond the core size are created only when the queue rejects a task. An unbounded queue never fills, so maximumPoolSize has no effect."
+  ],
+  [
+   "Because of type erasure, what does new ArrayList<String>().getClass() == new ArrayList<Integer>().getClass() evaluate to in Java?",
+   "true",
+   [
+    "false",
+    "A compile error",
+    "A ClassCastException at run time"
+   ],
+   "Generic type arguments are erased at compile time, so both objects have the same runtime class, java.util.ArrayList."
+  ],
+  [
+   "Which Java method signature accepts both a List<Integer> and a List<Double> and lets you read elements as Number?",
+   "void sum(List<? extends Number> list)",
+   [
+    "void sum(List<Number> list)",
+    "void sum(List<? super Number> list)",
+    "void sum(List<Object> list)"
+   ],
+   "Generics are invariant, so List<Integer> is not a List<Number>. An upper-bounded wildcard accepts any list of Number subtypes for reading (\"producer extends\")."
+  ],
+  [
+   "In the Spring Framework, what does @Autowired on a constructor do?",
+   "Asks the container to inject matching beans as arguments",
+   [
+    "Marks the class as a REST controller",
+    "Opens a new database connection on each call",
+    "Makes the constructor run on a background thread"
+   ],
+   "Spring resolves each constructor parameter from the beans in the application context. Since Spring 4.3 a single constructor is autowired even without the annotation."
+  ],
+  [
+   "What is the default scope of a bean in the Spring Framework?",
+   "Singleton: one shared instance per container",
+   [
+    "Prototype: a new instance on every lookup",
+    "Request: one instance per HTTP request",
+    "Session: one instance per HTTP session"
+   ],
+   "Unless another scope is declared, Spring creates one instance per application context and injects that same instance everywhere."
+  ],
+  [
+   "What does List.of(1, 2, 3, 4).stream().filter(x -> x > 1).map(x -> x * 2).toList() return in Java 16 or later?",
+   "[4, 6, 8]",
+   [
+    "[2, 4, 6, 8]",
+    "[4, 6]",
+    "[2, 6, 8]"
+   ],
+   "filter keeps 2, 3 and 4, then map doubles them. Stream.toList() was added in Java 16 and returns an unmodifiable list."
+  ],
+  [
+   "What does Stream.of(1, 2, 3).peek(System.out::print).map(x -> x * 2); print in Java if no terminal operation follows?",
+   "Nothing is printed",
+   [
+    "123",
+    "246",
+    "123246"
+   ],
+   "Intermediate operations are lazy; the pipeline runs only when a terminal operation such as forEach or toList is called."
+  ],
+  [
+   "Why does int n = 0; Runnable r = () -> n++; fail to compile in Java?",
+   "Lambdas can capture only effectively final local variables",
+   [
+    "Runnable lambdas cannot read any local variables",
+    "The ++ operator is not allowed inside a lambda",
+    "Runnable lambdas must return an int value"
+   ],
+   "A lambda may read captured locals only if they are never reassigned. n++ modifies n, so the compiler rejects it."
+  ],
+  [
+   "Which standard Java collection gives key lookups with the keys kept in sorted order?",
+   "TreeMap",
+   [
+    "HashMap",
+    "LinkedHashMap",
+    "Hashtable"
+   ],
+   "TreeMap is a red-black tree with O(log n) operations and sorted keys. LinkedHashMap keeps insertion order, not sorted order."
+  ],
+  [
+   "A Java class overrides equals() but not hashCode(). What problem appears when its objects are used as HashMap keys?",
+   "Equal keys may land in different buckets, so lookups fail",
+   [
+    "HashMap refuses to compile with such a key type",
+    "Every key is placed into the same bucket",
+    "The map sorts its keys using equals()"
+   ],
+   "HashMap finds the bucket by hashCode() first. Equal objects with different identity hash codes end up in different buckets, so get() can return null."
+  ],
+  [
+   "In Java: class A { void f() { System.out.print(\"A\"); } } class B extends A { void f() { System.out.print(\"B\"); } } What does A a = new B(); a.f(); print?",
+   "B",
+   [
+    "A",
+    "AB",
+    "A compile error"
+   ],
+   "Instance methods are dispatched on the runtime type of the object (dynamic dispatch), so B's override runs even through an A reference."
+  ],
+  [
+   "In Java, class A has static void f() printing \"A\", and subclass B declares static void f() printing \"B\". What does A a = new B(); a.f(); print?",
+   "A",
+   [
+    "B",
+    "AB",
+    "A compile error"
+   ],
+   "Static methods are not overridden but hidden, and calls are bound by the declared type of the reference, so A.f() runs. The compiler only warns about calling it through an instance."
+  ],
+  [
+   "Which kind of Java exception must be either caught or declared with throws?",
+   "Checked exceptions such as IOException",
+   [
+    "Unchecked ones such as NullPointerException",
+    "Errors such as OutOfMemoryError",
+    "Any subclass of RuntimeException"
+   ],
+   "The compiler enforces handling only for checked exceptions: Exception subclasses outside RuntimeException. RuntimeException and Error are unchecked."
+  ],
+  [
+   "What does this Java method return: int f() { try { return 1; } finally { return 2; } }",
+   "2",
+   [
+    "1",
+    "A compile error",
+    "It throws an exception"
+   ],
+   "The finally block runs after the try's return value is computed, and its own return replaces that value. Returning from finally is legal but discouraged."
+  ]
+ ],
+ "kotlin": [
+  [
+   "In Kotlin, what is the value of name?.length ?: 0 when name is null?",
+   "0",
+   [
+    "null",
+    "A NullPointerException is thrown",
+    "A compile error"
+   ],
+   "The safe call ?. yields null instead of throwing, and the Elvis operator ?: then substitutes 0."
+  ],
+  [
+   "What does the !! operator do in Kotlin, as in name!!.length?",
+   "Throws a NullPointerException if name is null",
+   [
+    "Returns 0 instead of failing if name is null",
+    "Skips the call and returns null if name is null",
+    "Marks name as nullable only for that call"
+   ],
+   "!! asserts that the value is not null and converts it to a non-null type; if it is null, a NullPointerException is thrown."
+  ],
+  [
+   "Which kotlinx.coroutines dispatcher is intended for blocking I/O such as file or network calls?",
+   "Dispatchers.IO",
+   [
+    "Dispatchers.Main",
+    "Dispatchers.Default",
+    "Dispatchers.Unconfined"
+   ],
+   "Dispatchers.IO uses a larger, elastic thread pool for blocking calls. Dispatchers.Default is sized to CPU cores and meant for CPU-bound work."
+  ],
+  [
+   "What is the key difference between launch and async in kotlinx.coroutines?",
+   "async returns a Deferred whose result you get with await()",
+   [
+    "launch returns a Deferred whose value you read with await()",
+    "async blocks the calling thread until it finishes",
+    "launch can start coroutines only on Dispatchers.Main"
+   ],
+   "launch returns a Job and is used for fire-and-forget work, while async returns Deferred<T>, a Job with a result."
+  ],
+  [
+   "In Kotlin: coroutineScope { launch { error(\"x\") }; launch { delay(5000) } }. What happens to the second child when the first one throws?",
+   "It is cancelled, and the exception propagates from coroutineScope",
+   [
+    "It keeps running for 5 seconds, then the scope ends",
+    "It restarts automatically with a fresh Job",
+    "It is promoted to replace the failed coroutine"
+   ],
+   "Structured concurrency: a failing child cancels its parent scope, which cancels all other children, and coroutineScope rethrows the exception. supervisorScope behaves differently."
+  ],
+  [
+   "In Kotlin, given data class User(val name: String, val age: Int), what does User(\"A\", 1) == User(\"A\", 1) return?",
+   "true",
+   [
+    "false",
+    "A compile error",
+    "It depends on object identity"
+   ],
+   "Data classes generate equals() and hashCode() from the primary constructor properties, and == calls equals()."
+  ],
+  [
+   "Which member does a Kotlin data class NOT generate automatically from its primary constructor properties?",
+   "compareTo()",
+   [
+    "copy()",
+    "component1()",
+    "toString()"
+   ],
+   "Data classes get equals, hashCode, toString, copy and componentN functions. Ordering is not generated; you must implement Comparable yourself."
+  ],
+  [
+   "In Kotlin, after declaring fun String.shout() = uppercase() + \"!\", which call works and what does it return?",
+   "\"hi\".shout(), returning \"HI!\"",
+   [
+    "shout(\"hi\"), returning \"HI!\"",
+    "\"hi\".shout, returning \"HI!\"",
+    "String.shout(\"hi\"), returning \"HI!\""
+   ],
+   "An extension function is called like a member on a receiver of that type, and inside it this refers to the receiver string."
+  ],
+  [
+   "In Kotlin: open class A; class B : A(); fun A.name() = \"A\"; fun B.name() = \"B\"; val x: A = B(). What does x.name() return?",
+   "\"A\"",
+   [
+    "\"B\"",
+    "\"AB\"",
+    "A compile error"
+   ],
+   "Extension functions are resolved statically by the declared type of the expression, here A, not by the runtime type."
+  ],
+  [
+   "Why can a Kotlin when expression on a value of a sealed class type omit the else branch?",
+   "The compiler knows every subclass and checks exhaustiveness",
+   [
+    "when returns null by default when nothing matches",
+    "A sealed class is limited to exactly two subclasses",
+    "else is added implicitly and throws at run time"
+   ],
+   "All direct subclasses of a sealed class are known at compile time, so the compiler can verify that every case is covered."
+  ],
+  [
+   "Since Kotlin 1.5, where can the direct subclasses of a sealed class be declared?",
+   "In the same module and package as the sealed class",
+   [
+    "In any module that depends on the sealed class",
+    "Only inside the body of the sealed class itself",
+    "Only in Java files in the same project"
+   ],
+   "Kotlin 1.5 relaxed the rule from the same file to the same module and package, which still keeps the set of subclasses closed."
+  ],
+  [
+   "What does marking a higher-order function as inline do in Kotlin?",
+   "Copies its body and lambda arguments into each call site",
+   [
+    "Runs the function on a separate background thread",
+    "Caches its result for repeated calls with same args",
+    "Forces lambda arguments to be stored as objects"
+   ],
+   "Inlining removes the cost of allocating function objects for lambdas and also enables non-local returns from those lambdas."
+  ],
+  [
+   "Which Kotlin feature can be used only in an inline function?",
+   "A reified type parameter, as in <reified T>",
+   [
+    "A vararg parameter, as in vararg x: Int",
+    "A default argument, as in x: Int = 0",
+    "A nullable return type, as in : Int?"
+   ],
+   "Generic types are erased on the JVM; reified works because the inlined body is copied with the actual type, so checks like x is T are possible."
+  ],
+  [
+   "In Kotlin, class Car declares fun create() inside its companion object. How do you call it from Kotlin code?",
+   "Car.create()",
+   [
+    "Car().create()",
+    "Car.companion.create()",
+    "new Car.create()"
+   ],
+   "Companion object members are called through the class name. Car.Companion.create() also works, but lowercase companion does not."
+  ],
+  [
+   "Which annotation makes a Kotlin companion object function callable from Java as a real static method, Car.create()?",
+   "@JvmStatic",
+   [
+    "@JvmField",
+    "@JvmOverloads",
+    "@JvmName"
+   ],
+   "Without @JvmStatic, Java must call Car.Companion.create(). @JvmField exposes properties as fields, and @JvmOverloads generates overloads for default arguments."
+  ],
+  [
+   "A Java method with no nullability annotations returns String. How does Kotlin see this return type?",
+   "As a platform type, String!, that may be used as either",
+   [
+    "As String?, so every use needs a null check",
+    "As String, guaranteed non-null by the compiler",
+    "As Any, because Java types are erased"
+   ],
+   "Platform types relax null checks for Java values; you choose nullable or non-null, and a wrong guess can still fail at run time."
+  ],
+  [
+   "What happens when a cold Kotlin Flow is built with flow { emit(1) } but collect is never called on it?",
+   "The block does not run and nothing is emitted",
+   [
+    "It emits 1 immediately into a buffer",
+    "It throws because no collector exists",
+    "It runs once on Dispatchers.Default"
+   ],
+   "Flows built with flow { } are cold: the block runs anew for each collector, and only when collection starts."
+  ],
+  [
+   "Which statement about StateFlow in kotlinx.coroutines is true?",
+   "It holds a current value and gives it to each new collector",
+   [
+    "It has no value until the first emit call happens",
+    "It replays every past value to each new collector",
+    "It is cold and restarts its producer per collector"
+   ],
+   "StateFlow needs an initial value, keeps only the latest value, and is a hot SharedFlow with replay 1 that skips equal consecutive values."
+  ],
+  [
+   "What does listOf(1, 2, 3).fold(10) { acc, x -> acc + x } return in Kotlin?",
+   "16",
+   [
+    "6",
+    "10",
+    "13"
+   ],
+   "fold starts with the initial accumulator 10 and adds each element: 10 + 1 + 2 + 3 = 16."
+  ],
+  [
+   "Which is the correct Kotlin type for a function value that takes two Ints and returns an Int?",
+   "(Int, Int) -> Int",
+   [
+    "Function<Int, Int, Int>",
+    "(Int, Int) => Int",
+    "fun(Int, Int): Int"
+   ],
+   "Kotlin function types use parentheses for parameters and -> for the return type. => is Scala or JavaScript syntax."
+  ]
+ ],
+ "swift": [
+  [
+   "Two Swift class instances hold strong references to each other, and nothing else references them. What happens under ARC?",
+   "Neither is deallocated, so their memory leaks",
+   [
+    "ARC detects the cycle and frees both of them",
+    "The older object is freed first, then the other",
+    "The app crashes at the next assignment"
+   ],
+   "ARC only counts references and has no cycle collector, so each object keeps the other's count above zero. Break cycles with weak or unowned."
+  ],
+  [
+   "In a Swift delegate pattern, how should the child object usually declare its delegate property to avoid a retain cycle?",
+   "weak var delegate: MyDelegate?",
+   [
+    "strong var delegate: MyDelegate?",
+    "lazy var delegate: MyDelegate?",
+    "static var delegate: MyDelegate?"
+   ],
+   "weak does not keep the delegate alive and becomes nil when it is freed. The protocol must be class-bound (AnyObject) for weak to be allowed."
+  ],
+  [
+   "When is unowned preferred over weak for a reference in Swift?",
+   "When the referenced object is sure to outlive the reference",
+   [
+    "When the reference must become nil automatically",
+    "When the referenced type is a struct, not a class",
+    "When the reference must keep its object alive"
+   ],
+   "unowned is non-optional and does not become nil; accessing it after the object is freed traps. Use it only when the lifetime guarantee holds."
+  ],
+  [
+   "Which capture list stops a stored Swift closure from strongly retaining self?",
+   "[weak self]",
+   [
+    "[strong self]",
+    "[inout self]",
+    "[copy self]"
+   ],
+   "[weak self] captures self weakly as an optional, breaking the cycle when self also stores the closure. [unowned self] is the other valid choice."
+  ],
+  [
+   "What does a protocol extension let you do in Swift?",
+   "Give default method implementations to conforming types",
+   [
+    "Add stored properties to every conforming type",
+    "Make a protocol inherit from a concrete class",
+    "Make a struct conform to a protocol at run time"
+   ],
+   "Protocol extensions add methods and computed properties with bodies, which every conforming type gets unless it provides its own."
+  ],
+  [
+   "In Swift: protocol P {}; extension P { func hi() -> String { \"P\" } }; struct S: P { func hi() -> String { \"S\" } }; let x: P = S(). What does x.hi() return?",
+   "\"P\"",
+   [
+    "\"S\"",
+    "\"PS\"",
+    "A compile error"
+   ],
+   "hi() is not a requirement declared in P, so a call through the P type uses static dispatch to the extension method. Declaring hi() in P would make it return \"S\"."
+  ],
+  [
+   "What does if let name = user.name { print(name) } do in Swift?",
+   "Prints name only when user.name is not nil",
+   [
+    "Crashes at run time when user.name is nil",
+    "Prints the word nil when user.name is nil",
+    "Prints name with an Optional(...) wrapper"
+   ],
+   "Optional binding unwraps the value into a non-optional constant and runs the block only if the optional holds a value."
+  ],
+  [
+   "In Swift: let a: Int? = nil; let b = a ?? 5. What is b?",
+   "5, of type Int",
+   [
+    "nil, of type Int?",
+    "Optional(5), of type Int?",
+    "0, of type Int"
+   ],
+   "The nil-coalescing operator returns the unwrapped value or the default; with a non-optional default, the result type is Int."
+  ],
+  [
+   "What must the else branch of a Swift guard let statement do?",
+   "Exit the current scope, for example with return or throw",
+   [
+    "Assign a default value to the guarded variable",
+    "Force-unwrap the optional with the ! operator",
+    "Fall through into the code that follows it"
+   ],
+   "The compiler requires guard's else to leave the scope (return, throw, break, continue or a Never call), so the unwrapped value is safe afterward."
+  ],
+  [
+   "In Swift: struct P { var x = 1 }; var a = P(); var b = a; b.x = 2. What is a.x?",
+   "1",
+   [
+    "2",
+    "nil",
+    "A compile error"
+   ],
+   "Structs are value types: var b = a copies the value, so changing b does not change a. With a class, a.x would be 2."
+  ],
+  [
+   "Why must a Swift struct method that changes a stored property be marked mutating?",
+   "self is immutable inside struct methods by default",
+   [
+    "Structs live on the heap, so writes need locking",
+    "mutating makes the method run on the main thread",
+    "mutating lets subclasses override the method"
+   ],
+   "Struct methods get self as an immutable value; mutating lets the method modify self, which works only on var instances."
+  ],
+  [
+   "What does a Swift actor guarantee about its mutable state?",
+   "Only one task at a time can access it",
+   [
+    "It is copied into every task that reads it",
+    "It is stored in thread-local storage",
+    "It can be read only from the main thread"
+   ],
+   "An actor serializes access to its isolated state, which prevents data races. Code outside must use await to reach it."
+  ],
+  [
+   "Why do you write await when calling an actor's method from outside the actor in Swift?",
+   "The call may suspend until the actor is free to run it",
+   [
+    "Actor methods are compiled as throwing functions",
+    "await converts the result into an optional value",
+    "await blocks the caller's thread until it returns"
+   ],
+   "Crossing into actor isolation is a potential suspension point; the caller's task suspends without blocking its thread."
+  ],
+  [
+   "What does async let x = fetchA() do in Swift?",
+   "Starts fetchA as a child task that runs concurrently",
+   [
+    "Calls fetchA and blocks until its value is ready",
+    "Declares x as a variable that can be reassigned",
+    "Runs fetchA on the main actor after the scope ends"
+   ],
+   "async let starts the work right away in parallel with the following code; you get the value later with await x."
+  ],
+  [
+   "What does [3, 1, 2].sorted { $0 > $1 } return in Swift?",
+   "[3, 2, 1]",
+   [
+    "[1, 2, 3]",
+    "[3, 1, 2]",
+    "[2, 1, 3]"
+   ],
+   "The trailing closure is the ordering predicate; $0 > $1 places larger elements first, giving descending order."
+  ],
+  [
+   "When must a closure parameter be marked @escaping in Swift?",
+   "When it is stored or called after the function returns",
+   [
+    "When it can throw an error during the call",
+    "When it captures no variables from outer scope",
+    "When it is called more than once inside the body"
+   ],
+   "Closure parameters are non-escaping by default. Storing one in a property or calling it asynchronously later needs @escaping."
+  ],
+  [
+   "In SwiftUI, which property wrapper declares simple local state owned by a view, such as a Bool for a toggle?",
+   "@State",
+   [
+    "@Binding",
+    "@Environment",
+    "@Published"
+   ],
+   "@State storage is owned by SwiftUI for that view, and changing it re-renders the body. @Binding refers to state owned elsewhere."
+  ],
+  [
+   "In SwiftUI, what is a @Binding property in a child view used for?",
+   "Reading and writing state owned by a parent view",
+   [
+    "Storing state that survives app restarts",
+    "Declaring state that the child creates and owns",
+    "Observing posts from NotificationCenter"
+   ],
+   "A Binding is a two-way reference to a source of truth elsewhere, usually passed in from a parent's @State with the $ prefix."
+  ],
+  [
+   "What does try? do when the called Swift function throws an error?",
+   "Returns nil instead of propagating the error",
+   [
+    "Crashes the app with the error's message",
+    "Retries the call once before giving up",
+    "Returns the error converted to a String"
+   ],
+   "try? converts the result into an optional and discards the error. try! is the variant that crashes when an error is thrown."
+  ],
+  [
+   "What must a type marked with @propertyWrapper provide in Swift?",
+   "A wrappedValue property",
+   [
+    "A projectedValue property",
+    "An init(from: Decoder) initializer",
+    "A static shared instance"
+   ],
+   "wrappedValue is the only requirement; it is what the wrapped property reads and writes. projectedValue is optional and is exposed with $."
+  ]
+ ],
+ "objective-c": [
+  [
+   "What does ARC (Automatic Reference Counting) do in Objective-C?",
+   "Inserts retain and release calls at compile time",
+   [
+    "Runs a tracing garbage collector at run time",
+    "Frees all objects when the app enters background",
+    "Detects and breaks retain cycles automatically"
+   ],
+   "ARC is a compiler feature: it adds the memory management calls you wrote by hand under MRC. It does not collect cycles."
+  ],
+  [
+   "Under ARC, what happens to a __weak Objective-C reference when its object is deallocated?",
+   "It is set to nil automatically",
+   [
+    "It keeps pointing at the freed memory",
+    "It retains the object to keep it alive",
+    "It raises an exception on the next access"
+   ],
+   "Zeroing weak references become nil on deallocation. __unsafe_unretained is the variant that keeps a dangling pointer."
+  ],
+  [
+   "Under manual retain-release (MRC), what does a retain property setter typically do?",
+   "Retains the new value and releases the old one",
+   [
+    "Copies the new value and retains the old one",
+    "Releases the new value and keeps the old one",
+    "Assigns the new value with no memory calls"
+   ],
+   "A retain setter takes ownership of the incoming object and gives up ownership of the previous one, taking care when both are the same object."
+  ],
+  [
+   "What does declaring a variable with the type id mean in Objective-C?",
+   "It can point to any Objective-C object",
+   [
+    "It holds an integer object identifier",
+    "It is a constant that cannot be reassigned",
+    "It can hold only NSObject subclasses"
+   ],
+   "id is a generic object pointer; the compiler allows any message to be sent to it, and the runtime resolves it."
+  ],
+  [
+   "What does the Objective-C compiler turn a message send like [obj doSomething:42] into?",
+   "A call to objc_msgSend with obj, the selector and 42",
+   [
+    "A direct C function call resolved at link time",
+    "A vtable lookup fixed at compile time",
+    "A performSelector call on the main thread"
+   ],
+   "Every message is dispatched at run time by objc_msgSend, which finds the method implementation for the selector in the receiver's class."
+  ],
+  [
+   "What is a SEL in Objective-C?",
+   "The runtime identifier for a method name",
+   [
+    "A pointer to a method's compiled code",
+    "A reference to an object's class",
+    "A block that wraps a method call"
+   ],
+   "A selector names a method, as in @selector(doSomething:). The pointer to the compiled function is a separate type, IMP."
+  ],
+  [
+   "By default, what happens when an Objective-C object receives a message it does not implement and has no forwarding set up?",
+   "An unrecognized selector exception is raised",
+   [
+    "The call quietly returns 0 or nil",
+    "The runtime adds an empty method for it",
+    "The superclass's init method is called"
+   ],
+   "After resolution and forwarding fail, doesNotRecognizeSelector: raises NSInvalidArgumentException (\"unrecognized selector sent to instance\")."
+  ],
+  [
+   "What can an Objective-C category add to an existing class such as NSString?",
+   "New methods, without needing its source code",
+   [
+    "New instance variables stored in each object",
+    "A new superclass for the existing class",
+    "Synthesized properties backed by new ivars"
+   ],
+   "Categories add methods, even to framework classes. They cannot add ivars, so a property declared in a category gets no storage."
+  ],
+  [
+   "Two categories on the same Objective-C class both define a method with the same name. What happens?",
+   "Which version is used at run time is undefined",
+   [
+    "The compiler merges both bodies into one",
+    "Both run, in alphabetical order of file name",
+    "The linker refuses to build the app"
+   ],
+   "Apple's documentation warns that the runtime picks one implementation in an undefined way, which is why category methods on shared classes use prefixes."
+  ],
+  [
+   "In Objective-C: int x = 1; void (^b)(void) = ^{ NSLog(@\"%d\", x); }; x = 2; b(); What is logged?",
+   "1",
+   [
+    "2",
+    "0",
+    "A compile error"
+   ],
+   "A block captures local variables by value when it is created, so later changes to x are not seen. Declaring x with __block would print 2."
+  ],
+  [
+   "Why do Objective-C developers write __weak typeof(self) weakSelf = self; before creating a block that self stores?",
+   "To avoid a retain cycle between self and the block",
+   [
+    "To make the block run faster on the main thread",
+    "To let the block change self's class at run time",
+    "To give the block a copied snapshot of self"
+   ],
+   "A block retains objects it captures. If self also owns the block, capturing self strongly creates a cycle that ARC cannot free."
+  ],
+  [
+   "Why is a delegate property in Objective-C usually declared weak?",
+   "The delegate often owns the object, so strong makes a cycle",
+   [
+    "Weak properties are faster to read than strong ones",
+    "Protocol-typed properties cannot be declared strong",
+    "Weak makes all delegate methods optional to implement"
+   ],
+   "A view controller typically owns a table view and is also its delegate; a strong back reference would keep both alive forever."
+  ],
+  [
+   "How do you safely call an @optional protocol method on an Objective-C delegate?",
+   "Check respondsToSelector: before sending the message",
+   [
+    "Check isKindOfClass: before sending the message",
+    "Check conformsToProtocol: before sending it",
+    "Wrap the call in @try and ignore the exception"
+   ],
+   "Conforming to the protocol does not mean an optional method is implemented, so test the specific selector first."
+  ],
+  [
+   "Why is copy usually preferred over strong for an NSString property in Objective-C?",
+   "A mutable string passed in cannot change it later",
+   [
+    "copy makes the property thread-safe for writes",
+    "strong is not allowed on object properties",
+    "copy keeps the string in a faster memory area"
+   ],
+   "If an NSMutableString is assigned to a strong property, later mutations show through. copy stores an immutable snapshot (cheap for an immutable string)."
+  ],
+  [
+   "What does the default atomic attribute on an Objective-C property guarantee?",
+   "Each get or set is whole, but the object is not fully thread-safe",
+   [
+    "Every operation on the owning object becomes thread-safe",
+    "The property is kept in a CPU register for speed",
+    "The property cannot be changed after init returns"
+   ],
+   "atomic ensures a getter never returns a half-written value. It does not make sequences of calls or the object's other state thread-safe, and it costs some speed."
+  ],
+  [
+   "In Objective-C: NSString *s = nil; NSUInteger n = [s length]; What is n?",
+   "0",
+   [
+    "The app crashes before n is set",
+    "An exception is thrown and n is unset",
+    "A random leftover value"
+   ],
+   "Sending a message to nil does nothing and returns zero for integer and pointer return types, so n is 0."
+  ],
+  [
+   "Messaging nil is safe in Objective-C, so why does [mutableArray addObject:nil] crash?",
+   "The receiver is valid, and collections reject nil elements",
+   [
+    "Messaging nil is safe only on the main thread",
+    "nil is converted to NSNull and then released",
+    "addObject: is a C function, not a message"
+   ],
+   "Here the receiver is not nil; the argument is. Foundation collections cannot store nil and throw NSInvalidArgumentException. Use NSNull instead."
+  ],
+  [
+   "Which Foundation class gives a placeholder object that can be stored in an NSArray where you would otherwise want nil?",
+   "NSNull",
+   [
+    "NSNumber",
+    "NSValue",
+    "NSObject"
+   ],
+   "[NSNull null] returns a singleton that represents \"no value\" inside collections, which cannot hold nil."
+  ],
+  [
+   "What is the correct way to compare the text of two NSString objects a and b in Objective-C?",
+   "[a isEqualToString:b]",
+   [
+    "a == b",
+    "[a compare:b] == YES",
+    "strcmp(a, b) == 0"
+   ],
+   "== compares pointers, not contents. compare: returns NSComparisonResult, where equality is NSOrderedSame (0), not YES."
+  ],
+  [
+   "What does the literal @[@1, @2] create in Objective-C?",
+   "An immutable NSArray of two NSNumber objects",
+   [
+    "A mutable NSMutableArray of two ints",
+    "A C array of two int values",
+    "An NSSet containing two NSNumbers"
+   ],
+   "@[...] is array literal syntax for NSArray, and @1 boxes the number into an NSNumber."
+  ]
+ ],
+ "scala": [
+  [
+   "In Scala 3, what does def show(x: Int)(using fmt: Formatter): String mean for code that calls show(5)?",
+   "A given Formatter in scope is passed in automatically",
+   [
+    "The caller must pass a Formatter as the first argument",
+    "A new Formatter is created on every call",
+    "fmt is loaded from a global configuration file"
+   ],
+   "A using clause is resolved by the compiler from given instances in scope. You can still pass one explicitly with show(5)(using myFmt)."
+  ],
+  [
+   "In Scala 2, what does implicit class RichInt(n: Int) { def double = n * 2 } let you write?",
+   "5.double, as if Int had a double method",
+   [
+    "5 * 2 with a custom, overridden * operator",
+    "RichInt as a subtype that replaces Int",
+    "double(5), as a new top-level function"
+   ],
+   "An implicit class adds an implicit conversion, so the compiler wraps 5 in RichInt when it sees .double. Scala 3 uses extension methods for this."
+  ],
+  [
+   "What does List(1, 2, 3) match { case x :: rest => rest; case Nil => Nil } return in Scala?",
+   "List(2, 3)",
+   [
+    "1",
+    "List(1)",
+    "Nil"
+   ],
+   "The :: pattern splits a non-empty list into its head (1) and tail, and the first case returns the tail."
+  ],
+  [
+   "What does 7 match { case n if n % 2 == 0 => \"even\"; case _ => \"odd\" } return in Scala?",
+   "\"odd\"",
+   [
+    "\"even\"",
+    "7",
+    "A MatchError"
+   ],
+   "The guard fails for 7, so matching moves on to the wildcard case. A MatchError would occur only if no case matched."
+  ],
+  [
+   "In Scala: trait T { def hi = \"T\" }; trait B extends T { override def hi = \"B\" + super.hi }; trait C extends T { override def hi = \"C\" + super.hi }. What does (new T with B with C).hi return?",
+   "\"CBT\"",
+   [
+    "\"BCT\"",
+    "\"CT\"",
+    "\"T\""
+   ],
+   "Trait linearization puts the rightmost trait first: C, then B, then T. Each super.hi calls the next trait in that order."
+  ],
+  [
+   "Which statement about mixing traits into a class in Scala is true?",
+   "A class can extend one class but mix in many traits",
+   [
+    "A trait cannot declare any concrete methods",
+    "A class can extend many classes but one trait",
+    "A trait cannot contain fields with values"
+   ],
+   "Scala keeps single class inheritance but allows many traits with with, and traits can hold concrete methods and fields."
+  ],
+  [
+   "In Akka, what does the ! (tell) operator do, as in actorRef ! Greet(\"Ann\")?",
+   "Sends the message and returns at once, with no reply",
+   [
+    "Sends the message and waits for the actor's reply",
+    "Creates a new actor named Greet on that reference",
+    "Stops the actor after it has processed Greet"
+   ],
+   "tell is fire-and-forget: the message is queued in the actor's mailbox and the sender continues. The ask pattern (?) is used to get a reply."
+  ],
+  [
+   "Why does an Akka actor process the messages in its mailbox one at a time?",
+   "So its internal state needs no locks",
+   [
+    "So messages can be sent only from the main thread",
+    "So the JVM can skip garbage collection for it",
+    "So every message gets its own new thread"
+   ],
+   "Because only one message is handled at a time, the actor's private state is never accessed concurrently, avoiding locks and data races."
+  ],
+  [
+   "In Scala, when is the right-hand side of lazy val x = compute() evaluated?",
+   "On the first access of x, then cached",
+   [
+    "Every time x is accessed",
+    "When the enclosing class is loaded",
+    "As soon as the declaration line runs"
+   ],
+   "A lazy val is initialized once, on first use, and later reads return the stored value. A def would re-evaluate on every access."
+  ],
+  [
+   "In Scala: def twice(x: => Int) = x + x. How many times is \"hi\" printed by twice({ println(\"hi\"); 1 })?",
+   "Twice",
+   [
+    "Once",
+    "Zero times",
+    "Once, then the value is cached"
+   ],
+   "x is a by-name parameter, so the argument expression is evaluated each time x is used inside the method, here twice."
+  ],
+  [
+   "What does List(1, 2, 3).map(_ * 2).filter(_ > 2) return in Scala?",
+   "List(4, 6)",
+   [
+    "List(2, 4, 6)",
+    "List(6)",
+    "List(3)"
+   ],
+   "map produces List(2, 4, 6), then filter keeps the elements greater than 2."
+  ],
+  [
+   "What does List(1, 2, 3).foldLeft(0)(_ - _) return in Scala?",
+   "-6",
+   [
+    "2",
+    "0",
+    "6"
+   ],
+   "foldLeft goes left to right: ((0 - 1) - 2) - 3 = -6. foldRight with the same function would give 1 - (2 - (3 - 0)) = 2."
+  ],
+  [
+   "What does Option(null: String).map(_.length).getOrElse(0) return in Scala?",
+   "0",
+   [
+    "null",
+    "None",
+    "A NullPointerException"
+   ],
+   "Option.apply turns null into None, map on None stays None, and getOrElse returns the default 0."
+  ],
+  [
+   "In Scala 2.12 and later, which side of an Either conventionally holds the error, and which side does map transform?",
+   "Left holds the error; map transforms Right",
+   [
+    "Right holds the error; map transforms Left",
+    "Left holds the error; map transforms Left",
+    "Either side may; map transforms both"
+   ],
+   "Since 2.12 Either is right-biased: map and flatMap work on Right, and a Left (usually the error) passes through unchanged."
+  ],
+  [
+   "In Scala, given case class P(x: Int, y: Int), what does P(1, 2) == P(1, 2) return?",
+   "true",
+   [
+    "false",
+    "A compile error",
+    "It depends on reference identity"
+   ],
+   "Case classes get structural equals and hashCode generated from their constructor parameters, so equal fields mean equal objects."
+  ],
+  [
+   "In Scala: case class User(name: String, age: Int); val u = User(\"Ann\", 20). What is u.copy(age = 21)?",
+   "A new User(\"Ann\", 21); u stays unchanged",
+   [
+    "u itself, with its age changed to 21",
+    "A compile error, because fields are vals",
+    "A User(\"Ann\", 20) that ignores the argument"
+   ],
+   "copy creates a new instance with the named fields replaced and the rest copied, which fits immutable case classes."
+  ],
+  [
+   "In Scala 2.13: def add(a: Int)(b: Int) = a + b; val inc = add(1) _. What does inc(5) return?",
+   "6",
+   [
+    "5",
+    "1",
+    "A compile error"
+   ],
+   "add has two parameter lists; supplying only the first and eta-expanding with _ gives a function Int => Int that adds 1."
+  ],
+  [
+   "In Scala, what is the type of add _ for def add(a: Int)(b: Int): Int?",
+   "Int => Int => Int",
+   [
+    "(Int, Int) => Int",
+    "Int => Int",
+    "(Int => Int) => Int"
+   ],
+   "Each parameter list becomes one function layer, so a curried method expands to a function returning a function."
+  ],
+  [
+   "In Scala 2.13, what type is inferred for val xs = List(1, \"a\")?",
+   "List[Any]",
+   [
+    "List[String]",
+    "List[Int]",
+    "A compile error"
+   ],
+   "The compiler infers the least upper bound of Int and String, which is Any. (Scala 3 infers a different type here, so the version matters.)"
+  ],
+  [
+   "Why must a recursive Scala method like def fact(n: Int) = if (n <= 1) 1 else n * fact(n - 1) declare its return type?",
+   "Recursive methods need an explicit result type to compile",
+   [
+    "Recursive methods return Unit unless told otherwise",
+    "Recursion requires the @tailrec annotation on the type",
+    "Without it, the result type is inferred as Any"
+   ],
+   "Inference of fact's type would depend on fact itself, so the compiler reports \"recursive method fact needs result type\"."
+  ]
+ ]
+}

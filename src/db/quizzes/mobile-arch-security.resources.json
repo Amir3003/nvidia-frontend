@@ -1,0 +1,62 @@
+{
+ "react-native": [
+  "React Native Documentation",
+  "https://reactnative.dev/docs/getting-started"
+ ],
+ "flutter": [
+  "Flutter Documentation",
+  "https://docs.flutter.dev/"
+ ],
+ "swiftui": [
+  "Apple SwiftUI Documentation",
+  "https://developer.apple.com/documentation/swiftui"
+ ],
+ "jetpack-compose": [
+  "Jetpack Compose Documentation",
+  "https://developer.android.com/develop/ui/compose/documentation"
+ ],
+ "electron": [
+  "Electron Documentation",
+  "https://www.electronjs.org/docs/latest"
+ ],
+ "tauri": [
+  "Tauri 2 Documentation",
+  "https://v2.tauri.app/start/"
+ ],
+ "distributed-systems": [
+  "MIT 6.5840 Distributed Systems",
+  "https://pdos.csail.mit.edu/6.824/schedule.html"
+ ],
+ "microservices": [
+  "Microservices.io Pattern Catalog",
+  "https://microservices.io/patterns/index.html"
+ ],
+ "system-design": [
+  "AWS Caching Overview",
+  "https://aws.amazon.com/caching/"
+ ],
+ "networking": [
+  "MDN Web Docs: HTTP",
+  "https://developer.mozilla.org/en-US/docs/Web/HTTP"
+ ],
+ "cybersecurity": [
+  "NIST Cybersecurity Framework",
+  "https://www.nist.gov/cyberframework"
+ ],
+ "penetration-testing": [
+  "OWASP Top Ten",
+  "https://owasp.org/www-project-top-ten/"
+ ],
+ "cryptography": [
+  "Cryptography I (Stanford, Coursera)",
+  "https://www.coursera.org/learn/crypto"
+ ],
+ "blockchain": [
+  "Ethereum Developer Documentation",
+  "https://ethereum.org/en/developers/docs/"
+ ],
+ "web3": [
+  "ethers.js v6 Documentation",
+  "https://docs.ethers.org/v6/"
+ ]
+}

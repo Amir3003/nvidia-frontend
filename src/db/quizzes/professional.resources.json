@@ -1,0 +1,42 @@
+{
+ "technical-writing": [
+  "Google Technical Writing courses",
+  "https://developers.google.com/tech-writing"
+ ],
+ "public-speaking": [
+  "Toastmasters: Public speaking resources",
+  "https://www.toastmasters.org/resources/public-speaking-tips"
+ ],
+ "product-management": [
+  "Atlassian Agile Coach: Product management",
+  "https://www.atlassian.com/agile/product-management"
+ ],
+ "ui-ux-design": [
+  "Nielsen Norman Group articles",
+  "https://www.nngroup.com/articles/"
+ ],
+ "figma": [
+  "Figma Learn (official help center)",
+  "https://help.figma.com/hc/en-us"
+ ],
+ "data-analysis": [
+  "NIST/SEMATECH e-Handbook: Exploratory Data Analysis",
+  "https://www.itl.nist.gov/div898/handbook/eda/eda.htm"
+ ],
+ "data-visualization": [
+  "Data Visualisation Catalogue",
+  "https://datavizcatalogue.com/"
+ ],
+ "excel": [
+  "Microsoft Support: Excel help and learning",
+  "https://support.microsoft.com/en-us/excel"
+ ],
+ "tableau": [
+  "Tableau Help: Tableau Desktop and Web Authoring",
+  "https://help.tableau.com/current/pro/desktop/en-us/default.htm"
+ ],
+ "power-bi": [
+  "Microsoft Learn: Power BI documentation",
+  "https://learn.microsoft.com/en-us/power-bi/"
+ ]
+}

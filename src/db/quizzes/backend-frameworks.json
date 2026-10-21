@@ -1,0 +1,1416 @@
+{
+ "fastapi": [
+  [
+   "In a default FastAPI app, which path serves the interactive Swagger UI documentation?",
+   "/docs",
+   [
+    "/swagger",
+    "/api-docs",
+    "/openapi"
+   ],
+   "FastAPI serves Swagger UI at /docs and ReDoc at /redoc by default, both built from the generated OpenAPI schema."
+  ],
+  [
+   "In a default FastAPI app, at which path is the raw OpenAPI schema served as JSON?",
+   "/openapi.json",
+   [
+    "/schema.json",
+    "/docs.json",
+    "/swagger.json"
+   ],
+   "The schema is generated from your routes and models and exposed at /openapi.json; /docs and /redoc read from it."
+  ],
+  [
+   "A FastAPI route is declared as @app.get('/items/{item_id}') with def read_item(item_id: int). What does GET /items/abc return?",
+   "A 422 validation error response",
+   [
+    "A 400 Bad Request response",
+    "A 404 Not Found response",
+    "A 500 Internal Server Error"
+   ],
+   "FastAPI validates path parameters against the type hint; 'abc' is not an int, so it returns 422 with details of the failed field."
+  ],
+  [
+   "In FastAPI, the route @app.get('/items/') has the handler def list_items(skip: int = 0). How is skip read from the request?",
+   "As a query parameter",
+   [
+    "As a path parameter",
+    "As a request body field",
+    "As an HTTP header"
+   ],
+   "Function parameters of simple types that are not part of the path are treated as query parameters, here ?skip=10."
+  ],
+  [
+   "In FastAPI, a POST handler has the parameter item: Item, where Item subclasses Pydantic BaseModel. Where does FastAPI read item from?",
+   "The JSON request body",
+   [
+    "The query string",
+    "Form data fields",
+    "A request cookie"
+   ],
+   "Parameters typed as Pydantic models are interpreted as the request body and parsed from JSON."
+  ],
+  [
+   "With Pydantic v2 in its default (lax) mode, class User(BaseModel): age: int. What does User(age='5').age give?",
+   "The integer 5",
+   [
+    "The string '5'",
+    "None",
+    "A ValidationError is raised"
+   ],
+   "In lax mode Pydantic coerces a numeric string to int. Strict mode (strict=True) would reject it instead."
+  ],
+  [
+   "In Pydantic v2, a model field is declared as name: Optional[str] with no default value. How does the model treat this field?",
+   "It is required but may be None",
+   [
+    "It is optional and defaults to None",
+    "It is optional and defaults to ''",
+    "It raises an error at class creation"
+   ],
+   "Pydantic v2 changed this: Optional[str] only allows None as a value. Without a default the field is still required; write = None to make it optional."
+  ],
+  [
+   "A FastAPI endpoint has response_model=UserOut, where UserOut has no password field, and returns a dict that includes 'password'. What happens?",
+   "The password key is left out of the response",
+   [
+    "FastAPI raises a validation error",
+    "The password is sent unchanged",
+    "The password value is sent as null"
+   ],
+   "response_model validates and filters the output to the declared fields, which is a common way to avoid leaking secrets."
+  ],
+  [
+   "Inside an async def FastAPI endpoint, the code calls time.sleep(5). What is the effect?",
+   "It blocks the event loop and stalls other requests",
+   [
+    "FastAPI moves the call to a thread pool",
+    "Python turns it into a non-blocking sleep",
+    "Only this response waits, others proceed"
+   ],
+   "Blocking calls inside async def run on the event loop thread. Use await asyncio.sleep() or a plain def endpoint for blocking work."
+  ],
+  [
+   "How does FastAPI run a path operation declared with plain def instead of async def?",
+   "In a thread pool, so it does not block the loop",
+   [
+    "Directly on the event loop thread",
+    "In a new process for each request",
+    "It refuses to start: handlers must be async"
+   ],
+   "FastAPI runs sync handlers in an external thread pool and awaits them, so blocking I/O there does not freeze the event loop."
+  ],
+  [
+   "Inside an async def function, which line pauses for one second without blocking the event loop?",
+   "await asyncio.sleep(1)",
+   [
+    "time.sleep(1)",
+    "asyncio.sleep(1)",
+    "await time.sleep(1)"
+   ],
+   "asyncio.sleep must be awaited; without await it only creates a coroutine object. time.sleep blocks and is not awaitable."
+  ],
+  [
+   "A FastAPI dependency is def get_db(): db = Session(); try: yield db; finally: db.close(). When does db.close() run?",
+   "After the endpoint has finished, as cleanup",
+   [
+    "Before the endpoint function runs",
+    "Only when the endpoint raises an error",
+    "Never: yield is not allowed here"
+   ],
+   "Dependencies with yield provide the value to the endpoint and run the code after yield as teardown once the endpoint is done."
+  ],
+  [
+   "In FastAPI, two sub-dependencies of one endpoint both use Depends(get_settings). By default, how many times is get_settings called per request?",
+   "Once, the result is reused",
+   [
+    "Twice, once for each use",
+    "Once for the whole app lifetime",
+    "Zero, it must be called by hand"
+   ],
+   "FastAPI caches a dependency's result within a single request (use_cache=True). It is called again on the next request."
+  ],
+  [
+   "In FastAPI tests, which line replaces the get_db dependency with fake_db for every route?",
+   "app.dependency_overrides[get_db] = fake_db",
+   [
+    "app.mock_dependencies[get_db] = fake_db",
+    "app.dependencies[get_db] = fake_db",
+    "Depends.overrides[get_db] = fake_db"
+   ],
+   "app.dependency_overrides is a dict that maps the original dependency to its replacement; clear it after the test."
+  ],
+  [
+   "In FastAPI, how do you make verify_token run for every route of one APIRouter?",
+   "APIRouter(dependencies=[Depends(verify_token)])",
+   [
+    "APIRouter(middleware=[verify_token])",
+    "APIRouter(before=[Depends(verify_token)])",
+    "APIRouter(guards=[verify_token])"
+   ],
+   "Routers (and the app) accept a dependencies list that is applied to every path operation they include."
+  ],
+  [
+   "A FastAPI endpoint calls background_tasks.add_task(write_log, 'done') and returns. When does write_log run?",
+   "After the response has been sent",
+   [
+    "Before the response is sent",
+    "In a separate Celery worker",
+    "At the start of the next request"
+   ],
+   "BackgroundTasks run in the same process after the response is returned, so the client does not wait for them."
+  ],
+  [
+   "A FastAPI app must run hour-long video encoding jobs with retries that survive server restarts. Which tool fits best?",
+   "A task queue such as Celery",
+   [
+    "FastAPI BackgroundTasks",
+    "An async def endpoint",
+    "A dependency with yield"
+   ],
+   "BackgroundTasks live in the web process and are lost on restart. Long, retryable jobs need a separate queue and workers."
+  ],
+  [
+   "Which call correctly schedules send_email(to, subject='Hi') with FastAPI BackgroundTasks?",
+   "background_tasks.add_task(send_email, to, subject='Hi')",
+   [
+    "background_tasks.add_task(send_email(to, subject='Hi'))",
+    "background_tasks.run(send_email, to, subject='Hi')",
+    "await background_tasks.add_task(send_email, to)"
+   ],
+   "add_task takes the function itself plus its arguments. Writing send_email(...) inside would run it immediately and pass its result."
+  ],
+  [
+   "In FastAPI, what does adding tags=['users'] to @app.get('/me') do?",
+   "Groups the route under 'users' in the docs",
+   [
+    "Limits the route to users with that role",
+    "Adds the /users prefix to the path",
+    "Caches the response under that tag"
+   ],
+   "Tags only affect the OpenAPI schema, where Swagger UI and ReDoc group operations by tag."
+  ],
+  [
+   "A FastAPI route is declared with @app.get('/internal', include_in_schema=False). What is the result?",
+   "It works but is hidden from the docs",
+   [
+    "It is disabled and returns 404",
+    "It requires authentication to call",
+    "It only accepts requests from localhost"
+   ],
+   "include_in_schema=False removes the operation from the OpenAPI schema, so it disappears from /docs, but the route still responds."
+  ]
+ ],
+ "django": [
+  [
+   "In Django's MVT pattern, which part receives the request, gets the data and chooses what to return, usually as a function or class?",
+   "The view",
+   [
+    "The template",
+    "The model",
+    "The URLconf"
+   ],
+   "Views hold the request handling logic. Models describe data, templates render it, and the URLconf only maps URLs to views."
+  ],
+  [
+   "In Django, what does Book.objects.filter(title='Dune') return when no book matches?",
+   "An empty QuerySet",
+   [
+    "None",
+    "A Book.DoesNotExist error",
+    "An empty Python list"
+   ],
+   "filter() always returns a QuerySet, which may be empty. Only get() raises DoesNotExist."
+  ],
+  [
+   "In Django, what happens when Book.objects.get(pk=999) finds no matching row?",
+   "It raises Book.DoesNotExist",
+   [
+    "It returns None",
+    "It returns an empty QuerySet",
+    "It raises KeyError"
+   ],
+   "get() expects exactly one row: none raises DoesNotExist and several raise MultipleObjectsReturned."
+  ],
+  [
+   "In Django, the line qs = Book.objects.filter(year=2020) runs. When is the SQL query sent to the database?",
+   "When qs is evaluated, e.g. iterated",
+   [
+    "Immediately, on that same line",
+    "When the server process starts",
+    "When the model class is imported"
+   ],
+   "QuerySets are lazy: building and chaining them does not hit the database until they are iterated, sliced with a step, or converted to a list."
+  ],
+  [
+   "In Django, which QuerySet method loads each book's ForeignKey author in the same SQL query using a JOIN?",
+   "select_related('author')",
+   [
+    "prefetch_related('author')",
+    "only('author')",
+    "annotate('author')"
+   ],
+   "select_related follows single-valued relations with a JOIN. prefetch_related runs a separate query and joins the results in Python."
+  ],
+  [
+   "Why is Product.objects.filter(pk=1).update(stock=F('stock') - 1) safer than reading stock in Python and saving it back?",
+   "The math runs inside one SQL UPDATE, so concurrent requests cannot lose updates",
+   [
+    "F() locks the whole table until the request ends",
+    "F() caches the value so the database is not queried",
+    "update() retries the save automatically on conflicts"
+   ],
+   "F expressions refer to the column value in the database, so the decrement happens atomically in SQL instead of in a read-modify-write cycle."
+  ],
+  [
+   "In Django Admin, which ModelAdmin option sets the columns shown on a model's change list page?",
+   "list_display",
+   [
+    "list_filter",
+    "search_fields",
+    "fieldsets"
+   ],
+   "list_display lists the fields shown as columns. list_filter adds the sidebar filters and fieldsets lays out the edit form."
+  ],
+  [
+   "Which command creates a user who can log in to the Django Admin with all permissions?",
+   "python manage.py createsuperuser",
+   [
+    "python manage.py createadmin",
+    "python manage.py adduser --admin",
+    "python manage.py initadmin"
+   ],
+   "createsuperuser creates a user with is_staff and is_superuser set, which is what the admin site requires."
+  ],
+  [
+   "A Django view is decorated with @login_required. What happens when an anonymous user opens it?",
+   "They are redirected to LOGIN_URL",
+   [
+    "They get a 403 Forbidden page",
+    "They get a 404 Not Found page",
+    "They see the page as a guest"
+   ],
+   "login_required redirects to settings.LOGIN_URL with a next parameter so the user returns to the page after logging in."
+  ],
+  [
+   "In Django 2.0 and later, which expression checks inside a view whether the current user is logged in?",
+   "request.user.is_authenticated",
+   [
+    "request.user.is_authenticated()",
+    "request.is_logged_in",
+    "request.session.is_authenticated"
+   ],
+   "is_authenticated is a boolean attribute since Django 2.0; calling it like a method raises a TypeError."
+  ],
+  [
+   "You added a new field to a Django model. Which commands create and then apply the database change?",
+   "makemigrations, then migrate",
+   [
+    "migrate, then makemigrations",
+    "syncdb, then migrate",
+    "makemigrations, then collectstatic"
+   ],
+   "makemigrations writes a migration file from model changes; migrate applies pending migrations to the database."
+  ],
+  [
+   "You add a non-nullable field with no default to a Django model whose table already has rows, then run makemigrations. What happens?",
+   "Django asks for a one-off default or to quit",
+   [
+    "Django silently fills the rows with NULL",
+    "Django deletes the existing rows",
+    "Django skips the field without a warning"
+   ],
+   "Existing rows need a value, so makemigrations prompts you to give a one-off default for them or to exit and add a default in the model."
+  ],
+  [
+   "Which command unapplies every migration of app shop that came after 0003_add_price?",
+   "python manage.py migrate shop 0003",
+   [
+    "python manage.py makemigrations shop --undo",
+    "python manage.py rollback shop 0003",
+    "python manage.py migrate shop --reverse"
+   ],
+   "Passing an app label and a migration name to migrate moves the app's schema to that state, unapplying later migrations."
+  ],
+  [
+   "A Django project has MIDDLEWARE = [A, B, C]. In which order do they process the response on the way out?",
+   "C, then B, then A",
+   [
+    "A, then B, then C",
+    "B, then A, then C",
+    "Only C processes it"
+   ],
+   "Middleware works like layers: requests pass top to bottom and responses pass back bottom to top."
+  ],
+  [
+   "In Django function middleware def mw(get_response): def m(request): ...; return m, what must m do to pass the request on to the view?",
+   "Call get_response(request) and return its result",
+   [
+    "Call next(request) and return nothing",
+    "Return the request object itself",
+    "Yield the request to the next layer"
+   ],
+   "get_response calls the next middleware or the view; m must return the response, optionally after changing it."
+  ],
+  [
+   "A Django POST form is missing {% csrf_token %} and CsrfViewMiddleware is enabled. What does submitting it return?",
+   "403 Forbidden",
+   [
+    "400 Bad Request",
+    "404 Not Found",
+    "500 Server Error"
+   ],
+   "CsrfViewMiddleware rejects unsafe requests without a valid token with a 403 CSRF verification failed page."
+  ],
+  [
+   "In a Django form, after form.is_valid() returns True, where do you read the cleaned and converted values?",
+   "form.cleaned_data",
+   [
+    "form.data",
+    "form.validated_data",
+    "form.values"
+   ],
+   "cleaned_data holds converted Python values. form.data is the raw submitted input, and validated_data belongs to DRF serializers."
+  ],
+  [
+   "In a Django Form, which method name adds custom validation for a field called email?",
+   "clean_email",
+   [
+    "validate_email",
+    "email_clean",
+    "check_email"
+   ],
+   "Django calls clean_<fieldname>() after the field's own validation; it must return the cleaned value or raise ValidationError."
+  ],
+  [
+   "In Django REST Framework, after serializer.is_valid() returns True, where is the validated input?",
+   "serializer.validated_data",
+   [
+    "serializer.cleaned_data",
+    "serializer.errors",
+    "serializer.initial_data"
+   ],
+   "validated_data holds the deserialized, validated input. initial_data is the raw input and cleaned_data is the Django forms name."
+  ],
+  [
+   "Which Django REST Framework permission class allows reads for everyone but writes only for logged-in users?",
+   "IsAuthenticatedOrReadOnly",
+   [
+    "IsAuthenticated",
+    "AllowAny",
+    "IsAdminUser"
+   ],
+   "IsAuthenticatedOrReadOnly permits safe methods (GET, HEAD, OPTIONS) for anyone and requires authentication for the rest."
+  ]
+ ],
+ "flask": [
+  [
+   "Why is Flask usually created as app = Flask(__name__)?",
+   "So Flask can find templates and static files",
+   [
+    "So the app is named after the server",
+    "So Flask enables debug mode",
+    "So routes are registered automatically"
+   ],
+   "The import name tells Flask where the application module lives, which it uses to locate resources such as templates and static files."
+  ],
+  [
+   "A Flask route is @app.route('/user/<int:user_id>'). What does a request to /user/abc return?",
+   "404 Not Found",
+   [
+    "400 Bad Request",
+    "422 Unprocessable Entity",
+    "500 Server Error"
+   ],
+   "The int converter only matches digits, so no route matches the URL and Flask returns 404."
+  ],
+  [
+   "Which HTTP methods does a Flask route accept when @app.route('/') is given no methods argument?",
+   "GET (with HEAD and OPTIONS added)",
+   [
+    "GET and POST",
+    "All HTTP methods",
+    "POST only"
+   ],
+   "By default a route handles GET; Flask adds HEAD and OPTIONS automatically. Other methods need methods=[...]."
+  ],
+  [
+   "A Flask view def profile(username) is routed at '/user/<username>'. What does url_for('profile', username='ann') return?",
+   "/user/ann",
+   [
+    "/profile/ann",
+    "/profile?username=ann",
+    "/user?username=ann"
+   ],
+   "url_for takes the endpoint name (by default the function name) and fills in the route variables."
+  ],
+  [
+   "A Flask route is defined as @app.route('/projects/'). What happens when a user visits /projects without the slash?",
+   "Flask redirects to /projects/",
+   [
+    "Flask returns 404 Not Found",
+    "Flask serves it with no redirect",
+    "Flask returns 405 Not Allowed"
+   ],
+   "A route with a trailing slash acts like a folder: Flask redirects the slashless URL to it. A route without one returns 404 for a URL with a trailing slash."
+  ],
+  [
+   "What is the main benefit of the Flask application factory pattern, def create_app(config): ... return app?",
+   "Several app instances with different configs, e.g. for tests",
+   [
+    "Routes are compiled ahead of time for speed",
+    "The app runs without a WSGI server",
+    "Blueprints no longer need registering"
+   ],
+   "Creating the app inside a function avoids a global app object, so tests and environments can each build an app with their own settings."
+  ],
+  [
+   "With the Flask application factory pattern, how should Flask-SQLAlchemy be set up?",
+   "db = SQLAlchemy() globally, then db.init_app(app) in create_app",
+   [
+    "db = SQLAlchemy(app) globally, before create_app runs",
+    "db = SQLAlchemy() created again inside every view",
+    "db.register(app) called once from a blueprint"
+   ],
+   "Creating the extension unbound and calling init_app inside the factory lets one extension object serve any app instance."
+  ],
+  [
+   "A Flask blueprint is Blueprint('auth', __name__, url_prefix='/auth') with @bp.route('/login') on def login(). Once registered, what URL serves login?",
+   "/auth/login",
+   [
+    "/login",
+    "/auth.login",
+    "/login/auth"
+   ],
+   "The url_prefix given to the blueprint is prepended to all of its routes."
+  ],
+  [
+   "A view def login() lives in a Flask blueprint named 'auth'. Which call builds its URL?",
+   "url_for('auth.login')",
+   [
+    "url_for('login')",
+    "url_for('auth/login')",
+    "url_for('auth_login')"
+   ],
+   "Blueprint endpoints are namespaced as blueprint_name.function_name. Inside the same blueprint, url_for('.login') also works."
+  ],
+  [
+   "Which call attaches a Flask blueprint bp to the application?",
+   "app.register_blueprint(bp)",
+   [
+    "app.add_blueprint(bp)",
+    "app.include(bp)",
+    "bp.attach(app)"
+   ],
+   "register_blueprint records the blueprint's routes, handlers and templates on the app, optionally with a url_prefix."
+  ],
+  [
+   "A standalone Flask script calls db.create_all() and fails with 'Working outside of application context'. Which change fixes it?",
+   "Run the call inside with app.app_context():",
+   [
+    "Import current_app at the top of the script",
+    "Set app.config['CONTEXT'] = True",
+    "Run the script with FLASK_DEBUG=1"
+   ],
+   "Outside a request, nothing pushes an app context automatically. app.app_context() pushes one so current_app and extensions work."
+  ],
+  [
+   "How long does data stored on Flask's g object live?",
+   "For one application context, usually one request",
+   [
+    "For the whole process lifetime",
+    "For the user's session across requests",
+    "Until the server is restarted"
+   ],
+   "g is tied to the application context and is reset for each request, so it suits per-request data like a database connection."
+  ],
+  [
+   "Where does Flask's built-in session store its data by default?",
+   "In a signed cookie in the browser",
+   [
+    "In server memory per worker",
+    "In the configured database",
+    "In an encrypted server-side file"
+   ],
+   "The default session is a cookie signed with SECRET_KEY: users cannot modify it but can read it, so do not store secrets in it."
+  ],
+  [
+   "A Flask view calls render_template('page.html', name='<b>hi</b>') and the template contains {{ name }}. What is output?",
+   "The escaped text &lt;b&gt;hi&lt;/b&gt;",
+   [
+    "The bold word hi",
+    "An empty string",
+    "A TemplateSyntaxError"
+   ],
+   "Flask enables Jinja2 autoescaping for .html templates. Use the |safe filter or Markup only for trusted HTML."
+  ],
+  [
+   "Which Jinja2 tag in a child template reuses base.html as its layout, so the child can override its blocks?",
+   "{% extends 'base.html' %}",
+   [
+    "{% include 'base.html' %}",
+    "{% import 'base.html' %}",
+    "{% inherit 'base.html' %}"
+   ],
+   "extends sets up template inheritance with overridable blocks; include only inserts another template's output in place."
+  ],
+  [
+   "What does the Jinja2 expression {{ [3, 1, 2]|sort|first }} render?",
+   "1",
+   [
+    "3",
+    "2",
+    "[1, 2, 3]"
+   ],
+   "Filters are chained left to right with the pipe: sort gives [1, 2, 3] and first takes its first item, 1."
+  ],
+  [
+   "Inside a Jinja2 loop {% for x in items %}, what is the value of loop.index on the first iteration?",
+   "1",
+   [
+    "0",
+    "None",
+    "-1"
+   ],
+   "loop.index counts from 1. loop.index0 is the zero-based counter."
+  ],
+  [
+   "Which Flask config key sets the database connection string for Flask-SQLAlchemy?",
+   "SQLALCHEMY_DATABASE_URI",
+   [
+    "DATABASE_URL",
+    "SQLALCHEMY_URL",
+    "SQLALCHEMY_CONNECTION"
+   ],
+   "Flask-SQLAlchemy reads SQLALCHEMY_DATABASE_URI, for example sqlite:///app.db or a PostgreSQL URL."
+  ],
+  [
+   "In Flask-SQLAlchemy, after db.session.add(user), which call makes the new row permanent in the database?",
+   "db.session.commit()",
+   [
+    "db.session.flush()",
+    "db.session.refresh(user)",
+    "db.session.save()"
+   ],
+   "add() only stages the object. flush() sends SQL inside the open transaction, but only commit() makes it permanent."
+  ],
+  [
+   "In Flask 1.1 and later, what does a view that returns ({'ok': False}, 400) send to the client?",
+   "A JSON response with status 400",
+   [
+    "A 200 response with the tuple as text",
+    "A TypeError and a 500 response",
+    "An HTML page that shows the dict"
+   ],
+   "Since Flask 1.1, a returned dict is converted to JSON automatically, and a tuple's second item sets the status code."
+  ]
+ ],
+ "spring-boot": [
+  [
+   "Which three annotations does @SpringBootApplication combine?",
+   "@Configuration, @EnableAutoConfiguration, @ComponentScan",
+   [
+    "@Component, @EnableWebMvc, @ComponentScan",
+    "@Configuration, @EnableTransactionManagement, @Bean",
+    "@Service, @EnableAutoConfiguration, @Import"
+   ],
+   "@SpringBootApplication marks a configuration class, turns on auto-configuration and scans the package of that class and its subpackages."
+  ],
+  [
+   "Why is constructor injection recommended over field injection with @Autowired in Spring?",
+   "Dependencies can be final and are easy to pass in tests",
+   [
+    "It is the only injection Spring Boot supports",
+    "It makes beans load lazily on first use",
+    "It avoids the need for any @Component annotations"
+   ],
+   "Constructor injection makes required dependencies explicit, allows immutable fields and lets unit tests create the class without Spring."
+  ],
+  [
+   "Two beans implement PaymentService. Which annotation on one of them makes Spring inject it by default when no qualifier is given?",
+   "@Primary",
+   [
+    "@Qualifier",
+    "@Default",
+    "@Preferred"
+   ],
+   "@Primary marks the preferred candidate among several beans of the same type. @Qualifier is used to pick a bean by name at the injection point."
+  ],
+  [
+   "What is the default scope of a Spring bean declared with @Component?",
+   "Singleton",
+   [
+    "Prototype",
+    "Request",
+    "Session"
+   ],
+   "By default the container creates one shared instance per bean definition. Prototype creates a new instance for each injection."
+  ],
+  [
+   "In Spring MVC, what does @RestController add compared to @Controller?",
+   "Return values are written to the response body",
+   [
+    "Endpoints get REST security by default",
+    "Methods are mapped to REST verbs by name",
+    "Responses are cached on the server"
+   ],
+   "@RestController is @Controller plus @ResponseBody, so returned objects are serialized (for example to JSON) instead of resolved as view names."
+  ],
+  [
+   "For GET /users/42?active=true and @GetMapping(\"/users/{id}\"), which annotation binds 42 to the Long id parameter?",
+   "@PathVariable",
+   [
+    "@RequestParam",
+    "@RequestBody",
+    "@RequestHeader"
+   ],
+   "@PathVariable binds a URI template variable; @RequestParam would bind the active query parameter."
+  ],
+  [
+   "A Spring MVC handler has the parameter @RequestParam String q with no other attributes. What happens when a request has no q parameter?",
+   "The request fails with 400 Bad Request",
+   [
+    "q is set to null",
+    "q is set to an empty string",
+    "The request fails with 500"
+   ],
+   "@RequestParam is required by default; a missing value triggers MissingServletRequestParameterException, mapped to 400. Use required = false or a default value."
+  ],
+  [
+   "In Spring Data JPA, UserRepository extends JpaRepository<User, Long> declares List<User> findByLastNameAndAge(String lastName, int age). What does this do?",
+   "Spring derives a query filtering by both fields",
+   [
+    "It fails until you write an @Query",
+    "It loads all users and filters in Java",
+    "It creates a new database index"
+   ],
+   "Spring Data parses derived query method names and generates the query at startup, with no implementation needed."
+  ],
+  [
+   "In Spring Data JPA, what is the return type of findById(id) on a JpaRepository<User, Long>?",
+   "Optional<User>",
+   [
+    "User, or null if missing",
+    "List<User>",
+    "ResponseEntity<User>"
+   ],
+   "findById returns Optional so callers must handle the missing case, for example with orElseThrow()."
+  ],
+  [
+   "By default, a Spring @Transactional method rolls back when it throws which kind of exception?",
+   "Unchecked ones (RuntimeException, Error)",
+   [
+    "Any exception, checked or not",
+    "Only checked exceptions",
+    "Only SQLException subclasses"
+   ],
+   "Checked exceptions commit by default. Use rollbackFor to roll back on them too."
+  ],
+  [
+   "In a Spring bean, method a() calls this.b(), and only b() is annotated with @Transactional. Why does b() run without a new transaction?",
+   "The self-call skips the Spring proxy",
+   [
+    "@Transactional only works on interfaces",
+    "b() must be declared static",
+    "Transactions need XML configuration"
+   ],
+   "Spring applies @Transactional through a proxy. A call on this inside the same object never goes through the proxy, so the advice is not applied."
+  ],
+  [
+   "In JPA, what is the default fetch type of a @ManyToOne association?",
+   "EAGER",
+   [
+    "LAZY",
+    "SUBSELECT",
+    "BATCH"
+   ],
+   "The JPA spec makes to-one associations EAGER and to-many associations LAZY by default; many teams set @ManyToOne to LAZY explicitly."
+  ],
+  [
+   "You add spring-boot-starter-web to a Spring Boot app. What does auto-configuration provide without extra code?",
+   "An embedded Tomcat and Spring MVC setup",
+   [
+    "A configured H2 database and JPA",
+    "A login page for all endpoints",
+    "A Thymeleaf template engine"
+   ],
+   "Auto-configuration reacts to the classpath: the web starter brings Tomcat and Spring MVC, which Boot then configures with sensible defaults."
+  ],
+  [
+   "In a Spring Boot app, you declare your own DataSource @Bean. What happens to Boot's auto-configured DataSource?",
+   "It backs off and yours is used",
+   [
+    "Both are created, causing an error",
+    "Boot's bean overrides yours",
+    "Boot merges the two configurations"
+   ],
+   "Most auto-configurations use @ConditionalOnMissingBean, so a user-defined bean of the same type replaces the default."
+  ],
+  [
+   "Which property in application.properties changes the HTTP port of a Spring Boot web app?",
+   "server.port",
+   [
+    "spring.port",
+    "server.http.port",
+    "spring.web.port"
+   ],
+   "server.port sets the embedded server port; the default is 8080."
+  ],
+  [
+   "A Spring Boot app has application-dev.yml next to application.yml. Which setting makes Boot load the dev file?",
+   "spring.profiles.active=dev",
+   [
+    "spring.config.dev=true",
+    "spring.application.profile=dev",
+    "server.profile=dev"
+   ],
+   "Profile-specific files application-{profile}.yml are loaded on top of application.yml for each active profile."
+  ],
+  [
+   "application.properties has server.port=9090 and the app starts with --server.port=7000 on the command line. Which port is used?",
+   "7000",
+   [
+    "9090",
+    "8080",
+    "The app fails to start"
+   ],
+   "Command-line arguments have higher precedence than application.properties in Spring Boot's externalized configuration."
+  ],
+  [
+   "You add spring-boot-starter-security to a Spring Boot app with no security configuration. What happens?",
+   "Every endpoint requires login with a generated password",
+   [
+    "Nothing changes until you add a filter chain",
+    "Only POST endpoints require authentication",
+    "The app refuses to start without a user store"
+   ],
+   "Security auto-configuration protects all endpoints and creates a user named 'user' whose random password is printed in the log at startup."
+  ],
+  [
+   "Which Spring Security PasswordEncoder is the appropriate choice for storing user passwords?",
+   "BCryptPasswordEncoder",
+   [
+    "NoOpPasswordEncoder",
+    "Base64PasswordEncoder",
+    "LdapShaPasswordEncoder"
+   ],
+   "BCrypt is an adaptive, salted hash designed for passwords. NoOp stores plain text, and LdapSha is deprecated legacy support."
+  ],
+  [
+   "In Spring Security 6, how do you configure which HTTP endpoints require authentication?",
+   "Declare a SecurityFilterChain @Bean",
+   [
+    "Extend WebSecurityConfigurerAdapter",
+    "Add security rules to web.xml",
+    "Annotate controllers with @Secure"
+   ],
+   "WebSecurityConfigurerAdapter was deprecated in 5.7 and removed in 6.0; configuration now uses a SecurityFilterChain bean built from HttpSecurity."
+  ]
+ ],
+ "ruby-on-rails": [
+  [
+   "Following Rails conventions, which database table does the Active Record model class Person map to?",
+   "people",
+   [
+    "persons",
+    "person",
+    "person_table"
+   ],
+   "Rails pluralizes the class name using its inflector, which knows irregular plurals like person to people."
+  ],
+  [
+   "In Rails, which controller class handles requests for the routes created by resources :articles?",
+   "ArticlesController",
+   [
+    "ArticleController",
+    "Articles::Controller",
+    "ArticlesResource"
+   ],
+   "Controller names are the plural resource name plus Controller, in app/controllers/articles_controller.rb."
+  ],
+  [
+   "A Rails ArticlesController#index action has no explicit render call. What does Rails render?",
+   "app/views/articles/index.html.erb",
+   [
+    "app/views/index.html.erb",
+    "app/views/layouts/articles.html.erb",
+    "Nothing, it returns 204"
+   ],
+   "By convention Rails renders the template named after the controller and action when the action does not render or redirect."
+  ],
+  [
+   "What does bin/rails generate migration AddPriceToProducts price:decimal create?",
+   "A migration that adds a price column to products",
+   [
+    "A new Price model with its table",
+    "A migration creating an add_price table",
+    "A Products controller with a price action"
+   ],
+   "The AddXxxToYyy name pattern tells the generator to write add_column :products, :price, :decimal."
+  ],
+  [
+   "Which command reverts the most recently applied migration in Rails?",
+   "bin/rails db:rollback",
+   [
+    "bin/rails db:migrate:undo",
+    "bin/rails db:revert",
+    "bin/rails db:reset"
+   ],
+   "db:rollback undoes the last migration (STEP=n for more). db:reset drops and recreates the whole database."
+  ],
+  [
+   "In Rails 5 and later, class Book < ApplicationRecord has belongs_to :author. What happens when you save a book with no author?",
+   "Validation fails: Author must exist",
+   [
+    "It saves with author_id set to NULL",
+    "The database raises a NOT NULL error",
+    "Rails creates an empty author record"
+   ],
+   "Since Rails 5, belongs_to is required by default. Add optional: true to allow a missing association."
+  ],
+  [
+   "A Rails Post model has has_many :comments, dependent: :destroy. What happens when you call post.destroy?",
+   "Each comment is destroyed too, running callbacks",
+   [
+    "Comments stay but lose their post_id",
+    "Deletion fails while comments exist",
+    "Comments are archived in another table"
+   ],
+   "dependent: :destroy loads and destroys each associated record. :delete_all removes them in SQL without callbacks."
+  ],
+  [
+   "In Rails, Post has_many :comments and Comment belongs_to :post. Where is the foreign key stored?",
+   "post_id column in the comments table",
+   [
+    "comment_id column in the posts table",
+    "A posts_comments join table",
+    "Both tables, one id each"
+   ],
+   "The model with belongs_to holds the foreign key, so the comments table gets a post_id column."
+  ],
+  [
+   "Which Rails association models a many-to-many relation through a join model that has its own attributes and validations?",
+   "has_many :through",
+   [
+    "has_and_belongs_to_many",
+    "has_one :through",
+    "belongs_to :through"
+   ],
+   "has_many :through uses a real model for the join table. has_and_belongs_to_many uses a bare join table with no model."
+  ],
+  [
+   "With resources :photos in config/routes.rb, which request is routed to PhotosController#destroy?",
+   "DELETE /photos/:id",
+   [
+    "POST /photos/:id/destroy",
+    "GET /photos/:id/delete",
+    "DELETE /photos"
+   ],
+   "Resourceful routes map HTTP verbs to actions: DELETE on a member URL goes to destroy."
+  ],
+  [
+   "In Rails routes, what does root 'pages#home' do?",
+   "Maps / to the home action of PagesController",
+   [
+    "Maps /pages to the home action",
+    "Makes PagesController the parent of all routes",
+    "Redirects /home to /pages"
+   ],
+   "root defines the route for the path / using the controller#action string."
+  ],
+  [
+   "Which command lists every route of a Rails app with its verb, path and controller action?",
+   "bin/rails routes",
+   [
+    "bin/rails routes:list",
+    "bin/rails show:routes",
+    "bin/rails about"
+   ],
+   "bin/rails routes prints the routing table; you can filter it, for example with -c articles."
+  ],
+  [
+   "In a Rails controller, User.new(params[:user]) is called without strong parameters. What happens?",
+   "It raises ActiveModel::ForbiddenAttributesError",
+   [
+    "All submitted attributes are assigned",
+    "Only string attributes are assigned",
+    "The user is built with no attributes"
+   ],
+   "Rails refuses unpermitted mass assignment. Use params.require(:user).permit(:name, :email)."
+  ],
+  [
+   "A Rails controller declares before_action :set_article, only: [:show, :edit]. When does set_article run?",
+   "Before the show and edit actions only",
+   [
+    "Before every action in the controller",
+    "After the show and edit actions",
+    "Once, when the controller loads"
+   ],
+   "Callbacks with only: run for the listed actions. except: does the reverse."
+  ],
+  [
+   "In a Rails create action, why use render :new instead of redirect_to new_article_path when @article.save fails?",
+   "render keeps @article and its errors for the form",
+   [
+    "render runs the new action again first",
+    "redirect_to cannot be used after a save",
+    "render forces the browser to reload"
+   ],
+   "render only renders a template within the same request, so the invalid object and its error messages stay available. A redirect starts a new request."
+  ],
+  [
+   "In Rails, a controller sets flash[:notice] = 'Saved' and then calls redirect_to. How long is the message available?",
+   "For the next request only",
+   [
+    "For the current request only",
+    "For the whole user session",
+    "Until it is cleared by hand"
+   ],
+   "The flash survives exactly one request after it is set, which fits messages shown after a redirect. flash.now is for the current request."
+  ],
+  [
+   "Why does the Rails asset pipeline add a digest to file names, as in application-3f2a9c.css?",
+   "So browsers cache files long-term but fetch new versions",
+   [
+    "So the asset files are encrypted on the server",
+    "So files of different users do not collide",
+    "So assets load in alphabetical order"
+   ],
+   "Fingerprinting changes the URL whenever the content changes, allowing far-future cache headers without serving stale files."
+  ],
+  [
+   "In a Rails layout, which helper outputs a link tag pointing to the fingerprinted application stylesheet?",
+   "stylesheet_link_tag 'application'",
+   [
+    "css_include_tag 'application'",
+    "asset_link 'application.css'",
+    "link_stylesheet 'application'"
+   ],
+   "stylesheet_link_tag resolves the asset path through the pipeline, including the digest in production."
+  ],
+  [
+   "In RESTful Rails routing with resources :articles, which action handles PATCH /articles/5?",
+   "update",
+   [
+    "edit",
+    "create",
+    "replace"
+   ],
+   "PATCH (and PUT) on a member URL map to update. GET /articles/5/edit maps to edit, which only shows the form."
+  ],
+  [
+   "With resources :posts do resources :comments end, what is the path to the comments index of one post?",
+   "/posts/:post_id/comments",
+   [
+    "/comments/:post_id",
+    "/posts/comments/:id",
+    "/post/:id/comments"
+   ],
+   "Nested resources put the parent id in the URL as :post_id, which the controller reads as params[:post_id]."
+  ]
+ ],
+ "laravel": [
+  [
+   "Which Artisan command creates a new controller class named PostController?",
+   "php artisan make:controller PostController",
+   [
+    "php artisan new:controller PostController",
+    "php artisan create:controller PostController",
+    "php artisan generate controller PostController"
+   ],
+   "make:* commands generate classes; make:controller places the file in app/Http/Controllers."
+  ],
+  [
+   "Which Artisan command starts a local development server for a Laravel app?",
+   "php artisan serve",
+   [
+    "php artisan start",
+    "php artisan run",
+    "php artisan up"
+   ],
+   "serve starts PHP's built-in server, by default on http://127.0.0.1:8000. artisan up only ends maintenance mode."
+  ],
+  [
+   "Which Artisan command prints all registered routes with their methods, URIs and actions?",
+   "php artisan route:list",
+   [
+    "php artisan routes",
+    "php artisan route:show",
+    "php artisan list:routes"
+   ],
+   "route:list displays the route table and can filter, for example with --path=api."
+  ],
+  [
+   "By Laravel convention, which table does the Eloquent model class OrderItem use when no $table is set?",
+   "order_items",
+   [
+    "orderitems",
+    "order_item",
+    "order_item_table"
+   ],
+   "Eloquent uses the snake_case plural of the class name unless the model sets $table."
+  ],
+  [
+   "A Laravel model has neither $fillable nor $guarded set. What does Post::create($request->all()) do?",
+   "It throws a MassAssignmentException",
+   [
+    "It saves every submitted field",
+    "It saves only the id and timestamps",
+    "It silently saves an empty row"
+   ],
+   "Models are fully guarded by default ($guarded = ['*']). List allowed attributes in $fillable to enable mass assignment."
+  ],
+  [
+   "A Laravel User model has public function posts() { return $this->hasMany(Post::class); }. What is the difference between $user->posts and $user->posts()?",
+   "The property gives the loaded Collection, the method a query builder",
+   [
+    "The property gives a query builder, the method the Collection",
+    "Both return the same Collection object",
+    "The property only works after save()"
+   ],
+   "The dynamic property runs the query and returns results. The method returns the relation, so you can chain constraints like ->where(...)->get()."
+  ],
+  [
+   "A Blade view loops over posts and prints $post->author->name, causing one query per post. Which fix loads authors up front?",
+   "Post::with('author')->get()",
+   [
+    "Post::join('author')->get()",
+    "Post::load('author')->all()",
+    "Post::author()->get()"
+   ],
+   "with() eager loads the relation in one extra query, solving the N+1 problem."
+  ],
+  [
+   "In a Laravel controller, Post::findOrFail(999) finds no row. What does the user get by default?",
+   "A 404 Not Found response",
+   [
+    "A null value passed to the view",
+    "A 500 error page",
+    "A redirect to the home page"
+   ],
+   "findOrFail throws ModelNotFoundException, which Laravel's exception handler turns into a 404 response."
+  ],
+  [
+   "Which Blade syntax prints a variable without HTML escaping?",
+   "{!! $html !!}",
+   [
+    "{{ $html }}",
+    "{{{ $html }}}",
+    "@raw($html)"
+   ],
+   "{{ }} escapes output with htmlspecialchars. {!! !!} prints raw HTML, so use it only for trusted content."
+  ],
+  [
+   "In a Blade layout file, which directive marks where a child view's @section('content') is inserted?",
+   "@yield('content')",
+   [
+    "@section('content')",
+    "@include('content')",
+    "@slot('content')"
+   ],
+   "Layouts declare @yield placeholders; child views use @extends and fill them with @section."
+  ],
+  [
+   "A Blade form posts to a route in the web middleware group but has no @csrf directive. What status does Laravel return?",
+   "419 Page Expired",
+   [
+    "403 Forbidden",
+    "400 Bad Request",
+    "401 Unauthorized"
+   ],
+   "Laravel's CSRF middleware rejects the request and returns its 419 Page Expired error. @csrf adds the hidden _token field."
+  ],
+  [
+   "A Laravel route is defined with Route::get('/profile', ...)->name('profile'). Which helper generates its URL?",
+   "route('profile')",
+   [
+    "url('profile')->name()",
+    "action('profile')",
+    "name('profile')"
+   ],
+   "route() builds a URL from a named route, so URLs stay correct even if the path changes later."
+  ],
+  [
+   "With Route::resource('photos', PhotoController::class), which controller method handles GET /photos/{photo}/edit?",
+   "edit",
+   [
+    "update",
+    "show",
+    "change"
+   ],
+   "Resource routes map GET /photos/{photo}/edit to edit (show the form) and PUT/PATCH /photos/{photo} to update."
+  ],
+  [
+   "Routes are wrapped in Route::middleware('auth')->group(...). What happens when a guest requests one of them in a browser?",
+   "They are redirected to the login route",
+   [
+    "They get a 404 Not Found page",
+    "They see the page as a guest",
+    "They get a 500 Server Error page"
+   ],
+   "The auth middleware redirects unauthenticated browser requests to the login route; JSON requests get a 401 instead."
+  ],
+  [
+   "In a new Laravel 11 application, where do you register middleware aliases?",
+   "bootstrap/app.php, in withMiddleware()",
+   [
+    "app/Http/Kernel.php, in $routeMiddleware",
+    "config/middleware.php, in aliases",
+    "routes/web.php, in Route::alias()"
+   ],
+   "Laravel 11 removed the HTTP Kernel from new apps; middleware is configured in bootstrap/app.php. Kernel.php was used in Laravel 10 and earlier."
+  ],
+  [
+   "In the Laravel service container, how does $this->app->singleton(Cache::class, ...) differ from $this->app->bind(Cache::class, ...)?",
+   "singleton resolves the same instance every time",
+   [
+    "singleton creates a new instance every time",
+    "bind works only for interfaces",
+    "singleton cannot use a closure"
+   ],
+   "bind runs the factory on each resolve; singleton runs it once and then reuses the result."
+  ],
+  [
+   "According to the Laravel docs, in which service provider method should you only bind things into the container?",
+   "register()",
+   [
+    "boot()",
+    "handle()",
+    "__construct()"
+   ],
+   "register() runs before all providers are booted, so it should only bind. boot() runs later and can use other registered services."
+  ],
+  [
+   "A Laravel controller constructor type-hints PaymentGateway, an interface bound to StripeGateway in a provider. What does Laravel pass in?",
+   "A StripeGateway instance from the container",
+   [
+    "null, until you call app()->make()",
+    "A mock of PaymentGateway",
+    "An error: interfaces cannot be injected"
+   ],
+   "The container resolves controller dependencies automatically and uses the binding to choose the concrete class."
+  ],
+  [
+   "Which Artisan command reverts the last batch of migrations in Laravel?",
+   "php artisan migrate:rollback",
+   [
+    "php artisan migrate:undo",
+    "php artisan migrate:back",
+    "php artisan db:rollback"
+   ],
+   "Migrations run in batches; migrate:rollback undoes the latest batch, and --step=n rolls back a set number of migrations."
+  ],
+  [
+   "Which Artisan command drops all tables, runs every migration again and then runs the seeders?",
+   "php artisan migrate:fresh --seed",
+   [
+    "php artisan db:seed --fresh",
+    "php artisan migrate:rollback --seed",
+    "php artisan migrate --seed --force"
+   ],
+   "migrate:fresh drops all tables and migrates from scratch; --seed then runs DatabaseSeeder."
+  ]
+ ],
+ "dotnet": [
+  [
+   "What does the C# compiler produce from your source code in .NET?",
+   "IL code that the CLR JIT-compiles at runtime",
+   [
+    "Native machine code for one CPU only",
+    "JavaScript that runs in a V8 engine",
+    "Java bytecode for the JVM"
+   ],
+   "C# compiles to Intermediate Language in assemblies; the CLR's JIT turns it into native code when it runs (AOT is an optional alternative)."
+  ],
+  [
+   "In the .NET garbage collector, in which generation are most newly allocated small objects placed?",
+   "Generation 0",
+   [
+    "Generation 1",
+    "Generation 2",
+    "The Large Object Heap"
+   ],
+   "New objects start in gen 0, which is collected often. Survivors are promoted to gen 1 and gen 2. Very large objects go to the LOH."
+  ],
+  [
+   "In C#, given struct P { public int X; }, what does var a = new P { X = 1 }; var b = a; b.X = 2; Console.WriteLine(a.X); print?",
+   "1",
+   [
+    "2",
+    "0",
+    "A compile error"
+   ],
+   "Structs are value types, so assigning a to b copies it. Changing b does not affect a. With a class it would print 2."
+  ],
+  [
+   "In C#, var list = new List<int> { 1, 2 }; var q = list.Where(x => x > 1); list.Add(5); What does q.Count() return?",
+   "2",
+   [
+    "1",
+    "3",
+    "0"
+   ],
+   "LINQ queries use deferred execution: Where runs when q is enumerated, after 5 was added, so it matches 2 and 5."
+  ],
+  [
+   "What does the [ApiController] attribute do when an ASP.NET Core action receives a model that fails validation?",
+   "It returns 400 with the validation errors",
+   [
+    "It passes the invalid model to the action",
+    "It returns 422 with an empty body",
+    "It throws an exception and returns 500"
+   ],
+   "[ApiController] checks ModelState automatically and returns a 400 ValidationProblemDetails response before the action runs."
+  ],
+  [
+   "In an ASP.NET Core controller action returning ActionResult<Product>, what does return NotFound(); send?",
+   "A 404 status code",
+   [
+    "A 204 status code",
+    "A 400 status code",
+    "A null JSON body with 200"
+   ],
+   "NotFound() creates a NotFoundResult, which produces a 404 response."
+  ],
+  [
+   "In an ASP.NET Core minimal API, what does app.MapGet(\"/hello\", () => \"Hi\"); return for GET /hello?",
+   "The text Hi as text/plain",
+   [
+    "The JSON string \"Hi\"",
+    "An HTML page saying Hi",
+    "An empty 204 response"
+   ],
+   "Minimal APIs write a returned string as text/plain; other returned objects are serialized to JSON."
+  ],
+  [
+   "An ASP.NET Core action has [HttpGet(\"items/{id:int}\")]. What does a request to items/abc return?",
+   "404 Not Found",
+   [
+    "400 Bad Request",
+    "500 Server Error",
+    "200 with id = 0"
+   ],
+   "Route constraints affect matching: 'abc' fails the int constraint, so no endpoint matches and the result is 404."
+  ],
+  [
+   "In ASP.NET Core, a service is registered with builder.Services.AddScoped<IRepo, Repo>(). How many Repo instances are created?",
+   "One per HTTP request",
+   [
+    "One for the whole application",
+    "A new one each time it is injected",
+    "One per thread"
+   ],
+   "Scoped services live for one scope, which in ASP.NET Core is one request. Singleton is one for the app and transient is new on every resolve."
+  ],
+  [
+   "In ASP.NET Core Development mode, a singleton service takes a scoped service in its constructor. What happens?",
+   "Scope validation throws an InvalidOperationException",
+   [
+    "The scoped service becomes a singleton",
+    "A new scoped instance is made per call",
+    "Nothing, it is a supported pattern"
+   ],
+   "Scope validation, enabled in Development, detects this captive dependency and refuses to resolve it. Without validation it would hold one scoped instance forever."
+  ],
+  [
+   "Which commands create an EF Core migration named Initial and apply it to the database with the dotnet CLI?",
+   "dotnet ef migrations add Initial, then dotnet ef database update",
+   [
+    "dotnet ef migrate Initial, then dotnet ef apply",
+    "dotnet ef database add Initial, then dotnet ef migrations update",
+    "dotnet migrations new Initial, then dotnet database push"
+   ],
+   "migrations add generates the migration code from the model; database update applies pending migrations."
+  ],
+  [
+   "What lifetime does builder.Services.AddDbContext<AppDbContext>() give the DbContext by default?",
+   "Scoped",
+   [
+    "Singleton",
+    "Transient",
+    "Pooled singleton"
+   ],
+   "DbContext is not thread safe and is meant to be short-lived, so AddDbContext registers it as scoped, one per request."
+  ],
+  [
+   "An EF Core query only reads data to display it and never changes it. Which call reduces its overhead?",
+   "AsNoTracking()",
+   [
+    "AsSplitQuery()",
+    "AsEnumerable()",
+    "AsTracking()"
+   ],
+   "AsNoTracking skips the change tracker, which saves memory and time for read-only queries."
+  ],
+  [
+   "In EF Core, var u = ctx.Users.Find(1); u.Name = \"Ann\"; Which call writes the change to the database?",
+   "ctx.SaveChanges()",
+   [
+    "ctx.Users.Update()",
+    "ctx.Commit()",
+    "ctx.Entry(u).Reload()"
+   ],
+   "Find returns a tracked entity, so the change tracker detects the modified property and SaveChanges issues the UPDATE."
+  ],
+  [
+   "In EF Core, which query loads blogs together with their related posts?",
+   "ctx.Blogs.Include(b => b.Posts)",
+   [
+    "ctx.Blogs.Join(b => b.Posts)",
+    "ctx.Blogs.With(b => b.Posts)",
+    "ctx.Blogs.Load(b => b.Posts)"
+   ],
+   "Include performs eager loading of a navigation property in the same query (or split queries if configured)."
+  ],
+  [
+   "In an ASP.NET Core Program.cs, in which order should app.UseAuthentication() and app.UseAuthorization() be called?",
+   "UseAuthentication, then UseAuthorization",
+   [
+    "UseAuthorization, then UseAuthentication",
+    "Either order, they are independent",
+    "Only one of them may be called"
+   ],
+   "Middleware runs in registration order. Authorization needs the user identity that authentication sets up first."
+  ],
+  [
+   "In ASP.NET Core, a middleware app.Use(async (ctx, next) => { await ctx.Response.WriteAsync(\"x\"); }) never calls next. What happens?",
+   "Later middleware and endpoints do not run",
+   [
+    "The pipeline calls next automatically",
+    "An exception is thrown at startup",
+    "Only the endpoint still runs afterward"
+   ],
+   "Not calling next short-circuits the pipeline, which is how middleware such as static files ends a request early."
+  ],
+  [
+   "An ASP.NET Core app sets Logging:LogLevel:Default in appsettings.json and also as an environment variable. Which value wins by default?",
+   "The environment variable",
+   [
+    "The appsettings.json value",
+    "Whichever key is read first",
+    "Startup fails with a conflict"
+   ],
+   "The default builder adds providers in order: appsettings.json, appsettings.{Environment}.json, user secrets, environment variables, command line. Later ones win."
+  ],
+  [
+   "Which environment variable name sets the configuration key ConnectionStrings:Default in ASP.NET Core on all platforms?",
+   "ConnectionStrings__Default",
+   [
+    "ConnectionStrings:Default",
+    "ConnectionStrings.Default",
+    "CONNECTIONSTRINGS_DEFAULT"
+   ],
+   "A double underscore is replaced with the colon separator, and it works on every OS, unlike a colon in variable names."
+  ],
+  [
+   "After builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection(\"Smtp\")), what should a service inject to read the settings?",
+   "IOptions<SmtpOptions>",
+   [
+    "SmtpOptions directly",
+    "IConfiguration<SmtpOptions>",
+    "ISettings<SmtpOptions>"
+   ],
+   "The options pattern exposes bound settings through IOptions<T> (or IOptionsSnapshot / IOptionsMonitor for reloadable values)."
+  ]
+ ]
+}

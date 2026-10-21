@@ -1,0 +1,1820 @@
+{
+ "english": [
+  [
+   "Choose the correct sentence.",
+   "She has lived here since 2015.",
+   [
+    "She lives here since 2015.",
+    "She is living here since 2015.",
+    "She lived here since 2015."
+   ],
+   "An action that started in the past and continues now, with 'since' plus a point in time, takes the present perfect. The present simple and past simple do not combine with 'since' this way."
+  ],
+  [
+   "Complete: 'By the time we arrived at the cinema, the movie ___.'",
+   "had already started",
+   [
+    "has already started",
+    "already starts",
+    "was already start"
+   ],
+   "The past perfect marks an action completed before another past action (our arrival)."
+  ],
+  [
+   "Choose the form that shows an action in progress that was interrupted: 'I ___ TV when the phone rang.'",
+   "was watching",
+   [
+    "watched",
+    "have watched",
+    "am watching"
+   ],
+   "The past continuous describes the longer background action; the past simple 'rang' is the short event that interrupts it."
+  ],
+  [
+   "Complete the third conditional (an unreal past situation): 'If she had studied harder, she ___ the exam.'",
+   "would have passed",
+   [
+    "would pass",
+    "will pass",
+    "had passed"
+   ],
+   "The third conditional uses if + past perfect, then would have + past participle."
+  ],
+  [
+   "Which sentence uses the indefinite article correctly?",
+   "She is an honest person.",
+   [
+    "She is a honest person.",
+    "It was an useful tip.",
+    "We waited for a hour."
+   ],
+   "'An' goes before a vowel sound. 'Honest' and 'hour' begin with a silent h, while 'useful' begins with a 'yoo' consonant sound, so it takes 'a'."
+  ],
+  [
+   "Complete with correct agreement: 'Neither the manager nor the employees ___ informed about the change.'",
+   "were",
+   [
+    "was",
+    "has been",
+    "is"
+   ],
+   "With 'neither... nor', the verb agrees with the nearer subject, here the plural 'employees'."
+  ],
+  [
+   "Choose the correct passive form: 'The report ___ by the committee last week.'",
+   "was approved",
+   [
+    "approved",
+    "has approved",
+    "is approving"
+   ],
+   "'Last week' calls for the past simple, and the report receives the action, so the passive 'was approved' is needed."
+  ],
+  [
+   "He told you, 'I will call you tomorrow.' A few days later you report it. Which version is standard?",
+   "He said he would call me the next day.",
+   [
+    "He said he will call me tomorrow.",
+    "He said he would call you tomorrow.",
+    "He said he will called me the next day."
+   ],
+   "In reported speech 'will' usually backshifts to 'would', 'you' becomes 'me' from your point of view, and 'tomorrow' becomes 'the next day' when reported later."
+  ],
+  [
+   "Which adjective naturally collocates with 'rain' to mean a lot of rain?",
+   "heavy",
+   [
+    "strong",
+    "big",
+    "thick"
+   ],
+   "English says 'heavy rain'. 'Strong' collocates with wind, not with rain."
+  ],
+  [
+   "Which verb completes the collocation: 'to ___ a mistake'?",
+   "make",
+   [
+    "do",
+    "take",
+    "create"
+   ],
+   "'Make a mistake' is the fixed collocation; 'do' pairs with words like homework, research and business."
+  ],
+  [
+   "What does the idiom 'break the ice' mean?",
+   "to ease tension when people first meet",
+   [
+    "to end a friendship suddenly",
+    "to make a costly mistake at work",
+    "to start an argument on purpose"
+   ],
+   "'Break the ice' means to help people feel relaxed at the start of a meeting or social event."
+  ],
+  [
+   "Passage: 'Although the drug reduced symptoms in most patients, some reported mild side effects.' Which statement is supported?",
+   "It helped most patients but had some side effects.",
+   [
+    "It helped every patient with no side effects.",
+    "Most patients stopped taking it early.",
+    "Its side effects were worse than the symptoms."
+   ],
+   "'Although' sets up a contrast: the drug worked for most patients, yet some had mild side effects. Nothing supports the other claims."
+  ],
+  [
+   "Which greeting is most appropriate in a formal email to a company when you do not know the recipient's name?",
+   "Dear Sir or Madam,",
+   [
+    "Hey there,",
+    "Hi guys,",
+    "Dear friend,"
+   ],
+   "'Dear Sir or Madam' is the conventional formal greeting for an unknown recipient; the others are informal or inappropriate."
+  ],
+  [
+   "In formal academic writing, which verb is the best replacement for the informal phrasal verb 'find out'?",
+   "ascertain",
+   [
+    "suss out",
+    "figure",
+    "dig up"
+   ],
+   "Academic register prefers single-word Latinate verbs such as 'ascertain' or 'determine'; the other options are informal."
+  ],
+  [
+   "Complete: 'These results are ___ with earlier studies, which also found a positive effect.'",
+   "consistent",
+   [
+    "constant",
+    "considerable",
+    "consisted"
+   ],
+   "'Consistent with' means in agreement with. 'Constant' means unchanging, and 'consisted' is a verb form that needs 'of'."
+  ],
+  [
+   "In academic writing, what does it mean to 'mitigate' a risk?",
+   "to make it less severe",
+   [
+    "to measure it precisely",
+    "to ignore it deliberately",
+    "to pass it on to others"
+   ],
+   "'Mitigate' means to reduce the seriousness or harm of something."
+  ],
+  [
+   "The author ___ that the policy failed, but never states it directly. Which verb fits?",
+   "implies",
+   [
+    "infers",
+    "denies",
+    "proves"
+   ],
+   "A writer implies (suggests indirectly); a reader infers (draws a conclusion). Confusing the two is a common error."
+  ],
+  [
+   "In a standard academic essay, where is the thesis statement usually placed?",
+   "at the end of the introduction",
+   [
+    "in the first line of the conclusion",
+    "at the start of each body paragraph",
+    "in the title of the essay"
+   ],
+   "The thesis normally closes the introduction, telling the reader the essay's main claim before the body develops it."
+  ],
+  [
+   "What is the main job of a topic sentence in a body paragraph?",
+   "to state the paragraph's main idea",
+   [
+    "to list the essay's sources",
+    "to restate the essay title",
+    "to summarize the whole essay"
+   ],
+   "A topic sentence, usually first in the paragraph, announces the single idea the paragraph supports."
+  ],
+  [
+   "Passage: 'Unlike earlier models, the new engine is light enough to be carried by one person.' What can you infer about earlier models?",
+   "They were heavier than the new engine.",
+   [
+    "They were cheaper than the new engine.",
+    "They were carried by one person.",
+    "They were built by the same firm."
+   ],
+   "'Unlike' signals a contrast in weight: if the new engine is light enough to carry, the earlier ones were heavier. Price and maker are not mentioned."
+  ]
+ ],
+ "kazakh": [
+  [
+   "Which group lists only Kazakh back (hard, жуан) vowels?",
+   "а, о, ұ, ы",
+   [
+    "ә, ө, ү, і",
+    "а, ә, е, і",
+    "о, ө, ұ, ү"
+   ],
+   "Kazakh back vowels are а, о, ұ, ы. Their front partners are ә, ө, ү, і, plus е."
+  ],
+  [
+   "What is the correct plural of 'үй' (house)?",
+   "үйлер",
+   [
+    "үйлар",
+    "үйдер",
+    "үйтер"
+   ],
+   "'Үй' has a front vowel, so the suffix takes е, and after й the plural suffix is -лар/-лер."
+  ],
+  [
+   "What is the correct plural of 'кітап' (book)?",
+   "кітаптар",
+   [
+    "кітаплар",
+    "кітаптер",
+    "кітапдар"
+   ],
+   "After a voiceless consonant like п the suffix starts with т, and the last vowel а is back, giving -тар."
+  ],
+  [
+   "Complete the yes/no question 'Сен студентсің ___?' (Are you a student?)",
+   "бе",
+   [
+    "ба",
+    "ме",
+    "па"
+   ],
+   "After ң the question particle starts with б, and the front vowel і requires е: Сен студентсің бе?"
+  ],
+  [
+   "What does 'кітапханада' mean? (кітап = book, хана = house, room)",
+   "in the library",
+   [
+    "to the library",
+    "from the library",
+    "of the library"
+   ],
+   "Кітапхана means library, and -да is the locative suffix, so the word means 'in the library'."
+  ],
+  [
+   "Which form correctly means 'to our children' (бала = child)?",
+   "балаларымызға",
+   [
+    "баламыздарға",
+    "балаларымызда",
+    "балаларғамыз"
+   ],
+   "Kazakh suffixes stack in a fixed order: stem + plural + possessive + case, so бала + лар + ымыз + ға."
+  ],
+  [
+   "Which suffix turns 'жаз' (write) into 'жазушы' (writer)?",
+   "-шы/-ші",
+   [
+    "-лық/-лік",
+    "-сыз/-сіз",
+    "-дай/-дей"
+   ],
+   "-шы/-ші forms a word for a person who does something: жазушы (writer), оқушы (pupil), әнші (singer)."
+  ],
+  [
+   "Which form means 'my book'?",
+   "кітабым",
+   [
+    "кітапым",
+    "кітабың",
+    "кітабы"
+   ],
+   "Final п voices to б before a vowel-initial suffix, and -ым marks first person singular possession. Кітабың is 'your book' and кітабы is 'his or her book'."
+  ],
+  [
+   "Choose the correct verb: 'Мен университетте ___.' (I study at university.)",
+   "оқимын",
+   [
+    "оқисың",
+    "оқиды",
+    "оқимыз"
+   ],
+   "The pronoun мен takes the ending -мын/-мін. -сың goes with сен, -ды with ол, and -мыз with біз."
+  ],
+  [
+   "What is the past tense form of 'келу' (to come) for 'біз' (we)?",
+   "келдік",
+   [
+    "келдім",
+    "келдіңдер",
+    "келеміз"
+   ],
+   "The definite past -ды/-ді plus the first person plural ending -к gives келдік. Келеміз is present-future."
+  ],
+  [
+   "Which form means 'I do not go' (from 'бару')?",
+   "бармаймын",
+   [
+    "барамын",
+    "бардым",
+    "барсам"
+   ],
+   "The negative suffix -ма/-ме comes right after the stem: бар + ма + й + мын. Барамын is 'I go', бардым 'I went', барсам 'if I go'."
+  ],
+  [
+   "What does 'Уақытым болса, барамын' mean?",
+   "If I have time, I will go.",
+   [
+    "Because I had time, I went.",
+    "I had time, but I did not go.",
+    "When I go, I will have time."
+   ],
+   "-са/-се is the conditional suffix ('if'), and the present-future барамын can describe a future action."
+  ],
+  [
+   "How do you say 'at school' (locative of 'мектеп')?",
+   "мектепте",
+   [
+    "мектепде",
+    "мектепта",
+    "мектепке"
+   ],
+   "After voiceless п the locative is -та/-те, and the front vowel е requires -те. Мектепке is dative ('to school')."
+  ],
+  [
+   "Which word means 'to Almaty' (direction)?",
+   "Алматыға",
+   [
+    "Алматыда",
+    "Алматыдан",
+    "Алматыны"
+   ],
+   "The dative case (барыс септік) -ға/-ге/-қа/-ке marks direction; -да marks location and -дан marks the source."
+  ],
+  [
+   "Which form means 'from Kazakhstan'?",
+   "Қазақстаннан",
+   [
+    "Қазақстандан",
+    "Қазақстанға",
+    "Қазақстанда"
+   ],
+   "After м, н and ң the ablative suffix is -нан/-нен, so Қазақстан becomes Қазақстаннан."
+  ],
+  [
+   "Which word completes 'Мен ___ жазамын.' (I write with a pen; қалам = pen)?",
+   "қаламмен",
+   [
+    "қаламда",
+    "қаламға",
+    "қаламды"
+   ],
+   "The instrumental case (көмектес септік) -мен/-бен/-пен marks the tool used for an action."
+  ],
+  [
+   "Which sentence has neutral Kazakh word order for 'I read a book'?",
+   "Мен кітап оқимын.",
+   [
+    "Мен оқимын кітап.",
+    "Оқимын мен кітап.",
+    "Оқимын кітап мен."
+   ],
+   "Kazakh is SOV: subject, then object, with the verb at the end."
+  ],
+  [
+   "Which is the neutral word order for 'Where are you going?'",
+   "Сен қайда барасың?",
+   [
+    "Сен барасың қайда?",
+    "Қайда сен барасың ба?",
+    "Барасың қайда сен?"
+   ],
+   "In Kazakh the question word stands where the answer would go, right before the verb, which stays last. A question word needs no extra ба."
+  ],
+  [
+   "Which greeting is appropriate when meeting an older person or a teacher?",
+   "Сәлеметсіз бе!",
+   [
+    "Сәлем!",
+    "Қалайсың?",
+    "Сау бол!"
+   ],
+   "'Сәлеметсіз бе' uses the polite сіз form. 'Сәлем' and 'Қалайсың' are informal, and 'Сау бол' is an informal goodbye."
+  ],
+  [
+   "Which is the polite way to say 'Sit down!' to a teacher?",
+   "Отырыңыз!",
+   [
+    "Отыр!",
+    "Отырдың!",
+    "Отырсаң!"
+   ],
+   "The polite imperative adds -ыңыз/-іңіз (linked to сіз). Bare 'Отыр!' is the informal command used with сен."
+  ]
+ ],
+ "russian": [
+  [
+   "Complete: 'Я живу в ___.' (Москва)",
+   "Москве",
+   [
+    "Москву",
+    "Москвы",
+    "Москвой"
+   ],
+   "'В' describing location takes the prepositional case: в Москве. 'В Москву' (accusative) shows direction."
+  ],
+  [
+   "Complete: 'У меня нет ___.' (брат)",
+   "брата",
+   [
+    "брат",
+    "брату",
+    "братом"
+   ],
+   "'Нет' meaning 'there is no' takes the genitive case: нет брата."
+  ],
+  [
+   "Complete: 'Я дал книгу ___.' (сестра)",
+   "сестре",
+   [
+    "сестру",
+    "сестры",
+    "сестрой"
+   ],
+   "The indirect object (to whom something is given) takes the dative case: сестре."
+  ],
+  [
+   "Complete: 'Я пишу ___.' (ручка, meaning 'with a pen')",
+   "ручкой",
+   [
+    "ручку",
+    "ручке",
+    "ручки"
+   ],
+   "An instrument used for an action takes the instrumental case with no preposition: писать ручкой."
+  ],
+  [
+   "Which phrase is correct for 'two tables'?",
+   "два стола",
+   [
+    "два столов",
+    "два столы",
+    "два стол"
+   ],
+   "After 2, 3 and 4 a noun takes the genitive singular: два стола. From 5 upward it takes the genitive plural: пять столов."
+  ],
+  [
+   "In 'Мне нравится эта песня', which case is 'мне'?",
+   "dative",
+   [
+    "nominative",
+    "accusative",
+    "genitive"
+   ],
+   "With нравиться the person who likes something is in the dative, while the thing liked (песня) is the grammatical subject."
+  ],
+  [
+   "Complete: 'Вчера я весь вечер ___ письмо.' (focus on the process and its duration)",
+   "писал",
+   [
+    "написал",
+    "напишу",
+    "пишу"
+   ],
+   "Duration ('весь вечер') calls for the imperfective past писал. Perfective написал stresses a finished result."
+  ],
+  [
+   "Complete: 'Я уже ___ это письмо, вот оно.' (the letter is finished)",
+   "написал",
+   [
+    "писал",
+    "пишу",
+    "буду писать"
+   ],
+   "A completed action with a result in the present takes the perfective past написал."
+  ],
+  [
+   "Which future form is ungrammatical in Russian?",
+   "буду прочитать",
+   [
+    "прочитаю",
+    "буду читать",
+    "прочитаем"
+   ],
+   "Perfective verbs form the future with personal endings alone (прочитаю). Буду combines only with imperfective infinitives (буду читать)."
+  ],
+  [
+   "What is the imperfective partner of the perfective verb 'купить' (to buy)?",
+   "покупать",
+   [
+    "скупить",
+    "закупить",
+    "купать"
+   ],
+   "The aspect pair is покупать (imperfective) and купить (perfective). Купать means to bathe someone."
+  ],
+  [
+   "Complete: 'Каждый день я ___ в университет пешком.' (repeated trips)",
+   "хожу",
+   [
+    "иду",
+    "еду",
+    "езжу"
+   ],
+   "Habitual round trips use the multidirectional ходить, and 'пешком' (on foot) rules out the vehicle verbs ехать and ездить."
+  ],
+  [
+   "Which sentence means 'I am going to work by bus' (a trip happening right now)?",
+   "Я еду на работу на автобусе.",
+   [
+    "Я иду на работу на автобусе.",
+    "Я хожу на работу на автобусе.",
+    "Я езжу на работу на автобусе."
+   ],
+   "Travel by vehicle uses ехать, and еду is unidirectional, for a trip in progress. Езжу would mean 'I regularly go'."
+  ],
+  [
+   "Which verb means 'to enter (on foot)'?",
+   "войти",
+   [
+    "выйти",
+    "уйти",
+    "прийти"
+   ],
+   "The prefix в- means 'into'. Вы- means 'out of', у- means 'away from', and при- means 'arrive'."
+  ],
+  [
+   "Which suffix forms a noun for a person who does the action, as in 'учить' becoming 'учитель'?",
+   "-тель",
+   [
+    "-ость",
+    "-ние",
+    "-ство"
+   ],
+   "-тель forms agent nouns: учитель, писатель, водитель. -ость and -ство form abstract nouns, and -ние forms action nouns."
+  ],
+  [
+   "What does the prefix пере- add in 'переписать' (from 'писать')?",
+   "doing the action again",
+   [
+    "doing the action partly",
+    "starting the action",
+    "doing it for others"
+   ],
+   "Переписать means 'to rewrite'. Пере- often means 're-' or 'across'."
+  ],
+  [
+   "Which word is an adjective formed from 'зима' (winter)?",
+   "зимний",
+   [
+    "зимовать",
+    "зимой",
+    "зимовка"
+   ],
+   "The suffix -н- with the soft ending -ий forms the adjective зимний. Зимой is an adverb, зимовать a verb, and зимовка a noun."
+  ],
+  [
+   "Which sentence with a что clause is punctuated correctly?",
+   "Я знаю, что он прав.",
+   [
+    "Я знаю что, он прав.",
+    "Я знаю что он прав.",
+    "Я, знаю что он прав."
+   ],
+   "A subordinate clause introduced by что is separated from the main clause by a comma placed before что."
+  ],
+  [
+   "Which sentence with a который clause is punctuated correctly?",
+   "Книга, которую я читаю, очень интересная.",
+   [
+    "Книга которую я читаю, очень интересная.",
+    "Книга, которую я читаю очень интересная.",
+    "Книга которую, я читаю, очень интересная."
+   ],
+   "A который clause in the middle of a sentence is set off by commas on both sides."
+  ],
+  [
+   "Which sentence punctuates the introductory word 'конечно' correctly?",
+   "Конечно, он придёт вовремя.",
+   [
+    "Конечно он придёт, вовремя.",
+    "Конечно он придёт вовремя.",
+    "Конечно он, придёт вовремя."
+   ],
+   "Introductory words such as конечно, например and к сожалению are set off by commas."
+  ],
+  [
+   "Which sentence with two verbs joined by и is punctuated correctly?",
+   "Он пришёл домой и сел ужинать.",
+   [
+    "Он пришёл домой, и сел ужинать.",
+    "Он, пришёл домой и сел ужинать.",
+    "Он пришёл, домой и сел ужинать."
+   ],
+   "Two predicates that share one subject and are joined by a single и are not separated by a comma."
+  ]
+ ],
+ "korean": [
+  [
+   "Which Hangul letter represents the 'm' sound?",
+   "ㅁ",
+   [
+    "ㅂ",
+    "ㄴ",
+    "ㅇ"
+   ],
+   "ㅁ is m. ㅂ is b/p, ㄴ is n, and ㅇ is silent at the start of a syllable and ng at the end."
+  ],
+  [
+   "How is 한국어 (Korean language) pronounced?",
+   "[한구거]",
+   [
+    "[한국어]",
+    "[한국거]",
+    "[한구커]"
+   ],
+   "A final consonant (batchim) followed by a syllable starting with silent ㅇ moves over: 국 + 어 sounds like 구거."
+  ],
+  [
+   "How is 감사합니다 pronounced?",
+   "[감사함니다]",
+   [
+    "[감사합니다]",
+    "[감사한니다]",
+    "[감사하니다]"
+   ],
+   "Final ㅂ before ㄴ becomes ㅁ (nasalization), so 합니다 sounds like 함니다."
+  ],
+  [
+   "How is 같이 (together) pronounced?",
+   "[가치]",
+   [
+    "[가티]",
+    "[갇이]",
+    "[가지]"
+   ],
+   "Final ㅌ followed by 이 becomes ㅊ (palatalization), so 같이 sounds like 가치."
+  ],
+  [
+   "Which ending is the formal polite style (합쇼체) used in news broadcasts and presentations?",
+   "-습니다/-ㅂ니다",
+   [
+    "-아요/-어요",
+    "-아/-어",
+    "-자"
+   ],
+   "-습니다/-ㅂ니다 is the formal polite level. -아요/-어요 is informal polite, and -아/-어 and -자 are casual (반말)."
+  ],
+  [
+   "Which sentence is appropriate when asking your teacher where they are going?",
+   "선생님, 어디 가세요?",
+   [
+    "선생님, 어디 가?",
+    "선생님, 어디 가니?",
+    "선생님, 어디 가자?"
+   ],
+   "The honorific -시- in 가세요 shows respect for the teacher; the others are casual speech."
+  ],
+  [
+   "Which honorific verb replaces 먹다 (to eat) when talking about a grandparent eating?",
+   "드시다",
+   [
+    "계시다",
+    "주무시다",
+    "말씀하시다"
+   ],
+   "드시다 (or 잡수시다) is the honorific for eating. 계시다 means 'to be', 주무시다 'to sleep' and 말씀하시다 'to speak'."
+  ],
+  [
+   "Choose the correct particle: '저___ 학생이에요.' (I am a student.)",
+   "는",
+   [
+    "은",
+    "가",
+    "를"
+   ],
+   "저 ends in a vowel, so the topic particle is 는; 은 follows a consonant. As a subject 저 becomes 제가, not 저가."
+  ],
+  [
+   "Choose the correct particle: '책___ 있어요.' (There is a book.)",
+   "이",
+   [
+    "가",
+    "을",
+    "에"
+   ],
+   "책 ends in a consonant, so the subject particle is 이; 가 follows a vowel."
+  ],
+  [
+   "Q: '누가 왔어요?' (Who came?) Which answer is most natural?",
+   "민수가 왔어요.",
+   [
+    "민수는 왔어요.",
+    "민수를 왔어요.",
+    "민수에 왔어요."
+   ],
+   "New information answering a question word takes 이/가. 는 would add a contrast ('Minsu, at least, came')."
+  ],
+  [
+   "Fill in: '도서관___ 공부해요.' (I study at the library.)",
+   "에서",
+   [
+    "에",
+    "을",
+    "가"
+   ],
+   "에서 marks the place where an action happens; 에 marks a destination or the place where something exists."
+  ],
+  [
+   "What is the polite past form of 하다 (to do)?",
+   "했어요",
+   [
+    "하었어요",
+    "핬어요",
+    "해었어요"
+   ],
+   "하다 becomes 해 before -어, and the past adds ㅆ: 했어요."
+  ],
+  [
+   "What is the polite present form of 덥다 (to be hot)?",
+   "더워요",
+   [
+    "덥어요",
+    "더버요",
+    "덥워요"
+   ],
+   "덥다 is a ㅂ-irregular verb: ㅂ changes to 우 before a vowel, giving 더워요."
+  ],
+  [
+   "What is the polite present form of 듣다 (to listen)?",
+   "들어요",
+   [
+    "듣어요",
+    "드어요",
+    "들아요"
+   ],
+   "듣다 is ㄷ-irregular: ㄷ becomes ㄹ before a vowel, giving 들어요."
+  ],
+  [
+   "Which form means 'I will go' (a future plan) in polite style?",
+   "갈 거예요",
+   [
+    "갔어요",
+    "가고 있어요",
+    "가세요"
+   ],
+   "-(으)ㄹ 거예요 expresses a future plan. 갔어요 is past, 가고 있어요 is 'am going' and 가세요 is an honorific request or statement."
+  ],
+  [
+   "What is the basic word order of a Korean sentence such as '저는 사과를 먹어요'?",
+   "subject, object, verb",
+   [
+    "subject, verb, object",
+    "verb, subject, object",
+    "object, verb, subject"
+   ],
+   "Korean is SOV: the verb comes last, and particles mark each noun's role."
+  ],
+  [
+   "Which phrase correctly means 'a big house'?",
+   "큰 집",
+   [
+    "집 큰",
+    "크다 집",
+    "집 크다"
+   ],
+   "A descriptive verb modifying a noun takes the -(으)ㄴ form and comes before the noun: 크다 becomes 큰 집."
+  ],
+  [
+   "How do you say 3 o'clock in Korean?",
+   "세 시",
+   [
+    "삼 시",
+    "셋 시",
+    "세 분"
+   ],
+   "Hours use native Korean numbers, and 셋 shortens to 세 before a counter. 분 is the counter for minutes."
+  ],
+  [
+   "How do you say 30 minutes in Korean?",
+   "삼십 분",
+   [
+    "서른 분",
+    "세 분",
+    "삼십 시"
+   ],
+   "Minutes use Sino-Korean numbers: 삼십 분. Native numbers such as 서른 are used for hours and ages."
+  ],
+  [
+   "How is the month of June written in Korean?",
+   "유월",
+   [
+    "육월",
+    "여섯월",
+    "륙월"
+   ],
+   "Months use Sino-Korean numbers, but June is irregular: 유월, not 육월. October is also irregular: 시월."
+  ]
+ ],
+ "japanese": [
+  [
+   "Which hiragana is read 'nu'?",
+   "ぬ",
+   [
+    "め",
+    "ね",
+    "わ"
+   ],
+   "ぬ is nu. め is me, ね is ne and わ is wa; their similar loops make them easy to confuse."
+  ],
+  [
+   "How is the hiragana word きって (stamp) pronounced?",
+   "kitte",
+   [
+    "kitsute",
+    "kite",
+    "kitsu"
+   ],
+   "A small っ doubles the following consonant, producing a short pause: ki-t-te. A full-size つ would be read tsu."
+  ],
+  [
+   "How is 'okaasan' (mother) correctly written in hiragana?",
+   "おかあさん",
+   [
+    "おかさん",
+    "おかーさん",
+    "おかあさ"
+   ],
+   "In hiragana a long a is written by adding あ. The long-vowel mark ー is used mainly in katakana."
+  ],
+  [
+   "Which katakana is read 'n'?",
+   "ン",
+   [
+    "ソ",
+    "シ",
+    "ツ"
+   ],
+   "ン (n) and ソ (so) look alike, as do シ (shi) and ツ (tsu). The direction of the last stroke tells them apart."
+  ],
+  [
+   "What does the mark ー in コーヒー (coffee) indicate?",
+   "a long vowel",
+   [
+    "a doubled consonant",
+    "a silent syllable",
+    "a pause between words"
+   ],
+   "ー lengthens the preceding vowel in katakana: ko-o-hi-i."
+  ],
+  [
+   "What is katakana mainly used for in modern Japanese?",
+   "foreign loanwords and names",
+   [
+    "verb and adjective endings",
+    "particles such as は and を",
+    "native everyday verbs"
+   ],
+   "Katakana writes loanwords like テレビ, foreign names and some emphasis or sound words. Verb endings and particles are written in hiragana."
+  ],
+  [
+   "Which is the correct katakana spelling of 'taxi'?",
+   "タクシー",
+   [
+    "タクシ",
+    "ダクシー",
+    "タクツー"
+   ],
+   "Taxi is ta-ku-shi-i with a long final vowel marked by ー. ツ is tsu, and ダ is da."
+  ],
+  [
+   "Which kanji contains the water radical 氵?",
+   "海",
+   [
+    "林",
+    "話",
+    "明"
+   ],
+   "海 (sea) has 氵 on its left. 林 is built from 木 (tree), 話 has 言 (speech) and 明 has 日 (sun)."
+  ],
+  [
+   "The radical 亻 on the left of 休 (rest) and 体 (body) represents what?",
+   "person",
+   [
+    "tree",
+    "water",
+    "hand"
+   ],
+   "亻 is the side form of 人 (person)."
+  ],
+  [
+   "How is 人 read in 日本人 (a Japanese person)?",
+   "じん",
+   [
+    "ひと",
+    "にん",
+    "り"
+   ],
+   "日本人 is read にほんじん, using the on-reading じん for nationality. ひと is the kun-reading used when 人 stands alone."
+  ],
+  [
+   "Fill in: 'わたし ___ がくせいです。' (I am a student.)",
+   "は",
+   [
+    "を",
+    "で",
+    "に"
+   ],
+   "は marks the topic of the sentence; in this use it is pronounced wa."
+  ],
+  [
+   "Fill in: 'としょかん ___ べんきょうします。' (I study at the library.)",
+   "で",
+   [
+    "に",
+    "を",
+    "が"
+   ],
+   "で marks the place where an action happens. に marks a destination or the place where something exists."
+  ],
+  [
+   "Fill in: 'パン ___ たべます。' (I eat bread.)",
+   "を",
+   [
+    "で",
+    "に",
+    "へ"
+   ],
+   "を marks the direct object of the verb たべます."
+  ],
+  [
+   "Fill in: 'だれ ___ きましたか。' (Who came?)",
+   "が",
+   [
+    "は",
+    "を",
+    "で"
+   ],
+   "Question words such as だれ and なに cannot be the topic with は; as subjects they take が."
+  ],
+  [
+   "What is the te-form of のむ (to drink)?",
+   "のんで",
+   [
+    "のみて",
+    "のって",
+    "のむて"
+   ],
+   "Verbs ending in む, ぶ and ぬ change to んで in the te-form: のむ becomes のんで."
+  ],
+  [
+   "What is the te-form of いく (to go)?",
+   "いって",
+   [
+    "いいて",
+    "いきて",
+    "いんで"
+   ],
+   "いく is the exception among く-verbs: its te-form is いって, not いいて."
+  ],
+  [
+   "What is the plain past form of たべる (to eat)?",
+   "たべた",
+   [
+    "たべった",
+    "たべだ",
+    "たべるた"
+   ],
+   "For ru-verbs, drop る and add た: たべる becomes たべた."
+  ],
+  [
+   "What does 'いま ごはんを たべています。' mean?",
+   "I am eating a meal now.",
+   [
+    "I ate a meal already.",
+    "I will eat a meal later.",
+    "I want to eat a meal now."
+   ],
+   "The te-form plus いる (here たべています) expresses an action in progress."
+  ],
+  [
+   "A shop clerk invites a customer to eat. Which verb is the honorific (sonkeigo) form of たべる?",
+   "めしあがる",
+   [
+    "いただく",
+    "まいる",
+    "もうす"
+   ],
+   "めしあがる raises the person eating. いただく is humble (kenjougo), used for your own eating or receiving."
+  ],
+  [
+   "A receptionist politely asks a guest where they are going. Which honorific verb replaces いく?",
+   "いらっしゃる",
+   [
+    "まいる",
+    "うかがう",
+    "おる"
+   ],
+   "いらっしゃる is the honorific form of いく, くる and いる. まいる, うかがう and おる are humble forms used about yourself."
+  ]
+ ],
+ "german": [
+  [
+   "Which article is correct for 'Mädchen' (girl)?",
+   "das",
+   [
+    "die",
+    "der",
+    "den"
+   ],
+   "Nouns ending in the diminutive suffix -chen are neuter, so it is das Mädchen despite the meaning."
+  ],
+  [
+   "Which gender do German nouns ending in -ung have, as in 'Zeitung' or 'Wohnung'?",
+   "feminine (die)",
+   [
+    "masculine (der)",
+    "neuter (das)",
+    "it varies by noun"
+   ],
+   "Nouns formed with the suffix -ung are feminine: die Zeitung, die Wohnung, die Übung."
+  ],
+  [
+   "Complete: 'Ich sehe ___ Mann.'",
+   "den",
+   [
+    "der",
+    "dem",
+    "des"
+   ],
+   "Sehen takes a direct object in the accusative, and masculine der becomes den."
+  ],
+  [
+   "Complete: 'Ich gebe ___ Frau das Buch.'",
+   "der",
+   [
+    "die",
+    "den",
+    "das"
+   ],
+   "The person receiving something is the indirect object in the dative; feminine die becomes der in the dative."
+  ],
+  [
+   "Complete: 'Das ist das Auto ___ Vaters.'",
+   "des",
+   [
+    "der",
+    "dem",
+    "den"
+   ],
+   "The genitive shows possession: masculine der becomes des, and the noun adds -s (des Vaters)."
+  ],
+  [
+   "Complete: 'Ich fahre mit ___ Bus.'",
+   "dem",
+   [
+    "den",
+    "der",
+    "das"
+   ],
+   "Mit always takes the dative, so masculine der becomes dem."
+  ],
+  [
+   "Choose the article: 'Ich lege das Buch auf ___ Tisch.' (movement onto the table)",
+   "den",
+   [
+    "dem",
+    "der",
+    "des"
+   ],
+   "Two-way prepositions like auf take the accusative for movement to a destination (Wohin?) and the dative for location (Wo?)."
+  ],
+  [
+   "Complete: 'Ich habe ___ Bruder und eine Schwester.'",
+   "einen",
+   [
+    "ein",
+    "einem",
+    "einer"
+   ],
+   "Haben takes an accusative object, and the masculine indefinite article ein becomes einen."
+  ],
+  [
+   "Which sentence correctly says 'I can swim well'?",
+   "Ich kann gut schwimmen.",
+   [
+    "Ich kann schwimmen gut.",
+    "Ich schwimmen kann gut.",
+    "Kann ich gut schwimmen."
+   ],
+   "The modal verb is conjugated in position 2 and the infinitive goes to the end of the main clause. 'Kann ich gut schwimmen' is word order for a question."
+  ],
+  [
+   "Complete: 'Er ___ sehr gut Deutsch sprechen.'",
+   "kann",
+   [
+    "kannt",
+    "könnt",
+    "können"
+   ],
+   "Modal verbs take no ending in the first and third person singular: ich kann, er kann."
+  ],
+  [
+   "What does 'Du musst heute nicht arbeiten' mean?",
+   "You don't have to work today.",
+   [
+    "You must not work today.",
+    "You can't work today.",
+    "You don't want to work today."
+   ],
+   "Nicht müssen means there is no obligation. A prohibition ('must not') is nicht dürfen: Du darfst heute nicht arbeiten."
+  ],
+  [
+   "Which modal verb typically asks for permission, as in '___ ich hereinkommen?' (May I come in?)",
+   "Darf",
+   [
+    "Muss",
+    "Soll",
+    "Mag"
+   ],
+   "Dürfen expresses permission: Darf ich hereinkommen? Müssen is obligation, sollen is duty or advice, and mögen is liking."
+  ],
+  [
+   "Which sentence correctly uses 'aufstehen' to say 'I get up at 7'?",
+   "Ich stehe um 7 Uhr auf.",
+   [
+    "Ich aufstehe um 7 Uhr.",
+    "Ich stehe um 7 Uhr aufstehen.",
+    "Ich auf stehe um 7 Uhr."
+   ],
+   "In a main clause the conjugated stem takes position 2 and the separable prefix moves to the end."
+  ],
+  [
+   "What is the past participle of 'anrufen' (to call)?",
+   "angerufen",
+   [
+    "geanrufen",
+    "anrufgen",
+    "angeruft"
+   ],
+   "With separable verbs, ge- goes between the prefix and the stem: an-ge-rufen."
+  ],
+  [
+   "Which verb is NOT separable?",
+   "verstehen",
+   [
+    "aufstehen",
+    "anfangen",
+    "mitkommen"
+   ],
+   "Ver- is an inseparable prefix, like be-, ent-, er-, ge- and zer-, so you say 'Ich verstehe' with no split."
+  ],
+  [
+   "Complete: 'Ich bin müde, weil ich jeden Tag früh ___.' (aufstehen)",
+   "aufstehe",
+   [
+    "stehe auf",
+    "auf stehe",
+    "aufstehen"
+   ],
+   "In a subordinate clause the verb goes to the end and a separable verb is written as one word: weil ich früh aufstehe."
+  ],
+  [
+   "Which sentence is correct in standard written German?",
+   "Ich bleibe zu Hause, weil ich krank bin.",
+   [
+    "Ich bleibe zu Hause, weil ich bin krank.",
+    "Ich bleibe zu Hause, weil bin ich krank.",
+    "Ich bleibe zu Hause, weil krank ich bin."
+   ],
+   "Weil introduces a subordinate clause, which sends the conjugated verb to the end."
+  ],
+  [
+   "Which conjunction keeps normal main-clause word order instead of sending the verb to the end?",
+   "denn",
+   [
+    "weil",
+    "dass",
+    "obwohl"
+   ],
+   "Denn is a coordinating conjunction: '..., denn ich bin krank.' Weil, dass and obwohl are subordinating and move the verb to the end."
+  ],
+  [
+   "Which sentence correctly says 'I know that he can come tomorrow'?",
+   "Ich weiß, dass er morgen kommen kann.",
+   [
+    "Ich weiß, dass er kann morgen kommen.",
+    "Ich weiß, dass er morgen kann kommen.",
+    "Ich weiß, dass kann er morgen kommen."
+   ],
+   "In a subordinate clause the conjugated verb, here the modal kann, goes to the very end, after the infinitive."
+  ],
+  [
+   "Which continuation is correct: 'Wenn ich Zeit habe, ...'?",
+   "gehe ich ins Kino.",
+   [
+    "ich gehe ins Kino.",
+    "ich ins Kino gehe.",
+    "ins Kino ich gehe."
+   ],
+   "The whole wenn-clause fills position 1, so the main-clause verb must come right after the comma, followed by the subject."
+  ]
+ ],
+ "chinese": [
+  [
+   "Which word means 'horse'?",
+   "马 (mǎ)",
+   [
+    "妈 (mā)",
+    "麻 (má)",
+    "骂 (mà)"
+   ],
+   "The syllable ma changes meaning with tone: 妈 mā mother, 麻 má hemp, 马 mǎ horse, 骂 mà to scold."
+  ],
+  [
+   "How is 你好 (nǐ hǎo) actually pronounced in speech?",
+   "ní hǎo",
+   [
+    "nǐ hào",
+    "nì hǎo",
+    "nī hǎo"
+   ],
+   "When two third tones meet, the first one changes to a second (rising) tone."
+  ],
+  [
+   "How is 不是 (bù shì, is not) pronounced?",
+   "bú shì",
+   [
+    "bù shì",
+    "bǔ shì",
+    "bū shì"
+   ],
+   "不 is normally fourth tone but changes to second tone before another fourth tone."
+  ],
+  [
+   "In the pinyin qù (去, to go), which vowel sound does the letter u represent?",
+   "ü",
+   [
+    "u as in 'food'",
+    "o",
+    "e"
+   ],
+   "After j, q, x and y, the vowel ü is written as u without the dots, so qù is pronounced with ü."
+  ],
+  [
+   "Which radical is shared by 吃 (chī, eat), 喝 (hē, drink) and 叫 (jiào, call)?",
+   "口 (mouth)",
+   [
+    "女 (woman)",
+    "木 (tree)",
+    "氵 (water)"
+   ],
+   "All three actions involve the mouth, and each character has 口 on its left."
+  ],
+  [
+   "The radical 氵 in 河 (hé, river), 海 (hǎi, sea) and 洗 (xǐ, wash) is related to what?",
+   "water",
+   [
+    "speech",
+    "hand",
+    "fire"
+   ],
+   "氵 is the side form of 水 (shuǐ, water) and appears in many characters about liquids."
+  ],
+  [
+   "Which character contains the speech radical 讠?",
+   "说 (shuō, speak)",
+   [
+    "打 (dǎ, hit)",
+    "妈 (mā, mother)",
+    "林 (lín, woods)"
+   ],
+   "讠 is the simplified speech radical, found in 说, 话 (huà) and 语 (yǔ). 打 has 扌, 妈 has 女 and 林 has 木."
+  ],
+  [
+   "In 十 (shí, ten), which stroke is written first?",
+   "the horizontal stroke",
+   [
+    "the vertical stroke",
+    "the left half of the horizontal",
+    "the top half of the vertical"
+   ],
+   "A basic stroke-order rule is horizontal before vertical when they cross, as in 十."
+  ],
+  [
+   "When writing an enclosed character such as 国 (guó, country), when is the bottom closing stroke written?",
+   "last, after the inside",
+   [
+    "first, before the frame",
+    "right after the left side",
+    "before the inside strokes"
+   ],
+   "Rule: write the outer frame, fill in the inside, then close the frame with the bottom stroke."
+  ],
+  [
+   "In 小 (xiǎo, small), which stroke comes first?",
+   "the center vertical hook",
+   [
+    "the left dot",
+    "the right dot",
+    "both dots together"
+   ],
+   "For symmetrical characters like 小 and 水, the center stroke is written before the two sides."
+  ],
+  [
+   "Which measure word fits '一___书' (a book; 书 shū)?",
+   "本 (běn)",
+   [
+    "张 (zhāng)",
+    "只 (zhī)",
+    "条 (tiáo)"
+   ],
+   "本 is the measure word for bound items such as books and notebooks."
+  ],
+  [
+   "Which measure word fits '一___纸' (a sheet of paper; 纸 zhǐ)?",
+   "张 (zhāng)",
+   [
+    "本 (běn)",
+    "辆 (liàng)",
+    "双 (shuāng)"
+   ],
+   "张 is used for flat objects such as paper, tickets, photos and tables."
+  ],
+  [
+   "Which measure word fits '一___车' (a car; 车 chē)?",
+   "辆 (liàng)",
+   [
+    "件 (jiàn)",
+    "杯 (bēi)",
+    "本 (běn)"
+   ],
+   "辆 is the measure word for vehicles such as cars, buses and bicycles."
+  ],
+  [
+   "Which measure word fits '一___鞋' (a pair of shoes; 鞋 xié)?",
+   "双 (shuāng)",
+   [
+    "条 (tiáo)",
+    "张 (zhāng)",
+    "本 (běn)"
+   ],
+   "双 means 'a pair' and is used for shoes, socks and chopsticks."
+  ],
+  [
+   "Which sentence correctly says 'I study at the library tomorrow'? (明天 míngtiān tomorrow, 图书馆 túshūguǎn library, 学习 xuéxí study)",
+   "我明天在图书馆学习。",
+   [
+    "我学习在图书馆明天。",
+    "我在图书馆学习明天。",
+    "明天学习我在图书馆。"
+   ],
+   "Chinese places time and place before the verb: subject + time + place + verb."
+  ],
+  [
+   "Which sentence correctly says 'I am taller than him' using 比 (bǐ)? (高 gāo tall)",
+   "我比他高。",
+   [
+    "我高比他。",
+    "我比他很高。",
+    "他比我高。"
+   ],
+   "The pattern is A 比 B + adjective. 很 cannot go before the adjective in a 比 comparison, and 他比我高 reverses the meaning."
+  ],
+  [
+   "Which is the correct negation of 我昨天去了 (wǒ zuótiān qù le, I went yesterday)?",
+   "我昨天没去。",
+   [
+    "我昨天不去了。",
+    "我昨天没去了。",
+    "我昨天不去。"
+   ],
+   "A completed past action is negated with 没 (méi), and the 了 is dropped."
+  ],
+  [
+   "What does 过 (guo) express in 我去过中国 (wǒ qù guo Zhōngguó)?",
+   "past experience: I have been there",
+   [
+    "an action in progress now",
+    "a state that continues",
+    "a plan for the near future"
+   ],
+   "过 marks that something has been experienced at least once. Ongoing actions use 在 or 着, not 过."
+  ],
+  [
+   "Which sentence correctly says 'I have never been to Beijing'? (北京 Běijīng)",
+   "我没去过北京。",
+   [
+    "我不去过北京。",
+    "我没去了北京。",
+    "我去过没北京。"
+   ],
+   "Experience with 过 is negated with 没 placed before the verb: 我没去过北京 (wǒ méi qù guo Běijīng)."
+  ],
+  [
+   "In 他坐着看书 (tā zuò zhe kàn shū), what does 着 (zhe) express?",
+   "he reads while in a sitting state",
+   [
+    "he finished sitting, then read",
+    "he has sat and read before",
+    "he will sit down to read"
+   ],
+   "着 marks a continuing state; V1 + 着 + V2 describes the manner of the second action: he reads sitting down."
+  ]
+ ],
+ "ielts": [
+  [
+   "Which IELTS sections are the same for the Academic and General Training tests?",
+   "Listening and Speaking",
+   [
+    "Reading and Writing",
+    "Listening and Reading",
+    "Writing and Speaking"
+   ],
+   "All candidates take the same Listening and Speaking tests; Reading and Writing differ between Academic and General Training."
+  ],
+  [
+   "In IELTS General Training, what does Writing Task 1 ask you to do?",
+   "write a letter",
+   [
+    "describe a chart",
+    "write a lecture summary",
+    "describe a process"
+   ],
+   "General Training Task 1 is a letter for an everyday situation. Describing charts, diagrams or processes is Academic Task 1."
+  ],
+  [
+   "How many questions does the IELTS Listening test contain in total?",
+   "40",
+   [
+    "30",
+    "50",
+    "60"
+   ],
+   "Listening has four parts with 40 questions in total."
+  ],
+  [
+   "Which IELTS Listening part is a monologue on an academic subject, such as a university lecture?",
+   "Part 4",
+   [
+    "Part 1",
+    "Part 2",
+    "Part 3"
+   ],
+   "Part 4 is an academic monologue. Part 1 is an everyday conversation, Part 2 an everyday monologue and Part 3 a conversation in an educational context."
+  ],
+  [
+   "In an IELTS Listening lecture, the speaker says 'Moving on to my second point...'. What does this signal?",
+   "a new main idea is starting",
+   [
+    "the talk is about to end",
+    "an example of the last point",
+    "a repeat of the last point"
+   ],
+   "Signposting phrases like 'moving on to' mark a shift to the next main point, which helps you track where answers will come."
+  ],
+  [
+   "During IELTS Listening a speaker says, 'The meeting is on Tuesday... sorry, I mean Thursday.' What should you write?",
+   "Thursday",
+   [
+    "Tuesday",
+    "Tuesday or Thursday",
+    "Tuesday and Thursday"
+   ],
+   "Speakers often correct themselves as a distractor. The final corrected information is the answer."
+  ],
+  [
+   "Which reading strategy means quickly locating a specific name, date or number in a passage?",
+   "scanning",
+   [
+    "skimming",
+    "paraphrasing",
+    "summarizing"
+   ],
+   "Scanning searches for specific details. Skimming is a fast read for the general idea."
+  ],
+  [
+   "In IELTS Reading, when should you answer Not Given to a True/False/Not Given statement?",
+   "when the passage neither confirms nor contradicts it",
+   [
+    "when the statement is only partly true",
+    "when the passage contradicts the statement",
+    "when the statement seems unlikely"
+   ],
+   "Not Given means the text has no information either way. If the text contradicts the statement, the answer is False."
+  ],
+  [
+   "Passage: 'The museum, which opened in 1990, attracts over a million visitors a year.' Statement: 'It was the first museum in the city.' What is the answer?",
+   "Not Given",
+   [
+    "True",
+    "False",
+    "Yes"
+   ],
+   "The passage says nothing about other museums in the city, so the statement can be neither confirmed nor contradicted."
+  ],
+  [
+   "Passage: 'Unlike most birds, the kiwi cannot fly.' Statement: 'The kiwi is able to fly.' What is the answer?",
+   "False",
+   [
+    "True",
+    "Not Given",
+    "Yes"
+   ],
+   "The passage directly contradicts the statement, so the answer is False."
+  ],
+  [
+   "How do Yes/No/Not Given questions differ from True/False/Not Given questions in IELTS Reading?",
+   "they ask about the writer's views or claims",
+   [
+    "they ask only about numbers and dates",
+    "they use only diagrams and tables",
+    "they test definitions of vocabulary"
+   ],
+   "True/False/Not Given checks factual information, while Yes/No/Not Given checks whether statements agree with the writer's opinions or claims."
+  ],
+  [
+   "What is the minimum word count for IELTS Academic Writing Task 1?",
+   "150 words",
+   [
+    "250 words",
+    "100 words",
+    "200 words"
+   ],
+   "Task 1 requires at least 150 words; Task 2 requires at least 250."
+  ],
+  [
+   "Which element is essential in an IELTS Academic Writing Task 1 chart description?",
+   "an overview of the main trends",
+   [
+    "your opinion on the causes",
+    "every single data point",
+    "a recommendation for action"
+   ],
+   "Examiners look for a clear overview of the key features. Personal opinions are not required in Task 1."
+  ],
+  [
+   "A line graph shows sales rising from 20 to 80 units. Which sentence best describes it in Task 1 style?",
+   "Sales quadrupled, rising from 20 to 80 units.",
+   [
+    "Sales doubled, rising from 20 to 80 units.",
+    "Sales rose because demand clearly grew.",
+    "Sales were good and then got even better."
+   ],
+   "From 20 to 80 is a fourfold increase. Task 1 reports data accurately and does not speculate about causes."
+  ],
+  [
+   "What is the minimum word count for IELTS Writing Task 2?",
+   "250 words",
+   [
+    "150 words",
+    "300 words",
+    "200 words"
+   ],
+   "Task 2 requires at least 250 words."
+  ],
+  [
+   "Which IELTS writing task carries more weight in the Writing score?",
+   "Task 2",
+   [
+    "Task 1",
+    "both carry equal weight",
+    "whichever is longer"
+   ],
+   "Task 2 counts for twice as much as Task 1, so it deserves about 40 of the 60 minutes."
+  ],
+  [
+   "Task 2 prompt: 'University education should be free. To what extent do you agree?' Which is the best thesis sentence?",
+   "I largely agree, since free tuition widens access, though some costs should be shared.",
+   [
+    "University education is a topic many people discuss nowadays.",
+    "There are many advantages and disadvantages to this issue.",
+    "In this essay I will talk about universities and their fees."
+   ],
+   "A strong thesis answers the question directly and previews the reasoning. The others are vague and take no position."
+  ],
+  [
+   "In IELTS Speaking Part 2, how long do you get to prepare before speaking on the cue card topic?",
+   "1 minute",
+   [
+    "30 seconds",
+    "2 minutes",
+    "5 minutes"
+   ],
+   "You get one minute to prepare and make notes, then speak for up to two minutes."
+  ],
+  [
+   "Which is NOT one of the four IELTS Speaking assessment criteria?",
+   "Task Achievement",
+   [
+    "Fluency and Coherence",
+    "Lexical Resource",
+    "Pronunciation"
+   ],
+   "Speaking is assessed on Fluency and Coherence, Lexical Resource, Grammatical Range and Accuracy, and Pronunciation. Task Achievement is a Writing Task 1 criterion."
+  ],
+  [
+   "In IELTS Speaking Part 1 the examiner asks, 'Do you like reading?' Which answer is best?",
+   "Yes, especially novels; they help me relax after classes.",
+   [
+    "Yes, I do.",
+    "Yes, I like reading, I like books, I like it a lot.",
+    "Reading is a popular hobby all over the world."
+   ],
+   "A good Part 1 answer is direct and extended with a reason or example. Repetition and generic statements do not show range."
+  ]
+ ],
+ "toefl": [
+  [
+   "In the TOEFL iBT Integrated Writing task, how does the lecture usually relate to the reading passage?",
+   "it challenges or casts doubt on the reading",
+   [
+    "it repeats the reading in simpler words",
+    "it introduces an unrelated topic",
+    "it gives the student's own opinion"
+   ],
+   "In the typical task the lecturer responds point by point to the reading, usually by challenging its claims."
+  ],
+  [
+   "What is the main goal of a TOEFL Integrated Writing response?",
+   "explain how the lecture responds to the reading",
+   [
+    "give your own opinion on the topic",
+    "summarize only the reading passage",
+    "add new examples from your own life"
+   ],
+   "The task asks you to summarize the lecture's points and show how they relate to the reading. Personal opinion is not wanted."
+  ],
+  [
+   "Which is the best opening sentence for a TOEFL Integrated Writing response?",
+   "The lecturer argues that the reading's three theories are unconvincing.",
+   [
+    "I strongly believe that the reading passage is correct.",
+    "This topic is very interesting for many people today.",
+    "In my country, this problem is very common nowadays."
+   ],
+   "It states the relationship between the lecture and the reading, which is the whole task. The others give opinion or filler."
+  ],
+  [
+   "Which phrase best links a lecture point to the reading in an Integrated Writing response?",
+   "This casts doubt on the reading's claim that",
+   [
+    "In my own personal experience, I think that",
+    "To sum up all of my personal feelings,",
+    "As everyone in the world already knows,"
+   ],
+   "Integrated Writing is about connecting sources, so a link that ties the lecture to a specific reading claim is best."
+  ],
+  [
+   "Who typically speaks in a TOEFL iBT Listening conversation?",
+   "a student and a professor or campus staff member",
+   [
+    "two business partners on a phone call",
+    "a job applicant and a company manager",
+    "a news anchor reporting world events"
+   ],
+   "TOEFL conversations are set in university life, such as office hours or a visit to a campus service office."
+  ],
+  [
+   "Can you take notes during the TOEFL iBT Listening section?",
+   "Yes, note-taking is allowed",
+   [
+    "No, note-taking is not permitted",
+    "Only during lectures",
+    "Only after each recording ends"
+   ],
+   "TOEFL allows notes throughout, and good notes on main ideas and examples help with detail and organization questions."
+  ],
+  [
+   "A lecturer says, 'Now, this is the crucial point...'. Why does this matter in TOEFL Listening?",
+   "it signals information likely to be tested",
+   [
+    "it signals the lecture is ending",
+    "it marks a joke you can ignore",
+    "it introduces an off-topic story"
+   ],
+   "Emphasis phrases highlight main ideas, which questions often target."
+  ],
+  [
+   "A TOEFL Listening question asks why the professor mentions a story about her own garden. What type of question is this?",
+   "a function or purpose question",
+   [
+    "a vocabulary question",
+    "a numeric detail question",
+    "a prose summary question"
+   ],
+   "Function questions ask why a speaker says something, such as to give an example or illustrate a concept."
+  ],
+  [
+   "A professor says, 'Some argue this theory is outdated, but I'm not so sure.' What is her attitude?",
+   "doubtful that the theory is outdated",
+   [
+    "convinced that the theory is outdated",
+    "uninterested in the theory",
+    "angry at the theory's supporters"
+   ],
+   "'I'm not so sure' signals doubt about the claim that the theory is outdated. Attitude questions test this kind of cue."
+  ],
+  [
+   "What should a strong TOEFL independent speaking response include?",
+   "a clear opinion with reasons and an example",
+   [
+    "both sides with no final opinion",
+    "a long restatement of the question",
+    "a memorized story off the topic"
+   ],
+   "Raters reward a clear position developed with specific reasons and examples in the short time available."
+  ],
+  [
+   "Prompt: 'Do you prefer studying alone or in a group?' Which is the best opening sentence?",
+   "I prefer studying alone, mainly because I focus better without distractions.",
+   [
+    "Studying is very important for all students in the whole world.",
+    "Some people like groups and some people like being alone.",
+    "This is a hard question and I have not thought about it."
+   ],
+   "It states a clear preference and a reason immediately, giving the response a direction."
+  ],
+  [
+   "Only a few seconds remain in a TOEFL speaking response. What is the best use of that time?",
+   "a short sentence restating your view",
+   [
+    "starting a brand-new example",
+    "repeating the question word for word",
+    "stopping and waiting in silence"
+   ],
+   "A brief wrap-up keeps the response complete and coherent. A new example would be cut off."
+  ],
+  [
+   "In a TOEFL campus-situation integrated speaking task, what do you typically do?",
+   "report a student's opinion of a plan and the reasons",
+   [
+    "describe your own campus and its facilities",
+    "give your own opinion on the announcement",
+    "read the announcement aloud to the rater"
+   ],
+   "You read a short campus text, hear students discuss it, and then explain the speaker's opinion and reasons."
+  ],
+  [
+   "In an academic integrated speaking task, how should you use the professor's example?",
+   "explain how it illustrates the concept from the reading",
+   [
+    "replace it with an example of your own",
+    "skip it and only define the concept",
+    "criticize the professor's choice of it"
+   ],
+   "The task tests whether you can connect the general concept in the reading to the specific example in the lecture."
+  ],
+  [
+   "Which note-taking approach works best for TOEFL integrated speaking tasks?",
+   "key words split into reading and listening columns",
+   [
+    "writing every word the speaker says",
+    "taking no notes in order to stay focused",
+    "noting only the first sentence of each"
+   ],
+   "Brief, organized notes let you find each source's key points quickly during the short preparation time."
+  ],
+  [
+   "A TOEFL Reading question says, 'All of the following are mentioned in the paragraph EXCEPT'. What type is it?",
+   "negative factual information",
+   [
+    "inference",
+    "rhetorical purpose",
+    "vocabulary"
+   ],
+   "EXCEPT and NOT questions are negative factual information items: three options appear in the text and one does not."
+  ],
+  [
+   "What do you do in a TOEFL Reading prose summary question?",
+   "choose the options that express the major ideas",
+   [
+    "pick sentences with exact words from the text",
+    "write a short summary in your own words",
+    "put the paragraphs in time order"
+   ],
+   "Prose summary items ask you to select the answer choices that capture the passage's most important ideas, not minor details."
+  ],
+  [
+   "In a TOEFL Reading insert-text question, what is the best clue for placing the sentence?",
+   "linking words and pronouns that connect to nearby sentences",
+   [
+    "the length of the sentence to insert",
+    "where the paragraph appears on screen",
+    "how many squares the paragraph has"
+   ],
+   "Words like 'this', 'however' or 'these changes' must refer back to something just before them."
+  ],
+  [
+   "Passage: 'The species declined after the dam was built, which blocked its migration route.' What can be inferred?",
+   "the dam likely contributed to the decline",
+   [
+    "the species had no migration route",
+    "the dam was built to protect the species",
+    "the species grew after the dam was built"
+   ],
+   "The passage links the dam to a blocked migration route and the decline that followed, so a causal role is the reasonable inference."
+  ],
+  [
+   "In the sentence 'Fish were abundant in the lake', what does 'abundant' mean?",
+   "plentiful",
+   [
+    "rare",
+    "dangerous",
+    "colorful"
+   ],
+   "'Abundant' means present in large quantities. TOEFL vocabulary items test meaning in context."
+  ]
+ ]
+}

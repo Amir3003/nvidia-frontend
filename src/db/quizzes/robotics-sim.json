@@ -1,0 +1,1618 @@
+{
+ "ros": [
+  [
+   "In ROS 1, which command starts the Master together with the parameter server and the rosout logging node?",
+   "roscore",
+   [
+    "rosnode start master",
+    "rosrun roscore master",
+    "rostopic init"
+   ],
+   "roscore launches the Master, the parameter server and rosout in one step. The other commands do not exist in this form."
+  ],
+  [
+   "In ROS 1, what does the Master do after a publisher and a subscriber on the same topic have found each other?",
+   "Nothing for that data: messages flow directly between the two nodes",
+   [
+    "It relays every message from the publisher to the subscriber",
+    "It buffers messages until the subscriber explicitly requests them",
+    "It serializes each message and stores a copy for later replay"
+   ],
+   "The Master only provides naming and lookup. Once nodes know each other's addresses, they connect peer to peer over TCPROS or UDPROS."
+  ],
+  [
+   "Which terminal command publishes one std_msgs/String message to the /chatter topic in ROS 1?",
+   "rostopic pub -1 /chatter std_msgs/String \"data: 'hi'\"",
+   [
+    "rosservice call /chatter std_msgs/String \"data: 'hi'\"",
+    "rosmsg pub -1 /chatter std_msgs/String \"data: 'hi'\"",
+    "rosnode pub -1 /chatter std_msgs/String \"data: 'hi'\""
+   ],
+   "rostopic pub publishes to a topic, and -1 publishes once and exits. rosservice call is for services, and rosmsg only shows message definitions."
+  ],
+  [
+   "In a custom ROS .msg file, what does the line float64[] ranges declare?",
+   "A variable-length array of 64-bit floats named ranges",
+   [
+    "A fixed-length array of 64 floats named ranges",
+    "A single 64-bit float named ranges with a default value",
+    "A reference to another message type called ranges"
+   ],
+   "Empty brackets mean an unbounded array. A fixed-size array would be written with a number inside, such as float64[3]."
+  ],
+  [
+   "A rospy subscriber uses queue_size=1 and its callback is slower than the publisher. What happens?",
+   "Older messages are dropped and the callback gets the newest one",
+   [
+    "The publisher blocks until the subscriber has finished",
+    "Messages pile up in memory until the node runs out of RAM",
+    "The node shuts down with a queue overflow exception"
+   ],
+   "With a small queue, ROS discards older messages when new ones arrive. This is a common choice for sensor data where only the latest value matters."
+  ],
+  [
+   "A ROS node must ask a planner to compute one path and wait for the reply. Which communication mechanism fits best?",
+   "A service, which gives a request and a matching response",
+   [
+    "A topic with a queue size of 1 on both ends",
+    "A parameter written to the parameter server",
+    "A bag file that the planner replays on demand"
+   ],
+   "Services implement synchronous request and response. Topics are one-way streams with no built-in reply, and parameters are for configuration."
+  ],
+  [
+   "In a ROS .srv file, what separates the request fields from the response fields?",
+   "A line containing three dashes: ---",
+   [
+    "A blank line between the two groups",
+    "A line containing three equals signs: ===",
+    "A comment line that reads #response"
+   ],
+   "The --- separator splits a .srv definition into request (above) and response (below). The same separator is used in .action files."
+  ],
+  [
+   "You ran catkin_make in ~/catkin_ws. In a new terminal, rosrun cannot find your new package. What is missing?",
+   "Running source ~/catkin_ws/devel/setup.bash",
+   [
+    "Running rospack rebuild in the workspace",
+    "Adding the package to ROS_MASTER_URI",
+    "Restarting roscore with the --reload flag"
+   ],
+   "Sourcing the workspace's setup file adds it to ROS_PACKAGE_PATH and other variables. Sourcing only /opt/ros/<distro>/setup.bash does not include your workspace."
+  ],
+  [
+   "Which two files must every catkin package contain?",
+   "package.xml and CMakeLists.txt",
+   [
+    "setup.py and launch.xml",
+    "manifest.yaml and Makefile",
+    "package.json and CMakeLists.txt"
+   ],
+   "package.xml holds the metadata and dependencies, and CMakeLists.txt defines the build. setup.py is optional and only needed for Python modules."
+  ],
+  [
+   "What is the main build difference between catkin_make and catkin build (from catkin_tools)?",
+   "catkin build builds each package in isolation; catkin_make uses one CMake project",
+   [
+    "catkin_make builds each package in isolation; catkin build uses one CMake project",
+    "catkin build only works for Python packages; catkin_make only for C++",
+    "catkin_make supports parallel jobs; catkin build compiles packages one by one"
+   ],
+   "catkin_make combines all packages into a single CMake invocation, while catkin build configures and builds each package separately, often in parallel."
+  ],
+  [
+   "A node runs as /driver in the root namespace. Which parameter does rospy.get_param(\"~rate\") read?",
+   "/driver/rate",
+   [
+    "/rate",
+    "/global/rate",
+    "/driver/private/rate"
+   ],
+   "The tilde makes a name private, so it is resolved inside the node's own namespace: /driver/rate."
+  ],
+  [
+   "A node reads a parameter once at startup with get_param. You then change it with rosparam set. What happens?",
+   "The node keeps the old value until it reads the parameter again",
+   [
+    "The node receives the new value through an automatic callback",
+    "The node restarts so it can load the new value",
+    "The parameter server rejects the change while the node runs"
+   ],
+   "The parameter server is a passive store. Nodes must re-read values or use a mechanism such as dynamic_reconfigure to react to changes."
+  ],
+  [
+   "In ROS 1, what happens if you run roslaunch while no roscore is running?",
+   "roslaunch starts a roscore automatically",
+   [
+    "roslaunch exits with an error about the Master",
+    "The nodes start but wait silently for a Master",
+    "roslaunch asks for a remote Master address"
+   ],
+   "If no Master is reachable at ROS_MASTER_URI, roslaunch starts one itself, which is convenient for single-machine setups."
+  ],
+  [
+   "In a ROS launch file, which tag makes a node subscribe to /scan_front instead of /scan without changing its code?",
+   "<remap from=\"scan\" to=\"scan_front\"/>",
+   [
+    "<arg name=\"scan\" value=\"scan_front\"/>",
+    "<param name=\"scan\" value=\"scan_front\"/>",
+    "<group ns=\"scan\" to=\"scan_front\"/>"
+   ],
+   "remap renames a topic name used inside the node. arg is a launch-file variable and param sets a value on the parameter server."
+  ],
+  [
+   "A launch file declares <arg name=\"robot\" default=\"r1\"/>. How do you set it to r2 from the command line?",
+   "roslaunch my_pkg demo.launch robot:=r2",
+   [
+    "roslaunch my_pkg demo.launch --robot=r2",
+    "roslaunch my_pkg demo.launch _robot:=r2",
+    "roslaunch my_pkg demo.launch robot=r2"
+   ],
+   "Launch arguments use the name:=value syntax. The underscore form _name:=value sets a private parameter when using rosrun."
+  ],
+  [
+   "Two tf publishers both broadcast base_link as a child: one of odom, the other of map. What is the problem?",
+   "A tf frame can have only one parent, so the tree is broken",
+   [
+    "tf requires every frame to have exactly two parents",
+    "base_link is reserved and cannot be a child frame",
+    "tf only allows transforms published by one node"
+   ],
+   "tf frames must form a tree. The usual convention is map to odom to base_link, where localization publishes map to odom."
+  ],
+  [
+   "In tf2, what does passing rospy.Time(0) as the time argument of lookup_transform request?",
+   "The latest available transform in the buffer",
+   [
+    "The transform at the moment the node started",
+    "The transform at Unix time zero (1970)",
+    "A transform predicted slightly into the future"
+   ],
+   "Time(0) is a special value meaning 'latest available'. Using now() instead can fail if the transform has not arrived yet."
+  ],
+  [
+   "A camera is bolted to a robot at a fixed offset. Which tool publishes that transform from the command line, without code or a URDF?",
+   "static_transform_publisher from tf2_ros",
+   [
+    "tf_echo from tf",
+    "view_frames from tf2_tools",
+    "rqt_tf_tree from rqt"
+   ],
+   "static_transform_publisher broadcasts a fixed transform. tf_echo prints transforms, and view_frames and rqt_tf_tree visualize the tree."
+  ],
+  [
+   "You replay a recorded bag with rosbag play --clock. What should nodes use so they follow the bag's time?",
+   "Set the /use_sim_time parameter to true before starting them",
+   [
+    "Set ROS_MASTER_URI to the bag's recorded Master",
+    "Pass the --realtime flag to every node",
+    "Run rosbag reindex before playing the bag"
+   ],
+   "With use_sim_time true, nodes read time from /clock, which rosbag play --clock publishes. Otherwise timestamps and wall time disagree."
+  ],
+  [
+   "Which command prints the duration, topics, message types and message counts of a ROS 1 bag file?",
+   "rosbag info",
+   [
+    "rosbag stats",
+    "rosbag show",
+    "rosbag describe"
+   ],
+   "rosbag info gives a summary of a bag file. The other subcommands do not exist."
+  ]
+ ],
+ "isaac-sim": [
+  [
+   "NVIDIA Isaac Sim is built on top of which NVIDIA platform?",
+   "NVIDIA Omniverse (Kit)",
+   [
+    "NVIDIA DRIVE OS",
+    "NVIDIA Jetson Linux",
+    "NVIDIA Riva"
+   ],
+   "Isaac Sim is an Omniverse Kit application, so it inherits USD scenes, RTX rendering and the extension system."
+  ],
+  [
+   "What is the native scene and asset format used by Isaac Sim?",
+   "OpenUSD (Universal Scene Description)",
+   [
+    "SDF (Simulation Description Format)",
+    "URDF (Unified Robot Description Format)",
+    "MJCF (MuJoCo XML format)"
+   ],
+   "Everything in Isaac Sim lives on a USD stage. URDF, MJCF and similar formats are converted to USD by importers."
+  ],
+  [
+   "Which physics engine does Isaac Sim use for rigid bodies, articulations and contacts?",
+   "NVIDIA PhysX",
+   [
+    "ODE (Open Dynamics Engine)",
+    "Bullet Physics",
+    "MuJoCo"
+   ],
+   "Isaac Sim uses NVIDIA PhysX, which can run on the GPU for large batches of simulated robots."
+  ],
+  [
+   "In an Isaac Sim standalone Python script, why must SimulationApp be created before importing most omni or isaacsim modules?",
+   "Those modules need the Kit app and its extensions to be loaded first",
+   [
+    "SimulationApp downloads the modules from Nucleus at startup",
+    "Python imports are disabled until the GPU driver is checked",
+    "The modules are compiled to bytecode by SimulationApp"
+   ],
+   "Isaac Sim modules are provided by Kit extensions, which only exist after SimulationApp starts the Kit runtime."
+  ],
+  [
+   "In a binary (workstation) install of Isaac Sim, which helper runs a standalone script with the bundled Python environment?",
+   "./python.sh my_script.py",
+   [
+    "./omni.sh my_script.py",
+    "pip run isaacsim my_script.py",
+    "ros2 run isaac_sim my_script.py"
+   ],
+   "The python.sh wrapper in the Isaac Sim folder sets up paths and runs the bundled interpreter. The other commands are not Isaac Sim tools."
+  ],
+  [
+   "In Isaac Sim, how is functionality such as importers, sensors and ROS bridges packaged and enabled?",
+   "As Kit extensions, toggled in the Extension Manager",
+   [
+    "As Docker containers, started from the Content browser",
+    "As separate executables, launched from the terminal",
+    "As USD layers, enabled in the Stage panel"
+   ],
+   "Omniverse Kit apps are made of extensions. Isaac Sim features are enabled or disabled as extensions."
+  ],
+  [
+   "A PhysX joint drive computes force = stiffness * (target position - position) + damping * (target velocity - velocity). How do you set up pure velocity control?",
+   "Set stiffness to 0 and damping to a positive value",
+   [
+    "Set damping to 0 and stiffness to a positive value",
+    "Set both stiffness and damping to large values",
+    "Set both stiffness and damping to 0"
+   ],
+   "With stiffness 0, the position error term disappears and the damping term drives the joint toward the target velocity. Both at 0 gives no drive force at all."
+  ],
+  [
+   "Why are robot arms in Isaac Sim usually simulated as articulations rather than separate rigid bodies linked by joints?",
+   "The reduced-coordinate solver keeps chains accurate and stable",
+   [
+    "Articulations skip collision checks, so they run faster",
+    "Separate rigid bodies cannot be rendered by RTX",
+    "Articulations allow joints without any physical limits"
+   ],
+   "Articulations use a reduced-coordinate formulation, so joints do not drift apart and long chains stay stable, unlike maximal-coordinate joint constraints."
+  ],
+  [
+   "In Isaac Sim, your imported robot falls straight through the ground plane when you press Play. What is the most likely cause?",
+   "The robot links or the ground have no collision (Collision API) applied",
+   [
+    "Gravity is set to a positive value along the z axis",
+    "The RTX renderer is in path tracing mode",
+    "The stage units are set to centimeters"
+   ],
+   "Rigid bodies only interact when their prims have colliders. Without collision geometry, physics lets them pass through each other."
+  ],
+  [
+   "You add a robot USD file to your scene as a reference and change one joint's stiffness in your stage. What happens to the robot's source file?",
+   "Nothing: the change is stored as an opinion in your stage's layer",
+   [
+    "The source file is rewritten with the new stiffness",
+    "The edit is rejected because referenced prims are read-only",
+    "The reference is converted into a full copy of the robot"
+   ],
+   "USD composition is non-destructive. Local edits are stronger opinions in your layer and override the referenced asset without modifying it."
+  ],
+  [
+   "When importing a URDF robot arm that should be bolted to a table, which importer option should you enable?",
+   "Fix Base Link",
+   [
+    "Merge Fixed Joints",
+    "Self Collision",
+    "Create Physics Scene"
+   ],
+   "Fix Base Link anchors the root link to the world. Without it, the arm's base is free and the robot can tip over or fall."
+  ],
+  [
+   "What does the Merge Fixed Joints option of the Isaac Sim URDF importer do?",
+   "Combines links joined by fixed joints into a single rigid body",
+   [
+    "Converts fixed joints into revolute joints with tight limits",
+    "Deletes all links that have no visual meshes",
+    "Locks every joint so the robot cannot move"
+   ],
+   "Merging fixed joints reduces the number of bodies, which simplifies and speeds up the simulation without changing the robot's motion."
+  ],
+  [
+   "A gripper's fingers have concave meshes. Which collision approximation keeps their shape best in PhysX?",
+   "Convex decomposition",
+   [
+    "Convex hull",
+    "Bounding sphere",
+    "Bounding cube"
+   ],
+   "A convex hull fills in concave regions, so fingers cannot grasp properly. Convex decomposition splits the mesh into several convex pieces."
+  ],
+  [
+   "Besides URDF, Isaac Sim ships an importer for which MuJoCo robot description format?",
+   "MJCF",
+   [
+    "SDF",
+    "COLLADA",
+    "STEP"
+   ],
+   "Isaac Sim includes an MJCF importer that converts MuJoCo XML models to USD."
+  ],
+  [
+   "Which Omniverse framework does Isaac Sim use to generate labeled synthetic images with randomized scenes?",
+   "Omniverse Replicator",
+   [
+    "Isaac Lab",
+    "Omniverse Nucleus",
+    "Isaac ROS"
+   ],
+   "Replicator provides randomizers, writers and annotators for synthetic data. Isaac Lab is for robot learning."
+  ],
+  [
+   "Why do synthetic data pipelines randomize lighting, textures, camera poses and object placement?",
+   "To help models trained on simulation work on real images",
+   [
+    "To reduce the file size of the generated dataset",
+    "To make the RTX renderer run at a higher frame rate",
+    "To avoid needing labels for the generated images"
+   ],
+   "Domain randomization exposes the model to wide variation, so the real world looks like one more variation. This improves sim-to-real transfer."
+  ],
+  [
+   "In Replicator, the bounding_box_2d_tight output is empty even though objects are visible. What is the most likely cause?",
+   "The objects have no semantic labels assigned",
+   [
+    "The camera uses the path tracing renderer",
+    "The objects have no physics colliders",
+    "The stage is saved in .usda instead of .usdc"
+   ],
+   "Annotators such as bounding boxes and segmentation report only prims that carry semantic labels."
+  ],
+  [
+   "Which Isaac Sim annotator gives per-pixel class labels for training a segmentation network?",
+   "semantic_segmentation",
+   [
+    "distance_to_camera",
+    "motion_vectors",
+    "normals"
+   ],
+   "semantic_segmentation assigns each pixel a class ID based on semantic labels. The other annotators give depth, motion or surface direction."
+  ],
+  [
+   "Which NVIDIA framework built on Isaac Sim is the recommended successor to Isaac Gym for robot learning?",
+   "Isaac Lab",
+   [
+    "Isaac Cortex",
+    "Omniverse Replicator",
+    "Isaac Mission Dispatch"
+   ],
+   "Isaac Lab (which grew out of Orbit) replaces the deprecated Isaac Gym preview for reinforcement and imitation learning."
+  ],
+  [
+   "Why can Isaac Lab train reinforcement learning policies much faster than a typical CPU simulator loop?",
+   "It runs thousands of environments in parallel on the GPU",
+   [
+    "It skips physics and replays recorded robot motions",
+    "It lowers the control rate to one action per second",
+    "It trains on low-resolution images instead of states"
+   ],
+   "GPU physics and tensor APIs step many environments at once and keep data on the GPU, avoiding slow CPU to GPU copies."
+  ]
+ ],
+ "gazebo": [
+  [
+   "Which XML format does Gazebo use natively to describe worlds and models?",
+   "SDF (Simulation Description Format)",
+   [
+    "URDF (Unified Robot Description Format)",
+    "MJCF (MuJoCo XML format)",
+    "USD (Universal Scene Description)"
+   ],
+   "Gazebo uses SDF for worlds, models, sensors and plugins. URDF files are converted to SDF when loaded."
+  ],
+  [
+   "In an SDF world file, which element contains the models, lights and physics settings of the simulation?",
+   "<world>",
+   [
+    "<model>",
+    "<scene>",
+    "<link>"
+   ],
+   "The <world> element holds everything in the simulation. <scene> only sets visual properties like ambient light and background."
+  ],
+  [
+   "What does <static>true</static> do inside an SDF model?",
+   "The model does not move under physics but other objects can collide with it",
+   [
+    "The model is removed from collision checks but still falls under gravity",
+    "The model is rendered without lighting or shadows",
+    "The model's pose is reset at every simulation step"
+   ],
+   "Static models are fixed in place, which suits buildings and terrain. They still provide collision surfaces."
+  ],
+  [
+   "In Gazebo Classic, a world includes <uri>model://my_robot</uri> and fails to load it. Which variable should list the folder that holds my_robot?",
+   "GAZEBO_MODEL_PATH",
+   [
+    "GAZEBO_PLUGIN_PATH",
+    "ROS_PACKAGE_PATH",
+    "GAZEBO_MASTER_URI"
+   ],
+   "model:// URIs are resolved against GAZEBO_MODEL_PATH. GAZEBO_PLUGIN_PATH is for plugin libraries."
+  ],
+  [
+   "In Gazebo, which roles do gzserver and gzclient play?",
+   "gzserver runs physics and sensors; gzclient is the graphical interface",
+   [
+    "gzserver is the graphical interface; gzclient runs physics and sensors",
+    "gzserver stores models online; gzclient downloads them",
+    "gzserver runs ROS nodes; gzclient runs Gazebo plugins"
+   ],
+   "The server does the simulation and can run headless. The client only visualizes and lets you interact."
+  ],
+  [
+   "Which physics engine does Gazebo Classic use by default?",
+   "ODE",
+   [
+    "Bullet",
+    "DART",
+    "Simbody"
+   ],
+   "Gazebo Classic defaults to ODE and also supports Bullet, Simbody and DART. Modern Gazebo (gz sim) defaults to DART."
+  ],
+  [
+   "In a Gazebo Classic world file, how do you switch the physics engine to Bullet?",
+   "<physics type=\"bullet\">",
+   [
+    "<engine name=\"bullet\">",
+    "<world physics=\"bullet\">",
+    "<plugin name=\"bullet\">"
+   ],
+   "The type attribute of the <physics> element selects the engine. The engine must also be compiled into your Gazebo build."
+  ],
+  [
+   "A Gazebo Classic world sets max_step_size to 0.001 and real_time_update_rate to 1000. What real time factor is targeted?",
+   "1.0",
+   [
+    "0.001",
+    "10.0",
+    "1000"
+   ],
+   "The target real time factor is max_step_size times real_time_update_rate: 0.001 s per step times 1000 steps per second gives 1.0."
+  ],
+  [
+   "A Gazebo robot model jitters, explodes or flies away as soon as the simulation starts. What is a common cause?",
+   "Unrealistic mass or inertia values on its links",
+   [
+    "Too many lights in the world file",
+    "A camera sensor with a low update rate",
+    "A model.config file without an author tag"
+   ],
+   "Tiny or inconsistent inertia tensors make the solver unstable. Correct inertials, or a smaller step size, usually fix it."
+  ],
+  [
+   "Which SDF sensor type simulates a laser scanner on the GPU in Gazebo Classic?",
+   "gpu_ray",
+   [
+    "depth",
+    "contact",
+    "imu"
+   ],
+   "In Gazebo Classic, ray is the CPU laser and gpu_ray is the GPU version. Modern Gazebo calls it gpu_lidar."
+  ],
+  [
+   "In an SDF camera sensor, what unit does <horizontal_fov> use?",
+   "Radians",
+   [
+    "Degrees",
+    "Pixels",
+    "Millimeters"
+   ],
+   "SDF angles are in radians. A value of 1.047 is about 60 degrees."
+  ],
+  [
+   "A Gazebo lidar uses 360 horizontal samples with min_angle -3.14159 and max_angle 3.14159. What is the approximate angular resolution?",
+   "About 1 degree per sample",
+   [
+    "About 0.1 degree per sample",
+    "About 3.6 degrees per sample",
+    "About 10 degrees per sample"
+   ],
+   "The scan covers about 2 pi radians (360 degrees) with 360 samples, so each beam is about 1 degree apart."
+  ],
+  [
+   "How do you make a simulated Gazebo camera or lidar produce more realistic data?",
+   "Add a <noise> element, for example type gaussian with a stddev",
+   [
+    "Lower the <update_rate> to 1 Hz",
+    "Mark the sensor model as <static>",
+    "Switch the physics engine to Bullet"
+   ],
+   "Real sensors are noisy. A gaussian <noise> block with mean and stddev makes training and testing more honest."
+  ],
+  [
+   "In Gazebo Classic, which plugin type should you write to control the joints of one specific robot?",
+   "A model plugin",
+   [
+    "A world plugin",
+    "A GUI plugin",
+    "A system plugin"
+   ],
+   "Model plugins attach to a single model and get access to its links and joints. World plugins act on the whole world."
+  ],
+  [
+   "In a Gazebo Classic C++ model plugin, which macro makes the class loadable by the simulator?",
+   "GZ_REGISTER_MODEL_PLUGIN(MyPlugin)",
+   [
+    "GZ_LOAD_PLUGIN(MyPlugin)",
+    "PLUGINLIB_EXPORT_CLASS(MyPlugin)",
+    "GAZEBO_PLUGIN_INIT(MyPlugin)"
+   ],
+   "GZ_REGISTER_MODEL_PLUGIN registers the class with Gazebo. PLUGINLIB_EXPORT_CLASS is a ROS pluginlib macro, not a Gazebo one."
+  ],
+  [
+   "A Gazebo Classic plugin's SDF block contains <gain>2.5</gain>. How does the plugin read it?",
+   "From the sdf::ElementPtr passed to Load, e.g. sdf->Get<double>(\"gain\")",
+   [
+    "From a ROS parameter called /gazebo/gain",
+    "From an environment variable named GAIN",
+    "From the model.config file of the model"
+   ],
+   "Load receives the plugin's SDF element, so custom child tags act as plugin parameters."
+  ],
+  [
+   "A Gazebo Classic model plugin must apply a force at every simulation step. What is the usual approach?",
+   "Connect a callback with event::Events::ConnectWorldUpdateBegin",
+   [
+    "Start a thread that sleeps for 1 ms in a loop",
+    "Call the force code once inside the plugin constructor",
+    "Use a ROS timer at the same rate as the GUI"
+   ],
+   "The world update event fires on every physics step, so the callback stays synchronized with simulation time."
+  ],
+  [
+   "Using ROS 2 with modern Gazebo (gz sim), which package relays messages between Gazebo topics and ROS 2 topics?",
+   "ros_gz_bridge",
+   [
+    "gazebo_ros_pkgs",
+    "rosbridge_server",
+    "image_transport"
+   ],
+   "ros_gz_bridge converts between gz-transport and ROS 2 messages. gazebo_ros_pkgs is for Gazebo Classic."
+  ],
+  [
+   "Which plugin lets ros2_control controllers command the joints of a robot simulated in Gazebo Classic?",
+   "gazebo_ros2_control",
+   [
+    "gazebo_ros_camera",
+    "gazebo_ros_ray_sensor",
+    "gazebo_ros_state"
+   ],
+   "gazebo_ros2_control exposes the simulated joints as ros2_control hardware interfaces. The others are sensor or state plugins."
+  ],
+  [
+   "What is the default port of the Gazebo Classic master in GAZEBO_MASTER_URI?",
+   "11345",
+   [
+    "11311",
+    "8080",
+    "9090"
+   ],
+   "Gazebo Classic uses port 11345. Port 11311 belongs to the ROS 1 Master, a common source of confusion."
+  ]
+ ],
+ "mujoco": [
+  [
+   "What is the root element of a MuJoCo MJCF model file?",
+   "<mujoco>",
+   [
+    "<robot>",
+    "<sdf>",
+    "<world>"
+   ],
+   "MJCF files start with <mujoco>. <robot> is the URDF root and <sdf> is the SDF root."
+  ],
+  [
+   "What is the default simulation timestep in MuJoCo when <option> does not set one?",
+   "0.002 seconds",
+   [
+    "0.001 seconds",
+    "0.01 seconds",
+    "1/240 seconds"
+   ],
+   "MuJoCo defaults to 2 ms. The value 1/240 s is PyBullet's default."
+  ],
+  [
+   "In MJCF, a child <body> contains geoms but no <joint>. How does it move relative to its parent?",
+   "It is welded to its parent and moves with it rigidly",
+   [
+    "It gets a free joint and falls under gravity",
+    "It gets a hinge joint around its z axis",
+    "It is ignored by the physics simulation"
+   ],
+   "Joints create degrees of freedom between a body and its parent. With no joint, the body has zero degrees of freedom relative to the parent."
+  ],
+  [
+   "A MuJoCo model contains only one body attached to the world with a free joint. What are model.nq and model.nv?",
+   "nq = 7 and nv = 6",
+   [
+    "nq = 6 and nv = 6",
+    "nq = 7 and nv = 7",
+    "nq = 6 and nv = 7"
+   ],
+   "A free joint stores position (3) plus a unit quaternion (4) in qpos, but has only 6 velocity degrees of freedom."
+  ],
+  [
+   "In what component order does MuJoCo store quaternions, for example in qpos or a body's quat attribute?",
+   "w, x, y, z",
+   [
+    "x, y, z, w",
+    "x, w, y, z",
+    "z, y, x, w"
+   ],
+   "MuJoCo puts the scalar part first. PyBullet and ROS use x, y, z, w, so conversions are a common bug source."
+  ],
+  [
+   "Using the official mujoco Python bindings, which call advances the simulation by one timestep?",
+   "mujoco.mj_step(model, data)",
+   [
+    "mujoco.mj_forward(model, data)",
+    "mujoco.mj_resetData(model, data)",
+    "data.step(model)"
+   ],
+   "mj_step integrates the dynamics by one timestep. mj_forward computes derived quantities without advancing time."
+  ],
+  [
+   "You write new values into data.qpos and need data.xpos (body positions) updated without advancing time. Which function do you call?",
+   "mujoco.mj_forward",
+   [
+    "mujoco.mj_step",
+    "mujoco.mj_inverse",
+    "mujoco.mj_resetData"
+   ],
+   "mj_forward recomputes kinematics and forces for the current state without integrating. mj_step would also move time forward."
+  ],
+  [
+   "Which MuJoCo function computes the generalized forces needed to produce a given acceleration data.qacc?",
+   "mujoco.mj_inverse",
+   [
+    "mujoco.mj_forward",
+    "mujoco.mj_step",
+    "mujoco.mj_fullM"
+   ],
+   "mj_inverse runs inverse dynamics and writes the result to data.qfrc_inverse. mj_fullM converts the sparse mass matrix to dense form."
+  ],
+  [
+   "In MuJoCo, what does data.qfrc_bias contain?",
+   "Coriolis, centrifugal and gravity forces in joint space",
+   [
+    "Forces from actuators after applying the gear ratio",
+    "Contact forces in the world frame for each geom",
+    "User-applied external forces on each body"
+   ],
+   "MuJoCo writes the dynamics as M qacc + bias = applied forces; qfrc_bias is the velocity- and gravity-dependent term c(q, qvel)."
+  ],
+  [
+   "In MuJoCo Python, where do you write the commands that drive the model's actuators?",
+   "data.ctrl",
+   [
+    "data.qfrc_applied",
+    "model.actuator_gear",
+    "data.act"
+   ],
+   "data.ctrl holds one control value per actuator. qfrc_applied adds raw generalized forces and bypasses actuators."
+  ],
+  [
+   "You want an MJCF actuator that drives a joint toward a commanded angle. Which actuator element fits best?",
+   "<position joint=\"elbow\" kp=\"100\"/>",
+   [
+    "<motor joint=\"elbow\" gear=\"100\"/>",
+    "<velocity joint=\"elbow\" kv=\"100\"/>",
+    "<general joint=\"elbow\" gear=\"100\"/>"
+   ],
+   "A position actuator applies a force proportional to the angle error, like a servo. A motor applies force proportional to ctrl directly."
+  ],
+  [
+   "Two MuJoCo geoms both have contype=\"1\" and conaffinity=\"0\". Can they collide with each other?",
+   "No, because neither contype matches the other's conaffinity",
+   [
+    "Yes, because their contype values are equal",
+    "Yes, but only if they belong to the same body",
+    "No, because contype must be larger than 1"
+   ],
+   "A contact is generated only if (contype1 & conaffinity2) or (contype2 & conaffinity1) is nonzero. Here both tests give 0."
+  ],
+  [
+   "Which MuJoCo condim value produces frictionless contacts?",
+   "1",
+   [
+    "3",
+    "4",
+    "6"
+   ],
+   "condim 1 models only the normal force. The default 3 adds sliding friction, 4 adds torsional and 6 adds rolling friction."
+  ],
+  [
+   "Which MJCF geom attributes mainly control how stiff and damped MuJoCo's soft contacts are?",
+   "solref and solimp",
+   [
+    "contype and conaffinity",
+    "rgba and group",
+    "margin and gap only"
+   ],
+   "MuJoCo contacts are soft constraints. solref sets time constant and damping ratio, and solimp sets impedance versus penetration."
+  ],
+  [
+   "Why do the geoms of two adjacent bodies in a MuJoCo chain (parent and child) not collide with each other by default?",
+   "MuJoCo filters out contacts between a body and its parent",
+   [
+    "MuJoCo only checks contacts between geoms of type plane",
+    "Adjacent bodies share one geom, so no pair exists",
+    "Contacts are only enabled after mj_inverse is called"
+   ],
+   "Contacts between geoms in the same body or in a parent and child body are excluded by default, since joints usually make them overlap."
+  ],
+  [
+   "What is a key benefit of MuJoCo simulating in generalized (joint) coordinates?",
+   "Joint constraints hold by construction, so links never drift apart",
+   [
+    "Contacts are computed without any numerical tolerance",
+    "Every body has exactly six degrees of freedom",
+    "The mass matrix is constant for the whole run"
+   ],
+   "Each joint adds only its own degrees of freedom, so joints do not need to be enforced as extra constraints that can be violated."
+  ],
+  [
+   "A model with strong joint damping becomes unstable with the default Euler integrator. Which <option> integrator setting is designed to help?",
+   "implicitfast",
+   [
+    "RK4 with a larger timestep",
+    "Euler with damping disabled",
+    "explicit"
+   ],
+   "Implicit integrators (implicit, implicitfast) treat velocity-dependent forces such as damping implicitly, which improves stability."
+  ],
+  [
+   "Which of these is a standard Gymnasium environment that runs on MuJoCo?",
+   "HalfCheetah",
+   [
+    "CartPole",
+    "LunarLander",
+    "Breakout"
+   ],
+   "HalfCheetah, Hopper, Ant and Humanoid are Gymnasium MuJoCo tasks. CartPole is classic control, LunarLander uses Box2D, Breakout is Atari."
+  ],
+  [
+   "A Gymnasium MuJoCo environment has a model timestep of 0.01 s and frame_skip of 5. How much simulated time passes per env.step()?",
+   "0.05 s",
+   [
+    "0.01 s",
+    "0.002 s",
+    "0.5 s"
+   ],
+   "Each env.step applies the action and calls the MuJoCo step frame_skip times, so 5 x 0.01 s = 0.05 s."
+  ],
+  [
+   "What is MJX in the MuJoCo project?",
+   "A JAX version of MuJoCo for batched simulation on GPU or TPU",
+   [
+    "A file format that compresses MJCF models for sharing",
+    "A web viewer that renders MuJoCo models in a browser",
+    "A ROS package that bridges MuJoCo topics to ROS 2"
+   ],
+   "MJX reimplements MuJoCo in JAX, so many environments can run in parallel on accelerators, which is useful for RL."
+  ]
+ ],
+ "pybullet": [
+  [
+   "What is PyBullet?",
+   "A Python module that wraps the Bullet Physics SDK",
+   [
+    "A Python port of the MuJoCo physics engine",
+    "A ROS package that renders Gazebo worlds in Python",
+    "A Python front end for NVIDIA PhysX on the GPU"
+   ],
+   "PyBullet exposes Bullet Physics to Python for simulation, robotics and RL, with optional OpenGL visualization."
+  ],
+  [
+   "You need to run PyBullet on a server without a display. Which connection mode should you use?",
+   "p.connect(p.DIRECT)",
+   [
+    "p.connect(p.GUI)",
+    "p.connect(p.SHARED_MEMORY)",
+    "p.connect(p.GUI_SERVER)"
+   ],
+   "DIRECT runs physics in the same process with no window. GUI opens an OpenGL window, which needs a display."
+  ],
+  [
+   "p.loadURDF(\"plane.urdf\") fails with 'Cannot load URDF file'. What is the usual fix?",
+   "Call p.setAdditionalSearchPath(pybullet_data.getDataPath()) first",
+   [
+    "Call p.setGravity(0, 0, -9.81) before loading",
+    "Pass useFixedBase=True to loadURDF",
+    "Connect with p.GUI instead of p.DIRECT"
+   ],
+   "plane.urdf ships in the pybullet_data package. Adding its folder to the search path lets loadURDF find it."
+  ],
+  [
+   "In PyBullet, you load a cube, call p.stepSimulation() in a loop, and the cube just floats. Why?",
+   "Gravity is zero by default until you call p.setGravity",
+   [
+    "The cube's mass defaults to zero in every URDF",
+    "stepSimulation only updates the GUI, not the physics",
+    "Objects sleep until a contact wakes them up"
+   ],
+   "PyBullet starts with zero gravity. Calling p.setGravity(0, 0, -9.81) makes objects fall."
+  ],
+  [
+   "With default settings, how much simulated time passes after 240 calls to p.stepSimulation()?",
+   "1 second",
+   [
+    "0.24 seconds",
+    "2.4 seconds",
+    "4 seconds"
+   ],
+   "The default time step is 1/240 s, so 240 steps make 1 second. You can change it with p.setTimeStep."
+  ],
+  [
+   "Which p.loadURDF argument keeps a robot arm's base anchored to the world?",
+   "useFixedBase=True",
+   [
+    "globalScaling=0",
+    "useMaximalCoordinates=True",
+    "flags=p.URDF_USE_INERTIA_FROM_FILE"
+   ],
+   "useFixedBase=True gives the base zero mass in the simulation so it stays in place."
+  ],
+  [
+   "In PyBullet, which link index refers to a multibody's base?",
+   "-1",
+   [
+    "0",
+    "1",
+    "None"
+   ],
+   "The base has index -1. Link indices 0 to getNumJoints() - 1 match the joints that connect each child link."
+  ],
+  [
+   "How do you find the index of the joint named \"elbow\" in a PyBullet robot?",
+   "Loop over range(p.getNumJoints(robot)) and check p.getJointInfo(robot, i)[1]",
+   [
+    "Call p.getJointIndex(robot, \"elbow\") directly",
+    "Read the index from p.getBasePositionAndOrientation(robot)",
+    "Use the order of joints printed by p.getDynamicsInfo(robot, -1)"
+   ],
+   "getJointInfo returns a tuple whose second item is the joint name (as bytes). There is no built-in lookup by name."
+  ],
+  [
+   "What does p.calculateInverseKinematics(robot, eeLink, targetPos) return?",
+   "Joint positions, one for each movable (non-fixed) joint",
+   [
+    "The end effector's position and orientation",
+    "The joint torques needed to hold the target pose",
+    "A boolean saying whether the target is reachable"
+   ],
+   "It returns a list with one value per degree of freedom. Fixed joints are skipped, so the list can be shorter than getNumJoints."
+  ],
+  [
+   "You call p.calculateInverseKinematics and get valid joint values, but the robot does not move. What is missing?",
+   "Sending the values to the joints, e.g. with setJointMotorControlArray, and stepping",
+   [
+    "Calling p.calculateInverseKinematics a second time",
+    "Setting the robot's base mass to zero",
+    "Enabling self collision on the URDF"
+   ],
+   "IK only computes a solution. You still have to command the motors and step the simulation."
+  ],
+  [
+   "Which call gives the current world position of a link frame after you change joint angles with resetJointState?",
+   "p.getLinkState(robot, link, computeForwardKinematics=True)",
+   [
+    "p.getJointState(robot, link)",
+    "p.getBasePositionAndOrientation(robot)",
+    "p.getDynamicsInfo(robot, link)"
+   ],
+   "getLinkState returns the link's Cartesian pose. computeForwardKinematics=True makes it recompute the pose from the current joint values."
+  ],
+  [
+   "In p.setJointMotorControl2 with p.POSITION_CONTROL, what does the force argument set?",
+   "The maximum motor force or torque used to reach the target",
+   [
+    "A constant torque added on top of the position command",
+    "The stiffness gain of the position controller",
+    "The force at which the joint breaks off the robot"
+   ],
+   "The motor tries to reach targetPosition but never applies more than force. Gains are set with positionGain and velocityGain."
+  ],
+  [
+   "You want pure torque control of a revolute joint in PyBullet, but TORQUE_CONTROL seems to have no effect. What must you do first?",
+   "Disable the default motor with VELOCITY_CONTROL and force=0",
+   [
+    "Set the joint's lateral friction to zero",
+    "Call p.resetJointState with targetValue=0",
+    "Load the URDF with useFixedBase=False"
+   ],
+   "PyBullet joints have a default velocity motor that resists motion. Setting its force to 0 frees the joint for torque commands."
+  ],
+  [
+   "What does p.resetJointState do?",
+   "Instantly sets a joint's angle, ignoring dynamics",
+   [
+    "Smoothly moves a joint to an angle using its motor",
+    "Resets the joint's motor gains to default values",
+    "Clears all forces applied to the joint this step"
+   ],
+   "resetJointState teleports the joint. It is meant for setting up initial poses, not for control during simulation."
+  ],
+  [
+   "You move two objects so they overlap with resetBasePositionAndOrientation, then call p.getContactPoints, which returns nothing. Why?",
+   "Contact points are computed during stepSimulation",
+   [
+    "getContactPoints only works in GUI mode",
+    "Objects must be loaded with useFixedBase=True",
+    "getContactPoints reports only self collisions"
+   ],
+   "getContactPoints reads results from the last simulation step. Step once, or use getClosestPoints, which runs a query immediately."
+  ],
+  [
+   "How can you check whether a gripper is within 5 cm of an object without needing an actual contact?",
+   "p.getClosestPoints(gripper, obj, distance=0.05)",
+   [
+    "p.getContactPoints(gripper, obj, distance=0.05)",
+    "p.rayTest(gripper, obj, 0.05)",
+    "p.getOverlappingObjects(gripper, 0.05)"
+   ],
+   "getClosestPoints returns point pairs closer than the given distance, computed right away, even when the bodies do not touch."
+  ],
+  [
+   "By default, do links of the same PyBullet robot collide with each other?",
+   "No, unless you load it with flags=p.URDF_USE_SELF_COLLISION",
+   [
+    "Yes, unless you load it with flags=p.URDF_IGNORE_SELF",
+    "Yes, but only links that share a fixed joint",
+    "No, and self collision cannot be enabled"
+   ],
+   "Self collision is off by default for URDF bodies and must be enabled with the URDF_USE_SELF_COLLISION flag."
+  ],
+  [
+   "Which PyBullet function disables collisions between one specific link of robot A and one link of robot B?",
+   "p.setCollisionFilterPair",
+   [
+    "p.setCollisionFilterGroupMask",
+    "p.changeVisualShape",
+    "p.removeConstraint"
+   ],
+   "setCollisionFilterPair enables or disables collision between two specific links. The group mask version filters whole groups."
+  ],
+  [
+   "Which PyBullet functions are commonly used to simulate a laser range finder?",
+   "p.rayTest and p.rayTestBatch",
+   [
+    "p.getClosestPoints and p.getAABB",
+    "p.getCameraImage and p.computeViewMatrix",
+    "p.getContactPoints and p.getLinkState"
+   ],
+   "Ray tests cast lines into the scene and return the first hit, which is what a lidar beam measures. rayTestBatch handles many rays at once."
+  ],
+  [
+   "In what order does p.getQuaternionFromEuler return quaternion components?",
+   "x, y, z, w",
+   [
+    "w, x, y, z",
+    "w, z, y, x",
+    "x, w, y, z"
+   ],
+   "PyBullet uses x, y, z, w with the scalar last, unlike MuJoCo, which puts w first."
+  ]
+ ],
+ "omniverse": [
+  [
+   "Which company originally developed USD (Universal Scene Description), the format at the core of Omniverse?",
+   "Pixar",
+   [
+    "NVIDIA",
+    "Autodesk",
+    "Epic Games"
+   ],
+   "Pixar created USD and open-sourced it in 2016. NVIDIA built Omniverse around it."
+  ],
+  [
+   "Which USD file extension is a human-readable text format?",
+   ".usda",
+   [
+    ".usdc",
+    ".usdz",
+    ".usdb"
+   ],
+   ".usda is ASCII text, .usdc is the binary crate format and .usdz is a zip package. .usdb is not a USD format."
+  ],
+  [
+   "A prim gets size = 2 from a referenced file, and your root layer sets size = 5 directly on it. Which value is used?",
+   "5, because local opinions are the strongest",
+   [
+    "2, because references override local edits",
+    "The average of both values",
+    "An error, since two opinions conflict"
+   ],
+   "In USD's LIVRPS strength order, Local opinions come first and win over References."
+  ],
+  [
+   "What is the main reason to bring a heavy asset into a USD stage as a payload instead of a reference?",
+   "Payloads can be unloaded so the stage opens faster",
+   [
+    "Payloads copy the asset into the stage file",
+    "Payloads let the asset be edited by several users",
+    "Payloads convert the asset to the binary format"
+   ],
+   "Payloads are references that can be loaded or unloaded on demand, which keeps large scenes manageable."
+  ],
+  [
+   "In USD Python, what does UsdGeom.Cube.Define(stage, \"/World/Box\") do?",
+   "Creates a Cube prim at /World/Box, or returns it if it already exists",
+   [
+    "Loads a cube mesh from the file named /World/Box",
+    "Renders a cube at /World/Box for one frame only",
+    "Checks whether /World/Box has a Cube type and returns a bool"
+   ],
+   "Define authors a prim of that schema type at the given path, also creating missing parent prims."
+  ],
+  [
+   "A USD chair asset must offer red, blue and green versions that users can switch between. Which USD feature fits?",
+   "A variant set",
+   [
+    "A sublayer per color",
+    "A relationship per color",
+    "A separate stage per color"
+   ],
+   "Variant sets store several alternatives inside one asset and let the user pick one, such as color or level of detail."
+  ],
+  [
+   "In USD, how is a material bound to a mesh prim?",
+   "Through a relationship that targets the material prim",
+   [
+    "Through an attribute holding the material's color",
+    "Through a sublayer containing the material",
+    "Through a variant set named material"
+   ],
+   "Material binding uses the material:binding relationship. Relationships point to other prims, while attributes hold values."
+  ],
+  [
+   "Omniverse's RTX renderer offers a Real-Time mode and a path tracing mode. When is the Real-Time mode the better choice?",
+   "Interactive navigation of large scenes at high frame rates",
+   [
+    "Final frames that need the most accurate global illumination",
+    "Reference renders that are compared with offline results",
+    "Still images where render time does not matter"
+   ],
+   "Real-Time uses ray-traced effects with approximations for speed. Path tracing is slower but more physically accurate."
+  ],
+  [
+   "Which material language is used by the Omniverse RTX renderer for physically based materials?",
+   "MDL (NVIDIA Material Definition Language)",
+   [
+    "GLSL (OpenGL Shading Language)",
+    "OSL (Open Shading Language)",
+    "HLSL (High-Level Shading Language)"
+   ],
+   "Omniverse materials are written in MDL, which describes physically based materials independently of the renderer."
+  ],
+  [
+   "In Omniverse RTX, what does enabling DLSS do?",
+   "Renders at a lower resolution and upscales with AI for higher frame rates",
+   [
+    "Adds extra light bounces for more accurate reflections",
+    "Compresses textures so the scene uses less disk space",
+    "Synchronizes the viewport with other Nucleus users"
+   ],
+   "DLSS uses a neural network on RTX GPUs to reconstruct a high-resolution image from a lower-resolution render."
+  ],
+  [
+   "Which URL scheme points to a file stored on an Omniverse Nucleus server?",
+   "omniverse://server/path/scene.usd",
+   [
+    "nucleus://server/path/scene.usd",
+    "usd://server/path/scene.usd",
+    "kit://server/path/scene.usd"
+   ],
+   "Nucleus paths use the omniverse:// scheme. The other schemes are not used by Omniverse."
+  ],
+  [
+   "What is the role of a Nucleus server in Omniverse?",
+   "It stores USD content and lets several apps and users share it",
+   [
+    "It renders frames on the GPU for every connected client",
+    "It compiles Kit extensions into native binaries",
+    "It runs PhysX simulations for all connected apps"
+   ],
+   "Nucleus is the database and collaboration engine: it stores assets, handles access and syncs changes between clients."
+  ],
+  [
+   "A team needs to go back to the version of a USD file saved last week on Nucleus. Which Nucleus feature helps?",
+   "Checkpoints",
+   [
+    "Variant sets",
+    "Payloads",
+    "Session layers"
+   ],
+   "Nucleus checkpoints keep saved versions of a file that can be restored. Variant sets and payloads are USD features, not version history."
+  ],
+  [
+   "Two artists in different Omniverse-connected apps want to see each other's edits to one scene almost immediately. What enables this?",
+   "A live session on Nucleus that syncs USD changes",
+   [
+    "Exporting the scene as .usdz after every edit",
+    "Rendering the scene with the path tracer",
+    "Converting the stage to a single flattened layer"
+   ],
+   "Live sessions send small USD deltas through Nucleus so all connected clients stay in sync."
+  ],
+  [
+   "In an Omniverse Kit extension, which file declares its name, version and dependencies?",
+   "extension.toml",
+   [
+    "package.json",
+    "setup.cfg",
+    "manifest.xml"
+   ],
+   "Each Kit extension has a config/extension.toml with metadata, dependencies and Python module settings."
+  ],
+  [
+   "A Python Kit extension class subclasses omni.ext.IExt. Which methods does Kit call when the extension is enabled and disabled?",
+   "on_startup(ext_id) and on_shutdown()",
+   [
+    "__init__() and __del__()",
+    "start() and stop()",
+    "load(ext_id) and unload()"
+   ],
+   "Kit calls on_startup when the extension is enabled and on_shutdown when it is disabled, so UI and subscriptions can be cleaned up."
+  ],
+  [
+   "Your Kit extension uses omni.ui. How do you make sure omni.ui is loaded before your extension starts?",
+   "List omni.ui under [dependencies] in extension.toml",
+   [
+    "Import omni.ui at the top of every Python file",
+    "Rename the extension so it sorts after omni.ui",
+    "Add omni.ui to the Python requirements.txt"
+   ],
+   "Kit resolves the [dependencies] section and starts required extensions first. An import alone does not enable an extension."
+  ],
+  [
+   "In Omniverse, what is a Connector?",
+   "A plugin that exchanges data between a third-party tool and USD or Nucleus",
+   [
+    "A cable standard for linking RTX GPUs in one workstation",
+    "A USD relationship that links two prims in a scene",
+    "A PhysX joint that attaches two rigid bodies"
+   ],
+   "Connectors let tools such as CAD or DCC apps publish to and read from Omniverse, which is key for digital twins."
+  ],
+  [
+   "In a factory digital twin built on Omniverse, how should live sensor readings reach the 3D scene?",
+   "A service or extension subscribes to the data and writes it to USD attributes",
+   [
+    "An artist re-exports the factory model every time a value changes",
+    "The RTX renderer reads the sensors directly from the network",
+    "Nucleus polls each sensor and creates a new checkpoint per value"
+   ],
+   "A digital twin needs a data pipeline that maps real-time signals to scene properties, so the twin reflects the real system."
+  ],
+  [
+   "Why is USD layering useful when several teams build one digital twin?",
+   "Each team edits its own layer without overwriting the others",
+   [
+    "Layers merge all edits into a single file automatically",
+    "Layers lock the stage so only one team edits at a time",
+    "Layers convert every asset to the same polygon count"
+   ],
+   "Layers stack non-destructively. Layout, lighting and simulation teams can work in parallel and compose results on one stage."
+  ]
+ ],
+ "slam": [
+  [
+   "In EKF-SLAM, what does the state vector contain?",
+   "The robot pose and the positions of all mapped landmarks",
+   [
+    "Only the robot pose, with landmarks in a separate file",
+    "Only landmark positions relative to the first robot pose",
+    "Raw sensor readings from the last few time steps"
+   ],
+   "EKF-SLAM estimates robot pose and landmarks jointly, with a full covariance matrix that captures their correlations."
+  ],
+  [
+   "How does the cost of one EKF-SLAM update grow with the number of landmarks n?",
+   "Roughly O(n^2), because the full covariance is updated",
+   [
+    "Roughly O(1), because only the robot pose changes",
+    "Roughly O(log n), using a landmark index",
+    "Roughly O(n^3) only at loop closures"
+   ],
+   "The covariance matrix is n by n, and each update touches all of it. This limits EKF-SLAM to small maps."
+  ],
+  [
+   "In graph-based SLAM, what do nodes and edges usually represent?",
+   "Nodes are poses (or landmarks); edges are measurement constraints",
+   [
+    "Nodes are sensor readings; edges are timestamps",
+    "Nodes are grid cells; edges are free-space rays",
+    "Nodes are features; edges are image pixels"
+   ],
+   "Graph SLAM builds a pose graph and finds the poses that best satisfy all constraints."
+  ],
+  [
+   "How is the optimal pose graph usually found in graph-based SLAM?",
+   "Nonlinear least squares, e.g. Gauss-Newton or Levenberg-Marquardt",
+   [
+    "A single Kalman filter prediction step",
+    "Breadth-first search over the graph",
+    "K-means clustering of the robot poses"
+   ],
+   "The graph defines a sum of squared errors that solvers such as g2o, GTSAM or Ceres minimize iteratively."
+  ],
+  [
+   "Which of these libraries is commonly used to optimize pose graphs in SLAM?",
+   "GTSAM",
+   [
+    "OctoMap",
+    "MoveIt",
+    "tf2"
+   ],
+   "GTSAM (like g2o and Ceres) solves factor graph optimization. OctoMap is a 3D mapping structure, MoveIt is for motion planning."
+  ],
+  [
+   "What is loop closure in SLAM?",
+   "Recognizing a previously visited place and adding a constraint to it",
+   [
+    "Stopping the robot when the map has no unknown cells",
+    "Returning the robot to its start pose after mapping",
+    "Closing gaps between scan points with interpolation"
+   ],
+   "A loop closure links the current pose to an earlier one, which corrects drift accumulated by odometry."
+  ],
+  [
+   "A SLAM system accepts a false loop closure between two similar-looking corridors. What is the likely effect?",
+   "The optimized map gets badly distorted",
+   [
+    "Only the newest pose shifts by a few centimeters",
+    "The system ignores it because the edge is new",
+    "Drift is reduced, just like with a real closure"
+   ],
+   "A wrong constraint pulls unrelated parts of the map together. Geometric checks and robust kernels help reject such outliers."
+  ],
+  [
+   "How does ORB-SLAM find loop closure candidates?",
+   "With a bag-of-words place recognition database (DBoW2)",
+   [
+    "By running ICP against every previous keyframe",
+    "By comparing GPS positions of the keyframes",
+    "By checking the occupancy grid for overlaps"
+   ],
+   "ORB descriptors are quantized into visual words, so similar keyframes can be retrieved quickly before geometric verification."
+  ],
+  [
+   "In an occupancy grid map, what probability is usually assigned to a cell that has never been observed?",
+   "0.5",
+   [
+    "0.0",
+    "1.0",
+    "0.25"
+   ],
+   "0.5 means 'unknown': neither free nor occupied is more likely."
+  ],
+  [
+   "Why do occupancy grid mappers usually store each cell as log-odds instead of a probability?",
+   "Bayesian updates become simple additions",
+   [
+    "Log-odds take less memory than a byte",
+    "Log-odds values stay between 0 and 1",
+    "Log-odds remove the need for a sensor model"
+   ],
+   "In log-odds, each measurement adds a value, and probabilities near 0 or 1 avoid numeric problems. Unknown (p = 0.5) is log-odds 0."
+  ],
+  [
+   "A lidar beam hits an obstacle 4 m away. How does an occupancy grid mapper update the cells along that beam?",
+   "Cells before the hit become more free; the cell at the hit more occupied",
+   [
+    "All cells along the beam become more occupied",
+    "Only the cell at the hit is updated",
+    "Cells before the hit become more occupied; the hit cell more free"
+   ],
+   "The beam passed through the earlier cells, so they are likely free. Ray tracing such as Bresenham's algorithm finds those cells."
+  ],
+  [
+   "Which two steps does the classic ICP algorithm repeat?",
+   "Match nearest points, then compute the best rigid transform",
+   [
+    "Detect ORB features, then match their descriptors",
+    "Build an occupancy grid, then run A* on it",
+    "Predict with a motion model, then resample particles"
+   ],
+   "ICP alternates between finding correspondences and solving for the transform that minimizes their distances."
+  ],
+  [
+   "ICP fails to align two scans that start rotated about 90 degrees apart. What is the most likely reason?",
+   "ICP needs a good initial guess and can get stuck in a local minimum",
+   [
+    "ICP only works with color point clouds",
+    "ICP cannot estimate any rotation, only translation",
+    "ICP needs exactly the same number of points"
+   ],
+   "Nearest-neighbor matches are wrong when the start is far off. An odometry prior or global registration should come first."
+  ],
+  [
+   "When aligning lidar scans of walls and floors, why is point-to-plane ICP often preferred over point-to-point ICP?",
+   "It usually converges in fewer iterations on flat surfaces",
+   [
+    "It does not need any nearest-neighbor search",
+    "It works without estimating a rotation",
+    "It needs no initial guess at all"
+   ],
+   "Point-to-plane lets points slide along surfaces, matching the geometry better and converging faster."
+  ],
+  [
+   "Given matched 3D point pairs with known correspondences, how is the optimal rigid transform usually computed in closed form?",
+   "SVD of the cross-covariance matrix (Kabsch or Umeyama method)",
+   [
+    "Gradient descent over all possible rotations",
+    "A Fourier transform of both point sets",
+    "Solving a linear system for a 4 x 4 affine matrix"
+   ],
+   "After centering both sets, the SVD of their cross-covariance gives the best rotation, and the translation follows from the centroids."
+  ],
+  [
+   "What are ORB features made of?",
+   "FAST keypoints with rotation-aware BRIEF binary descriptors",
+   [
+    "Harris corners with floating-point SIFT descriptors",
+    "Blob detections with SURF descriptors",
+    "Edge pixels with HOG descriptors"
+   ],
+   "ORB is fast to compute and match because its descriptors are binary and compared with Hamming distance."
+  ],
+  [
+   "Which three main threads run in parallel in ORB-SLAM?",
+   "Tracking, local mapping and loop closing",
+   [
+    "Sensing, rendering and planning",
+    "Prediction, update and resampling",
+    "Calibration, compression and logging"
+   ],
+   "Tracking localizes each frame, local mapping refines nearby keyframes, and loop closing detects and corrects loops."
+  ],
+  [
+   "A monocular visual SLAM system builds a map that looks correct but has the wrong overall size. Why?",
+   "One camera alone cannot recover absolute scale",
+   [
+    "The camera's frame rate is too low",
+    "ORB features are not scale invariant",
+    "The map was saved in the wrong units"
+   ],
+   "Monocular geometry is defined up to scale. Stereo, depth, an IMU or known object sizes are needed to fix it."
+  ],
+  [
+   "A spinning lidar on a fast vehicle produces skewed scans. What is the standard fix in LiDAR SLAM?",
+   "Deskew each scan using IMU or odometry motion during the sweep",
+   [
+    "Lower the lidar's range so fewer points are recorded",
+    "Discard every second scan before matching",
+    "Convert the scans to images before matching"
+   ],
+   "The sensor moves while it sweeps, so points are captured from different poses. Motion compensation removes this distortion."
+  ],
+  [
+   "Which lidar odometry method extracts edge and planar feature points and matches them separately?",
+   "LOAM",
+   [
+    "ORB-SLAM",
+    "gmapping",
+    "MonoSLAM"
+   ],
+   "LOAM classifies points by local smoothness into edges and planes. ORB-SLAM and MonoSLAM are visual, gmapping is a particle filter."
+  ]
+ ],
+ "motion-planning": [
+  [
+   "In motion planning, what is the configuration space (C-space) of a robot?",
+   "The set of all possible configurations of the robot",
+   [
+    "The 3D workspace volume the robot can reach",
+    "The set of all joint torques the motors can apply",
+    "The free floor area around the robot base"
+   ],
+   "Each point in C-space fully describes the robot's pose. Its dimension equals the number of degrees of freedom."
+  ],
+  [
+   "A rigid robot moves on a flat floor and can translate and rotate. What is the dimension of its configuration space?",
+   "3 (x, y, theta)",
+   [
+    "2 (x, y)",
+    "4 (x, y, z, theta)",
+    "6 (x, y, z, roll, pitch, yaw)"
+   ],
+   "Planar position needs two values and heading needs one, so the C-space is three-dimensional."
+  ],
+  [
+   "What is the dimension of the configuration space of a fixed-base robot arm with 6 revolute joints?",
+   "6",
+   [
+    "3",
+    "12",
+    "36"
+   ],
+   "Each joint angle is one degree of freedom, so the C-space has 6 dimensions, regardless of the workspace being 3D."
+  ],
+  [
+   "A disc robot of radius r translates without rotating. How are obstacles usually represented in its C-space?",
+   "Each obstacle is grown by r, then the robot is treated as a point",
+   [
+    "Each obstacle is shrunk by r, then the robot is treated as a point",
+    "Obstacles keep their size, and the robot is grown by 2r",
+    "Obstacles are replaced by their bounding spheres"
+   ],
+   "The C-space obstacle is the Minkowski sum of the obstacle and the robot shape, which for a disc means inflating by r."
+  ],
+  [
+   "How does Dijkstra's algorithm relate to A* search?",
+   "Dijkstra is A* with a heuristic of zero",
+   [
+    "Dijkstra is A* with an infinite heuristic",
+    "Dijkstra is A* that only expands the goal node",
+    "Dijkstra is A* run backward from the goal"
+   ],
+   "A* orders nodes by g + h. With h = 0, it expands nodes by path cost only, which is exactly Dijkstra."
+  ],
+  [
+   "What property of the heuristic guarantees that A* (tree search) returns an optimal path?",
+   "It never overestimates the true remaining cost",
+   [
+    "It never underestimates the true remaining cost",
+    "It equals the number of nodes left to the goal",
+    "It increases by one with each expanded node"
+   ],
+   "An admissible heuristic keeps A* optimal. A consistent heuristic also makes graph search optimal without reopening nodes."
+  ],
+  [
+   "On an 8-connected grid where diagonal moves cost sqrt(2) and straight moves cost 1, which heuristic is admissible for A*?",
+   "Euclidean distance",
+   [
+    "Manhattan distance",
+    "Manhattan distance times 1.5",
+    "Squared Euclidean distance"
+   ],
+   "Euclidean distance never exceeds the true cost. Manhattan overestimates diagonal paths (2 versus about 1.41 for one diagonal step)."
+  ],
+  [
+   "Weighted A* multiplies an admissible heuristic by w = 2. What do you get?",
+   "Usually faster search, with a path cost at most 2 times optimal",
+   [
+    "Slower search, but a path that is guaranteed optimal",
+    "The same search as Dijkstra, with fewer nodes stored",
+    "A path that is exactly 2 times longer than optimal"
+   ],
+   "Inflating the heuristic makes the search greedier. With an admissible base heuristic, the cost is bounded by w times the optimum."
+  ],
+  [
+   "Which statement about the basic RRT algorithm is correct?",
+   "It is probabilistically complete but not asymptotically optimal",
+   [
+    "It is asymptotically optimal but not complete",
+    "It is complete and returns the shortest path",
+    "It is neither complete nor useful in high dimensions"
+   ],
+   "RRT finds a path with probability approaching 1 if one exists, but the path quality does not converge to the optimum."
+  ],
+  [
+   "What does RRT* add to RRT that makes it asymptotically optimal?",
+   "Choosing the best nearby parent and rewiring neighbors",
+   [
+    "Sampling only along a straight line to the goal",
+    "Growing two trees, one from each end",
+    "Replacing random samples with a grid search"
+   ],
+   "RRT* connects each new node to the lowest-cost neighbor and rewires nearby nodes through it, so path cost converges to the optimum."
+  ],
+  [
+   "Why do RRT implementations often sample the goal itself with a small probability, such as 5%?",
+   "To pull the tree toward the goal and find a path sooner",
+   [
+    "To guarantee the returned path is the shortest",
+    "To avoid checking collisions near the goal",
+    "To keep the tree from growing past a size limit"
+   ],
+   "Goal biasing speeds up connection to the goal. Too much bias makes the tree greedy and worse at exploring around obstacles."
+  ],
+  [
+   "A robot must plan many paths in the same static environment with different start and goal pairs. Which sampling method fits best?",
+   "PRM (Probabilistic Roadmap)",
+   [
+    "Single-query RRT",
+    "Bidirectional RRT",
+    "Weighted A* on raw pixels"
+   ],
+   "PRM builds a reusable roadmap once and answers many queries quickly. RRT variants are designed for single queries."
+  ],
+  [
+   "Why do sampling-based planners struggle with narrow passages in C-space?",
+   "Few random samples fall inside the passage",
+   [
+    "Collision checks are skipped inside passages",
+    "The passage makes the C-space lower dimensional",
+    "Samples inside the passage are discarded as duplicates"
+   ],
+   "The chance of sampling a point is proportional to volume, and narrow passages have small volume. Bridge or Gaussian sampling helps."
+  ],
+  [
+   "What distinguishes a trajectory from a path in motion planning?",
+   "A trajectory also specifies timing, such as velocity over time",
+   [
+    "A trajectory is a straight line in C-space",
+    "A trajectory ignores obstacles, while a path avoids them",
+    "A trajectory is defined only in the workspace, not C-space"
+   ],
+   "A path is a geometric curve. A trajectory adds a time parameterization, so velocities and accelerations are defined."
+  ],
+  [
+   "A joint trajectory must match given position, velocity and acceleration at both start and end. What is the lowest polynomial degree that can do this?",
+   "5 (quintic)",
+   [
+    "3 (cubic)",
+    "4 (quartic)",
+    "7 (septic)"
+   ],
+   "There are 6 boundary conditions, so 6 coefficients are needed: a degree 5 polynomial. A cubic only matches position and velocity."
+  ],
+  [
+   "What is a typical weakness of trajectory optimization methods such as CHOMP or TrajOpt?",
+   "They can get stuck in local minima, depending on the initial guess",
+   [
+    "They can only plan for mobile robots, not arms",
+    "They ignore smoothness and only minimize length",
+    "They need a full grid of the entire C-space"
+   ],
+   "These methods improve a trajectory locally using gradients. A poor start can converge to a colliding or suboptimal solution."
+  ],
+  [
+   "Why does CHOMP use a signed distance field of the environment?",
+   "It gives distances and gradients that push the trajectory away from obstacles",
+   [
+    "It stores the shortest path from every cell to the goal",
+    "It replaces collision checking with image segmentation",
+    "It converts the robot's mesh into a point cloud"
+   ],
+   "The signed distance field gives smooth obstacle costs with gradients, which the optimizer follows to move points out of collision."
+  ],
+  [
+   "A planner checks collisions only at waypoints 10 cm apart and returns a path through a 2 cm thick wall. What fixes this?",
+   "Finer edge checking or continuous collision detection along segments",
+   [
+    "Increasing the spacing between checked waypoints",
+    "Checking collisions only at the start and goal",
+    "Using a larger heuristic weight in the search"
+   ],
+   "Discrete checks can skip thin obstacles. Checking at a resolution smaller than the thinnest obstacle, or sweeping volumes, prevents this."
+  ],
+  [
+   "In collision checking, what is the purpose of the broad phase with bounding volumes such as AABBs or a BVH?",
+   "To cheaply reject object pairs that cannot be in contact",
+   [
+    "To compute exact contact points between meshes",
+    "To smooth the robot's path before execution",
+    "To convert concave meshes into convex ones"
+   ],
+   "Bounding volume tests are fast and remove most pairs. Only the remaining pairs go to the exact narrow-phase check."
+  ],
+  [
+   "Which algorithm is widely used to compute distance or intersection between two convex shapes?",
+   "GJK (Gilbert-Johnson-Keerthi)",
+   [
+    "Bresenham's line algorithm",
+    "Dijkstra's algorithm",
+    "Marching cubes"
+   ],
+   "GJK works on the Minkowski difference of two convex sets and is the core narrow-phase routine in libraries like FCL and Bullet."
+  ]
+ ]
+}

@@ -1,0 +1,58 @@
+{
+ "vllm": [
+  "vLLM Documentation",
+  "https://docs.vllm.ai/en/latest/"
+ ],
+ "tgi": [
+  "Text Generation Inference docs (Hugging Face)",
+  "https://huggingface.co/docs/text-generation-inference/index"
+ ],
+ "ollama": [
+  "Ollama on GitHub (README and docs)",
+  "https://github.com/ollama/ollama"
+ ],
+ "llama-cpp": [
+  "llama.cpp on GitHub",
+  "https://github.com/ggml-org/llama.cpp"
+ ],
+ "triton": [
+  "NVIDIA Triton Inference Server User Guide",
+  "https://docs.nvidia.com/deeplearning/triton-inference-server/user-guide/docs/index.html"
+ ],
+ "deepspeed": [
+  "DeepSpeed Getting Started",
+  "https://www.deepspeed.ai/getting-started/"
+ ],
+ "megatron-lm": [
+  "Megatron-LM on GitHub",
+  "https://github.com/NVIDIA/Megatron-LM"
+ ],
+ "cuda": [
+  "CUDA C++ Programming Guide",
+  "https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html"
+ ],
+ "cudnn": [
+  "NVIDIA cuDNN Documentation",
+  "https://docs.nvidia.com/deeplearning/cudnn/latest/"
+ ],
+ "tensorrt": [
+  "NVIDIA TensorRT Documentation",
+  "https://docs.nvidia.com/deeplearning/tensorrt/latest/index.html"
+ ],
+ "tensorrt-llm": [
+  "TensorRT-LLM Documentation",
+  "https://nvidia.github.io/TensorRT-LLM/"
+ ],
+ "nvidia-nim": [
+  "NVIDIA NIM Documentation",
+  "https://docs.nvidia.com/nim/index.html"
+ ],
+ "nemo": [
+  "NVIDIA NeMo Framework User Guide",
+  "https://docs.nvidia.com/nemo-framework/user-guide/latest/overview.html"
+ ],
+ "numba": [
+  "Numba Documentation",
+  "https://numba.readthedocs.io/en/stable/"
+ ]
+}

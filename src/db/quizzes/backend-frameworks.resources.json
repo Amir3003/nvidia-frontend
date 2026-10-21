@@ -1,0 +1,30 @@
+{
+ "fastapi": [
+  "FastAPI Tutorial - User Guide",
+  "https://fastapi.tiangolo.com/tutorial/"
+ ],
+ "django": [
+  "Django documentation",
+  "https://docs.djangoproject.com/en/stable/"
+ ],
+ "flask": [
+  "Flask documentation",
+  "https://flask.palletsprojects.com/"
+ ],
+ "spring-boot": [
+  "Spring Boot Reference Documentation",
+  "https://docs.spring.io/spring-boot/index.html"
+ ],
+ "ruby-on-rails": [
+  "Ruby on Rails Guides",
+  "https://guides.rubyonrails.org/"
+ ],
+ "laravel": [
+  "Laravel documentation",
+  "https://laravel.com/docs"
+ ],
+ "dotnet": [
+  "ASP.NET Core documentation",
+  "https://learn.microsoft.com/en-us/aspnet/core/"
+ ]
+}

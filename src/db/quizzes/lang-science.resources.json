@@ -1,0 +1,30 @@
+{
+ "julia": [
+  "Julia Documentation",
+  "https://docs.julialang.org/en/v1/"
+ ],
+ "r-lang": [
+  "An Introduction to R (CRAN)",
+  "https://cran.r-project.org/doc/manuals/r-release/R-intro.html"
+ ],
+ "matlab": [
+  "MATLAB Documentation (MathWorks)",
+  "https://www.mathworks.com/help/matlab/"
+ ],
+ "haskell": [
+  "Learn You a Haskell for Great Good!",
+  "https://learnyouahaskell.com/chapters"
+ ],
+ "ocaml": [
+  "OCaml Tutorials and Guides (ocaml.org)",
+  "https://ocaml.org/docs"
+ ],
+ "elixir": [
+  "Elixir Getting Started Guide",
+  "https://hexdocs.pm/elixir/introduction.html"
+ ],
+ "solidity": [
+  "Solidity Documentation",
+  "https://docs.soliditylang.org/"
+ ]
+}

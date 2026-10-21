@@ -1,0 +1,1618 @@
+{
+ "c-lang": [
+  [
+   "In C, given int a[] = {10, 20, 30}; int *p = a; what is the value of *(p + 2)?",
+   "30",
+   [
+    "20",
+    "12",
+    "It does not compile"
+   ],
+   "p + 2 points to the third element, a[2], because pointer arithmetic counts in elements, not bytes."
+  ],
+  [
+   "In C, if int *p holds address 1000 and sizeof(int) is 4, what address does p + 1 hold?",
+   "1004",
+   [
+    "1001",
+    "1008",
+    "1002"
+   ],
+   "Adding 1 to a pointer advances it by one element, which is sizeof(int) = 4 bytes here."
+  ],
+  [
+   "What is the key difference between malloc(n * sizeof(int)) and calloc(n, sizeof(int)) in C?",
+   "calloc zero-fills the block; malloc leaves it uninitialized",
+   [
+    "malloc zero-fills the block; calloc leaves it uninitialized",
+    "calloc allocates on the stack; malloc allocates on the heap",
+    "calloc memory is freed automatically; malloc memory is not"
+   ],
+   "calloc initializes every byte to zero (and checks the n * size multiplication for overflow); malloc returns uninitialized memory."
+  ],
+  [
+   "A C program does p = realloc(p, new_size); What is the problem with this line?",
+   "On failure it returns NULL and the old block is leaked",
+   [
+    "realloc cannot enlarge a block, so new_size is ignored",
+    "realloc clears the old data, so the contents are lost",
+    "realloc allocates on the stack, so p dies at return"
+   ],
+   "If realloc fails it returns NULL but leaves the original block allocated. Assigning the result straight to p loses the only pointer to it. Use a temporary pointer."
+  ],
+  [
+   "What does free(NULL) do in standard C?",
+   "Nothing; it is a valid no-op",
+   [
+    "It crashes with a segmentation fault",
+    "It is undefined behavior",
+    "It returns an error code"
+   ],
+   "The C standard says that if the argument to free is a null pointer, no action occurs."
+  ],
+  [
+   "Assuming int is 4 bytes, what is sizeof(union { int i; char c[4]; }) on a typical compiler?",
+   "4",
+   [
+    "8",
+    "5",
+    "1"
+   ],
+   "All members of a union share the same storage, so its size is that of the largest member (plus any alignment padding), here 4."
+  ],
+  [
+   "On a typical x86-64 compiler (4-byte int, default alignment), what is sizeof(struct { char c; int i; })?",
+   "8",
+   [
+    "5",
+    "6",
+    "16"
+   ],
+   "The compiler inserts 3 bytes of padding after c so that i is 4-byte aligned: 1 + 3 + 4 = 8."
+  ],
+  [
+   "A C function contains char buf[16]; ... return buf; What happens when the caller uses the returned pointer?",
+   "Undefined behavior, because buf no longer exists",
+   [
+    "It works, because arrays are copied on return",
+    "It works, because buf is moved to the heap",
+    "Compilation fails with a type mismatch error"
+   ],
+   "buf has automatic storage on the stack and its lifetime ends when the function returns, so the pointer dangles. Compilers usually warn but still compile it."
+  ],
+  [
+   "Where does a non-static local variable declared inside a C function typically live?",
+   "On the stack (automatic storage)",
+   [
+    "On the heap (dynamic storage)",
+    "In the data segment (static storage)",
+    "In the read-only text segment"
+   ],
+   "Local variables without static have automatic storage duration, which implementations place in the function's stack frame."
+  ],
+  [
+   "Which call reads a line into char buf[64] in C without risking a buffer overflow?",
+   "fgets(buf, sizeof buf, stdin)",
+   [
+    "gets(buf)",
+    "scanf(\"%s\", buf)",
+    "fscanf(stdin, \"%s\", buf)"
+   ],
+   "fgets writes at most sizeof buf - 1 characters plus the terminator. gets was removed in C11, and %s without a width has no limit."
+  ],
+  [
+   "Which C declaration makes f a pointer to a function that takes two ints and returns an int?",
+   "int (*f)(int, int);",
+   [
+    "int *f(int, int);",
+    "int (*f)(int);",
+    "(int *) f(int, int);"
+   ],
+   "The parentheses bind * to f, so f is a pointer. Without them, int *f(int, int) declares a function returning int *."
+  ],
+  [
+   "What comparator signature does the C standard library function qsort expect?",
+   "int (*)(const void *, const void *)",
+   [
+    "bool (*)(const void *, const void *)",
+    "int (*)(void *, void *, size_t)",
+    "void (*)(const void *, const void *)"
+   ],
+   "qsort calls the comparator with pointers to two elements and expects a negative, zero or positive int result."
+  ],
+  [
+   "Given #define SQUARE(x) x * x in C, what does SQUARE(1 + 2) evaluate to?",
+   "5",
+   [
+    "9",
+    "6",
+    "3"
+   ],
+   "The macro expands textually to 1 + 2 * 1 + 2 = 5. Writing ((x) * (x)) fixes it."
+  ],
+  [
+   "What is the purpose of #ifndef MY_H / #define MY_H / #endif around a C header's contents?",
+   "It prevents the header from being included twice in one file",
+   [
+    "It makes the header's functions inline by default",
+    "It hides the header's symbols from other source files",
+    "It speeds up linking by skipping unused functions"
+   ],
+   "Include guards stop repeated definitions when the same header is pulled in more than once into a translation unit."
+  ],
+  [
+   "What does printf return in C when it succeeds?",
+   "The number of characters written",
+   [
+    "The number of arguments it formatted",
+    "Zero to indicate success",
+    "A pointer to the output buffer"
+   ],
+   "printf returns the count of characters transmitted, or a negative value if an output error occurs."
+  ],
+  [
+   "Which printf format specifier is correct for a value of type size_t (C99 and later)?",
+   "%zu",
+   [
+    "%d",
+    "%lu",
+    "%u"
+   ],
+   "The z length modifier denotes size_t. %lu happens to work on some platforms but is not portable, for example on 64-bit Windows."
+  ],
+  [
+   "In C, int x = INT_MAX; x = x + 1; What does the standard say about the result?",
+   "It is undefined behavior",
+   [
+    "It is guaranteed to wrap to INT_MIN",
+    "It is guaranteed to become 0",
+    "It is guaranteed to stay at INT_MAX"
+   ],
+   "Signed integer overflow is undefined behavior. Only unsigned arithmetic is defined to wrap around modulo 2^N."
+  ],
+  [
+   "In C, what does the statement i = i++ + 1; do?",
+   "It is undefined behavior",
+   [
+    "It increments i by exactly 1",
+    "It increments i by exactly 2",
+    "It leaves i unchanged"
+   ],
+   "i is modified twice without a sequencing rule between the modifications, which is undefined behavior; compilers may produce any result."
+  ],
+  [
+   "What is the value of (5 & 3) | (1 << 3) in C?",
+   "9",
+   [
+    "15",
+    "7",
+    "11"
+   ],
+   "5 & 3 is binary 101 & 011 = 001 = 1, and 1 << 3 = 8, so 1 | 8 = 9."
+  ],
+  [
+   "Which C statement clears bit 3 of an unsigned int x and leaves the other bits unchanged?",
+   "x &= ~(1u << 3);",
+   [
+    "x |= (1u << 3);",
+    "x ^= (1u << 3);",
+    "x &= (1u << 3);"
+   ],
+   "ANDing with a mask that has only bit 3 at zero clears it. |= sets the bit, ^= toggles it, and &= with the plain mask clears every other bit."
+  ]
+ ],
+ "cpp": [
+  [
+   "What does RAII mean in C++?",
+   "A resource is tied to an object and released in its destructor",
+   [
+    "Resources are allocated once at compile time and reused",
+    "A garbage collector releases resources when memory is low",
+    "Resources are acquired lazily the first time they are used"
+   ],
+   "Resource Acquisition Is Initialization: the constructor acquires the resource and the destructor releases it, so cleanup happens on every exit path."
+  ],
+  [
+   "Why is std::lock_guard<std::mutex> preferred over calling m.lock() and m.unlock() by hand?",
+   "It unlocks in its destructor, even when an exception is thrown",
+   [
+    "It makes the mutex faster by skipping kernel calls",
+    "It lets several threads hold the same mutex at once",
+    "It detects deadlocks and throws an exception instead"
+   ],
+   "lock_guard is an RAII wrapper: leaving the scope, normally or via an exception, runs the destructor, which releases the lock."
+  ],
+  [
+   "In C++, auto a = std::make_unique<int>(5); std::unique_ptr<int> b = a; What happens?",
+   "Compilation fails, because unique_ptr cannot be copied",
+   [
+    "b and a now share ownership of the same int",
+    "b gets a deep copy of the int with value 5",
+    "a is silently moved into b and set to null"
+   ],
+   "unique_ptr's copy constructor is deleted to keep single ownership. Use std::unique_ptr<int> b = std::move(a); to transfer it."
+  ],
+  [
+   "In C++, after std::unique_ptr<int> b = std::move(a); what does a hold?",
+   "nullptr",
+   [
+    "The same pointer as b",
+    "A dangling pointer to freed memory",
+    "A copy of the original int"
+   ],
+   "Moving a unique_ptr transfers ownership and the standard guarantees the source is left empty (equal to nullptr)."
+  ],
+  [
+   "Two C++ objects hold std::shared_ptr references to each other and nothing else refers to them. What happens?",
+   "Neither is destroyed, because each keeps the other's count above 0",
+   [
+    "Both are destroyed when the last outside pointer goes away",
+    "The program throws std::bad_weak_ptr when the scope ends",
+    "The runtime detects the cycle and frees the older object"
+   ],
+   "Reference counting cannot reclaim cycles. Making one of the links a std::weak_ptr breaks the cycle."
+  ],
+  [
+   "In C++, how do you safely use the object behind a std::weak_ptr<T> w?",
+   "Call w.lock() and check the returned shared_ptr",
+   [
+    "Dereference w directly with *w",
+    "Call w.get() and check for null",
+    "Cast w to a raw pointer with static_cast"
+   ],
+   "lock() atomically returns a shared_ptr that keeps the object alive, or an empty one if it has already been destroyed. weak_ptr has no operator* or get()."
+  ],
+  [
+   "What does std::move(x) actually do in C++?",
+   "It casts x to an rvalue reference so a move can be chosen",
+   [
+    "It moves the bytes of x to a new memory location",
+    "It destroys x and returns a new copy of its value",
+    "It swaps x with a default-constructed object"
+   ],
+   "std::move is just a cast to T&&. The actual move happens only if a move constructor or move assignment is selected."
+  ],
+  [
+   "Why should a C++ class's move constructor be marked noexcept?",
+   "std::vector reallocation uses it only if it cannot throw",
+   [
+    "The compiler refuses to call a move constructor otherwise",
+    "noexcept makes the moved-from object automatically empty",
+    "It allows the move constructor to be called at compile time"
+   ],
+   "To keep the strong exception guarantee, vector moves elements during reallocation only if the move cannot throw (or no copy is available); otherwise it copies."
+  ],
+  [
+   "Given template<typename T> T maxOf(T a, T b); what happens with the call maxOf(3, 4.5)?",
+   "Compilation fails: T is deduced as both int and double",
+   [
+    "T is deduced as double and 4.5 is returned",
+    "T is deduced as int and 4 is returned",
+    "T is deduced as auto and the call works"
+   ],
+   "Template argument deduction requires both deductions to agree. Fix it with maxOf<double>(3, 4.5) or by using two type parameters."
+  ],
+  [
+   "In C++, Base* p = new Derived; p->f(); where f is NOT virtual in Base and Derived defines its own f. Which f runs?",
+   "Base::f",
+   [
+    "Derived::f",
+    "Both, Base::f first",
+    "The call is ambiguous and fails"
+   ],
+   "Without virtual, the call is bound statically using the pointer's static type, Base."
+  ],
+  [
+   "In C++, a class used polymorphically has no virtual destructor, and code runs delete p; where Base* p points to a Derived. What is the result?",
+   "Undefined behavior; Derived's destructor may never run",
+   [
+    "Derived's destructor runs, then Base's destructor",
+    "Only Base's destructor runs, which is well defined",
+    "The compiler rejects the delete expression"
+   ],
+   "Deleting a derived object through a base pointer without a virtual destructor is undefined behavior. Declare virtual ~Base() in polymorphic bases."
+  ],
+  [
+   "In C++, std::vector<int> v{1, 2, 2, 3}; std::remove(v.begin(), v.end(), 2); What is v.size() afterwards?",
+   "4",
+   [
+    "2",
+    "3",
+    "0"
+   ],
+   "std::remove only shifts kept elements forward and returns the new logical end; it cannot change the container size. Follow it with v.erase(it, v.end())."
+  ],
+  [
+   "You need a C++ container mapping string keys to values with average O(1) lookup and no ordering requirement. Which fits best?",
+   "std::unordered_map",
+   [
+    "std::map",
+    "std::list",
+    "std::set"
+   ],
+   "unordered_map is a hash table with average constant-time lookup. std::map is a balanced tree with O(log n) lookup and sorted keys."
+  ],
+  [
+   "In C++, a loop holds an iterator it into std::vector v and calls v.push_back(x) inside the loop. What is the risk?",
+   "Reallocation can invalidate it, so using it is undefined",
+   [
+    "push_back throws if any iterator is still active",
+    "it automatically moves to point at the new element",
+    "The new element is skipped, but it stays valid"
+   ],
+   "If push_back exceeds capacity, the vector reallocates and all iterators, pointers and references to its elements become invalid."
+  ],
+  [
+   "In C++, what does the declaration const int* p mean?",
+   "p cannot modify the int it points to, but p can be repointed",
+   [
+    "p cannot be repointed, but it can modify the int",
+    "Neither p nor the int it points to can change",
+    "p points to an int that must be a compile-time constant"
+   ],
+   "const before * applies to the pointee. int* const p would make the pointer itself constant."
+  ],
+  [
+   "Why is catch (const std::exception& e) preferred over catch (std::exception e) in C++?",
+   "It avoids copying and slicing the derived exception",
+   [
+    "It catches exceptions from other threads as well",
+    "It lets the handler modify and rethrow the copy",
+    "It is required for catching standard exceptions"
+   ],
+   "Catching by value copies the object and slices off derived parts, so e.what() may lose the derived message. A reference keeps the real type."
+  ],
+  [
+   "In C++11 and later, what happens if an exception escapes a destructor that has no explicit noexcept(false)?",
+   "std::terminate is called",
+   [
+    "The exception propagates to the caller normally",
+    "The exception is silently discarded",
+    "The object is destroyed a second time"
+   ],
+   "Destructors are implicitly noexcept since C++11, so an escaping exception calls std::terminate."
+  ],
+  [
+   "Under the C++ rule of five, a class defines a destructor, copy constructor and copy assignment. Which two members complete the set?",
+   "Move constructor and move assignment operator",
+   [
+    "Default constructor and conversion operator",
+    "Swap function and comparison operator",
+    "Virtual destructor and clone method"
+   ],
+   "The rule of five adds the move constructor and move assignment, since user-declared copy operations or a destructor suppress the implicit moves."
+  ],
+  [
+   "A C++ class owns a raw pointer, deletes it in the destructor, and relies on the compiler-generated copy constructor. What happens after copying an object?",
+   "Both copies delete the same pointer, a double free",
+   [
+    "The copy gets its own new allocation automatically",
+    "The compiler refuses to generate a copy constructor",
+    "Only the original deletes the pointer at scope exit"
+   ],
+   "The default copy constructor copies the pointer value (shallow copy). This is why the rule of three exists; the rule of zero avoids it with std::unique_ptr or containers."
+  ],
+  [
+   "On x86-64 (8-byte double with 8-byte alignment), what is sizeof(struct { char a; double b; char c; })?",
+   "24",
+   [
+    "10",
+    "16",
+    "18"
+   ],
+   "a takes 1 byte plus 7 padding so b is aligned, b takes 8, c takes 1 plus 7 tail padding: 24. Reordering to double b; char a; char c; shrinks it to 16."
+  ]
+ ],
+ "rust": [
+  [
+   "In Rust, let s1 = String::from(\"hi\"); let s2 = s1; println!(\"{}\", s1); What happens?",
+   "Compile error: borrow of moved value s1",
+   [
+    "It prints hi, because s2 is a copy of s1",
+    "It prints an empty string",
+    "It panics at runtime with a use-after-move"
+   ],
+   "String is not Copy, so let s2 = s1 moves ownership to s2 and s1 can no longer be used. The check happens at compile time."
+  ],
+  [
+   "In Rust, let a: i32 = 5; let b = a; println!(\"{}\", a); What happens?",
+   "It prints 5, because i32 implements Copy",
+   [
+    "Compile error, because a was moved into b",
+    "It prints 0, because a was reset by the move",
+    "It panics, because a is no longer valid"
+   ],
+   "Simple scalar types like i32 implement Copy, so assignment copies the value and a stays usable."
+  ],
+  [
+   "Which statement correctly describes Rust's borrowing rules for a value at any one time?",
+   "Either one mutable reference or any number of shared ones",
+   [
+    "Any number of mutable references, but only one shared",
+    "One mutable and one shared reference at the same time",
+    "Any mix of references, checked only at runtime"
+   ],
+   "The borrow checker enforces aliasing XOR mutability: many &T, or exactly one &mut T, and references must not outlive the value."
+  ],
+  [
+   "In Rust, let mut v = vec![1]; let first = &v[0]; v.push(2); println!(\"{}\", first); Why does this fail to compile?",
+   "v is borrowed mutably while first still borrows it",
+   [
+    "vec! macros cannot be modified after creation",
+    "first must be declared with let mut",
+    "push requires v to be passed by value"
+   ],
+   "push needs &mut v, but the shared borrow first is still used afterwards. This prevents first from dangling if push reallocates."
+  ],
+  [
+   "Why does fn longest(x: &str, y: &str) -> &str { ... } fail to compile in Rust?",
+   "The return lifetime cannot be inferred from two inputs",
+   [
+    "Functions cannot return references in Rust",
+    "&str arguments must be passed as String",
+    "The function body must use unsafe code"
+   ],
+   "With two reference inputs, elision rules cannot pick one. Writing fn longest<'a>(x: &'a str, y: &'a str) -> &'a str ties them together."
+  ],
+  [
+   "What is the type of the string literal \"hello\" in Rust?",
+   "&'static str",
+   [
+    "String",
+    "&mut str",
+    "Box<str>"
+   ],
+   "String literals are stored in the binary and live for the whole program, so they are &'static str. String is an owned heap type."
+  ],
+  [
+   "In Rust, what does fn show<T>(x: T) where T: Clone + Debug require of T?",
+   "T must implement both Clone and Debug",
+   [
+    "T must implement Clone or Debug",
+    "T must be a struct deriving Clone",
+    "T must be a reference type"
+   ],
+   "A + in a trait bound combines bounds, so the type must satisfy all of them."
+  ],
+  [
+   "Can a Rust crate write impl std::fmt::Display for Vec<i32>?",
+   "No, because both the trait and type are foreign",
+   [
+    "Yes, any crate can implement any trait",
+    "Yes, but only inside an unsafe block",
+    "No, because Vec has no fields to print"
+   ],
+   "The orphan rule requires the trait or the type to be local to the crate. The usual workaround is a newtype like struct MyVec(Vec<i32>)."
+  ],
+  [
+   "In Rust, enum Color { Red, Green, Blue } and a match on a Color with arms only for Red and Green. What happens?",
+   "Compile error: the match is not exhaustive",
+   [
+    "Blue silently falls through to the Green arm",
+    "It panics at runtime only when Blue is matched",
+    "It compiles with an unreachable pattern warning"
+   ],
+   "match must cover every possible value. Add a Blue arm or a wildcard _ arm."
+  ],
+  [
+   "In Rust, what does match x { 1 | 2 => \"small\", 3..=5 => \"mid\", _ => \"big\" } evaluate to when x is 5?",
+   "\"mid\"",
+   [
+    "\"big\"",
+    "\"small\"",
+    "It fails to compile"
+   ],
+   "3..=5 is an inclusive range pattern, so 5 matches it. The _ arm would catch anything above 5."
+  ],
+  [
+   "In a Rust function returning Result<T, E>, what does let v = parse(s)?; do?",
+   "Returns early with the converted Err, or unwraps Ok into v",
+   [
+    "Panics on Err, or unwraps Ok into v",
+    "Converts Err into None and stores it in v",
+    "Retries parse(s) until it returns Ok"
+   ],
+   "The ? operator propagates the error to the caller, converting it via From, and evaluates to the Ok value otherwise."
+  ],
+  [
+   "What does Some(3).map(|x| x * 2).unwrap_or(0) evaluate to in Rust?",
+   "6",
+   [
+    "Some(6)",
+    "0",
+    "3"
+   ],
+   "map transforms the inner value to Some(6), and unwrap_or returns the inner value 6 because it is Some."
+  ],
+  [
+   "You need several Rust threads to share read-only ownership of one value. Which smart pointer fits?",
+   "Arc<T>",
+   [
+    "Rc<T>",
+    "Box<T>",
+    "RefCell<T>"
+   ],
+   "Arc uses atomic reference counting and is Send and Sync when T is. Rc is not thread-safe, Box has one owner, and RefCell gives no sharing."
+  ],
+  [
+   "In Rust, let c = RefCell::new(5); let a = c.borrow_mut(); let b = c.borrow_mut(); What happens?",
+   "It panics at runtime with a borrow error",
+   [
+    "Compile error from the borrow checker",
+    "Both a and b get mutable access",
+    "b silently waits until a is dropped"
+   ],
+   "RefCell moves borrow checking to runtime. A second active mutable borrow panics (try_borrow_mut returns an Err instead)."
+  ],
+  [
+   "Why does enum List { Cons(i32, Box<List>), Nil } need the Box in Rust?",
+   "It gives the recursive type a known, finite size",
+   [
+    "It makes List automatically thread-safe",
+    "It allows List to be mutated through &self",
+    "It enables reference counting of the nodes"
+   ],
+   "Without indirection the type would contain itself and have infinite size. Box is a pointer with a fixed size."
+  ],
+  [
+   "Why does std::thread::spawn(move || println!(\"{}\", rc)) fail to compile when rc is an Rc<i32>?",
+   "Rc<i32> is not Send, so it cannot move to another thread",
+   [
+    "Closures passed to spawn cannot capture variables",
+    "i32 values cannot be printed from other threads",
+    "spawn requires the closure to return a Result"
+   ],
+   "Rc's reference count is not atomic, so Rc does not implement Send. Arc is the thread-safe alternative."
+  ],
+  [
+   "Which Rust type is the standard choice for a counter that several threads increment?",
+   "Arc<Mutex<i32>>",
+   [
+    "Rc<RefCell<i32>>",
+    "Box<Cell<i32>>",
+    "&mut i32 shared by all"
+   ],
+   "Arc shares ownership across threads and Mutex provides synchronized mutable access. Rc and RefCell are single-threaded. (An AtomicI32 in an Arc also works.)"
+  ],
+  [
+   "What does the ! in vec![1, 2, 3] indicate in Rust?",
+   "A macro invocation",
+   [
+    "An unsafe function call",
+    "A call that may panic",
+    "A logical negation"
+   ],
+   "Names followed by ! are macros, such as vec!, println! and format!. Macros expand to code at compile time."
+  ],
+  [
+   "Which Rust operation requires an unsafe block?",
+   "Dereferencing a raw pointer",
+   [
+    "Creating a raw pointer with as *const i32",
+    "Calling a method on a Box",
+    "Indexing a Vec with []"
+   ],
+   "Creating a raw pointer is safe; reading or writing through it is not, because the compiler cannot verify it is valid."
+  ],
+  [
+   "Where does cargo build --release place the compiled binary by default?",
+   "target/release/",
+   [
+    "target/debug/",
+    "bin/release/",
+    "build/out/"
+   ],
+   "Cargo builds into target/debug by default and into target/release with the release profile, which enables optimizations."
+  ]
+ ],
+ "zig": [
+  [
+   "In idiomatic Zig, how does a library function that needs heap memory usually obtain it?",
+   "It takes a std.mem.Allocator parameter",
+   [
+    "It calls a global default heap allocator",
+    "It reads a thread-local allocator setting",
+    "It uses the C malloc function implicitly"
+   ],
+   "Zig has no hidden global allocator. Passing an Allocator makes allocation explicit and lets the caller choose the strategy."
+  ],
+  [
+   "A Zig server makes many small allocations per request and can free them all when the request ends. Which allocator fits best?",
+   "std.heap.ArenaAllocator",
+   [
+    "std.heap.page_allocator alone",
+    "std.testing.allocator in production",
+    "No allocator, using global variables"
+   ],
+   "An arena hands out memory from a child allocator and frees everything at once with deinit(), so individual frees are unnecessary."
+  ],
+  [
+   "In Zig, which call releases const buf = try allocator.alloc(u8, 100);?",
+   "allocator.free(buf)",
+   [
+    "allocator.destroy(buf)",
+    "std.c.free(buf)",
+    "buf.deinit()"
+   ],
+   "Memory from alloc (a slice) is released with free. destroy is the counterpart of create, which allocates a single item."
+  ],
+  [
+   "What happens in Zig when allocator.alloc cannot obtain memory?",
+   "It returns error.OutOfMemory",
+   [
+    "It returns a null slice",
+    "It aborts the program",
+    "It throws an exception"
+   ],
+   "Allocation failure is an ordinary error value that the caller must handle, for example with try or catch."
+  ],
+  [
+   "In Zig, what does the parameter declaration comptime T: type in fn max(comptime T: type, a: T, b: T) T mean?",
+   "T must be known at compile time",
+   [
+    "T is inferred at runtime from a and b",
+    "T is erased after type checking",
+    "T must be a pointer type"
+   ],
+   "comptime parameters are evaluated during compilation. Passing types this way is how Zig writes generic functions."
+  ],
+  [
+   "How are generic data structures such as a typed list usually written in Zig?",
+   "A function takes a comptime type and returns a type",
+   [
+    "Through template blocks like in C++",
+    "Through runtime type tags on each element",
+    "Through a special generic keyword on struct"
+   ],
+   "For example, fn List(comptime T: type) type { return struct { items: []T }; }. Types are first-class values at compile time."
+  ],
+  [
+   "In Zig, why does a ++ b fail when a and b are slices whose lengths are only known at runtime?",
+   "++ requires operands with comptime-known lengths",
+   [
+    "++ is defined only for numeric types",
+    "++ needs both operands to be mutable",
+    "++ only works inside a defer block"
+   ],
+   "++ concatenates arrays at compile time. Runtime concatenation needs an allocator, for example std.mem.concat."
+  ],
+  [
+   "In a Zig function returning !void, what does try foo() do?",
+   "Returns foo's error to the caller, or yields its value",
+   [
+    "Retries foo until it succeeds",
+    "Converts the error into a panic",
+    "Ignores the error and continues"
+   ],
+   "try x is shorthand for x catch |err| return err. On success it evaluates to the payload."
+  ],
+  [
+   "In Zig, what does const n = std.fmt.parseInt(u32, s, 10) catch 0; do?",
+   "Uses 0 if parsing returns an error",
+   [
+    "Returns 0 from the current function",
+    "Panics with the code 0 on failure",
+    "Retries parsing with base 0"
+   ],
+   "catch provides a fallback value when the left side is an error. The surrounding function continues normally."
+  ],
+  [
+   "When does a Zig errdefer statement run?",
+   "Only when the scope exits by returning an error",
+   [
+    "On every scope exit, like defer",
+    "Only when the program panics",
+    "Only at the end of the program"
+   ],
+   "errdefer is used for cleanup that should happen only on failure, such as freeing a partially built object."
+  ],
+  [
+   "In Zig, a line foo(); calls a function returning !void and does not use the result. What happens?",
+   "Compilation fails because the error is ignored",
+   [
+    "The error is silently discarded at runtime",
+    "The program panics if foo returns an error",
+    "A warning is printed and execution continues"
+   ],
+   "Zig refuses to compile code that ignores an error union. Handle it with try, catch or if."
+  ],
+  [
+   "Which feature does Zig deliberately leave out to keep \"no hidden control flow\"?",
+   "Operator overloading",
+   [
+    "The defer statement",
+    "Inline functions",
+    "Compile-time evaluation"
+   ],
+   "Without operator overloading (or exceptions), an expression like a + b can never call a function behind the reader's back."
+  ],
+  [
+   "In Zig, how do you add two u8 values so that 255 + 1 wraps to 0?",
+   "Use the +% operator",
+   [
+    "Use + in a ReleaseSafe build",
+    "Use the ++ operator",
+    "Cast both values to i8 first"
+   ],
+   "+% is wrapping addition. Plain + is checked: overflow panics in Debug and ReleaseSafe builds and is undefined in ReleaseFast."
+  ],
+  [
+   "What does declaring a Zig type as extern struct guarantee?",
+   "Its fields follow the C ABI layout",
+   [
+    "It must be defined in a C header",
+    "Its fields may be reordered freely",
+    "It is always allocated on the heap"
+   ],
+   "Plain Zig structs have no guaranteed layout. extern struct uses C-compatible field order and padding for interop."
+  ],
+  [
+   "What is zig cc commonly used for?",
+   "As a drop-in C compiler with easy cross-compilation",
+   [
+    "As a converter from C source to Zig source",
+    "As a linter for Zig code style",
+    "As the Zig package registry client"
+   ],
+   "zig cc wraps Clang and ships libc headers for many targets, so it can compile C for other platforms without extra toolchains."
+  ],
+  [
+   "In a Zig project, what is build.zig?",
+   "A Zig source file that defines the build, run by zig build",
+   [
+    "A JSON file listing compiler flags",
+    "A Makefile that zig build converts",
+    "A lock file of resolved package versions"
+   ],
+   "The build is described in Zig itself. Package dependencies are declared separately in build.zig.zon."
+  ],
+  [
+   "What does running zig test math.zig do?",
+   "Compiles the file and runs its test blocks",
+   [
+    "Formats the file and reports style issues",
+    "Builds a release binary named test",
+    "Checks the file for syntax errors only"
+   ],
+   "Blocks like test \"add\" { try std.testing.expect(add(1, 2) == 3); } are collected and run by zig test."
+  ],
+  [
+   "In Zig, const arr = [_]u8{ 1, 2, 3, 4, 5 }; const s = arr[1..3]; What does s contain?",
+   "2 and 3",
+   [
+    "1, 2 and 3",
+    "2, 3 and 4",
+    "1 and 2"
+   ],
+   "Slicing uses a half-open range [start..end), so indexes 1 and 2 are included."
+  ],
+  [
+   "In a Zig Debug build, what happens when code indexes a slice past its length?",
+   "The program panics with an index out of bounds error",
+   [
+    "It reads whatever memory lies after the slice",
+    "The index wraps around to the start",
+    "The slice grows to fit the index"
+   ],
+   "Safety checks are on in Debug and ReleaseSafe. In ReleaseFast they are removed and the access is undefined behavior."
+  ],
+  [
+   "In Zig, a function body contains defer print(\"a\"); defer print(\"b\"); What is printed when the function returns?",
+   "b then a",
+   [
+    "a then b",
+    "Only b",
+    "Only a"
+   ],
+   "Deferred statements run in reverse order of declaration when the scope exits."
+  ]
+ ],
+ "fortran": [
+  [
+   "In Fortran, real :: a(10) is declared with no explicit bounds. Which indexes are valid?",
+   "1 to 10",
+   [
+    "0 to 9",
+    "0 to 10",
+    "1 to 9"
+   ],
+   "Fortran arrays start at index 1 by default, unlike C."
+  ],
+  [
+   "Fortran stores arrays in column-major order. For real :: a(3, 4), which element comes right after a(1, 1) in memory?",
+   "a(2, 1)",
+   [
+    "a(1, 2)",
+    "a(2, 2)",
+    "a(3, 4)"
+   ],
+   "In column-major order the first index varies fastest, so for speed the innermost loop should run over the first index."
+  ],
+  [
+   "In Fortran, what is size(b) for integer :: b(-2:2)?",
+   "5",
+   [
+    "4",
+    "2",
+    "3"
+   ],
+   "Bounds -2:2 are inclusive, giving the indexes -2, -1, 0, 1 and 2."
+  ],
+  [
+   "In Fortran, integer :: v(5) = [1, 2, 3, 4, 5]. What is sum(v(2:4))?",
+   "9",
+   [
+    "6",
+    "14",
+    "12"
+   ],
+   "The section v(2:4) contains v(2), v(3) and v(4), which are 2, 3 and 4."
+  ],
+  [
+   "How many times does the body of the Fortran loop do i = 1, 10, 3 execute?",
+   "4",
+   [
+    "3",
+    "10",
+    "5"
+   ],
+   "i takes the values 1, 4, 7 and 10. The upper bound is inclusive when the step lands on it."
+  ],
+  [
+   "How many times does the body of the Fortran loop do i = 10, 1 execute?",
+   "0",
+   [
+    "10",
+    "1",
+    "9"
+   ],
+   "The default step is +1, so the iteration count max((1 - 10 + 1) / 1, 0) is zero. A countdown needs do i = 10, 1, -1."
+  ],
+  [
+   "Inside a Fortran DO loop, which statement skips the rest of the current iteration and starts the next one?",
+   "cycle",
+   [
+    "exit",
+    "continue",
+    "next"
+   ],
+   "cycle is like continue in C, while exit leaves the loop like break. In Fortran, CONTINUE is a no-op statement."
+  ],
+  [
+   "What is the main benefit of placing Fortran subroutines inside a module and accessing them with use?",
+   "Calls get an explicit interface, so arguments are checked",
+   [
+    "The subroutines run in parallel automatically",
+    "The subroutines no longer need a call statement",
+    "Module variables are stored in double precision"
+   ],
+   "Module procedures have explicit interfaces, so the compiler checks argument count, type and rank at each call. Old external procedures had none."
+  ],
+  [
+   "A Fortran subroutine declares real, intent(in) :: x and then executes x = 2.0. What happens?",
+   "The compiler reports an error",
+   [
+    "The caller's variable becomes 2.0",
+    "A local copy of x is changed",
+    "The value is ignored at runtime"
+   ],
+   "intent(in) means the dummy argument must not be redefined, and compilers diagnose the assignment at compile time."
+  ],
+  [
+   "In Fortran, real :: a(3, 4). What does shape(a) return?",
+   "[3, 4]",
+   [
+    "12",
+    "[4, 3]",
+    "2"
+   ],
+   "shape returns a rank-1 array of the extents along each dimension. size(a) would give 12 and rank(a) would give 2."
+  ],
+  [
+   "What do the Fortran intrinsics mod(-7, 3) and modulo(-7, 3) return?",
+   "-1 and 2",
+   [
+    "2 and -1",
+    "-1 and -1",
+    "2 and 2"
+   ],
+   "mod uses truncation, taking the sign of the first argument. modulo uses floor, taking the sign of the second argument."
+  ],
+  [
+   "Which Fortran declaration portably requests a real with at least 15 significant decimal digits?",
+   "real(selected_real_kind(15)) :: x",
+   [
+    "real(kind=15) :: x",
+    "real*15 :: x",
+    "real(precision=15) :: x"
+   ],
+   "Kind numbers are compiler-specific, so selected_real_kind(15) (or real64 from iso_fortran_env) is the portable choice."
+  ],
+  [
+   "In Fortran, x is declared real(real64) and the code does x = 0.1. What precision does x end up with?",
+   "Single precision, because 0.1 is a default real constant",
+   [
+    "Double precision, because x is declared as real64",
+    "Quad precision, because the constant is promoted",
+    "It depends on the loop that uses x later"
+   ],
+   "The literal 0.1 is default (usually 32-bit) real and is rounded before conversion. Write 0.1_real64 or 0.1d0 to keep full precision."
+  ],
+  [
+   "In Coarray Fortran, integer :: x[*] is declared. What does x[3] refer to?",
+   "The copy of x on image 3",
+   [
+    "The third element of x",
+    "x on every image except 3",
+    "x copied 3 times locally"
+   ],
+   "Square brackets are codimensions: each image has its own x, and x[3] accesses the one on image 3."
+  ],
+  [
+   "In Coarray Fortran, what does the statement sync all do?",
+   "Waits until every image reaches this point",
+   [
+    "Copies all coarrays to image 1",
+    "Ends execution on all images",
+    "Starts all images in parallel"
+   ],
+   "sync all is a barrier across all images, often used before reading data another image has written."
+  ],
+  [
+   "A Fortran file contains !$omp parallel do before a loop and is compiled without OpenMP enabled. What happens?",
+   "The directive is treated as a comment",
+   [
+    "Compilation fails with an error",
+    "The loop runs in parallel anyway",
+    "The loop body is skipped"
+   ],
+   "OpenMP directives start with the !$omp sentinel, which looks like a comment to a compiler without OpenMP support, so the code stays serial."
+  ],
+  [
+   "A Fortran OpenMP loop adds values into a shared variable s and gives wrong totals. Which clause fixes it?",
+   "reduction(+:s)",
+   [
+    "private(s)",
+    "shared(s)",
+    "nowait"
+   ],
+   "reduction gives each thread a private copy of s and combines them at the end, removing the data race. private(s) would discard the results."
+  ],
+  [
+   "In legacy Fortran without implicit none, an undeclared variable named kount is used. What type does it get?",
+   "integer",
+   [
+    "real",
+    "character",
+    "logical"
+   ],
+   "By default, names starting with I through N are integer and all others are real. implicit none turns this off."
+  ],
+  [
+   "In fixed-form FORTRAN 77 source, what does a non-blank character in column 6 mean?",
+   "The line continues the previous statement",
+   [
+    "The line is a comment",
+    "The line carries a statement label",
+    "The line is a compiler directive"
+   ],
+   "Columns 1 to 5 hold labels, column 6 marks continuation and statements go in columns 7 to 72. A C or * in column 1 marks a comment."
+  ],
+  [
+   "Which Fortran standard first made coarrays part of the language?",
+   "Fortran 2008",
+   [
+    "Fortran 90",
+    "Fortran 95",
+    "Fortran 77"
+   ],
+   "Coarrays were added in Fortran 2008 and extended with teams and events in Fortran 2018."
+  ]
+ ],
+ "assembly": [
+  [
+   "In the System V AMD64 ABI (Linux, macOS), which register holds a function's integer return value?",
+   "RAX",
+   [
+    "RDI",
+    "RBX",
+    "RSP"
+   ],
+   "Integer and pointer results are returned in RAX (with RDX for the upper half of 128-bit values)."
+  ],
+  [
+   "Which x86-64 register holds the address of the next instruction to execute?",
+   "RIP",
+   [
+    "RSP",
+    "RBP",
+    "RSI"
+   ],
+   "RIP is the instruction pointer. RSP is the stack pointer and RBP is often the frame pointer."
+  ],
+  [
+   "On x86-64, RAX holds 0xFFFFFFFFFFFFFFFF and the code runs mov eax, 1. What is RAX afterwards?",
+   "0x0000000000000001",
+   [
+    "0xFFFFFFFF00000001",
+    "0xFFFFFFFFFFFFFF01",
+    "0x0000000100000001"
+   ],
+   "Writing a 32-bit register zero-extends into the full 64-bit register. Writing AL or AX leaves the upper bits unchanged."
+  ],
+  [
+   "What is a key difference between ARM and x86 as instruction set architectures?",
+   "ARM is load/store; x86 allows memory operands in ALU ops",
+   [
+    "x86 is load/store; ARM allows memory operands in ALU ops",
+    "ARM has no general-purpose registers at all",
+    "x86 has no instructions for accessing memory"
+   ],
+   "On ARM, arithmetic works only on registers and memory is accessed through loads and stores. x86 can do add rax, [rbx] directly."
+  ],
+  [
+   "How long are AArch64 (A64) instructions compared with x86-64 instructions?",
+   "A64 uses a fixed 32 bits; x86-64 varies from 1 to 15 bytes",
+   [
+    "Both use a fixed length of 32 bits",
+    "A64 varies from 1 to 15 bytes; x86-64 uses 32 bits",
+    "Both vary from 2 to 8 bytes"
+   ],
+   "Fixed-length encoding simplifies decoding on ARM, while x86 uses variable-length instructions with prefixes."
+  ],
+  [
+   "On AArch64, where does the BL instruction store the return address?",
+   "In X30, the link register",
+   [
+    "On the stack at [SP]",
+    "In X0, the first argument register",
+    "In the program counter PC"
+   ],
+   "BL writes the return address to X30 (LR) and branches. A function that calls others must save LR before its own BL."
+  ],
+  [
+   "In Intel syntax, what does mov rax, [rbx + rcx*8 + 16] load into RAX?",
+   "8 bytes from address rbx + rcx*8 + 16",
+   [
+    "The value rbx + rcx*8 + 16 itself",
+    "8 bytes from address rbx, then adds 16",
+    "16 bytes starting at rbx + rcx*8"
+   ],
+   "Brackets mean a memory access with base + index*scale + displacement addressing, often used for array element access."
+  ],
+  [
+   "What does lea rax, [rbx + 8] do on x86-64?",
+   "Sets RAX to RBX + 8 without reading memory",
+   [
+    "Loads 8 bytes from address RBX + 8 into RAX",
+    "Stores RAX at address RBX + 8",
+    "Adds 8 to RBX and copies it into RAX"
+   ],
+   "lea computes the effective address only. It is often used for cheap arithmetic like rax = rbx + rcx*4 + 8. RBX is not modified."
+  ],
+  [
+   "In Intel syntax, what does mov eax, [0x1000] put into EAX?",
+   "The 4 bytes stored at address 0x1000",
+   [
+    "The number 0x1000",
+    "The address of EAX",
+    "The 4 bytes at the address held in 0x1000"
+   ],
+   "Square brackets denote a memory operand (direct addressing). mov eax, 0x1000 without brackets would load the immediate value."
+  ],
+  [
+   "Under the System V AMD64 calling convention, which register carries the first integer argument?",
+   "RDI",
+   [
+    "RAX",
+    "RCX",
+    "RSP"
+   ],
+   "The first six integer arguments go in RDI, RSI, RDX, RCX, R8 and R9. Windows x64 uses RCX, RDX, R8 and R9 instead."
+  ],
+  [
+   "What does the x86-64 call instruction do?",
+   "Pushes the return address and jumps to the target",
+   [
+    "Jumps to the target without saving anything",
+    "Saves all registers and jumps to the target",
+    "Pushes RBP and sets RBP to RSP"
+   ],
+   "call pushes the address of the next instruction onto the stack, and ret pops it back into RIP."
+  ],
+  [
+   "Under the System V AMD64 ABI, which register must a function preserve for its caller (callee-saved)?",
+   "RBX",
+   [
+    "RAX",
+    "RCX",
+    "RDI"
+   ],
+   "RBX, RBP, RSP and R12 to R15 are callee-saved. RAX, RCX, RDX, RSI, RDI and R8 to R11 may be clobbered."
+  ],
+  [
+   "Under the System V AMD64 ABI, what alignment must RSP have right before a call instruction?",
+   "16 bytes",
+   [
+    "4 bytes",
+    "8 bytes",
+    "32 bytes"
+   ],
+   "RSP must be a multiple of 16 at the call, so on entry RSP + 8 is 16-byte aligned. Misalignment can crash SSE code such as printf."
+  ],
+  [
+   "On Linux x86-64, which register holds the system call number for the syscall instruction?",
+   "RAX",
+   [
+    "RDI",
+    "RBX",
+    "R10"
+   ],
+   "The number goes in RAX, arguments in RDI, RSI, RDX, R10, R8 and R9, and the result comes back in RAX."
+  ],
+  [
+   "On Linux x86-64, which register carries the fourth argument of a system call?",
+   "R10",
+   [
+    "RCX",
+    "R8",
+    "RDX"
+   ],
+   "Normal functions use RCX for the fourth argument, but the syscall instruction overwrites RCX with the return address, so the kernel uses R10."
+  ],
+  [
+   "What distinguishes a hardware interrupt from a system call?",
+   "A device raises it asynchronously, not the running code",
+   [
+    "The running code raises it with a special instruction",
+    "It can only happen while the CPU is in user mode",
+    "It is handled entirely in user space"
+   ],
+   "A system call is a deliberate, synchronous request by the program. Hardware interrupts arrive at any time and the CPU runs a handler in the kernel."
+  ],
+  [
+   "What does cmp eax, ebx do on x86?",
+   "Computes eax - ebx, sets flags, and discards the result",
+   [
+    "Computes eax - ebx and stores it in eax",
+    "Copies ebx into eax if they differ",
+    "Swaps eax and ebx if eax is larger"
+   ],
+   "cmp is a subtraction that only updates flags such as ZF, SF, CF and OF, which conditional jumps then test."
+  ],
+  [
+   "On x86, AL holds 0x7F and the code runs add al, 1. Which flags describe the result?",
+   "OF = 1 and CF = 0",
+   [
+    "OF = 0 and CF = 1",
+    "OF = 1 and CF = 1",
+    "OF = 0 and CF = 0"
+   ],
+   "0x7F + 1 = 0x80: as signed bytes 127 + 1 overflows to -128 (OF set), but as unsigned bytes 127 + 1 = 128 fits, so no carry."
+  ],
+  [
+   "After cmp eax, ebx, which x86 jump is taken if EAX is greater than EBX when both are treated as unsigned?",
+   "ja",
+   [
+    "jg",
+    "jl",
+    "jb"
+   ],
+   "ja (jump if above) uses CF and ZF for unsigned comparisons. jg (jump if greater) is the signed version."
+  ],
+  [
+   "On x86, what does the sequence test eax, eax followed by jz done do?",
+   "Jumps to done if EAX is zero",
+   [
+    "Jumps to done if EAX is negative",
+    "Jumps to done if EAX is nonzero",
+    "Jumps to done unconditionally"
+   ],
+   "test ANDs EAX with itself and sets ZF when the result is zero. jz (same as je) jumps when ZF is set."
+  ]
+ ],
+ "verilog": [
+  [
+   "In Verilog-2001, what kind of signal must appear on the left side of an assign statement?",
+   "A net, such as a wire",
+   [
+    "A reg variable",
+    "An integer variable",
+    "A parameter"
+   ],
+   "Continuous assignments drive nets. Variables like reg are assigned in procedural blocks. (SystemVerilog relaxes this with logic.)"
+  ],
+  [
+   "Which Verilog statement describes a tri-state buffer that drives a onto y only when en is 1?",
+   "assign y = en ? a : 1'bz;",
+   [
+    "assign y = en ? a : 1'b0;",
+    "assign y = en & a;",
+    "assign y = en ? a : 1'bx;"
+   ],
+   "z is the high-impedance value, which lets other drivers control the line. Driving 0 or x would conflict with them."
+  ],
+  [
+   "In Verilog-2001, how must q be declared if it is assigned inside always @(posedge clk)?",
+   "As reg q",
+   [
+    "As wire q",
+    "As parameter q",
+    "As supply0 q"
+   ],
+   "Signals assigned procedurally must be variables (reg). Note that reg does not always mean a flip-flop; that depends on the logic."
+  ],
+  [
+   "Why is always @(*) preferred for combinational logic in Verilog?",
+   "It includes every signal read in the block automatically",
+   [
+    "It makes the block run on every clock edge",
+    "It forces the block to use non-blocking assignments",
+    "It turns the block into a testbench process"
+   ],
+   "A hand-written sensitivity list that misses a signal causes a mismatch between simulation and synthesized hardware."
+  ],
+  [
+   "What does always @(*) if (en) q = d; synthesize to in Verilog?",
+   "A latch, because q keeps its value when en is 0",
+   [
+    "A flip-flop clocked by en",
+    "Pure combinational wiring from d to q",
+    "A tri-state buffer controlled by en"
+   ],
+   "When en is 0 there is no assignment, so q must hold its value, which requires a latch. Add an else or a default assignment."
+  ],
+  [
+   "In a Verilog always @(posedge clk) block, a <= b; b <= a; runs on a clock edge. What happens?",
+   "a and b swap values",
+   [
+    "Both get the old value of b",
+    "Both get the old value of a",
+    "Only a changes"
+   ],
+   "Non-blocking assignments read all right-hand sides first and update together at the end of the time step."
+  ],
+  [
+   "In a Verilog always @(posedge clk) block, a = b; b = a; runs on a clock edge. What happens?",
+   "Both end up with the old value of b",
+   [
+    "a and b swap values",
+    "Both end up with the old value of a",
+    "Neither changes"
+   ],
+   "Blocking assignments execute in order: a takes b first, then b takes the new a, which is the old b."
+  ],
+  [
+   "What is the standard Verilog guideline for choosing between = and <=?",
+   "Use <= in clocked blocks and = in combinational blocks",
+   [
+    "Use = in clocked blocks and <= in combinational blocks",
+    "Use <= everywhere, since = is deprecated",
+    "Use = everywhere, since <= is only for simulation"
+   ],
+   "Following this rule avoids race conditions between clocked blocks and keeps simulation consistent with synthesized hardware."
+  ],
+  [
+   "A Verilog designer writes always @(posedge clk) begin q1 = d; q2 = q1; end intending a 2-stage shift register. What is built?",
+   "One stage: q1 and q2 both take d at each edge",
+   [
+    "A correct 2-stage shift register",
+    "A latch on q2 controlled by q1",
+    "No logic, since q2 is unused"
+   ],
+   "With blocking assignments q2 reads the new q1, which is already d. Using q1 <= d; q2 <= q1; gives two stages."
+  ],
+  [
+   "What is the main advantage of named port connections like adder u1 (.a(x), .b(y), .sum(s)); in Verilog?",
+   "They do not depend on the order of ports",
+   [
+    "They make the instance simulate faster",
+    "They allow connecting ports of any width",
+    "They create copies of the module"
+   ],
+   "Named association stays correct if the module's port order changes and makes mismatches easier to spot."
+  ],
+  [
+   "How do you instantiate a Verilog module counter with its WIDTH parameter set to 8?",
+   "counter #(.WIDTH(8)) c1 (...);",
+   [
+    "counter c1 #(.WIDTH(8)) (...);",
+    "counter c1 (.WIDTH = 8, ...);",
+    "counter<8> c1 (...);"
+   ],
+   "Parameter overrides come between the module name and the instance name, using #( ... )."
+  ],
+  [
+   "Where can a module instance appear in Verilog?",
+   "In a module body, outside procedural blocks",
+   [
+    "Inside an always block, under a condition",
+    "Inside an initial block in a testbench",
+    "Inside a function or task body"
+   ],
+   "Instances describe structural hardware and are not executable statements, so they cannot be placed in always, initial, functions or tasks."
+  ],
+  [
+   "What is typical of a Verilog testbench top module?",
+   "It has no ports and drives the design from initial blocks",
+   [
+    "It must be synthesizable into hardware",
+    "It has the same ports as the design under test",
+    "It contains only continuous assignments"
+   ],
+   "A testbench wraps the design, generates stimulus and checks results in simulation only."
+  ],
+  [
+   "In a Verilog testbench, how does $monitor differ from $display?",
+   "$monitor prints whenever one of its arguments changes",
+   [
+    "$monitor prints once at the end of simulation",
+    "$monitor prints only when an error occurs",
+    "$monitor writes to a waveform file"
+   ],
+   "$display prints once when executed. $monitor keeps watching its arguments and prints each time one changes."
+  ],
+  [
+   "With `timescale 1ns/1ps in Verilog, what does #5 mean?",
+   "A delay of 5 ns",
+   [
+    "A delay of 5 ps",
+    "A delay of 5 clock cycles",
+    "A delay of 1 ns, rounded to 5 ps"
+   ],
+   "The first value sets the time unit for delays and the second sets the rounding precision."
+  ],
+  [
+   "In a Verilog testbench with initial clk = 0; and always #5 clk = ~clk; what is the clock period?",
+   "10 time units",
+   [
+    "5 time units",
+    "20 time units",
+    "2.5 time units"
+   ],
+   "The clock toggles every 5 units, so one full cycle (high then low) takes 10."
+  ],
+  [
+   "A Verilog testbench declares reg clk; and uses always #5 clk = ~clk; with no initial value. What does clk do?",
+   "It stays at x for the whole simulation",
+   [
+    "It toggles normally starting from 0",
+    "It toggles normally starting from 1",
+    "It stays at z for the whole simulation"
+   ],
+   "A reg starts as x, and ~x is still x. Initialize it with initial clk = 0;."
+  ],
+  [
+   "In FSM design, what distinguishes a Moore machine from a Mealy machine?",
+   "Moore outputs depend only on the current state",
+   [
+    "Moore outputs depend on state and current inputs",
+    "Moore machines have no state register",
+    "Moore machines cannot have a reset"
+   ],
+   "Mealy outputs also depend on inputs, so they can react within the same cycle but may produce glitches."
+  ],
+  [
+   "In Verilog, what does always @(posedge clk or posedge rst) indicate for an FSM state register?",
+   "An asynchronous, active-high reset",
+   [
+    "A synchronous, active-high reset",
+    "A clock that runs on both edges",
+    "A reset that is only used in simulation"
+   ],
+   "Listing rst in the sensitivity list lets it change the state immediately, without waiting for a clock edge."
+  ],
+  [
+   "How many flip-flops does a 5-state FSM need with binary encoding and with one-hot encoding?",
+   "3 and 5",
+   [
+    "5 and 3",
+    "3 and 3",
+    "5 and 32"
+   ],
+   "Binary needs ceil(log2 5) = 3 bits. One-hot uses one flip-flop per state, which often simplifies next-state logic on FPGAs."
+  ]
+ ],
+ "vhdl": [
+  [
+   "In VHDL, what is the role of an entity compared with an architecture?",
+   "The entity declares the ports; the architecture its behavior",
+   [
+    "The entity holds the behavior; the architecture the ports",
+    "The entity is a testbench; the architecture is the design",
+    "The entity lists libraries; the architecture lists signals"
+   ],
+   "The entity is the external interface, and an architecture body describes how the design works inside."
+  ],
+  [
+   "How many architectures can one VHDL entity have?",
+   "One or more, and a configuration or binding picks one",
+   [
+    "Exactly one, defined in the same file",
+    "Zero, since architectures replace entities",
+    "Exactly two: one behavioral, one structural"
+   ],
+   "An entity can have several architectures, such as a behavioral model and a structural one. By default the most recently analyzed one is used."
+  ],
+  [
+   "In VHDL-93, an architecture reads the value of a port declared with mode out. What happens?",
+   "It is a compile error; VHDL-2008 allows reading it",
+   [
+    "It always reads 'U' in simulation",
+    "It reads the value from the previous clock",
+    "It works the same in all VHDL versions"
+   ],
+   "Before VHDL-2008, out ports could not be read inside the architecture, so designers used an internal signal or mode buffer."
+  ],
+  [
+   "What is the key difference between a VHDL signal and a variable inside a process?",
+   "A variable updates at once; a signal after the process suspends",
+   [
+    "A signal updates at once; a variable after the process suspends",
+    "Both update at once, in program order",
+    "Both update only at the next clock edge"
+   ],
+   "Variable assignment (:=) takes effect immediately. Signal assignment (<=) is scheduled and visible after a delta cycle."
+  ],
+  [
+   "Inside one VHDL process, s <= '0'; is followed by s <= '1';. What value does s get?",
+   "'1'",
+   [
+    "'0'",
+    "'X'",
+    "'U'"
+   ],
+   "Within a process, a later signal assignment overrides an earlier one, so the last assignment wins. Separate concurrent drivers would resolve to 'X'."
+  ],
+  [
+   "Where are VHDL variables (other than shared variables) declared?",
+   "In the declarative part of a process or subprogram",
+   [
+    "In the entity's port list",
+    "In the architecture's declarative part",
+    "In the library clause"
+   ],
+   "Ordinary variables are local to a process, function or procedure. Signals are declared in the architecture."
+  ],
+  [
+   "A combinational VHDL process is written as process(a) but also reads b. What is the effect?",
+   "Simulation misses changes on b, unlike the hardware",
+   [
+    "Synthesis fails with a missing signal error",
+    "b is treated as a constant zero",
+    "The process runs on every delta cycle"
+   ],
+   "The process wakes only on a. Synthesis usually ignores the list and builds logic using b, so simulation and hardware disagree."
+  ],
+  [
+   "What does process(all) mean in VHDL-2008?",
+   "The process is sensitive to every signal it reads",
+   [
+    "The process runs once at time zero",
+    "The process drives every signal in the design",
+    "The process waits on all clocks in the design"
+   ],
+   "process(all) removes the risk of incomplete sensitivity lists in combinational logic."
+  ],
+  [
+   "What happens in simulation to a VHDL process that has neither a sensitivity list nor any wait statement?",
+   "It loops forever at time zero and the simulation hangs",
+   [
+    "It runs once and then stops for good",
+    "It runs once on every clock edge",
+    "It is removed by the simulator"
+   ],
+   "A process repeats from the top when it ends, and only a wait (or a sensitivity list) can suspend it."
+  ],
+  [
+   "Why is rising_edge(clk) preferred over clk'event and clk = '1' in VHDL?",
+   "It ignores transitions such as 'X' to '1'",
+   [
+    "It runs faster in synthesized hardware",
+    "It also detects falling edges",
+    "It is required for asynchronous reset"
+   ],
+   "rising_edge is true only for a real '0' to '1' transition (including 'L' and 'H' forms), so simulation of unknown values is more accurate."
+  ],
+  [
+   "In a VHDL architecture body, two concurrent signal assignments appear outside any process. Does their order matter?",
+   "No, both describe hardware that is active in parallel",
+   [
+    "Yes, the first one is evaluated first",
+    "Yes, the last one overrides the first",
+    "Only if they drive different signals"
+   ],
+   "Concurrent statements execute whenever their inputs change, regardless of their position in the code."
+  ],
+  [
+   "In VHDL-93, which statement can appear directly in an architecture body outside any process?",
+   "y <= a when sel = '1' else b;",
+   [
+    "if sel = '1' then y <= a; else y <= b; end if;",
+    "case sel is when '1' => y <= a; when others => y <= b; end case;",
+    "for i in 0 to 3 loop y(i) <= a(i); end loop;"
+   ],
+   "when/else is a concurrent conditional assignment. if, case and loop statements are sequential and belong inside a process."
+  ],
+  [
+   "Which VHDL construct is the concurrent counterpart of a case statement?",
+   "with sel select y <= ...;",
+   [
+    "if ... elsif ... end if;",
+    "wait until sel'event;",
+    "loop ... exit when sel;"
+   ],
+   "A selected signal assignment chooses a value based on one expression, like case does inside a process."
+  ],
+  [
+   "What is a VHDL generic, such as generic (WIDTH : integer := 8)?",
+   "A constant parameter set when the entity is instantiated",
+   [
+    "A signal shared by all entities in the design",
+    "A variable that changes during simulation",
+    "A library that defines generic data types"
+   ],
+   "Generics parameterize an entity, for example bus width, and can be overridden per instance with a generic map."
+  ],
+  [
+   "How do you override the WIDTH generic of a counter instance in VHDL?",
+   "u1: entity work.counter generic map (WIDTH => 16) port map (...);",
+   [
+    "u1: entity work.counter port map (WIDTH => 16, ...);",
+    "u1: entity work.counter (WIDTH => 16) port map (...);",
+    "u1: entity work.counter generic (WIDTH := 16) port map (...);"
+   ],
+   "Generic values are given in a generic map placed before the port map."
+  ],
+  [
+   "What does u1: and2 port map (a => x, b => y, c => z); use for connecting ports in VHDL?",
+   "Named association, mapping formal ports to actual signals",
+   [
+    "Positional association, by order of declaration",
+    "Generic association, with constant values",
+    "Implicit association, by matching signal names"
+   ],
+   "formal => actual connects each port by name, so the order of the list does not matter."
+  ],
+  [
+   "What does direct entity instantiation, u1: entity work.and2 port map (...);, avoid in VHDL-93?",
+   "The need for a separate component declaration",
+   [
+    "The need for a port map",
+    "The need to compile the entity first",
+    "The need for a library clause for ieee"
+   ],
+   "Component instantiation requires a matching component declaration; direct entity instantiation refers to the compiled entity in a library."
+  ],
+  [
+   "What is the initial simulation value of a std_logic signal declared without a default value?",
+   "'U'",
+   [
+    "'0'",
+    "'X'",
+    "'Z'"
+   ],
+   "Signals start with the leftmost value of their type, and std_logic begins with 'U' (uninitialized)."
+  ],
+  [
+   "Two VHDL drivers put '0' and '1' on the same std_logic signal at the same time. What is the resolved value?",
+   "'X'",
+   [
+    "'0'",
+    "'1'",
+    "'Z'"
+   ],
+   "std_logic is a resolved type, and a conflict between strong 0 and strong 1 resolves to 'X'. std_ulogic does not allow multiple drivers."
+  ],
+  [
+   "Which IEEE package is the recommended way to do arithmetic on vectors in VHDL?",
+   "ieee.numeric_std with signed and unsigned",
+   [
+    "ieee.std_logic_arith with std_logic_vector",
+    "ieee.math_real with real values",
+    "std.textio with string values"
+   ],
+   "numeric_std is the IEEE standard package. std_logic_arith is a non-standard vendor package that can conflict with it."
+  ]
+ ]
+}

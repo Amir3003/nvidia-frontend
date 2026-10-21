@@ -3,7 +3,9 @@ import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { PageHeader } from '../components/PageHeader';
-import { SkillCard } from '../components/SkillCard';
+import { SkillCard, SKILL_META } from '../components/SkillCard';
+import { QUIZ_BANK } from '../db/quizBank';
+import { QUIZ_CATEGORIES, getCatalogTopic, getSkillCategory } from '../db/quizCatalog';
 import { TARGET_TRACKS, radarTargets } from '../db/targetTracks';
 import {
   ExternalLinkIcon,
@@ -15,7 +17,11 @@ import {
   ChevronDownIcon,
   ShieldIcon,
   TechIcon,
+  SearchIcon,
+  CloseIcon,
 } from '../components/Icons';
+
+const QUIZ_PAGE_SIZE = 24;
 
 export const CvLabPage: React.FC = () => {
   const { skills, openSkillQuiz, userProfile, setIsOnboardingOpen, opportunities } = useApp();
@@ -23,6 +29,15 @@ export const CvLabPage: React.FC = () => {
   // Benchmark target selection state
   const [targetOppId, setTargetOppId] = useState<string>(TARGET_TRACKS[0].id);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [quizQuery, setQuizQuery] = useState('');
+  const [quizScope, setQuizScope] = useState<'for-you' | 'all'>('for-you');
+  const [quizCategory, setQuizCategory] = useState<string>('');
+  const [quizLimit, setQuizLimit] = useState(QUIZ_PAGE_SIZE);
+
+  // Any change to the filters starts the list from the first page again.
+  useEffect(() => {
+    setQuizLimit(QUIZ_PAGE_SIZE);
+  }, [quizQuery, quizScope, quizCategory]);
   const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
   const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -175,6 +190,45 @@ export const CvLabPage: React.FC = () => {
 
     return 0;
   });
+
+  // Quizzes the candidate needs: skills the target requires plus profile skills not yet verified.
+  const isNeeded = (name: string) => {
+    const n = name.toLowerCase();
+    return (
+      requiredTargetSkills.some((req) => req.toLowerCase() === n) ||
+      userSkills.some((us) => us.toLowerCase() === n)
+    );
+  };
+  const neededSkills = prioritizedSkills.filter((s) => isNeeded(s.name));
+
+  // Search matches the skill name, category and quiz topics (and question text for built-in banks).
+  const query = quizQuery.trim().toLowerCase();
+  const matchesQuery = (skill: (typeof skills)[number]) => {
+    if (!query) return true;
+    const topics = [...(SKILL_META[skill.id]?.topics || []), ...(getCatalogTopic(skill.id)?.topics || [])];
+    const questions = QUIZ_BANK[skill.id] || skill.quizQuestions;
+    const haystack = [skill.name, getSkillCategory(skill.id), skill.reason, ...topics, ...questions.map((q) => q.question)]
+      .join(' ')
+      .toLowerCase();
+    // Each word must start a word in the text, so "rag" finds RAG but not "storage".
+    return query
+      .split(/\s+/)
+      .every((word) => new RegExp(`(^|[^a-z0-9])${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`).test(haystack));
+  };
+
+  // A search always looks across every quiz; without one, "For you" shows only needed quizzes.
+  const scopedSkills = query || quizScope === 'all' ? prioritizedSkills : neededSkills;
+  const matchingSkills = scopedSkills.filter(matchesQuery);
+  const categoryCounts = new Map<string, number>();
+  for (const s of matchingSkills) {
+    const c = getSkillCategory(s.id);
+    categoryCounts.set(c, (categoryCounts.get(c) || 0) + 1);
+  }
+  const activeCategory = quizCategory && categoryCounts.has(quizCategory) ? quizCategory : '';
+  const filteredSkills = activeCategory
+    ? matchingSkills.filter((s) => getSkillCategory(s.id) === activeCategory)
+    : matchingSkills;
+  const visibleSkills = filteredSkills.slice(0, quizLimit);
 
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-transparent relative z-10 text-slate-100">
@@ -612,21 +666,111 @@ export const CvLabPage: React.FC = () => {
         <div className="space-y-4 pt-2">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-2 border-b border-teal-200/60 gap-2">
             <div>
-              <h3 className="text-mini font-mono uppercase tracking-wider text-teal-800 font-semibold">
+              <h3 className="text-mini font-mono uppercase tracking-wider text-teal-300 font-semibold">
                 Recommended Skills & Benchmark Curriculum
               </h3>
-              <div className="text-[14px] text-indigo-950 font-bold mt-0.5">
+              <div className="text-[14px] text-slate-100 font-bold mt-0.5">
                 {selectedOpp.kind === 'TRACK' ? 'Skills for the track' : 'Skills listed by'} {selectedOpp.title}
               </div>
             </div>
             <span className="text-mini font-mono px-2.5 py-1 rounded bg-white/80 border border-teal-200 text-teal-900 font-semibold">
-              {prioritizedSkills.length} Available Curriculum Tracks
+              {filteredSkills.length} of {prioritizedSkills.length} Skill Quizzes
             </span>
           </div>
 
+          {/* Quiz finder: needed-only by default, search spans every quiz */}
+          <div className="flex flex-col sm:flex-row gap-2.5">
+            <div className="relative flex-1 min-w-0">
+              <SearchIcon size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-teal-700 pointer-events-none" />
+              <input
+                type="text"
+                enterKeyHint="search"
+                value={quizQuery}
+                onChange={(e) => setQuizQuery(e.target.value)}
+                placeholder="Search quizzes: skill or topic, e.g. Docker, RAG, joins"
+                aria-label="Search skill quizzes"
+                className="w-full h-11 pl-9 pr-10 rounded-btn bg-white/90 border border-teal-200/80 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20 text-[13px] text-slate-900 placeholder:text-slate-500"
+              />
+              {quizQuery && (
+                <button
+                  type="button"
+                  onClick={() => setQuizQuery('')}
+                  aria-label="Clear search"
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-md text-teal-800 hover:bg-teal-100/70 cursor-pointer"
+                >
+                  <CloseIcon size={14} />
+                </button>
+              )}
+            </div>
+            <div role="tablist" aria-label="Quiz scope" className="flex p-1 rounded-btn bg-white/80 border border-teal-200/80 flex-shrink-0">
+              {([
+                ['for-you', `For you (${neededSkills.length})`],
+                ['all', `All (${prioritizedSkills.length})`],
+              ] as const).map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  role="tab"
+                  aria-selected={quizScope === value}
+                  onClick={() => setQuizScope(value)}
+                  className={`flex-1 sm:flex-none h-9 px-4 rounded-md text-mini font-mono font-bold transition-colors cursor-pointer ${
+                    quizScope === value ? 'bg-teal-600 text-white shadow-2xs' : 'text-teal-900 hover:bg-teal-50'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+          {query && quizScope === 'for-you' && (
+            <p className="text-[12px] text-teal-200 -mt-1">Searching all quizzes, not only the ones for you.</p>
+          )}
+          {categoryCounts.size > 1 && (
+            <div className="flex gap-1.5 overflow-x-auto sm:flex-wrap -mx-4 px-4 sm:mx-0 sm:px-0 pb-1 sm:pb-0 [scrollbar-width:none]" role="group" aria-label="Filter quizzes by category">
+              {[['', matchingSkills.length] as const, ...QUIZ_CATEGORIES.filter((c) => categoryCounts.has(c)).map((c) => [c, categoryCounts.get(c) || 0] as const)].map(
+                ([value, count]) => (
+                  <button
+                    key={value || 'all'}
+                    type="button"
+                    aria-pressed={activeCategory === value}
+                    onClick={() => setQuizCategory(value)}
+                    className={`h-8 px-3 rounded-full text-[12px] font-medium border transition-colors cursor-pointer whitespace-nowrap flex-shrink-0 ${
+                      activeCategory === value
+                        ? 'bg-teal-500/90 border-teal-400 text-white'
+                        : 'bg-white/10 border-white/15 text-slate-200 hover:bg-white/15'
+                    }`}
+                  >
+                    {value || 'All categories'} <span className="opacity-70">{count}</span>
+                  </button>
+                )
+              )}
+            </div>
+          )}
+
           {/* Grid of Vertical Portrait Cards */}
+          {visibleSkills.length === 0 && (
+            <div className="p-6 rounded-card bg-white/80 border border-teal-200/80 text-center space-y-2">
+              <div className="text-[14px] font-bold text-indigo-950">
+                {query ? `No quizzes match "${quizQuery.trim()}"` : 'No quizzes for you yet'}
+              </div>
+              <p className="text-[13px] text-slate-600">
+                {query
+                  ? 'Try a broader word, for example a tool name or a topic.'
+                  : 'Pick a target benchmark above or add skills to your profile, or browse all quizzes.'}
+              </p>
+              {!query && (
+                <button
+                  type="button"
+                  onClick={() => setQuizScope('all')}
+                  className="h-10 px-4 rounded-btn bg-teal-600 hover:bg-teal-500 text-white text-mini font-mono font-bold cursor-pointer"
+                >
+                  Show all quizzes
+                </button>
+              )}
+            </div>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-            {prioritizedSkills.map((skill) => {
+            {visibleSkills.map((skill) => {
               const isMissingTarget = missingTargetSkills.some(
                 (m) => m.toLowerCase() === skill.name.toLowerCase()
               );
@@ -645,6 +789,17 @@ export const CvLabPage: React.FC = () => {
               );
             })}
           </div>
+          {filteredSkills.length > visibleSkills.length && (
+            <div className="flex justify-center pt-1">
+              <button
+                type="button"
+                onClick={() => setQuizLimit((n) => n + QUIZ_PAGE_SIZE)}
+                className="h-11 px-6 rounded-btn bg-white/90 hover:bg-white border border-teal-200 text-teal-900 text-[13px] font-bold cursor-pointer shadow-xs"
+              >
+                Show more ({filteredSkills.length - visibleSkills.length} left)
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

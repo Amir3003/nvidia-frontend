@@ -1,0 +1,2022 @@
+{
+ "technical-writing": [
+  [
+   "In the Diataxis documentation framework, which type of page is meant to teach a beginner by walking them through a complete small project?",
+   "Tutorial",
+   [
+    "Reference",
+    "Explanation",
+    "How-to guide"
+   ],
+   "Diataxis separates learning-oriented tutorials from task-oriented how-to guides, information-oriented reference and understanding-oriented explanation."
+  ],
+  [
+   "A reader already knows the product and wants to rotate an API key. Which Diataxis document type best serves this need?",
+   "How-to guide",
+   [
+    "Tutorial",
+    "Explanation",
+    "Release note"
+   ],
+   "How-to guides are goal-oriented steps for a user who already has basic competence. A tutorial is for learning from scratch."
+  ],
+  [
+   "Which heading structure is best for a documentation page that will be scanned quickly?",
+   "Descriptive, task-based headings in a consistent hierarchy (H1, then H2, then H3)",
+   [
+    "Clever, playful headings that hide the topic until the reader opens them",
+    "One long H1 heading followed by unbroken paragraphs of prose",
+    "Headings that skip levels freely (H1, then H4, then H2) so the page looks more varied"
+   ],
+   "Readers scan headings to find what they need, so headings should state the topic plainly and follow a logical hierarchy."
+  ],
+  [
+   "Which sentence follows common technical writing guidance best?",
+   "Run the installer, then restart the server.",
+   [
+    "The installer should be run, after which a restart of the server is to be performed.",
+    "It is recommended that the installer be run and the server restarted.",
+    "A restart of the server is needed once installation has been done by you."
+   ],
+   "Clear technical writing prefers active voice, imperative mood for instructions and short sentences."
+  ],
+  [
+   "What should an API reference entry for an endpoint include at minimum?",
+   "Method and path, typed parameters, request and response examples, error codes",
+   [
+    "A history of why the endpoint was designed and which engineer wrote it",
+    "Only a short summary of the endpoint, since developers can always read the source code",
+    "A marketing description of the business benefits the endpoint brings"
+   ],
+   "Reference docs are for lookup, so they must be complete and precise about inputs, outputs and failures."
+  ],
+  [
+   "An API parameter is documented as \"limit: the limit\". What is the main problem?",
+   "It repeats the name without saying type, allowed range or default",
+   [
+    "It should be rewritten in passive voice, as reference style guides usually require",
+    "Parameter names must never appear in their own description",
+    "It is too long for a reference table"
+   ],
+   "A useful parameter description states what it controls, its type, valid values and default, not just the name again."
+  ],
+  [
+   "Which code sample is most helpful in an API reference?",
+   "A minimal, runnable example with realistic values and the expected response",
+   [
+    "A large excerpt of real production code, including the unrelated business logic around it",
+    "Pseudocode that hides the real request format",
+    "A screenshot of code that cannot be copied"
+   ],
+   "Copyable, minimal and realistic samples let developers verify behavior quickly. Screenshots and pseudocode block copying and testing."
+  ],
+  [
+   "You are writing a developer guide. Where should prerequisites (accounts, versions, tools) appear?",
+   "At the start, before the first step",
+   [
+    "At the very end, after the troubleshooting section",
+    "Inside a footnote attached to the last step",
+    "Only in the separate API reference pages"
+   ],
+   "Listing prerequisites first prevents readers from failing midway because something is missing."
+  ],
+  [
+   "In a step-by-step guide, why should each numbered step usually contain a single action?",
+   "Readers can follow and verify progress one action at a time",
+   [
+    "Markdown limits each numbered list item to a single sentence of text",
+    "Search engines rank one-action steps higher",
+    "It makes the guide longer, which looks more thorough"
+   ],
+   "One action per step reduces missed actions and makes it easy to tell where something went wrong."
+  ],
+  [
+   "Which section is most important to put near the top of a project README?",
+   "What the project does and how to install and run it quickly",
+   [
+    "The full list of contributors, their roles and how to contact each of them",
+    "The complete changelog since the first commit",
+    "Detailed internal architecture of every module"
+   ],
+   "A README is the entry point, so it should first answer what this is and how to get started."
+  ],
+  [
+   "A README says \"Run npm start\" but the project needs environment variables first. What is the best fix?",
+   "Add a setup step listing the required variables, such as a .env.example file",
+   [
+    "Remove the npm start instruction so that nobody runs into the error",
+    "Mention the variables only in a comment on the issue tracker, where maintainers will see it",
+    "Tell users to search the source code to discover the variables"
+   ],
+   "Quick-start instructions must work as written. Documenting required configuration, often via a .env.example, makes the first run succeed."
+  ],
+  [
+   "What is the main purpose of a documentation style guide?",
+   "Keeping terminology, tone and formatting consistent across many authors",
+   [
+    "Replacing the need for engineers to technically review documentation content",
+    "Defining the product roadmap for the documentation team",
+    "Setting the visual brand colors of the marketing site"
+   ],
+   "Style guides like the Google developer documentation style guide or the Microsoft Writing Style Guide keep docs consistent regardless of who writes them."
+  ],
+  [
+   "A style guide says to use one term consistently. A page alternates between \"workspace\", \"project\" and \"space\" for the same thing. Why is this a problem?",
+   "Readers may assume they are three different concepts",
+   [
+    "Search engines penalize pages that use synonyms for the same feature",
+    "It makes the page shorter than it should be",
+    "Only the first term will be translated correctly"
+   ],
+   "Technical readers treat different words as different things. Using one term per concept prevents confusion."
+  ],
+  [
+   "Which guideline appears in widely used developer style guides such as Google's and Microsoft's?",
+   "Address the reader as \"you\" and use second person",
+   [
+    "Refer to the reader as \"the user\" in third person throughout",
+    "Use first person plural \"we\" for every instruction",
+    "Avoid pronouns and write only in passive voice"
+   ],
+   "Both major developer style guides recommend second person, which makes instructions direct and clear."
+  ],
+  [
+   "What is the main audience and purpose of release notes?",
+   "Telling users what changed in a version and how it affects them",
+   [
+    "Recording every internal commit message verbatim for the team",
+    "Explaining the long-term product vision to investors",
+    "Teaching brand new users the basics of the product step by step"
+   ],
+   "Release notes summarize user-visible changes, fixes and required actions for a specific version."
+  ],
+  [
+   "Which release note entry is best written?",
+   "Fixed: exporting a report with over 10,000 rows no longer times out.",
+   [
+    "Fixed bug #4821 reported by the QA team last sprint.",
+    "Refactored the ExportService class and tweaked several internal timeout values.",
+    "Various performance improvements and fixes under the hood."
+   ],
+   "A good entry describes the user-visible effect. Ticket numbers or internal class names alone do not tell users what changed."
+  ],
+  [
+   "A new version removes a deprecated API parameter. How should the release notes handle this?",
+   "Flag it clearly as a breaking change and describe the migration path",
+   [
+    "Leave it out entirely so that users are not alarmed by the change",
+    "Mention it only in a code comment inside the SDK source",
+    "List it at the bottom of the notes under minor improvements"
+   ],
+   "Breaking changes need prominent placement and migration instructions so users can upgrade safely."
+  ],
+  [
+   "Under Semantic Versioning (SemVer 2.0.0), which version bump signals a backward-incompatible API change?",
+   "Major, for example 2.4.1 to 3.0.0",
+   [
+    "Minor, for example 2.4.1 to 2.5.0",
+    "Patch, for example 2.4.1 to 2.4.2",
+    "Pre-release, for example 2.4.1 to 2.4.1-beta"
+   ],
+   "SemVer reserves the major number for incompatible API changes, minor for backward-compatible features and patch for backward-compatible fixes."
+  ],
+  [
+   "What does the Keep a Changelog convention recommend as section headings within a version entry?",
+   "Added, Changed, Deprecated, Removed, Fixed, Security",
+   [
+    "Features, Chores, Refactors, Tests, Docs, Builds, Style",
+    "Major, Minor, Patch, Build, Alpha, Beta",
+    "Frontend, Backend, Database, DevOps, QA, Design"
+   ],
+   "Keep a Changelog groups changes by type of impact on users, using exactly these six categories."
+  ],
+  [
+   "Which technique best checks whether a tutorial actually works for new readers?",
+   "Have a newcomer follow it exactly and note where they get stuck",
+   [
+    "Ask the original author to reread it once more before publishing",
+    "Run a spell checker and a grammar checker over the whole text",
+    "Count the words to make sure it is long enough to be thorough"
+   ],
+   "Authors fill gaps from memory. Watching a newcomer follow the steps reveals missing steps and unclear wording."
+  ]
+ ],
+ "public-speaking": [
+  [
+   "Which slide design choice usually makes a technical talk easier to follow?",
+   "One main idea per slide with a short headline that states it",
+   [
+    "Fitting the full script onto each slide so nothing is forgotten",
+    "Using a new font and color theme on every slide for variety",
+    "Putting all charts on one slide so the audience sees everything"
+   ],
+   "One idea per slide with an assertive headline lets the audience grasp the point while listening to you."
+  ],
+  [
+   "A speaker reads dense bullet points word for word from the slides. What is the most likely effect?",
+   "The audience reads ahead and stops listening to the speaker",
+   [
+    "The audience remembers far more of the content than with spoken delivery",
+    "The talk feels more interactive and personal",
+    "Questions become shorter and more focused"
+   ],
+   "People cannot read and listen at the same time well, so dense text competes with the speaker instead of supporting them."
+  ],
+  [
+   "What is a strong way to open a 10 minute project presentation?",
+   "Open with the problem or a concrete hook, then say what they will gain",
+   [
+    "Apologize for being nervous and for any mistakes you might make",
+    "Spend the first three minutes listing your team's biographies and previous projects",
+    "Begin with the detailed table of database fields and their types"
+   ],
+   "A hook plus a clear promise gives the audience a reason to listen. Apologies reduce credibility."
+  ],
+  [
+   "Which structure is commonly recommended for a short persuasive talk?",
+   "Problem, solution, evidence, call to action",
+   [
+    "Thanks, agenda, appendix, references",
+    "Details, background, conclusion, introduction",
+    "Questions first, then the main content, then the agenda"
+   ],
+   "Problem, solution, evidence and a clear ask is a simple persuasive arc audiences can follow."
+  ],
+  [
+   "During a talk you notice many people looking at their phones. What is the best adjustment?",
+   "Re-engage them with a question, a quick poll or a concrete example",
+   [
+    "Speak noticeably faster so you finish before they lose interest completely",
+    "Stop and tell the audience to put their phones away",
+    "Skip to the appendix slides with detailed tables"
+   ],
+   "Interaction or a vivid example resets attention. Speeding up or scolding usually makes things worse."
+  ],
+  [
+   "Why do speakers often tell a short personal or user story in a technical talk?",
+   "Stories make abstract information concrete and easier to remember",
+   [
+    "Stories replace the need for any data or evidence",
+    "Stories make the talk longer, which makes the speaker look more serious and prepared",
+    "Audiences expect stories only at the very end"
+   ],
+   "A story gives context and emotion, which helps audiences remember the point. It should support evidence, not replace it."
+  ],
+  [
+   "In storytelling, what is the role of conflict or tension?",
+   "It creates a problem the audience wants to see resolved",
+   [
+    "It shows the audience that the speaker disagrees with their opinions",
+    "It replaces the conclusion of the talk",
+    "It is used only in fiction, not in business talks"
+   ],
+   "Tension, such as a failing system or an unmet need, makes the audience care about the resolution you present."
+  ],
+  [
+   "Which is the best way to use a pause while speaking?",
+   "Pause briefly after a key point to let it land",
+   [
+    "Avoid pauses entirely to show confidence",
+    "Fill every pause with \"um\" so the audience knows you are thinking",
+    "Pause only when you lose your place in the notes"
+   ],
+   "A deliberate pause signals importance and gives listeners time to process. Filler words weaken delivery."
+  ],
+  [
+   "A speaker is told they talk too fast when nervous. Which practice helps most?",
+   "Rehearse aloud with a timer and mark planned pauses in the notes",
+   [
+    "Add more slides so there is more to say",
+    "Memorize the full script word for word and recite it as quickly as possible",
+    "Drink an energy drink just before going on stage"
+   ],
+   "Timed rehearsal and planned pauses build a natural pace. Cramming more content increases speed."
+  ],
+  [
+   "What does \"vocal variety\" mean in public speaking?",
+   "Changing pitch, pace and volume to emphasize meaning",
+   [
+    "Switching between several languages during one talk",
+    "Using a microphone and a backup microphone",
+    "Repeating each sentence twice for clarity"
+   ],
+   "Varying pitch, pace and volume keeps attention and highlights what matters. A monotone voice loses listeners."
+  ],
+  [
+   "An audience member asks a question you cannot answer. What is the best response?",
+   "Say you do not know, and offer to follow up after checking",
+   [
+    "Invent a plausible answer on the spot to avoid looking unprepared",
+    "Ignore the question and move to the next slide",
+    "Tell them the question is not relevant"
+   ],
+   "Honesty preserves credibility. Following up shows respect for the question."
+  ],
+  [
+   "Why should a speaker repeat or paraphrase a question from the audience before answering?",
+   "So the whole room hears it and you confirm you understood it",
+   [
+    "To buy extra time so that the session can run over schedule",
+    "Because conference rules require every question to be repeated",
+    "To show the audience that the question was too simple to ask"
+   ],
+   "Repeating the question ensures the whole room hears it and lets you check you understood it correctly."
+  ],
+  [
+   "An audience member makes a long statement with no clear question during Q&A. What is the most professional response?",
+   "Briefly summarize their point, respond, and invite the next question",
+   [
+    "Let them continue for as long as they want, then end the session",
+    "Interrupt sharply and tell them this is not a question at all",
+    "End the whole Q&A session immediately and leave the stage"
+   ],
+   "A brief summary and response respects the person while protecting time for other questions."
+  ],
+  [
+   "You present to non-technical managers about a system migration. What should you focus on?",
+   "Business impact, risks, timeline and the decision you need from them",
+   [
+    "Code snippets, full database schemas and the deployment scripts",
+    "The exact versions of every library and framework that the new system depends on",
+    "A deep dive into the math behind the migration algorithm"
+   ],
+   "Tailor the talk to the audience: managers need impact and decisions, not implementation details."
+  ],
+  [
+   "What is the main benefit of a live demo in a technical presentation, and the main risk?",
+   "It proves the product works, but can fail, so keep a recorded backup",
+   [
+    "It is faster than slides, but audiences usually find demos boring",
+    "It needs no rehearsal, but it always requires internet access",
+    "It replaces Q&A, but it also makes any slides unnecessary"
+   ],
+   "Demos are convincing but fragile. Rehearsal and a pre-recorded fallback are standard practice."
+  ],
+  [
+   "You must show code in a talk. Which approach is best?",
+   "Show a short snippet in a large font and highlight the lines that matter",
+   [
+    "Show the whole source file in a small font so that nothing important is missing",
+    "Show code only as a link and never on the slide",
+    "Scroll quickly through the code in your editor"
+   ],
+   "Large, short and highlighted code lets the room read the relevant part. Full files in small fonts are unreadable."
+  ],
+  [
+   "When presenting a chart in a talk, what should you do first?",
+   "Explain what the axes show, then state the key takeaway",
+   [
+    "Read every number in the chart aloud",
+    "Move on immediately and let the audience interpret it",
+    "Apologize for the chart's colors"
+   ],
+   "Orient the audience to the axes, then tell them what to see, so everyone draws the right conclusion."
+  ],
+  [
+   "Which ending is strongest for a talk?",
+   "Restate the key message and give a clear next step or call to action",
+   [
+    "Say \"that's all I have\" and simply stop speaking at that point",
+    "Introduce a brand new topic so the audience leaves feeling curious",
+    "Show a slide with only the word \"Questions?\" and wait silently"
+   ],
+   "A strong close restates the main idea and tells the audience what to do or remember."
+  ],
+  [
+   "What is the most effective way to reduce stage anxiety before a talk?",
+   "Rehearse several times aloud, ideally in front of others",
+   [
+    "Avoid rehearsing so the talk feels spontaneous",
+    "Read the slides silently once the night before, so the talk stays fresh",
+    "Write the talk on the day it is given"
+   ],
+   "Repeated out-loud rehearsal builds familiarity and confidence, and reveals timing problems."
+  ],
+  [
+   "Where should a speaker usually look while talking to a live audience?",
+   "At different people across the room, a few seconds each",
+   [
+    "At the projected slides behind them for most of the time",
+    "At their own printed notes for nearly the whole talk",
+    "At one fixed point on the back wall above everyone's heads"
+   ],
+   "Eye contact with individuals across the room builds connection. Facing the slides turns your back to the audience."
+  ]
+ ],
+ "product-management": [
+  [
+   "Which is the standard user story template?",
+   "As a <type of user>, I want <goal> so that <benefit>",
+   [
+    "The system shall <function> within <time limit> for <role>",
+    "Given <context>, when <event>, then <outcome>",
+    "If <condition> then <action> else <fallback>"
+   ],
+   "The role, goal and benefit template keeps the focus on who needs something and why. Given/When/Then is a format for acceptance criteria."
+  ],
+  [
+   "What are acceptance criteria for a user story?",
+   "Conditions a story must meet for the product owner to accept it",
+   [
+    "A list of the developers who are assigned to work on the story",
+    "The estimated hours that each task in the story will take",
+    "The design mockups and screenshots attached to the story ticket"
+   ],
+   "Acceptance criteria define the testable conditions of satisfaction for a specific story."
+  ],
+  [
+   "Which acceptance criterion is best written?",
+   "Given a logged-in user, when they click Export, then a CSV downloads",
+   [
+    "The export feature should work well and be fast for every user, on every device",
+    "Export must be user-friendly, intuitive and pleasant to use",
+    "Developers should implement exporting properly and test it"
+   ],
+   "Good criteria are specific and testable. Given/When/Then makes the precondition, action and expected result explicit."
+  ],
+  [
+   "What does the INVEST acronym describe?",
+   "Qualities of a good user story: Independent, Negotiable, Valuable, Estimable, Small, Testable",
+   [
+    "Steps of a product launch: Inform, Notify, Validate, Execute, Ship, Track, Review",
+    "Metrics for investors: Income, Net value, Volume, Equity, Sales, Turnover",
+    "Roles in a Scrum team: Investor, Negotiator, Visionary, Engineer, Sponsor, Tester"
+   ],
+   "INVEST, coined by Bill Wake, is a checklist for writing user stories that are ready for development."
+  ],
+  [
+   "What is the main difference between a product roadmap and a release plan?",
+   "A roadmap shows direction and themes over time; a release plan details what ships when",
+   [
+    "A roadmap lists the bugs the team must fix; a release plan lists the company's annual budget",
+    "A roadmap is only for engineers; a release plan is only for the sales team",
+    "A roadmap is fixed for several years; a release plan can never be changed"
+   ],
+   "Roadmaps communicate outcomes and priorities at a high level; release plans are tactical and date-specific."
+  ],
+  [
+   "A Now / Next / Later roadmap is often preferred over a date-based roadmap because:",
+   "It shows priorities without committing to dates that may change",
+   [
+    "It removes the need for the team to prioritize any of the work",
+    "It lists every task in the backlog along with hour estimates",
+    "It is the roadmap format that the Scrum Guide requires teams to use"
+   ],
+   "Now/Next/Later shows sequence and focus while staying honest about uncertainty in later items."
+  ],
+  [
+   "What is the main goal of backlog refinement (backlog grooming)?",
+   "Clarifying, splitting, estimating and ordering upcoming backlog items",
+   [
+    "Reviewing the completed increment with stakeholders and collecting their feedback",
+    "Reflecting on how the team worked during the last sprint",
+    "Deploying finished features to production"
+   ],
+   "Refinement keeps the top of the backlog ready for upcoming sprints. Reviewing the increment happens in the Sprint Review."
+  ],
+  [
+   "According to the Scrum Guide, who is accountable for ordering the Product Backlog?",
+   "The Product Owner",
+   [
+    "The Scrum Master",
+    "The Developers",
+    "The most senior stakeholder"
+   ],
+   "The Scrum Guide makes the Product Owner accountable for Product Backlog management, including ordering items."
+  ],
+  [
+   "A backlog has grown to 600 items, many years old. What is a sensible refinement action?",
+   "Archive or delete stale items that no longer align with goals",
+   [
+    "Estimate every single item in detail with the whole team before the next sprint",
+    "Move all items into the current sprint",
+    "Split each item into ten smaller tasks"
+   ],
+   "A huge, stale backlog hides priorities. Removing items that no longer matter keeps it useful."
+  ],
+  [
+   "What is a Minimum Viable Product (MVP)?",
+   "The smallest version that lets a team learn whether customers value it",
+   [
+    "A complete product with every planned feature, released to customers as a beta",
+    "The cheapest product version the company can sell to customers",
+    "A clickable design prototype that cannot be used for real tasks"
+   ],
+   "Popularized by Eric Ries, an MVP is about validated learning with the least effort, not about shipping a cheap or full product."
+  ],
+  [
+   "A team wants to test demand for a meal-planning app before building it. Which is a valid MVP-style experiment?",
+   "A landing page describing the app with a sign-up button",
+   [
+    "Building the full app with all integrations before any launch",
+    "Hiring a large sales team before any product exists at all",
+    "Writing a 50 page specification and waiting for approval"
+   ],
+   "A landing page (smoke test) measures real interest cheaply before investing in development."
+  ],
+  [
+   "What is the main purpose of tracking a North Star Metric?",
+   "Focusing the team on one metric that reflects core customer value",
+   [
+    "Replacing all of the other metrics that the company tracks",
+    "Measuring the individual performance of each employee on the team",
+    "Reporting the company's stock price to every team each day"
+   ],
+   "A North Star Metric aligns teams around the value customers get. Supporting metrics are still tracked."
+  ],
+  [
+   "Which of these is a vanity metric rather than an actionable metric?",
+   "Total registered users since launch",
+   [
+    "Week-1 retention rate of new sign-ups",
+    "Conversion rate from trial to paid",
+    "Weekly active users divided by monthly active users"
+   ],
+   "A cumulative total only goes up and says little about health. Rates and ratios guide decisions."
+  ],
+  [
+   "Monthly churn rate is calculated as:",
+   "Customers lost during the month divided by customers at the start of the month",
+   [
+    "New customers during the month divided by total customers",
+    "Revenue during the month divided by number of customers",
+    "Customers at the end of the month divided by customers at the start of the month"
+   ],
+   "Churn measures the share of existing customers who leave over a period."
+  ],
+  [
+   "What does DAU/MAU measure?",
+   "Stickiness: how often monthly users return on a typical day",
+   [
+    "Average revenue earned per monthly active user in each calendar month",
+    "The number of new app downloads recorded per day",
+    "The ratio of paid subscribers to free users each month"
+   ],
+   "Dividing daily by monthly active users shows how habitually people use the product."
+  ],
+  [
+   "In the RICE prioritization framework, how is the score calculated?",
+   "(Reach x Impact x Confidence) / Effort",
+   [
+    "Reach + Impact + Confidence + Effort",
+    "(Reach x Effort) / (Impact x Confidence)",
+    "Reach x Impact x Confidence x Effort"
+   ],
+   "RICE, from Intercom, rewards reach, impact and confidence and divides by effort, so cheap high-value items rank first."
+  ],
+  [
+   "Feature A: Reach 1000, Impact 2, Confidence 50%, Effort 2. Feature B: Reach 500, Impact 3, Confidence 100%, Effort 1. Which has the higher RICE score?",
+   "Feature B, with a score of 1500",
+   [
+    "Feature A, with a score of 1000",
+    "Feature A, with a score of 2000",
+    "Neither, they tie at 500 each"
+   ],
+   "A: 1000 x 2 x 0.5 / 2 = 500. B: 500 x 3 x 1.0 / 1 = 1500, so B ranks higher despite smaller reach."
+  ],
+  [
+   "In the MoSCoW method, what does the \"W\" stand for?",
+   "Won't have (this time)",
+   [
+    "Wish list",
+    "Will have later this sprint",
+    "Weighted priority"
+   ],
+   "MoSCoW is Must have, Should have, Could have, Won't have this time. The last category sets explicit scope limits."
+  ],
+  [
+   "Under MoSCoW, a feature without which the release would be unusable or illegal is a:",
+   "Must have",
+   [
+    "Should have",
+    "Could have",
+    "Won't have"
+   ],
+   "Must haves are non-negotiable for the release. Should haves are important but the release still works without them."
+  ],
+  [
+   "In the Kano model, what are \"delighters\" (attractive features)?",
+   "Unexpected features that raise satisfaction but are not missed when absent",
+   [
+    "Basic features whose absence makes customers very dissatisfied",
+    "Features whose satisfaction rises in proportion to how much is delivered",
+    "Features that customers actively dislike when they are added"
+   ],
+   "Kano separates must-be, performance and attractive qualities. Delighters surprise users without being expected."
+  ]
+ ],
+ "ui-ux-design": [
+  [
+   "What is the main purpose of a low-fidelity wireframe?",
+   "Exploring layout and structure quickly before visual polish",
+   [
+    "Delivering final pixel-perfect assets to developers for build",
+    "Testing the final color palette and brand fonts with users",
+    "Producing marketing images for the app store listing"
+   ],
+   "Low-fidelity wireframes are cheap to change, so teams can test structure and flow early."
+  ],
+  [
+   "Why do designers often use grayscale and placeholder text in early wireframes?",
+   "To keep feedback on structure and flow instead of colors and copy",
+   [
+    "Because most wireframing tools do not support color at all",
+    "Because developers require grayscale files when they implement the first version",
+    "To make the wireframe load faster when shared in the browser"
+   ],
+   "Without visual polish, reviewers comment on layout and content priority, which is what matters at that stage."
+  ],
+  [
+   "What is a user persona?",
+   "A fictional but research-based profile representing a key user group",
+   [
+    "A real customer who is chosen by the team to approve every design decision",
+    "A list of all user accounts in the database",
+    "The designer's own preferences written as a profile"
+   ],
+   "Personas summarize patterns from real research so the team can design for specific needs and goals."
+  ],
+  [
+   "Which research method best reveals why users abandon a checkout flow?",
+   "Moderated usability sessions where users think aloud at checkout",
+   [
+    "A survey asking users to rate the brand on a scale from 1 to 10",
+    "Counting page views on the homepage over the last month",
+    "Asking the sales team what they think customers dislike"
+   ],
+   "Observing users think aloud uncovers the reasons behind behavior. Analytics show where they leave but not why."
+  ],
+  [
+   "What is the difference between qualitative and quantitative user research?",
+   "Qualitative explains why people behave as they do; quantitative measures how many",
+   [
+    "Qualitative relies on numbers; quantitative relies on open interviews",
+    "Qualitative is done after launch; quantitative is done only before launch",
+    "Qualitative is optional for teams; quantitative is mandatory for every project"
+   ],
+   "Interviews and usability tests answer why; surveys and analytics answer how many."
+  ],
+  [
+   "According to Nielsen Norman Group, roughly how many users are typically enough for a small qualitative usability test to find most common problems?",
+   "About 5",
+   [
+    "About 50",
+    "About 500",
+    "Exactly 1"
+   ],
+   "NN/g research shows around 5 users uncover most usability problems in a qualitative test; iterating with more small rounds is more efficient."
+  ],
+  [
+   "During a usability test, a participant asks \"Should I click here?\" What should the facilitator do?",
+   "Reply neutrally, for example \"What would you expect to happen?\"",
+   [
+    "Say yes and point to the correct button so the test continues",
+    "Explain in detail how the feature was designed to work",
+    "End the session early, since the user is clearly confused"
+   ],
+   "Facilitators avoid leading participants so the test shows how real users behave without help."
+  ],
+  [
+   "What is the difference between a usability test and A/B testing?",
+   "Usability tests find problems with a few users; A/B tests compare variants at scale",
+   [
+    "Usability tests need thousands of users; A/B tests need only about five users per variant",
+    "They are the same research method, just known by different names",
+    "A/B tests explain why users struggle; usability tests only count clicks"
+   ],
+   "Usability testing is qualitative and diagnostic; A/B testing is quantitative and measures which variant performs better."
+  ],
+  [
+   "A date field accepts free text and rejects bad formats only after the form is submitted. Which Nielsen heuristic suggests a date picker or inline validation?",
+   "Error prevention",
+   [
+    "Aesthetic and minimalist design",
+    "Consistency and standards",
+    "Help and documentation"
+   ],
+   "Error prevention means designing so mistakes are less likely in the first place, for example by constraining input with a date picker."
+  ],
+  [
+   "A loading button shows no spinner or change after it is clicked. Which Nielsen heuristic is violated?",
+   "Visibility of system status",
+   [
+    "Consistency and standards",
+    "Flexibility and efficiency of use",
+    "Match between system and real world"
+   ],
+   "Users should always know what the system is doing through timely feedback."
+  ],
+  [
+   "Showing recently used files in a menu instead of asking users to type a filename supports which heuristic?",
+   "Recognition rather than recall",
+   [
+    "User control and freedom",
+    "Error prevention",
+    "Aesthetic and minimalist design"
+   ],
+   "Making options visible reduces memory load: recognizing is easier than recalling."
+  ],
+  [
+   "Which heuristic is supported by providing Undo and a clear Cancel button?",
+   "User control and freedom",
+   [
+    "Visibility of system status",
+    "Help and documentation",
+    "Recognition rather than recall"
+   ],
+   "Users make mistakes and need a clearly marked emergency exit to leave unwanted states."
+  ],
+  [
+   "What is card sorting used for?",
+   "Learning how users group and label content for navigation",
+   [
+    "Testing how fast pages load on different mobile devices",
+    "Choosing the brand color palette with input from users",
+    "Ranking reported bugs by severity before a release"
+   ],
+   "In card sorting, participants organize topics into groups, revealing their mental models for navigation."
+  ],
+  [
+   "What does tree testing evaluate?",
+   "Whether users can find items in a text-only navigation hierarchy",
+   [
+    "How fast the site's database queries run under heavy load",
+    "Which illustration style users prefer for the landing page hero section",
+    "How the page layout adapts to different screen sizes"
+   ],
+   "Tree testing checks the findability of a text-only hierarchy, isolating information architecture from visual design."
+  ],
+  [
+   "What is the main benefit of a design system?",
+   "Reusable components and shared rules that keep products consistent",
+   [
+    "A single static mockup of the homepage shared with the team",
+    "A complete replacement for user research and usability testing",
+    "A brand logo file exported in several formats and sizes"
+   ],
+   "Design systems combine components, tokens and documentation so teams build consistent interfaces faster."
+  ],
+  [
+   "In Atomic Design (Brad Frost), what is the correct order from smallest to largest?",
+   "Atoms, molecules, organisms, templates, pages",
+   [
+    "Pages, templates, organisms, molecules, atoms",
+    "Molecules, atoms, templates, organisms, pages",
+    "Atoms, organisms, molecules, pages, templates"
+   ],
+   "Atomic Design builds up from atoms (a button) to molecules (a search field) to organisms (a header), then templates and pages."
+  ],
+  [
+   "Which technique most directly creates visual hierarchy on a page?",
+   "Varying size, weight, contrast and spacing of elements",
+   [
+    "Using the same font size and weight for every element",
+    "Centering every element on the page along one axis",
+    "Adding more items to the main navigation bar"
+   ],
+   "Hierarchy comes from contrast: bigger, bolder, higher-contrast and well-spaced elements are seen first."
+  ],
+  [
+   "Per WCAG 2.x level AA, what is the minimum contrast ratio for normal-size body text?",
+   "4.5:1",
+   [
+    "3:1",
+    "7:1",
+    "2:1"
+   ],
+   "WCAG AA requires 4.5:1 for normal text and 3:1 for large text. 7:1 is the AAA level."
+  ],
+  [
+   "What does Fitts's law imply for interface design?",
+   "Larger and closer targets are faster to click or tap",
+   [
+    "Users read every page in a strict left-to-right, top-to-bottom order",
+    "More choices always make decisions faster",
+    "Users remember about seven items at once"
+   ],
+   "Fitts's law relates target size and distance to movement time, so key actions should be large and easy to reach."
+  ],
+  [
+   "What does Hick's law state?",
+   "Decision time grows with the number and complexity of choices",
+   [
+    "Users tend to click the first option they see on any page",
+    "Larger buttons get clicked more often regardless of position",
+    "Users stop reading most pages after about three paragraphs"
+   ],
+   "Hick's law suggests reducing or grouping choices to speed up decisions."
+  ]
+ ],
+ "figma": [
+  [
+   "In Figma, what keyboard shortcut adds Auto Layout to a selected frame or set of layers?",
+   "Shift + A",
+   [
+    "Ctrl/Cmd + G",
+    "Ctrl/Cmd + Alt/Option + K",
+    "Shift + R"
+   ],
+   "Shift + A adds Auto Layout. Ctrl/Cmd + G groups layers, Ctrl/Cmd + Alt/Option + K creates a component."
+  ],
+  [
+   "A button uses Auto Layout. You want it to grow wider as the label text gets longer. Which horizontal resizing setting should the button frame use?",
+   "Hug contents",
+   [
+    "Fixed width",
+    "Fill container",
+    "Scale"
+   ],
+   "Hug contents makes the frame size itself to its children, so longer text widens the button."
+  ],
+  [
+   "Inside an Auto Layout row, you want one child to take all remaining horizontal space. Which setting does that child need?",
+   "Fill container",
+   [
+    "Hug contents",
+    "Fixed width",
+    "Absolute position"
+   ],
+   "Fill container makes a child stretch to fill the available space along that axis."
+  ],
+  [
+   "In Auto Layout, what does \"space between\" spacing mode do?",
+   "Pushes children to the edges and spreads leftover space evenly between them",
+   [
+    "Adds a fixed 8 px gap between every child, regardless of how wide the frame becomes",
+    "Stacks all children on top of each other in the same position",
+    "Places all children at the start of the frame with no gap at all"
+   ],
+   "Space between (similar to CSS justify-content: space-between) spreads children across the full frame."
+  ],
+  [
+   "How do you make one layer inside an Auto Layout frame ignore the layout flow, such as a badge pinned to a corner?",
+   "Enable Absolute position on that layer",
+   [
+    "Lock the layer",
+    "Set its opacity to 0 and duplicate it",
+    "Convert the parent frame to a group"
+   ],
+   "Absolute position lets a child be placed freely while siblings keep their Auto Layout flow."
+  ],
+  [
+   "What is the relationship between a main component and its instances in Figma?",
+   "Main component changes reach instances, except properties overridden there",
+   [
+    "Instances are fully independent copies with no link to the main component",
+    "Changes made to any instance automatically update the main component",
+    "Instances can only be used in the same file as their main component"
+   ],
+   "Instances inherit from the main component; local overrides such as changed text are preserved."
+  ],
+  [
+   "You have Primary, Secondary and Ghost buttons in Small and Large sizes. What is the best way to organize them in Figma?",
+   "One component set with variant properties Type and Size",
+   [
+    "Six separate components with unrelated names on one page",
+    "One component with all six buttons drawn inside one frame",
+    "Six groups copied by hand into each design file that needs them"
+   ],
+   "Variants combine related components into a set with properties, making swapping easy in the instance panel."
+  ],
+  [
+   "Which Figma component property lets designers show or hide an icon in instances without creating extra variants?",
+   "Boolean property",
+   [
+    "Instance swap property",
+    "Text property",
+    "Variant property"
+   ],
+   "A boolean property toggles a layer's visibility, avoiding a separate variant for each with/without combination."
+  ],
+  [
+   "Which component property lets an instance replace its nested icon with any other icon component?",
+   "Instance swap property",
+   [
+    "Boolean property",
+    "Text property",
+    "Constraint property"
+   ],
+   "Instance swap properties expose a nested instance so users can pick a different component in place."
+  ],
+  [
+   "What does the \"Detach instance\" action do?",
+   "Turns it into a regular frame that no longer gets main component updates",
+   [
+    "Deletes the main component from the published team library and from every file",
+    "Moves the instance to a new page and hides the original",
+    "Publishes the instance as a brand new shared team library"
+   ],
+   "Detaching breaks the link to the main component, so future changes no longer apply."
+  ],
+  [
+   "In Figma, what are variables most commonly used to implement?",
+   "Design tokens such as colors and spacing, with modes like light and dark",
+   [
+    "Animated transitions between frames in an interactive prototype",
+    "Plugins written in JavaScript that automate repetitive tasks across many files",
+    "Version history snapshots that let you restore older file states"
+   ],
+   "Variables store reusable values and support modes, which makes them the native way to represent design tokens."
+  ],
+  [
+   "A team wants one set of color values for light theme and another for dark theme, switchable on a frame. Which Figma feature fits?",
+   "A variable collection with Light and Dark modes",
+   [
+    "Two separate copies of every frame in the file",
+    "A shared layout grid style applied to each frame",
+    "A new branch of the file for each color theme"
+   ],
+   "Variable modes let the same variable resolve to different values; you set the mode on a frame or page."
+  ],
+  [
+   "Why do design systems often use alias (semantic) tokens such as color/text/primary that point to raw tokens such as blue/600?",
+   "So meaning stays stable while the raw value can change in one place",
+   [
+    "Because Figma does not allow raw color values on any layer",
+    "To make each token name longer and therefore more unique across the whole file",
+    "Because alias tokens render faster in interactive prototypes"
+   ],
+   "Semantic tokens describe purpose; changing the referenced primitive updates every usage consistently."
+  ],
+  [
+   "In a Figma prototype, what does the Smart Animate transition do?",
+   "Animates matching layers between two frames, based on layer names",
+   [
+    "Generates new intermediate frames automatically using AI",
+    "Plays a video file that is embedded inside the frame",
+    "Converts the prototype into production-ready CSS animations for developers"
+   ],
+   "Smart Animate finds layers with the same name in both frames and animates differences in position, size, opacity and more."
+  ],
+  [
+   "Smart Animate between two frames shows a sudden jump instead of a smooth move for a card. What is the most likely cause?",
+   "The card layer has different names in the two frames",
+   [
+    "The prototype connection uses the On click trigger",
+    "Both frames are placed on the same page of the file",
+    "The card has a drop shadow effect applied to it"
+   ],
+   "Smart Animate matches layers by name (and hierarchy). Different names mean it treats them as different layers and cuts."
+  ],
+  [
+   "Which prototype feature in Figma keeps a header visible while the rest of a long frame scrolls?",
+   "Set the header's scroll behavior to Fixed",
+   [
+    "Set the header layer's opacity to 100%",
+    "Add a column layout grid to the header",
+    "Bind the header's height to a variable"
+   ],
+   "Scroll behavior settings on a layer, such as Fixed, keep it in place while content scrolls in the prototype."
+  ],
+  [
+   "What is the main benefit of using shared color and text styles instead of raw values?",
+   "Updating a style changes every layer that uses it",
+   [
+    "Styles make the file size smaller in all cases",
+    "Styles are required to export images",
+    "Styles automatically pass accessibility checks"
+   ],
+   "Styles centralize visual values, so a single edit updates everywhere they are applied."
+  ],
+  [
+   "How do you make your file's styles and components available in other team files?",
+   "Publish them as a team library",
+   [
+    "Export the file as PNG",
+    "Copy the file link into a comment",
+    "Duplicate the file for each team member"
+   ],
+   "Publishing to a library lets other files enable it and use, then update, its styles and components."
+  ],
+  [
+   "A 12-column layout grid is set with Stretch type. What happens to the column widths when the frame is resized?",
+   "Columns resize to fill the frame; margins and gutters stay fixed",
+   [
+    "Columns keep a fixed width and the outer margins grow instead",
+    "The number of columns changes automatically to fit the frame",
+    "The grid disappears until the frame is reset to its original size"
+   ],
+   "Stretch grids have flexible column widths with fixed gutters and margins, similar to responsive CSS grids."
+  ],
+  [
+   "What do constraints control for a layer inside a regular (non-Auto Layout) frame?",
+   "How the layer moves or resizes when the parent frame is resized",
+   [
+    "The order in which layers appear in the layers panel when the frame is resized",
+    "The export format of the layer",
+    "Which users can edit the layer"
+   ],
+   "Constraints like Left, Right, Center or Scale define how a child responds when its frame changes size."
+  ]
+ ],
+ "data-analysis": [
+  [
+   "What is the main goal of Exploratory Data Analysis (EDA)?",
+   "Understanding the data's structure, quirks and relationships before modeling",
+   [
+    "Deploying a trained model to production and monitoring its predictions for real users",
+    "Writing the final polished report for executives",
+    "Proving a hypothesis that was chosen in advance"
+   ],
+   "EDA, promoted by John Tukey, uses summaries and plots to learn what the data looks like and what questions are worth asking."
+  ],
+  [
+   "A column of incomes has mean 95,000 and median 52,000. What does this most likely indicate?",
+   "The distribution is right-skewed by a few very high incomes",
+   [
+    "The distribution is perfectly symmetric",
+    "The distribution is left-skewed by a few very low incomes",
+    "The data contains no outliers"
+   ],
+   "When the mean is far above the median, a long right tail of large values is pulling the mean up."
+  ],
+  [
+   "Which plot is best for quickly checking the distribution shape of one numeric variable?",
+   "Histogram",
+   [
+    "Pie chart",
+    "Line chart over categories",
+    "Stacked bar chart"
+   ],
+   "A histogram shows how values are distributed across bins, revealing skew, modes and gaps."
+  ],
+  [
+   "Using the IQR rule, a value is commonly flagged as an outlier when it is:",
+   "Below Q1 - 1.5 x IQR or above Q3 + 1.5 x IQR",
+   [
+    "More than 1.5 times the mean",
+    "Below the median or above the mean by more than one unit",
+    "Outside the range of Q1 to Q3"
+   ],
+   "The 1.5 x IQR fence is Tukey's standard rule and is what box plot whiskers usually use."
+  ],
+  [
+   "What does a Pearson correlation coefficient of r = -0.9 between two variables indicate?",
+   "A strong negative linear relationship",
+   [
+    "A weak negative relationship",
+    "No relationship at all",
+    "That one variable causes the other to fall"
+   ],
+   "r near -1 means that as one variable rises, the other tends to fall along a line. Correlation alone does not show causation."
+  ],
+  [
+   "Pearson r between X and Y is close to 0, but a scatter plot shows a clear U-shape. What is the correct conclusion?",
+   "There is a strong non-linear relationship that r misses",
+   [
+    "X and Y are completely unrelated to each other",
+    "The scatter plot must have been drawn incorrectly",
+    "The data must contain a calculation error somewhere"
+   ],
+   "Pearson r measures only linear association. Always plot the data, as Anscombe's quartet famously shows."
+  ],
+  [
+   "Ice cream sales and drowning incidents are positively correlated. What is the most likely explanation?",
+   "A confounding variable, hot weather, drives both",
+   [
+    "Eating ice cream causes drowning",
+    "Drowning causes people to buy ice cream",
+    "The strong correlation proves a direct causal link between them"
+   ],
+   "Both rise in summer. A third variable creating a spurious correlation is a classic confounder example."
+  ],
+  [
+   "Which correlation measure is more appropriate for ranked data or a monotonic but non-linear relationship?",
+   "Spearman rank correlation",
+   [
+    "Pearson correlation",
+    "Covariance in raw units",
+    "Coefficient of variation"
+   ],
+   "Spearman correlation works on ranks, so it captures any monotonic relationship and is robust to outliers."
+  ],
+  [
+   "A dataset has a Country column with values \"USA\", \"usa\", \"U.S.A.\" and \"United States\". What is the right cleaning step?",
+   "Standardize them to one canonical value before grouping",
+   [
+    "Delete every row whose country is not \"USA\"",
+    "Leave them as they are, since grouping will merge them",
+    "Convert the column to numeric type"
+   ],
+   "Inconsistent labels split one category into several groups, so they must be normalized first."
+  ],
+  [
+   "Values in an age column are missing for 3% of rows, at random. Which is a reasonable simple approach for a quick analysis?",
+   "Impute with the median or drop those rows, and document it",
+   [
+    "Replace every missing age with 0 so no rows are lost",
+    "Fill each missing age with the maximum age in the column",
+    "Delete the whole age column from the dataset entirely"
+   ],
+   "Replacing with 0 creates impossible values. Median imputation or dropping a small random share is reasonable if documented."
+  ],
+  [
+   "After joining orders to customers, the row count is larger than the original orders table. What is the most likely cause?",
+   "Duplicate keys in the customers table multiplied the rows",
+   [
+    "The join removed all orders that had no matching customer",
+    "The orders table was sorted in the wrong order before joining",
+    "The join converted every date column into plain text values"
+   ],
+   "If a customer ID appears twice in the customer table, each matching order is duplicated. Check key uniqueness before joining."
+  ],
+  [
+   "What is the purpose of a moving average (for example, a 7-day rolling mean) in trend analysis?",
+   "Smoothing short-term noise so the underlying trend is visible",
+   [
+    "Removing all outliers from the data permanently before analysis",
+    "Forecasting exact future values for each of the coming days",
+    "Converting the raw values into percentages of the total"
+   ],
+   "Rolling averages reduce day-to-day fluctuations, such as weekday effects, revealing the longer trend."
+  ],
+  [
+   "Retail sales jump every December and drop in January. What kind of pattern is this?",
+   "Seasonality",
+   [
+    "A random walk",
+    "A long-term trend reversal",
+    "Measurement error"
+   ],
+   "A pattern that repeats at a fixed calendar interval is seasonality, which should be separated from the trend."
+  ],
+  [
+   "Why compare this month to the same month last year (year over year) instead of the previous month?",
+   "It removes seasonal effects that distort month to month comparisons",
+   [
+    "It always produces higher growth numbers, which look better in the monthly report",
+    "It requires less historical data to calculate correctly",
+    "It removes the need to check the data for any outliers"
+   ],
+   "Year over year comparisons hold the season constant, so differences reflect real change."
+  ],
+  [
+   "What is a cohort in cohort analysis?",
+   "Users who share a starting trait, such as sign-up month",
+   [
+    "All users who visited the site at any time today",
+    "A random sample of users chosen for one arm of an A/B test",
+    "The top 10% of customers ranked by total revenue"
+   ],
+   "Cohorts are defined by a shared event in a time window, so their behavior can be tracked over time."
+  ],
+  [
+   "In a retention cohort table, the January cohort shows 40% active in month 1, while the March cohort shows 55% in month 1. What does this suggest?",
+   "Something changed by March that improved early retention",
+   [
+    "March users signed up for longer contracts by default",
+    "The January cohort is too small to analyze",
+    "Retention tables cannot be compared between cohorts"
+   ],
+   "Comparing the same age across cohorts isolates changes in product or acquisition that affect retention."
+  ],
+  [
+   "Why can overall average retention look stable while each cohort's retention is falling?",
+   "A growing share of newer users can hide declines in each cohort",
+   [
+    "Averages always hide every trend in the data completely",
+    "Each cohort is calculated with a different retention formula",
+    "Retention can only be computed once per year for any product"
+   ],
+   "Aggregates mix users of different ages. Cohort analysis separates them to show real behavior."
+  ],
+  [
+   "In hypothesis testing, what does a p-value of 0.03 mean?",
+   "If the null were true, results this extreme would occur about 3% of the time",
+   [
+    "There is a 3% chance that the null hypothesis is actually true for this data",
+    "There is a 97% chance that the alternative hypothesis is true",
+    "The measured effect size between the groups is exactly 3%"
+   ],
+   "The p-value is computed assuming the null is true. It is not the probability that the null is true."
+  ],
+  [
+   "An A/B test compares conversion rates of two page versions. What is the null hypothesis?",
+   "There is no difference in conversion rate between the versions",
+   [
+    "Version B converts better than version A for most users in the test",
+    "Version A converts better than version B for most users",
+    "Both versions convert visitors at a rate of exactly 0%"
+   ],
+   "The null hypothesis states no effect; the test asks whether the data give enough evidence to reject it."
+  ],
+  [
+   "A team checks 20 different metrics in one experiment at alpha = 0.05 and celebrates one significant result. What is the problem?",
+   "With many tests, about one false positive is expected by chance",
+   [
+    "Alpha should be raised to 0.5 when an experiment tracks many metrics",
+    "Significant results cannot happen with 20 metrics",
+    "The sample size is irrelevant to significance"
+   ],
+   "This is the multiple comparisons problem. Pre-registering a primary metric or correcting (for example Bonferroni) addresses it."
+  ]
+ ],
+ "data-visualization": [
+  [
+   "You need to show monthly revenue over three years. Which chart type fits best?",
+   "Line chart",
+   [
+    "Pie chart",
+    "Scatter plot",
+    "Treemap"
+   ],
+   "Line charts show change over continuous time clearly; pie charts show parts of a whole at one moment."
+  ],
+  [
+   "You need to compare sales across 12 product categories. Which chart is usually clearest?",
+   "Sorted horizontal bar chart",
+   [
+    "Pie chart with 12 slices",
+    "Line chart connecting categories",
+    "3D cone chart"
+   ],
+   "People compare lengths more accurately than angles, and sorting plus horizontal labels makes 12 categories easy to read."
+  ],
+  [
+   "Which chart best shows the relationship between two numeric variables, such as ad spend and sales?",
+   "Scatter plot",
+   [
+    "Stacked bar chart",
+    "Donut chart",
+    "Area chart"
+   ],
+   "Scatter plots show each observation by two coordinates, revealing correlation, clusters and outliers."
+  ],
+  [
+   "Why are pie charts generally discouraged for comparing many similar values?",
+   "People judge angles and areas less accurately than lengths",
+   [
+    "Pie charts cannot display percentages or labels at all",
+    "Pie charts are not supported by most charting tools",
+    "Pie charts only work when the data has negative values"
+   ],
+   "Perception research (Cleveland and McGill) ranks position and length above angle and area for accuracy."
+  ],
+  [
+   "In narrative visualization, what is the purpose of an annotation such as \"Price cut launched here\" on a line chart?",
+   "Directing attention to the event that explains the change",
+   [
+    "Making the chart look busier and more detailed overall",
+    "Replacing the axis labels with a shorter description",
+    "Hiding data points that do not fit the intended story"
+   ],
+   "Annotations connect data to context, telling the audience what to notice and why."
+  ],
+  [
+   "Which chart title best supports a narrative visualization?",
+   "Support tickets fell 30% after the new help center launched",
+   [
+    "Chart 3: support ticket data for the last twelve months",
+    "Support tickets by month, January to December",
+    "Monthly data exported from the ticketing system"
+   ],
+   "An action title states the takeaway, so the audience understands the message before studying the details."
+  ],
+  [
+   "In a chart about one important product among ten, what is an effective way to highlight it?",
+   "Color the focus product strongly and show the others in muted gray",
+   [
+    "Give each of the ten products its own different bright, saturated color",
+    "Make all lines dashed except one dotted line",
+    "Remove the other products from the axis labels only"
+   ],
+   "Using gray for context and one accent color makes the focus stand out immediately."
+  ],
+  [
+   "Which color scheme fits a map of unemployment rate from low to high?",
+   "Sequential scheme, light to dark of one hue",
+   [
+    "Qualitative scheme with several unrelated hues",
+    "Rainbow scheme with many hues",
+    "Random colors per region"
+   ],
+   "Ordered numeric data needs a sequential scheme where lightness clearly encodes order."
+  ],
+  [
+   "Which color scheme fits data with a meaningful midpoint, such as temperature change above and below zero?",
+   "Diverging scheme with a neutral middle",
+   [
+    "Sequential scheme using one hue",
+    "Qualitative scheme of unrelated hues",
+    "Grayscale scheme with no hue at all"
+   ],
+   "Diverging schemes use two hues that move away from a neutral center to show direction and magnitude."
+  ],
+  [
+   "Why is a red-green only color encoding risky?",
+   "Red-green deficiency is the most common type of color blindness",
+   [
+    "Red and green inks cannot be printed next to each other on the same page",
+    "Most web browsers do not render pure green correctly",
+    "Red and green use more printer ink than other colors"
+   ],
+   "Pair colors with lightness differences, labels or patterns, or use colorblind-safe palettes."
+  ],
+  [
+   "What is the most common recommended layout principle for a dashboard?",
+   "Put the most important KPIs at the top left, details below",
+   [
+    "Put the most important KPIs at the bottom right, details above",
+    "Spread the charts randomly to keep the layout interesting",
+    "Put every metric into one large table with no charts at all"
+   ],
+   "In left-to-right reading cultures, viewers scan from the top left first, so key information goes there."
+  ],
+  [
+   "A dashboard has 25 charts on one screen. What is the best improvement?",
+   "Keep the few decision-driving metrics and move the rest to drill-downs",
+   [
+    "Shrink every chart even further so that more of them fit on screen",
+    "Add entrance animations to each chart to keep viewers engaged",
+    "Use a different chart type for each metric to add visual variety"
+   ],
+   "Effective dashboards answer specific questions at a glance; overload hides what matters."
+  ],
+  [
+   "Why should KPI tiles on a dashboard usually show a comparison, such as vs last month or vs target?",
+   "A number alone does not show whether it is good or bad",
+   [
+    "Comparisons make the KPI tiles load faster in the browser",
+    "Dashboard standards require exactly two numbers per tile",
+    "Showing a comparison removes the need for any chart titles"
+   ],
+   "Context like a target or previous period turns a number into information a viewer can act on."
+  ],
+  [
+   "What does Edward Tufte's data-ink ratio encourage?",
+   "Spending most of the ink on data and removing decoration",
+   [
+    "Using as much ink as possible to make every chart bold",
+    "Printing all charts using black ink only for clarity",
+    "Adding a background image to every chart for context"
+   ],
+   "Tufte argues that heavy gridlines, borders, 3D effects and decoration should be reduced so the data stands out."
+  ],
+  [
+   "Which change increases the data-ink ratio of a bar chart?",
+   "Removing heavy gridlines and the 3D effect",
+   [
+    "Adding a soft drop shadow to each of the bars",
+    "Adding a patterned background",
+    "Adding a thick border around the chart"
+   ],
+   "Gridlines, shadows and 3D are non-data ink. Removing them focuses attention on the bars."
+  ],
+  [
+   "What is \"chartjunk\" in Tufte's terminology?",
+   "Decoration that adds no information, such as fake 3D effects",
+   [
+    "Charts that were made with free or open source charting software",
+    "Charts that use more than two colors for their series",
+    "Charts that contain too few data points to be useful"
+   ],
+   "Chartjunk is decoration that adds no information and can distort reading."
+  ],
+  [
+   "Why should the value axis of a bar chart start at zero?",
+   "Bar length encodes value, so a cut axis exaggerates gaps",
+   [
+    "Most charting software tools require it for bar charts",
+    "Starting at zero makes the bars thinner and easier to read",
+    "It automatically hides any negative values in the data"
+   ],
+   "With a truncated axis, a 2% difference can look like a doubling. Line charts can sometimes use non-zero baselines."
+  ],
+  [
+   "A chart has two y-axes with different scales for two lines. What is the main risk?",
+   "Scale choices can create a fake correlation or crossing point",
+   [
+    "The chart can no longer show more than two lines in total",
+    "Dual axes always double the file size of the exported chart",
+    "The x-axis must then be switched to a logarithmic scale"
+   ],
+   "The apparent relationship depends on arbitrary scaling of each axis, which can mislead readers."
+  ],
+  [
+   "When is a logarithmic y-axis appropriate?",
+   "When data spans several orders of magnitude",
+   [
+    "When all values fall between 0 and 10",
+    "When you want small differences to look bigger",
+    "When the data contains many negative values"
+   ],
+   "Log scales show equal percentage changes as equal distances. They cannot show zero or negatives and need clear labeling."
+  ],
+  [
+   "A bubble chart sizes bubbles by radius proportional to value. What is the problem?",
+   "Area grows with the square of radius, so big values look exaggerated",
+   [
+    "Bubbles in a bubble chart are not allowed to overlap each other in any layout",
+    "Radius is a property that cannot encode numeric values at all",
+    "Bubble charts must use only one color for every bubble shown"
+   ],
+   "Viewers perceive area, so bubble area, not radius, should be proportional to the value."
+  ]
+ ],
+ "excel": [
+  [
+   "In Excel, what does the last argument FALSE mean in =VLOOKUP(A2, D:F, 3, FALSE)?",
+   "Find an exact match for A2",
+   [
+    "Return the value from column D",
+    "Search from the bottom up",
+    "Ignore case when matching text"
+   ],
+   "FALSE (or 0) requests an exact match. TRUE or omitting it uses approximate match, which needs sorted data."
+  ],
+  [
+   "Why can VLOOKUP not directly return a value from a column to the LEFT of the lookup column?",
+   "It searches the first column of the range and returns from columns to its right",
+   [
+    "It only works with numeric data, so text columns to the left of it are always skipped",
+    "It requires the whole table to be sorted in descending order first",
+    "It cannot look up values stored on a different worksheet"
+   ],
+   "The lookup column must be the leftmost in table_array. INDEX/MATCH or XLOOKUP remove this limitation."
+  ],
+  [
+   "A VLOOKUP returns #N/A for \"ABC123\" even though it appears in the table. What is a common cause?",
+   "Extra spaces or a text vs number mismatch in the values",
+   [
+    "The workbook is saved in the .xlsx file format",
+    "The column index number in the formula points to an empty column",
+    "The worksheet is protected with a password"
+   ],
+   "Hidden trailing spaces or numbers stored as text prevent an exact match. TRIM or VALUE can fix the data."
+  ],
+  [
+   "What does =XLOOKUP(\"P7\", A2:A100, C2:C100, \"Not found\") return if \"P7\" is not in A2:A100?",
+   "The text Not found",
+   [
+    "#N/A",
+    "0",
+    "The last value in C2:C100"
+   ],
+   "XLOOKUP's fourth argument, if_not_found, replaces the #N/A error with a custom value."
+  ],
+  [
+   "Which is an advantage of XLOOKUP over VLOOKUP in Excel 365?",
+   "It can return values to the left and defaults to an exact match",
+   [
+    "It works in every older Excel version, including Excel 2010",
+    "It is the only lookup function that supports wildcard matching",
+    "It automatically sorts the lookup range before searching it"
+   ],
+   "XLOOKUP uses separate lookup and return arrays and exact match by default. It is not available in Excel 2016 or earlier."
+  ],
+  [
+   "What does =MATCH(\"Kiwi\", {\"Apple\",\"Kiwi\",\"Pear\"}, 0) return?",
+   "2",
+   [
+    "1",
+    "\"Kiwi\"",
+    "TRUE"
+   ],
+   "MATCH returns the relative position of the item; with match_type 0 it finds the exact match at position 2."
+  ],
+  [
+   "What does =INDEX(B2:B10, MATCH(\"Bob\", A2:A10, 0)) do?",
+   "Returns the column B value on the row where column A equals Bob",
+   [
+    "Counts how many times the name Bob appears in column A",
+    "Returns the row number where the name Bob appears in column B",
+    "Sorts the values in column B by the names in column A"
+   ],
+   "MATCH finds Bob's position in A2:A10, and INDEX returns the item at that position in B2:B10."
+  ],
+  [
+   "Why is INDEX-MATCH often more robust than VLOOKUP with a hard-coded column number?",
+   "Inserting a column in the table does not shift its return column",
+   [
+    "It works only on data that is sorted in ascending order",
+    "It ignores blank cells in the lookup range automatically, unlike VLOOKUP",
+    "It converts numbers stored as text into real numbers"
+   ],
+   "VLOOKUP's column index is a fixed number that becomes wrong when columns are inserted; INDEX references the actual column."
+  ],
+  [
+   "What is a PivotTable mainly used for?",
+   "Summarizing and grouping large data by category without formulas",
+   [
+    "Encrypting a workbook so it can only be opened with a password",
+    "Drawing free-form shapes and diagrams on top of a worksheet",
+    "Recording macros in VBA to automate repetitive tasks"
+   ],
+   "PivotTables aggregate (sum, count, average) data by fields placed in Rows, Columns, Values and Filters."
+  ],
+  [
+   "You add new rows below the source data of a PivotTable, but the pivot does not show them after Refresh. What is the best fix?",
+   "Convert the source data into an Excel Table so the range grows",
+   [
+    "Delete the workbook and recreate the PivotTable from scratch",
+    "Turn off automatic calculation for the whole workbook",
+    "Move the PivotTable to a new worksheet and refresh it again"
+   ],
+   "A PivotTable based on a fixed range ignores rows outside it. A Table (Ctrl + T) expands automatically."
+  ],
+  [
+   "In a PivotTable, a Revenue field placed in Values shows \"Count of Revenue\" instead of a sum. What is the likely reason?",
+   "The column contains text or blank cells, so Excel uses Count",
+   [
+    "The PivotTable is linked to a source table stored in another workbook",
+    "The Revenue field is also placed in the Filters area",
+    "The workbook is set to use manual calculation mode"
+   ],
+   "Excel defaults to Sum only when the column is fully numeric. Text values (such as numbers stored as text) or blanks make it default to Count."
+  ],
+  [
+   "Which conditional formatting rule highlights entire rows where column C equals \"Late\" when applied to A2:F100?",
+   "Use a formula: =$C2=\"Late\"",
+   [
+    "Use a formula: =C$2=\"Late\"",
+    "Use a formula: =$C$2=\"Late\"",
+    "Use a formula: =C2:C100=\"Late\""
+   ],
+   "Locking the column ($C) while leaving the row relative (2) lets each row check its own C value."
+  ],
+  [
+   "What does the conditional formatting option \"Color Scales\" do?",
+   "Shades cells with a gradient based on their relative values",
+   [
+    "Changes the theme colors used across every sheet in the whole workbook",
+    "Applies the same fill color to every non-empty cell",
+    "Colors each cell based on who last edited its contents"
+   ],
+   "Color scales map low to high values onto a color gradient, giving a quick heatmap view."
+  ],
+  [
+   "What does =IF(B2>=90, \"A\", IF(B2>=80, \"B\", \"C\")) return when B2 is 85?",
+   "B",
+   [
+    "A",
+    "C",
+    "FALSE"
+   ],
+   "85 is not >= 90, so the second IF runs; 85 >= 80 is true, so it returns B."
+  ],
+  [
+   "In Excel 2019 and later, which function can replace deeply nested IF formulas by testing conditions in order?",
+   "IFS",
+   [
+    "SUMIFS",
+    "IFERROR",
+    "COUNTIF"
+   ],
+   "IFS(condition1, value1, condition2, value2, ...) returns the value for the first true condition, avoiding nested IFs."
+  ],
+  [
+   "What does =IF(AND(A2>0, B2>0), \"OK\", \"Check\") return when A2 is 5 and B2 is 0?",
+   "Check",
+   [
+    "OK",
+    "TRUE",
+    "#VALUE!"
+   ],
+   "AND requires all conditions to be true; B2>0 is false, so the IF returns the value_if_false argument."
+  ],
+  [
+   "How can you restrict a cell to a dropdown of allowed values such as \"Open\", \"Closed\", \"Pending\"?",
+   "Data Validation with Allow set to List",
+   [
+    "Conditional formatting with a color scale",
+    "Protect Sheet with a password",
+    "A PivotTable filter"
+   ],
+   "Data > Data Validation > List creates an in-cell dropdown and rejects other entries by default."
+  ],
+  [
+   "Which Data Validation setting prevents users from entering a date earlier than today?",
+   "Allow Date, greater than or equal to =TODAY()",
+   [
+    "Allow Whole number, between 1 and 31",
+    "Allow Text length, equal to 10 characters",
+    "Allow List, with the source set to =TODAY()"
+   ],
+   "Date validation with a formula like =TODAY() as the minimum blocks earlier dates."
+  ],
+  [
+   "What is Power Query in Excel mainly used for?",
+   "Importing, cleaning and reshaping data with repeatable steps",
+   [
+    "Writing VBA macros that run when users click buttons",
+    "Designing printable page layouts with headers and footers",
+    "Creating interactive 3D maps of geographic data"
+   ],
+   "Power Query (Get & Transform) records transformation steps that can be refreshed when the source changes."
+  ],
+  [
+   "Your monthly sales are in columns Jan, Feb, Mar and so on. Which Power Query operation turns them into two columns, Month and Sales?",
+   "Unpivot Columns",
+   [
+    "Pivot Column",
+    "Merge Queries",
+    "Group By"
+   ],
+   "Unpivot turns wide columns into attribute-value rows, the tidy format needed for PivotTables and charts."
+  ]
+ ],
+ "tableau": [
+  [
+   "In Tableau, what does the calculated field SUM([Profit]) / SUM([Sales]) compute in a view by Region?",
+   "The profit ratio for each region",
+   [
+    "The profit of each order, then summed",
+    "The total sales for all regions",
+    "The average of row-level profit ratios"
+   ],
+   "Aggregating before dividing gives a ratio of totals at the view's level of detail. Dividing row by row and averaging gives a different result."
+  ],
+  [
+   "Why does Tableau show an error for the calculation [Sales] / SUM([Sales])?",
+   "It mixes an aggregate and a non-aggregate argument",
+   [
+    "Division is not supported between fields in calculated fields",
+    "Field names cannot be repeated",
+    "SUM only works on dimensions"
+   ],
+   "Tableau requires arguments to be all aggregated or all row level; wrap [Sales] in an aggregation or use a table calculation."
+  ],
+  [
+   "Which is valid Tableau calculated field syntax for labeling sales above 1000 as High and the rest as Low?",
+   "IF [Sales] > 1000 THEN \"High\" ELSE \"Low\" END",
+   [
+    "CASE [Sales] WHEN > 1000 THEN \"High\" ELSE \"Low\" END",
+    "IIF([Sales] > 1000) THEN \"High\"",
+    "WHEN [Sales] > 1000 RETURN \"High\""
+   ],
+   "Tableau IF statements use IF ... THEN ... ELSE ... END syntax; CASE compares exact values, not ranges."
+  ],
+  [
+   "What is a Tableau parameter?",
+   "A user-controlled value that can drive calculations, filters or reference lines",
+   [
+    "A field from the data source that users are not allowed to edit or rename in the workbook",
+    "A saved copy of the data extract stored inside the workbook",
+    "A Tableau Server setting that controls who can view a workbook"
+   ],
+   "Parameters are global values controlled by the user, often via a parameter control, and must be referenced in calculations or filters to have an effect."
+  ],
+  [
+   "You create a parameter \"Top N\" but changing it does nothing in the view. What is the most likely reason?",
+   "No calculation, filter or set references the parameter yet",
+   [
+    "Parameters only work with extracts, not with live connections",
+    "The parameter must be a string type for changes to apply",
+    "Parameter changes only apply after the workbook is republished"
+   ],
+   "A parameter alone has no effect; it must be used in, for example, a Top N filter or a calculated field."
+  ],
+  [
+   "How can a user switch a chart between showing Sales and Profit with one control?",
+   "A parameter listing both options plus a calculated field returning the chosen one",
+   [
+    "Create two separate data sources, one per measure, and blend them on the Region field",
+    "Add a context filter on Sales and a second one on Profit",
+    "Apply a FIXED LOD expression to Profit and hide the Sales axis"
+   ],
+   "A parameter plus a CASE or IF calculated field is the standard measure-swap pattern."
+  ],
+  [
+   "What does {FIXED [Customer ID] : MIN([Order Date])} return?",
+   "Each customer's first order date, regardless of the view",
+   [
+    "The single earliest order date in the entire data source",
+    "The order date of the first row currently shown in the view",
+    "The total number of orders placed by each customer"
+   ],
+   "A FIXED LOD computes at the specified dimension, here each customer, independently of what is in the view."
+  ],
+  [
+   "How do INCLUDE and EXCLUDE LOD expressions differ from FIXED?",
+   "They compute relative to the view, adding or removing dimensions",
+   [
+    "They ignore all filters in the workbook, including context filters",
+    "They work only on extracts and fail on live connections",
+    "They always return strings instead of numbers or dates"
+   ],
+   "FIXED uses only the listed dimensions; INCLUDE adds dimensions to the view's level, and EXCLUDE removes them."
+  ],
+  [
+   "A dimension filter does not affect a FIXED LOD calculation. Which change makes the filter apply to it?",
+   "Add the dimension filter to context",
+   [
+    "Convert the filter to a measure filter",
+    "Move the LOD to the Rows shelf",
+    "Change FIXED to MIN"
+   ],
+   "In Tableau's order of operations, FIXED LODs are computed before regular dimension filters but after context filters."
+  ],
+  [
+   "In Tableau, what is a Story?",
+   "A sequence of sheets or dashboards that walks viewers through findings",
+   [
+    "A data source that has a written text description attached to explain each of its fields",
+    "A calculated field that returns full sentences instead of numbers",
+    "A Tableau Server schedule that refreshes extracts every night"
+   ],
+   "Stories present a narrative with captions, each story point showing a view or dashboard in a chosen state."
+  ],
+  [
+   "Which dashboard action lets clicking a bar in one sheet filter the other sheets on the dashboard?",
+   "Filter action",
+   [
+    "URL action",
+    "Go to Sheet action",
+    "Highlight action"
+   ],
+   "A filter action passes the selected values as filters to target sheets on the dashboard."
+  ],
+  [
+   "Why might a dashboard designer prefer a Fixed dashboard size over Automatic?",
+   "It gives a predictable layout and can improve server caching",
+   [
+    "Fixed size allows unlimited sheets",
+    "Automatic sizing is not supported once a dashboard is published to Tableau Server",
+    "Fixed size removes the need for filters"
+   ],
+   "Fixed sizes render consistently on all screens; Automatic resizes and can shift elements unpredictably."
+  ],
+  [
+   "In classic Tableau data blending, what defines the primary data source?",
+   "The data source of the first field placed in the view",
+   [
+    "The data source with the most rows",
+    "The data source that was connected most recently",
+    "The data source that has the larger number of columns"
+   ],
+   "The first source used becomes primary (blue check); secondary sources (orange check) are aggregated and joined on linking fields."
+  ],
+  [
+   "How does data blending differ from a join in Tableau?",
+   "Blending aggregates each source first, then combines; a join combines rows first",
+   [
+    "Blending can only combine sources that live in the same database, while joins work across any",
+    "Joins are only available on Tableau Server, not in Tableau Desktop",
+    "Blending duplicates every row of the secondary data source"
+   ],
+   "Blending works like a post-aggregation left join on linking fields, which avoids row duplication across different granularities."
+  ],
+  [
+   "In Tableau, what is the main difference between a set and a group?",
+   "A set splits members into In and Out, possibly dynamically; a group merges members",
+   [
+    "A set can only contain measures, while a group can only contain dates",
+    "Sets are limited to 10 members each, while groups can contain any number of members",
+    "Sets only work on Tableau Server, while groups work everywhere"
+   ],
+   "Sets split data into In and Out and can update by condition or top N; groups merge dimension members into higher-level labels."
+  ],
+  [
+   "Which filter is applied first in Tableau's order of operations among these?",
+   "Extract filter",
+   [
+    "Dimension filter",
+    "Measure filter",
+    "Table calculation filter"
+   ],
+   "The order is extract, data source, context, then FIXED LOD, dimension, INCLUDE/EXCLUDE LOD, measure, and finally table calculation filters."
+  ],
+  [
+   "You want a Top 10 customers filter to apply only within the selected Region. What should you do?",
+   "Add the Region filter to context",
+   [
+    "Turn Region into a measure",
+    "Use a table calculation filter on Region",
+    "Put Region on the Detail mark"
+   ],
+   "Top N filters are evaluated before regular dimension filters. Making Region a context filter evaluates it first."
+  ],
+  [
+   "What does LAST() = 0 used as a filter typically achieve in a view?",
+   "Shows only the last mark per partition while keeping table calculations intact",
+   [
+    "Removes all null values from the view before any of the table calculations can run",
+    "Shows only the earliest date that exists in the whole data source",
+    "Filters out the most recent row from the extract during refresh"
+   ],
+   "Table calculation filters hide marks after calculations run, so running totals stay correct."
+  ],
+  [
+   "How do you show values as currency with no decimals on a Tableau axis?",
+   "Set the field's number format to Currency (Custom) with 0 decimals",
+   [
+    "Wrap the field in STR() inside a new calculated field",
+    "Change the field's data type to string in the data source, then add a $ prefix",
+    "Use a parameter to round each value before it is drawn"
+   ],
+   "Number formatting changes display without altering the data type. Converting to string breaks aggregation and axes."
+  ],
+  [
+   "Which formatting choice best follows good visual practice in a Tableau bar chart?",
+   "Light or no gridlines, direct labels, and color only when it encodes data",
+   [
+    "Heavy gridlines, a dark border and a gradient fill on every bar to add depth",
+    "A different bright color for every bar, applied by default",
+    "Bold fonts for every label, title and tooltip in the chart"
+   ],
+   "Minimal formatting puts focus on the data. Use color only when it carries meaning."
+  ]
+ ],
+ "power-bi": [
+  [
+   "In Power BI, what is the key difference between a calculated column and a measure?",
+   "Columns are computed per row at refresh; measures at query time in filter context",
+   [
+    "Measures are stored per row in the table; calculated columns are computed on the fly",
+    "Calculated columns are written in M; measures are written in SQL",
+    "They are identical features that only differ in their display name"
+   ],
+   "Calculated columns consume memory and use row context; measures aggregate dynamically based on filters in visuals."
+  ],
+  [
+   "What does the DAX measure Total Sales = SUMX(Sales, Sales[Qty] * Sales[Price]) do?",
+   "Multiplies Qty by Price for each row, then sums the results",
+   [
+    "Sums Qty and Price separately, then multiplies the totals",
+    "Returns the maximum Qty times the maximum Price",
+    "Counts rows where Qty and Price are both non-blank"
+   ],
+   "SUMX is an iterator: it evaluates the expression row by row and sums it, which is correct for line totals."
+  ],
+  [
+   "What does CALCULATE([Total Sales], Product[Color] = \"Red\") return?",
+   "Total Sales with filter context changed to red products only",
+   [
+    "The number of distinct products in the model whose color is red",
+    "Total Sales for all product colors except red",
+    "A table containing only the red products"
+   ],
+   "CALCULATE evaluates an expression under modified filter context; it is the most important function in DAX."
+  ],
+  [
+   "What does ALL(Product) do when used inside CALCULATE?",
+   "Removes filters from the Product table for that calculation",
+   [
+    "Selects all columns of Product for display",
+    "Counts all rows in Product",
+    "Adds a filter that keeps every product visible in visuals"
+   ],
+   "ALL removes filters, which is commonly used to compute a grand total for percent-of-total measures."
+  ],
+  [
+   "Which DAX function divides two values and returns BLANK (or an alternate result) instead of an error when the denominator is zero?",
+   "DIVIDE",
+   [
+    "QUOTIENT",
+    "MOD",
+    "IFERROR"
+   ],
+   "DIVIDE(numerator, denominator, alternateResult) safely handles division by zero."
+  ],
+  [
+   "Which DAX time intelligence function compares to the same period last year?",
+   "SAMEPERIODLASTYEAR",
+   [
+    "STARTOFQUARTER",
+    "EOMONTH",
+    "PREVIOUSDAY"
+   ],
+   "CALCULATE([Sales], SAMEPERIODLASTYEAR('Date'[Date])) returns last year's value for the current period; it needs a proper date table."
+  ],
+  [
+   "In Power Query, what language is used for transformation steps?",
+   "M",
+   [
+    "DAX",
+    "Python",
+    "T-SQL"
+   ],
+   "Power Query steps are written in M. DAX is used for measures and calculated columns in the model."
+  ],
+  [
+   "A Power Query step references column \"Amount\" but the source renames it to \"Total\". What happens on refresh?",
+   "The refresh fails with a column not found error",
+   [
+    "Power Query automatically maps Total to Amount",
+    "The Amount column is silently filled with zeros",
+    "Power BI skips the broken step and continues"
+   ],
+   "Steps reference columns by name, so renamed source columns break steps like Changed Type."
+  ],
+  [
+   "What does query folding mean in Power Query?",
+   "Steps are translated into a native query run by the source",
+   [
+    "Queries are compressed into a smaller file before refresh",
+    "Several queries are merged into one table automatically",
+    "Steps are hidden from the Applied Steps pane to save space"
+   ],
+   "When folding works, filtering and grouping happen in the database, which improves refresh performance."
+  ],
+  [
+   "Which Power Query operation combines two tables with the same columns by stacking rows?",
+   "Append Queries",
+   [
+    "Merge Queries",
+    "Pivot Column",
+    "Group By"
+   ],
+   "Append stacks rows (like SQL UNION ALL); Merge joins tables on matching columns."
+  ],
+  [
+   "What is a star schema in Power BI data modeling?",
+   "Fact tables in the center related to surrounding dimension tables",
+   [
+    "A single flat table that holds every column of the model",
+    "Tables connected one after another in a long chain of relationships",
+    "Several fact tables joined directly to each other by keys"
+   ],
+   "Microsoft recommends star schemas: facts hold events and numbers, dimensions describe them, which makes DAX simpler and faster."
+  ],
+  [
+   "In a relationship between a Customers dimension and a Sales fact table, what is the usual cardinality?",
+   "One-to-many from Customers to Sales",
+   [
+    "Many-to-many",
+    "One-to-one",
+    "Many-to-one from Customers to Sales"
+   ],
+   "Each customer appears once in Customers and many times in Sales."
+  ],
+  [
+   "What is the default and generally recommended cross-filter direction for a one-to-many relationship?",
+   "Single, from the one side to the many side",
+   [
+    "Both directions",
+    "None",
+    "From the many side to the one side only"
+   ],
+   "Single direction avoids ambiguity and performance issues; bidirectional filtering should be used sparingly."
+  ],
+  [
+   "Why should you mark a dedicated table as a Date table in Power BI?",
+   "So time intelligence functions work with a continuous date range",
+   [
+    "So the date table refreshes faster than the other tables",
+    "Because visuals cannot display dates unless a table is marked",
+    "To hide the date table from report users in the Fields pane"
+   ],
+   "Marking a date table with one row per day and no gaps tells Power BI to use it for DAX time intelligence, which then works reliably."
+  ],
+  [
+   "Which report design choice usually improves a Power BI report page?",
+   "A few key visuals in a clear grid with consistent colors",
+   [
+    "As many visuals as will fit on the page at once",
+    "A different color theme on each page of the report to separate topics",
+    "A gauge visual for every single metric in the model"
+   ],
+   "Focused pages with consistent formatting are easier to read and perform better."
+  ],
+  [
+   "Which Power BI feature lets a report user right-click a data point and go to a detail page filtered to that item?",
+   "Drillthrough",
+   [
+    "Bookmarks",
+    "Sync slicers",
+    "Field parameters"
+   ],
+   "Drillthrough pages accept a field and open filtered to the selected value from another page."
+  ],
+  [
+   "How is row-level security (RLS) defined in Power BI Desktop?",
+   "By creating roles with DAX filter expressions",
+   [
+    "By hiding sensitive columns in the Fields pane",
+    "By password-protecting the .pbix file itself",
+    "By deleting restricted rows in Power Query"
+   ],
+   "RLS roles use DAX filters, such as [Region] = \"North\", and users are assigned to roles in the Power BI service."
+  ],
+  [
+   "A dynamic RLS rule should show each salesperson only their own rows. Which DAX function is typically used?",
+   "USERPRINCIPALNAME()",
+   [
+    "TODAY()",
+    "SELECTEDVALUE()",
+    "RELATED()"
+   ],
+   "USERPRINCIPALNAME returns the signed-in user's UPN (often their email), which is compared to a column in the security table."
+  ],
+  [
+   "A Power BI semantic model uses Import mode with on-premises SQL Server. What is required for scheduled refresh in the Power BI service?",
+   "An on-premises data gateway",
+   [
+    "A Premium capacity license in all cases",
+    "A DirectQuery connection",
+    "Publishing to the web"
+   ],
+   "The service is in the cloud, so it needs a gateway to reach on-premises sources during refresh."
+  ],
+  [
+   "How does DirectQuery mode differ from Import mode for data freshness?",
+   "DirectQuery queries the source at view time instead of importing data",
+   [
+    "DirectQuery stores a full compressed copy of the data inside Power BI",
+    "DirectQuery data refreshes only once a week on a fixed schedule",
+    "Import mode always shows real-time data without any refresh"
+   ],
+   "Import caches data and needs refresh; DirectQuery queries the source live, trading speed for freshness."
+  ]
+ ]
+}

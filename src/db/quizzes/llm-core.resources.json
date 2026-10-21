@@ -1,0 +1,42 @@
+{
+ "hugging-face": [
+  "Hugging Face LLM Course",
+  "https://huggingface.co/learn/llm-course/chapter1/1"
+ ],
+ "transformers": [
+  "The Illustrated Transformer (Jay Alammar)",
+  "https://jalammar.github.io/illustrated-transformer/"
+ ],
+ "diffusers": [
+  "Hugging Face Diffusers documentation",
+  "https://huggingface.co/docs/diffusers/index"
+ ],
+ "peft-lora": [
+  "Hugging Face PEFT documentation",
+  "https://huggingface.co/docs/peft/index"
+ ],
+ "rlhf": [
+  "Illustrating RLHF (Hugging Face blog)",
+  "https://huggingface.co/blog/rlhf"
+ ],
+ "fine-tuning": [
+  "Fine-tuning a pretrained model (Transformers docs)",
+  "https://huggingface.co/docs/transformers/training"
+ ],
+ "quantization": [
+  "Quantization overview (Transformers docs)",
+  "https://huggingface.co/docs/transformers/quantization/overview"
+ ],
+ "rag": [
+  "Retrieval-Augmented Generation paper (Lewis et al., 2020)",
+  "https://arxiv.org/abs/2005.11401"
+ ],
+ "prompt-engineering": [
+  "Prompt Engineering Guide",
+  "https://www.promptingguide.ai/"
+ ],
+ "ai-agents": [
+  "Building effective agents (Anthropic)",
+  "https://www.anthropic.com/engineering/building-effective-agents"
+ ]
+}

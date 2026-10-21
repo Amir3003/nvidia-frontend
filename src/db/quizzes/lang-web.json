@@ -1,0 +1,2022 @@
+{
+ "typescript": [
+  [
+   "With strictNullChecks enabled, what happens when you compile let s: string = null;?",
+   "A compile error: null is not assignable to string",
+   [
+    "It compiles and s becomes an empty string",
+    "It compiles but throws a TypeError at runtime",
+    "It compiles with a warning that can be ignored"
+   ],
+   "Under strictNullChecks, null and undefined are separate types and must be included explicitly, for example string | null."
+  ],
+  [
+   "What type does TypeScript infer for x in const x = \"hello\";?",
+   "The literal type \"hello\"",
+   [
+    "The type string",
+    "The type unknown",
+    "The type any"
+   ],
+   "A const binding cannot be reassigned, so TypeScript keeps the narrow literal type. With let x = \"hello\" it would widen to string."
+  ],
+  [
+   "Which declaration lets function getLength<T>(x: T) safely read x.length?",
+   "function getLength<T extends { length: number }>(x: T)",
+   [
+    "function getLength<T implements { length: number }>(x: T)",
+    "function getLength<T: { length: number }>(x: T)",
+    "function getLength<T super { length: number }>(x: T)"
+   ],
+   "Generic constraints use the extends keyword. TypeScript has no implements, colon or super syntax for type parameters."
+  ],
+  [
+   "Given type Box<T = string> = { value: T }; what is the type of b.value after let b: Box;?",
+   "string",
+   [
+    "unknown",
+    "any",
+    "never"
+   ],
+   "T has a default type of string, so Box with no type argument is Box<string>."
+  ],
+  [
+   "In function f(x: string | number) { if (typeof x === \"string\") { return x.length; } return x; }, what is the type of x in the final return?",
+   "number",
+   [
+    "string | number",
+    "string",
+    "never"
+   ],
+   "The typeof check narrows x to string inside the if block, and because that block returns, x is narrowed to number after it."
+  ],
+  [
+   "Given type A = { a: number }; type B = { b: string };, which object is assignable to A & B?",
+   "{ a: 1, b: \"x\" }",
+   [
+    "{ a: 1 }",
+    "{ b: \"x\" }",
+    "{}"
+   ],
+   "An intersection type requires all members of both types, so the object needs both a and b."
+  ],
+  [
+   "What does TypeScript reduce the type string & number to?",
+   "never",
+   [
+    "string | number",
+    "unknown",
+    "any"
+   ],
+   "No value can be both a string and a number at the same time, so the intersection of these primitives is never."
+  ],
+  [
+   "You write interface User { name: string } and later interface User { age: number } in the same scope. What is the result?",
+   "One User interface with both name and age",
+   [
+    "A Duplicate identifier compile error",
+    "The second declaration replaces the first",
+    "Only the first declaration is used"
+   ],
+   "Interfaces support declaration merging. Declaring a type alias twice with the same name is an error instead."
+  ],
+  [
+   "Which of these can a type alias express but an interface declaration cannot?",
+   "A union such as string | number",
+   [
+    "An object type with methods",
+    "Optional properties",
+    "An index signature"
+   ],
+   "An interface always describes an object shape. Unions of primitives require a type alias."
+  ],
+  [
+   "Given type P = { x: number; y: string }, what is keyof P?",
+   "\"x\" | \"y\"",
+   [
+    "number | string",
+    "[\"x\", \"y\"]",
+    "\"x\" & \"y\""
+   ],
+   "keyof produces a union of the property names of a type, not of their value types."
+  ],
+  [
+   "Given const config = { port: 3000 }; what is type C = typeof config;?",
+   "{ port: number }",
+   [
+    "{ port: 3000 }",
+    "\"object\"",
+    "{ readonly port: 3000 }"
+   ],
+   "Type-level typeof reads the inferred type of the variable. Property values in a mutable object literal widen to number; as const would keep 3000 and add readonly."
+  ],
+  [
+   "Which built-in utility type is equivalent to type RO<T> = { readonly [K in keyof T]: T[K] }?",
+   "Readonly<T>",
+   [
+    "Required<T>",
+    "Partial<T>",
+    "Record<keyof T, T>"
+   ],
+   "This is a mapped type that adds the readonly modifier to every property, which is exactly how Readonly is defined."
+  ],
+  [
+   "What does the -? modifier do in the mapped type { [K in keyof T]-?: T[K] }?",
+   "Removes optionality, making every property required",
+   [
+    "Makes every property optional",
+    "Removes the readonly modifier from every property",
+    "Removes properties whose type is undefined"
+   ],
+   "A minus prefix removes a modifier, so -? strips the optional flag. This is how Required<T> is implemented."
+  ],
+  [
+   "Given type IsStr<T> = T extends string ? \"yes\" : \"no\";, what is IsStr<string | number>?",
+   "\"yes\" | \"no\"",
+   [
+    "\"no\"",
+    "\"yes\"",
+    "never"
+   ],
+   "Conditional types distribute over unions when the checked type is a naked type parameter, so each member is evaluated separately."
+  ],
+  [
+   "Given type R<T> = T extends (...args: any[]) => infer U ? U : never;, what is R<() => boolean>?",
+   "boolean",
+   [
+    "() => boolean",
+    "never",
+    "unknown"
+   ],
+   "infer U captures the return type of the function type. This is how the built-in ReturnType works."
+  ],
+  [
+   "What is Omit<{ a: number; b: string; c: boolean }, \"a\">?",
+   "{ b: string; c: boolean }",
+   [
+    "{ a: number }",
+    "{ a?: number; b: string; c: boolean }",
+    "{ b?: string; c?: boolean }"
+   ],
+   "Omit builds a type with all properties except the listed keys. Pick<T, \"a\"> would give { a: number } instead."
+  ],
+  [
+   "Which tsconfig.json setting turns on strictNullChecks, noImplicitAny and the other strict family checks at once?",
+   "\"strict\": true",
+   [
+    "\"noImplicitAny\": true",
+    "\"strictMode\": \"all\"",
+    "\"checkJs\": true"
+   ],
+   "strict is an umbrella flag that enables the whole strict family. strictMode is not a real option, and checkJs only type checks JavaScript files."
+  ],
+  [
+   "Which tsconfig.json flag makes the compiler type check without writing any JavaScript output files?",
+   "\"noEmit\": true",
+   [
+    "\"skipLibCheck\": true",
+    "\"isolatedModules\": true",
+    "\"declaration\": false"
+   ],
+   "noEmit is common when a bundler such as Vite or esbuild does the actual transpiling. skipLibCheck only skips checking .d.ts files."
+  ],
+  [
+   "In TypeScript 5.0 and later, which tsconfig flag selects the older, non-standard decorator implementation used by frameworks such as Angular?",
+   "experimentalDecorators",
+   [
+    "emitDecoratorMetadata",
+    "useDefineForClassFields",
+    "legacyDecorators"
+   ],
+   "Without experimentalDecorators, TypeScript 5.0+ uses standard ECMAScript decorators. emitDecoratorMetadata only adds metadata on top of the legacy mode."
+  ],
+  [
+   "What happens when you compile let v: unknown = \"hi\"; v.toUpperCase();?",
+   "A compile error, because unknown must be narrowed first",
+   [
+    "It compiles and returns \"HI\"",
+    "It compiles but always throws at runtime",
+    "It compiles because unknown behaves like any"
+   ],
+   "unknown is the type-safe counterpart of any: you must narrow it, for example with typeof v === \"string\", before using it."
+  ]
+ ],
+ "javascript": [
+  [
+   "What does this print? console.log(1); setTimeout(() => console.log(2), 0); Promise.resolve().then(() => console.log(3)); console.log(4);",
+   "1 4 3 2",
+   [
+    "1 2 3 4",
+    "1 4 2 3",
+    "1 3 4 2"
+   ],
+   "Synchronous code runs first. Then the microtask queue (the Promise callback) drains before the next macrotask (the timer)."
+  ],
+  [
+   "Which callback is queued as a microtask in a browser?",
+   "A Promise .then() callback",
+   [
+    "A setTimeout callback",
+    "A setInterval callback",
+    "A click event listener"
+   ],
+   "Promise reactions and queueMicrotask use the microtask queue. Timers and DOM events are scheduled as tasks (macrotasks)."
+  ],
+  [
+   "What does this print? for (var i = 0; i < 3; i++) { setTimeout(() => console.log(i)); }",
+   "3 3 3",
+   [
+    "0 1 2",
+    "0 0 0",
+    "undefined undefined undefined"
+   ],
+   "var is function scoped, so all three closures share one i, which is 3 when the timers fire. Using let creates a new binding per iteration."
+  ],
+  [
+   "What does this print? for (let i = 0; i < 3; i++) { setTimeout(() => console.log(i)); }",
+   "0 1 2",
+   [
+    "3 3 3",
+    "2 2 2",
+    "1 2 3"
+   ],
+   "let creates a fresh binding for each loop iteration, so each closure captures its own value of i."
+  ],
+  [
+   "Given function make() { let c = 0; return () => ++c; } const f = make(); f(); f();, what does a third call f() return?",
+   "3",
+   [
+    "1",
+    "0",
+    "undefined"
+   ],
+   "The returned arrow function closes over c, which persists between calls and is incremented each time."
+  ],
+  [
+   "Given class Animal {} and class Dog extends Animal {}, what does Object.getPrototypeOf(Dog.prototype) return?",
+   "Animal.prototype",
+   [
+    "Dog",
+    "Object.prototype",
+    "Function.prototype"
+   ],
+   "extends links Dog.prototype to Animal.prototype, forming the prototype chain used for method lookup."
+  ],
+  [
+   "In strict mode, what happens? const o = { n: 1, f() { return this.n; } }; const g = o.f; g();",
+   "It throws a TypeError",
+   [
+    "It returns 1",
+    "It returns undefined",
+    "It returns null"
+   ],
+   "Calling g as a plain function sets this to undefined in strict mode, so reading this.n throws. In sloppy mode it would return undefined."
+  ],
+  [
+   "Where does an arrow function get its this value from?",
+   "The enclosing lexical scope",
+   [
+    "The object it is called on",
+    "The global object",
+    "The first argument passed to it"
+   ],
+   "Arrow functions have no own this binding, so call, apply and bind cannot change it."
+  ],
+  [
+   "Given function f() { return this.x; } const b = f.bind({ x: 1 });, what does b.call({ x: 2 }) return?",
+   "1",
+   [
+    "2",
+    "undefined",
+    "It throws a TypeError"
+   ],
+   "A bound function permanently fixes this. A later call or apply cannot override it."
+  ],
+  [
+   "Given async function f() { return 5; }, what does f() return?",
+   "A Promise that resolves to 5",
+   [
+    "The number 5",
+    "undefined",
+    "A Promise that resolves to undefined"
+   ],
+   "An async function always returns a Promise. A returned value becomes the resolution value."
+  ],
+  [
+   "Which method waits for all input promises and resolves with their outcomes even when some of them reject?",
+   "Promise.allSettled",
+   [
+    "Promise.all",
+    "Promise.race",
+    "Promise.any"
+   ],
+   "Promise.all rejects as soon as one input rejects. allSettled always resolves with an array of { status, value | reason } objects."
+  ],
+  [
+   "What does this print? console.log(a); var a = 5;",
+   "undefined",
+   [
+    "5",
+    "A ReferenceError",
+    "null"
+   ],
+   "The var declaration is hoisted and initialized to undefined. The assignment stays in place."
+  ],
+  [
+   "What happens? console.log(b); let b = 5;",
+   "A ReferenceError is thrown",
+   [
+    "It prints undefined",
+    "It prints 5",
+    "It prints null"
+   ],
+   "let and const are hoisted but stay uninitialized in the temporal dead zone until the declaration line runs."
+  ],
+  [
+   "In Node.js, which package.json field makes .js files load as ES modules?",
+   "\"type\": \"module\"",
+   [
+    "\"module\": true",
+    "\"esm\": true",
+    "\"format\": \"esm\""
+   ],
+   "With type set to module, .js files are treated as ESM. .cjs files remain CommonJS regardless."
+  ],
+  [
+   "Inside a Node.js ES module, which of these is not available by default?",
+   "__dirname",
+   [
+    "import.meta.url",
+    "process",
+    "console"
+   ],
+   "__dirname and require exist only in CommonJS. In ESM you derive paths from import.meta.url (Node 20.11+ also offers import.meta.dirname)."
+  ],
+  [
+   "What does this print? if (true) { var a = 1; let b = 2; } console.log(a, typeof b);",
+   "1 undefined",
+   [
+    "1 2",
+    "A ReferenceError",
+    "undefined undefined"
+   ],
+   "var ignores block scope, so a is visible. b is block scoped, and typeof on a name that is not declared in scope returns \"undefined\" without throwing."
+  ],
+  [
+   "Why is a WeakMap a good fit for storing extra data about DOM nodes?",
+   "Its keys do not prevent the nodes from being garbage collected",
+   [
+    "It iterates its entries faster than a Map",
+    "It can use strings as well as objects as keys",
+    "It copies each node so later changes do not affect it"
+   ],
+   "WeakMap holds keys weakly. When a node is removed and unreferenced, its entry can be collected. WeakMap keys must be objects, not strings."
+  ],
+  [
+   "Which is the safe way to display untrusted user input as text inside an element?",
+   "el.textContent = input",
+   [
+    "el.innerHTML = input",
+    "el.outerHTML = input",
+    "el.insertAdjacentHTML(\"beforeend\", input)"
+   ],
+   "textContent inserts plain text and never parses HTML, which prevents script injection. The other options parse markup."
+  ],
+  [
+   "Two objects reference each other, but nothing else references either one. What happens in a modern JavaScript engine?",
+   "Both can be garbage collected",
+   [
+    "They leak until the page reloads",
+    "Only one of them is collected",
+    "The engine throws a RangeError"
+   ],
+   "Modern engines use reachability based collection (mark and sweep), which handles cycles. Pure reference counting would leak them."
+  ],
+  [
+   "What is a after const { a = 1, b } = { a: undefined, b: 2 };?",
+   "1",
+   [
+    "undefined",
+    "2",
+    "null"
+   ],
+   "Destructuring defaults apply when the value is undefined. A null value would not trigger the default."
+  ]
+ ],
+ "ruby": [
+  [
+   "You implement method_missing to support dynamic finders such as find_by_email. Which method should you also override so respond_to? reports them correctly?",
+   "respond_to_missing?",
+   [
+    "respond_to?",
+    "method_added",
+    "define_method"
+   ],
+   "Ruby's respond_to? calls respond_to_missing? for methods that are not defined. Overriding it keeps respond_to? and method objects consistent."
+  ],
+  [
+   "Which Module method defines a new instance method from a block at runtime?",
+   "define_method",
+   [
+    "instance_eval",
+    "attr_accessor",
+    "method_missing"
+   ],
+   "define_method(:name) { |args| ... } creates a real method whose body is the block. attr_accessor only generates fixed getters and setters."
+  ],
+  [
+   "Object obj has a private method greet. Which call raises NoMethodError?",
+   "obj.public_send(:greet)",
+   [
+    "obj.send(:greet)",
+    "obj.__send__(:greet)",
+    "obj.instance_eval { greet }"
+   ],
+   "public_send respects visibility. send and __send__ bypass it, and inside instance_eval self is obj, so a private call is allowed."
+  ],
+  [
+   "What does p = proc { |a, b| [a, b] }; p.call(1) return?",
+   "[1, nil]",
+   [
+    "An ArgumentError",
+    "[1]",
+    "nil"
+   ],
+   "Procs are lenient about arguments: missing ones become nil. A lambda with the same body would raise ArgumentError."
+  ],
+  [
+   "What does method m return? def m; [1, 2].each { |x| return x }; :done; end",
+   "1",
+   [
+    ":done",
+    "[1, 2]",
+    "2"
+   ],
+   "return inside a block returns from the enclosing method, so m exits on the first iteration. In a lambda, return would only leave the lambda."
+  ],
+  [
+   "Which check is most idiomatic in Ruby when a method should accept any object that can be iterated?",
+   "obj.respond_to?(:each)",
+   [
+    "obj.is_a?(Array)",
+    "obj.class == Array",
+    "obj.instance_of?(Enumerable)"
+   ],
+   "Duck typing cares about what an object can do, not its class. Checking for each accepts arrays, hashes, sets and custom collections."
+  ],
+  [
+   "Given s = \"hi\"; def s.shout; upcase; end, which objects respond to shout?",
+   "Only the object referenced by s",
+   [
+    "Every String instance",
+    "Every object in the program",
+    "Only frozen strings"
+   ],
+   "def s.shout adds a singleton method to that one object's singleton class, not to String."
+  ],
+  [
+   "Where is a method defined with def self.build inside class Foo stored?",
+   "In the singleton class of Foo",
+   [
+    "In Foo's instance method table",
+    "In Object",
+    "In Module"
+   ],
+   "Class methods are singleton methods of the class object, so they live in Foo's singleton class (its eigenclass)."
+  ],
+  [
+   "What does Class.superclass return in Ruby?",
+   "Module",
+   [
+    "Object",
+    "BasicObject",
+    "Class"
+   ],
+   "In Ruby's object model, Class inherits from Module, which inherits from Object and then BasicObject."
+  ],
+  [
+   "A module Greeting defines def greet; \"hi\"; end. What does extend do when you write class Foo; extend Greeting; end?",
+   "It makes greet a class method, called as Foo.greet",
+   [
+    "It makes greet an instance method of Foo",
+    "It copies greet into every subclass only",
+    "It raises an error because modules cannot be extended"
+   ],
+   "extend adds the module's methods to the receiver's singleton class. include would add them as instance methods."
+  ],
+  [
+   "Given module M; end; class C; prepend M; end, what are the first two entries of C.ancestors?",
+   "[M, C]",
+   [
+    "[C, M]",
+    "[C, Object]",
+    "[M, Object]"
+   ],
+   "prepend inserts the module before the class in the lookup chain, so M's methods can wrap C's methods and call super."
+  ],
+  [
+   "Which method must a class define to get <, <=, ==, > and between? by including Comparable?",
+   "<=>",
+   [
+    "==",
+    "each",
+    "compare"
+   ],
+   "Comparable builds all its operators from the spaceship method <=>. Enumerable, by contrast, needs each."
+  ],
+  [
+   "Given h = { \"a\" => 1 }, what does h[:a] return?",
+   "nil",
+   [
+    "1",
+    "A KeyError",
+    "\"a\""
+   ],
+   "The string \"a\" and the symbol :a are different keys. Hash#[] returns nil for a missing key, while fetch would raise KeyError."
+  ],
+  [
+   "Which statement about Ruby symbols is correct?",
+   "Each symbol name maps to one immutable object",
+   [
+    "Symbols can be modified in place with <<",
+    "Two :name literals create two different objects",
+    "Symbols are a subclass of String"
+   ],
+   "Every occurrence of :name refers to the same object, which is why symbols are cheap and common as hash keys. Symbol is not a String subclass."
+  ],
+  [
+   "After require \"json\", what type are the keys of the hash returned by JSON.parse('{\"a\": 1}')?",
+   "String",
+   [
+    "Symbol",
+    "Integer",
+    "JSON::Key"
+   ],
+   "JSON.parse uses string keys by default. Pass symbolize_names: true to get symbol keys."
+  ],
+  [
+   "Which call returns [[1, 2], [3, 4]] for the array [1, 2, 3, 4]?",
+   "[1, 2, 3, 4].each_slice(2).to_a",
+   [
+    "[1, 2, 3, 4].each_cons(2).to_a",
+    "[1, 2, 3, 4].partition(&:odd?)",
+    "[1, 2, 3, 4].zip([1, 2])"
+   ],
+   "each_slice splits into consecutive chunks. each_cons gives overlapping windows: [[1, 2], [2, 3], [3, 4]]."
+  ],
+  [
+   "In Rails, what does User.where(active: true) return?",
+   "An ActiveRecord::Relation that runs its query lazily",
+   [
+    "An Array of loaded User objects",
+    "The first matching User",
+    "A raw SQL string"
+   ],
+   "where builds a chainable Relation. The query runs only when results are needed, for example on each, to_a or first."
+  ],
+  [
+   "In Rails, no user has id 999. What does User.find(999) do?",
+   "It raises ActiveRecord::RecordNotFound",
+   [
+    "It returns nil",
+    "It returns an empty Relation",
+    "It creates a new user with id 999"
+   ],
+   "find raises when no record matches, which Rails turns into a 404. find_by(id: 999) would return nil instead."
+  ],
+  [
+   "A Rails page lists posts and calls post.comments.size for each one, producing one query per post. Which change fixes this N+1 problem?",
+   "Post.includes(:comments)",
+   [
+    "Post.joins(:comments).distinct",
+    "Post.select(:comments)",
+    "Post.order(:comments)"
+   ],
+   "includes preloads the association in a fixed number of queries. joins alone filters with SQL but does not load the comments into memory."
+  ],
+  [
+   "Custom exception classes in Ruby should usually inherit from which class?",
+   "StandardError",
+   [
+    "Exception",
+    "RuntimeException",
+    "Error"
+   ],
+   "A bare rescue (and rescue => e) catches StandardError and its subclasses. Inheriting directly from Exception means those rescues will miss it."
+  ]
+ ],
+ "php": [
+  [
+   "A file starts with declare(strict_types=1); and defines function f(int $x) {}. What happens on the call f(\"5\")?",
+   "A TypeError is thrown",
+   [
+    "The string is converted to 5",
+    "A warning is shown and 0 is used",
+    "The call is silently skipped"
+   ],
+   "Strict mode disables scalar type coercion for calls made from that file. Without it, the numeric string would be coerced to int 5."
+  ],
+  [
+   "What does the parameter type ?string accept in PHP?",
+   "A string or null",
+   [
+    "Only a non-empty string",
+    "Any scalar value",
+    "A string or false"
+   ],
+   "The leading question mark makes a type nullable. It is shorthand for the union type string|null."
+  ],
+  [
+   "Code in namespace App; calls new DateTime() without a use statement. What happens?",
+   "PHP looks for App\\DateTime and fails if it does not exist",
+   [
+    "PHP silently falls back to the global DateTime class",
+    "PHP creates an empty App\\DateTime class",
+    "PHP treats the call as a function call"
+   ],
+   "Unqualified class names resolve against the current namespace and never fall back to global. Use \\DateTime or use DateTime;. Functions and constants do fall back."
+  ],
+  [
+   "Which statement lets you refer to App\\Models\\User as U in the current file?",
+   "use App\\Models\\User as U;",
+   [
+    "import App\\Models\\User as U;",
+    "namespace U = App\\Models\\User;",
+    "alias U = App\\Models\\User;"
+   ],
+   "The use keyword imports and optionally aliases a class name. PHP has no import or alias keywords for this."
+  ],
+  [
+   "A class uses traits A and B, and both define log(). How do you choose A's version?",
+   "use A, B { A::log insteadof B; }",
+   [
+    "use A, B { A::log override B; }",
+    "use A, B { B::log extends A; }",
+    "use A, B { prefer A::log; }"
+   ],
+   "The insteadof operator resolves trait method conflicts. You can still keep B's version under another name with B::log as logB."
+  ],
+  [
+   "What happens when you run new Loggable() where Loggable is a trait?",
+   "An Error, because traits cannot be instantiated",
+   [
+    "A new object with the trait's methods",
+    "A new stdClass object",
+    "A deprecation notice, then an object"
+   ],
+   "Traits are only for reuse inside classes through use. They cannot be instantiated on their own."
+  ],
+  [
+   "Which PDO code safely looks up a user by an email address typed into a form?",
+   "$pdo->prepare(\"SELECT * FROM users WHERE email = ?\")->execute([$email])",
+   [
+    "$pdo->query(\"SELECT * FROM users WHERE email = '$email'\")",
+    "$pdo->query(\"SELECT * FROM users WHERE email = \" . addslashes($email))",
+    "$pdo->exec(\"SELECT * FROM users WHERE email = '\" . trim($email) . \"'\")"
+   ],
+   "A prepared statement sends the value separately from the SQL text, so input cannot change the query structure. Escaping by hand is fragile."
+  ],
+  [
+   "Can a PDO placeholder be used for a table name, as in SELECT * FROM ? WHERE id = ?",
+   "No, placeholders only stand for values",
+   [
+    "Yes, if you bind it with PDO::PARAM_STR",
+    "Yes, but only with named placeholders",
+    "Yes, with emulated prepares turned off"
+   ],
+   "Identifiers such as table and column names cannot be bound. Validate them against an allowlist instead."
+  ],
+  [
+   "In PHP 8.0 and later, what is the default PDO error mode?",
+   "PDO::ERRMODE_EXCEPTION",
+   [
+    "PDO::ERRMODE_SILENT",
+    "PDO::ERRMODE_WARNING",
+    "PDO::ERRMODE_STRICT"
+   ],
+   "PHP 8.0 changed the default from silent to exception mode, so failed queries throw PDOException. ERRMODE_STRICT does not exist."
+  ],
+  [
+   "composer.json maps \"App\\\\\": \"src/\" under autoload psr-4. Which file should contain the class App\\Http\\HomeController?",
+   "src/Http/HomeController.php",
+   [
+    "src/App/Http/HomeController.php",
+    "app/http/homecontroller.php",
+    "src/HomeController.php"
+   ],
+   "PSR-4 strips the mapped prefix App\\ and turns the remaining namespace segments into folders under src/."
+  ],
+  [
+   "Which Composer command installs exactly the versions recorded in composer.lock?",
+   "composer install",
+   [
+    "composer update",
+    "composer require",
+    "composer dump-autoload"
+   ],
+   "install reads the lock file for reproducible builds. update resolves new versions and rewrites the lock file."
+  ],
+  [
+   "What does OPcache store to speed up PHP?",
+   "Compiled script bytecode in shared memory",
+   [
+    "Rendered HTML responses",
+    "Database query results",
+    "Session data for each user"
+   ],
+   "OPcache saves PHP from parsing and compiling scripts on every request. Caching responses or queries needs other tools."
+  ],
+  [
+   "Production has opcache.validate_timestamps=0. You deploy new PHP files. What happens?",
+   "The old code keeps running until OPcache is reset or PHP restarts",
+   [
+    "PHP detects the changes on the next request",
+    "PHP returns a 500 error until the cache rebuilds",
+    "OPcache disables itself because files changed"
+   ],
+   "With timestamp validation off, OPcache never checks files for changes. Deploy scripts must reset the cache, for example by reloading PHP-FPM."
+  ],
+  [
+   "Right after a user logs in, which call helps prevent session fixation attacks?",
+   "session_regenerate_id(true)",
+   [
+    "session_start()",
+    "session_write_close()",
+    "session_unset()"
+   ],
+   "Regenerating issues a new session ID once privileges change, so an ID an attacker planted earlier becomes useless."
+  ],
+  [
+   "With PHP's default session settings, where is $_SESSION data stored?",
+   "In files on the server, keyed by the session ID",
+   [
+    "Inside the session cookie in the browser",
+    "In localStorage in the browser",
+    "In the URL of every request"
+   ],
+   "The PHPSESSID cookie only carries the ID. The default files handler keeps the data on the server."
+  ],
+  [
+   "What does match(\"1\") { 1 => \"int\", default => \"other\" } return?",
+   "\"other\"",
+   [
+    "\"int\"",
+    "null",
+    "An UnhandledMatchError"
+   ],
+   "match compares with strict identity (===), so the string \"1\" does not equal the integer 1. switch would use loose comparison."
+  ],
+  [
+   "Given enum Suit: string { case Hearts = 'H'; }, what does Suit::tryFrom('X') return?",
+   "null",
+   [
+    "A ValueError",
+    "Suit::Hearts",
+    "false"
+   ],
+   "tryFrom returns null for an unknown value, while from throws a ValueError. Backed enums were added in PHP 8.1."
+  ],
+  [
+   "Which syntax declares a native PHP 8 attribute on a controller method?",
+   "#[Route('/home')]",
+   [
+    "@Route('/home')",
+    "/** @Route('/home') */",
+    "[[Route('/home')]]"
+   ],
+   "Native attributes use #[...]. Docblock annotations are just comments that libraries parse, not a language feature."
+  ],
+  [
+   "What does public function __construct(private LoggerInterface $logger) {} do in PHP 8?",
+   "It declares a private $logger property and assigns the argument to it",
+   [
+    "It declares a local variable that is lost after construction",
+    "It makes the constructor private",
+    "It injects a logger from a global container automatically"
+   ],
+   "Constructor property promotion declares and assigns the property in one step. Wiring the dependency is still up to the caller or DI container."
+  ],
+  [
+   "A PHP REST endpoint receives a JSON request body. Why is $_POST empty, and what reads the data?",
+   "$_POST only parses form encodings; use json_decode(file_get_contents('php://input'), true)",
+   [
+    "$_POST is filled only over HTTPS; use $_REQUEST['json'] instead",
+    "$_POST needs session_start(); call it and then read $_POST",
+    "$_POST is filled only for PUT requests; use $_GET['body'] instead"
+   ],
+   "PHP fills $_POST only for form encoded and multipart bodies. A JSON body must be read from php://input and decoded."
+  ]
+ ],
+ "dart": [
+  [
+   "With dart:async imported, what does this print? print('a'); Future(() => print('b')); scheduleMicrotask(() => print('c')); print('d');",
+   "a d c b",
+   [
+    "a b c d",
+    "a d b c",
+    "a c d b"
+   ],
+   "Synchronous code runs first, then the microtask queue drains, then the event queue, where Future(() => ...) callbacks are scheduled."
+  ],
+  [
+   "How do two Dart isolates share data?",
+   "By passing messages through ports",
+   [
+    "By reading the same global variables",
+    "By locking a shared mutex",
+    "By sharing one heap with atomic fields"
+   ],
+   "Each isolate has its own memory and event loop. They communicate only by sending messages, for example through SendPort and ReceivePort."
+  ],
+  [
+   "Parsing a very large JSON file freezes a Flutter app's UI. Which fix actually removes the jank?",
+   "Run the parsing in another isolate with Isolate.run or compute",
+   [
+    "Mark the parsing function as async",
+    "Wrap the parsing in Future.delayed(Duration.zero)",
+    "Convert the parsed result into a Stream"
+   ],
+   "async code still runs on the main isolate, so CPU heavy work blocks frames. A separate isolate does the work in parallel."
+  ],
+  [
+   "With sound null safety, what happens when you compile String? name; print(name.length);?",
+   "A compile error, because name might be null",
+   [
+    "It prints 0",
+    "It prints null",
+    "It compiles and throws only if name is null"
+   ],
+   "A nullable type cannot be dereferenced directly. Use name?.length, a null check, or the ! operator."
+  ],
+  [
+   "What happens when code reads a late String s; field before anything has been assigned to it?",
+   "A LateInitializationError is thrown at runtime",
+   [
+    "It returns an empty string",
+    "It returns null",
+    "A compile error is reported"
+   ],
+   "late moves the initialization check from compile time to runtime, so reading too early throws."
+  ],
+  [
+   "What does this Dart code print? int? x; x ??= 5; print(x);",
+   "5",
+   [
+    "null",
+    "0",
+    "A compile error"
+   ],
+   "A nullable local without an initializer starts as null, and ??= assigns only when the current value is null."
+  ],
+  [
+   "Which return type should you declare for a Dart function marked async whose body ends with return 42;?",
+   "Future<int>",
+   [
+    "int",
+    "Stream<int>",
+    "Iterable<int>"
+   ],
+   "An async function always returns a Future. The value returned in the body becomes the value the Future completes with."
+  ],
+  [
+   "Which function body modifier lets a Dart function yield values that callers consume with await for?",
+   "async*",
+   [
+    "sync*",
+    "async",
+    "yield*"
+   ],
+   "async* produces a Stream. sync* produces an Iterable, and yield* is a statement that forwards another stream or iterable."
+  ],
+  [
+   "A Dart Stream from a StreamController() is listened to a second time. What happens?",
+   "A StateError: the stream has already been listened to",
+   [
+    "The second listener receives every event again",
+    "The first listener is cancelled automatically",
+    "The second listener only gets events added later"
+   ],
+   "StreamController() creates a single-subscription stream. Use StreamController.broadcast() or asBroadcastStream() for several listeners."
+  ],
+  [
+   "Which State method in Flutter runs exactly once, when the State object is inserted into the widget tree?",
+   "initState",
+   [
+    "build",
+    "didUpdateWidget",
+    "didChangeDependencies"
+   ],
+   "initState is the place to create controllers and subscriptions. build can run many times, and didChangeDependencies can run again when inherited widgets change."
+  ],
+  [
+   "A StatefulWidget creates an AnimationController in initState. Where should controller.dispose() be called?",
+   "In the State's dispose method",
+   [
+    "In build",
+    "In didUpdateWidget",
+    "In deactivate"
+   ],
+   "dispose runs when the State is removed permanently, which is the right moment to release controllers, streams and listeners."
+  ],
+  [
+   "In a Flutter State, after an await that may take a while, which property should you check before calling setState?",
+   "mounted",
+   [
+    "context.isActive",
+    "widget.isBuilt",
+    "isDisposed"
+   ],
+   "If the widget was removed during the await, calling setState throws. if (!mounted) return; guards against that."
+  ],
+  [
+   "What does mixin Swimmer on Animal { } mean in Dart?",
+   "Swimmer can only be mixed into classes that are subtypes of Animal",
+   [
+    "Swimmer automatically extends every subclass of Animal",
+    "Swimmer replaces Animal's methods for all classes",
+    "Swimmer can be instantiated only through Animal"
+   ],
+   "The on clause restricts which classes can use the mixin and lets the mixin call Animal members, including through super."
+  ],
+  [
+   "Mixins A and B both define hello(). Which version runs for C().hello() when class C with A, B {}?",
+   "B's version",
+   [
+    "A's version",
+    "Both, in order A then B",
+    "A compile error about the conflict"
+   ],
+   "Mixins are applied left to right, each one a new superclass layer, so the last mixin listed overrides earlier ones."
+  ],
+  [
+   "Which kind of Dart constructor may return an existing cached instance instead of creating a new one?",
+   "A factory constructor",
+   [
+    "A const constructor",
+    "A named generative constructor",
+    "A redirecting generative constructor"
+   ],
+   "A factory constructor is not required to create a new instance and can return a cached object or a subtype. Generative constructors always create one."
+  ],
+  [
+   "Given class Point { final int x, y; const Point(this.x, this.y); }, what does identical(const Point(1, 2), const Point(1, 2)) return?",
+   "true",
+   [
+    "false",
+    "A compile error",
+    "It depends on the platform"
+   ],
+   "Constant expressions with equal arguments are canonicalized, so both refer to the same object."
+  ],
+  [
+   "Which requirement must a class meet to have a const constructor?",
+   "All of its instance fields must be final",
+   [
+    "It must have no methods",
+    "It must extend a const class",
+    "Its fields must all be static"
+   ],
+   "A const constructor builds compile-time constants, so the object's state must be immutable. That requires final instance fields."
+  ],
+  [
+   "Given extension on String { bool get isBlank => trim().isEmpty; }, what happens with dynamic d = '  '; print(d.isBlank);?",
+   "It throws NoSuchMethodError at runtime",
+   [
+    "It prints true",
+    "It prints false",
+    "It is a compile error"
+   ],
+   "Extension members are resolved from the static type. With a dynamic receiver the extension is not applied, so the runtime lookup fails."
+  ],
+  [
+   "What does this Dart list literal evaluate to? var a = [1, 2]; var b = [0, ...a, if (false) 9, 3];",
+   "[0, 1, 2, 3]",
+   [
+    "[0, [1, 2], 3]",
+    "[0, 1, 2, 9, 3]",
+    "[0, [1, 2], null, 3]"
+   ],
+   "The spread operator inserts the elements of a, and a collection if with a false condition adds nothing."
+  ],
+  [
+   "In Dart, what is the static type of s after var s = {};?",
+   "Map<dynamic, dynamic>",
+   [
+    "Set<dynamic>",
+    "List<dynamic>",
+    "Object"
+   ],
+   "An empty {} is a map literal. To create an empty set, write <String>{} or declare the type, as in Set<String> s = {}."
+  ]
+ ],
+ "lua": [
+  [
+   "In Lua, what does t[1] return after local t = {\"a\", \"b\", \"c\"}?",
+   "\"a\"",
+   [
+    "\"b\"",
+    "nil",
+    "An index error"
+   ],
+   "Table constructors assign list items to integer keys starting at 1, which is the convention for Lua sequences."
+  ],
+  [
+   "What does #t return for local t = {10, 20, 30}?",
+   "3",
+   [
+    "30",
+    "2",
+    "60"
+   ],
+   "The length operator returns the size of a sequence. It is only well defined when the table has no holes."
+  ],
+  [
+   "In Lua, given local x = \"k\"; local t = {}, how do t.x = 1 and t[x] = 1 differ?",
+   "t.x uses the key \"x\", while t[x] uses the key \"k\"",
+   [
+    "They are the same, both use the key \"k\"",
+    "They are the same, both use the key \"x\"",
+    "t.x creates a global variable, while t[x] creates a field"
+   ],
+   "Dot syntax is sugar for a string key: t.x means t[\"x\"]. Brackets evaluate the expression, here the variable x."
+  ],
+  [
+   "What does the Lua statement t.name = nil do when the field already exists?",
+   "It removes the key from the table",
+   [
+    "It stores nil as a real value under the key",
+    "It raises an error",
+    "It sets the field to an empty string"
+   ],
+   "Tables never store nil values. Assigning nil is how you delete a key."
+  ],
+  [
+   "For local t = {1, 2, nil, 4, x = 5}, why might ipairs(t) and pairs(t) visit different entries?",
+   "ipairs stops at the first nil, while pairs visits every key",
+   [
+    "ipairs visits keys in random order, while pairs is sorted",
+    "pairs skips string keys, while ipairs includes them",
+    "pairs stops at the first nil, while ipairs visits every key"
+   ],
+   "ipairs walks integer keys 1, 2, 3 until it finds nil. pairs uses next and visits all keys in an unspecified order."
+  ],
+  [
+   "What does print(t.hi) show? local t = setmetatable({}, { __index = function(_, k) return k .. \"!\" end })",
+   "hi!",
+   [
+    "nil",
+    "An error: field hi not found",
+    "table: hi"
+   ],
+   "__index runs when a key is absent from the table. Here the function builds a value from the missing key."
+  ],
+  [
+   "Which metamethod lets you write a + b for two tables that represent vectors?",
+   "__add",
+   [
+    "__plus",
+    "__concat",
+    "__call"
+   ],
+   "Arithmetic operators look for metamethods such as __add, __sub and __mul. __concat handles .. and __call makes a table callable."
+  ],
+  [
+   "A table has an __index metamethod. Which function reads a key without triggering it?",
+   "rawget(t, k)",
+   [
+    "next(t, k)",
+    "select(k, t)",
+    "getmetatable(t)[k]"
+   ],
+   "rawget performs a primitive table access that ignores metamethods. rawset does the same for writes."
+  ],
+  [
+   "In Lua, what is obj:move(5) equivalent to?",
+   "obj.move(obj, 5)",
+   [
+    "obj.move(5)",
+    "move(obj, 5)",
+    "obj.move(self, 5)"
+   ],
+   "The colon syntax passes the receiver as the first argument, which the method receives as self."
+  ],
+  [
+   "What does the second call return? co = coroutine.create(function(a) local b = coroutine.yield(a + 1); return b * 2 end); coroutine.resume(co, 1); coroutine.resume(co, 5)",
+   "true, 10",
+   [
+    "true, 2",
+    "false, 10",
+    "true, 12"
+   ],
+   "The first resume yields a + 1 = 2. The second resume makes yield return 5, so the function returns 10, and resume reports success with true."
+  ],
+  [
+   "What does coroutine.status(co) return after the coroutine's function has returned normally?",
+   "\"dead\"",
+   [
+    "\"suspended\"",
+    "\"normal\"",
+    "\"finished\""
+   ],
+   "A coroutine that finished or raised an error is dead and cannot be resumed. A coroutine that has not started or has yielded is suspended."
+  ],
+  [
+   "What does the last call print? function counter() local n = 0 return function() n = n + 1 return n end end; local a = counter(); local b = counter(); a(); a(); print(b())",
+   "1",
+   [
+    "3",
+    "2",
+    "0"
+   ],
+   "Each call to counter creates a new local n, so a and b have independent upvalues."
+  ],
+  [
+   "What does this print in Lua? local x = 1; do local x = 2 end; print(x)",
+   "1",
+   [
+    "2",
+    "nil",
+    "An error about redeclaring x"
+   ],
+   "The inner local x is scoped to the do ... end block and shadows the outer x only there."
+  ],
+  [
+   "Inside a function, you write count = 0 without the local keyword. What does Lua do?",
+   "It creates or updates a global variable",
+   [
+    "It creates a local variable of the function",
+    "It raises an undeclared variable error",
+    "It creates a field on the function"
+   ],
+   "Names without local are globals, stored in the _ENV table (the global table _G by default). This is a common source of bugs."
+  ],
+  [
+   "Why do Lua programs often write local insert = table.insert before a hot loop?",
+   "Local access is faster than repeated global and field lookups",
+   [
+    "Global functions cannot be called inside loops",
+    "It makes table.insert run in a separate coroutine",
+    "It prevents the garbage collector from running during the loop"
+   ],
+   "Locals live in VM registers, while table.insert requires a global lookup plus a field lookup every time."
+  ],
+  [
+   "How does C code exchange values with Lua through the Lua C API?",
+   "Through a virtual stack of Lua values",
+   [
+    "Through shared C global variables",
+    "Through JSON strings",
+    "Through a pipe between processes"
+   ],
+   "Functions such as lua_pushnumber and lua_tostring push and read values on a stack owned by the lua_State."
+  ],
+  [
+   "A C function registered with Lua has the signature int f(lua_State *L). What does its int return value mean?",
+   "How many results it pushed onto the stack",
+   [
+    "An error code, where 0 means success",
+    "The number of arguments it received",
+    "The type of the first result"
+   ],
+   "Lua takes that many values from the top of the stack as the function's results."
+  ],
+  [
+   "Which C API call runs a Lua function in protected mode, so that errors are caught instead of aborting?",
+   "lua_pcall",
+   [
+    "lua_call",
+    "lua_resume",
+    "luaL_checkstack"
+   ],
+   "lua_pcall returns an error code and leaves the error message on the stack. lua_call propagates errors."
+  ],
+  [
+   "A Lua program calls require(\"util\") in two different files. How many times does util.lua run?",
+   "Once, then the result is reused from package.loaded",
+   [
+    "Once per calling file",
+    "Every time require is called",
+    "Never until a field is used"
+   ],
+   "require caches each module's return value in package.loaded and returns the cached value on later calls."
+  ],
+  [
+   "In Lua, which values are treated as false in an if condition?",
+   "Only nil and false",
+   [
+    "nil, false and 0",
+    "nil, false, 0 and the empty string",
+    "Only nil"
+   ],
+   "Unlike C or JavaScript, 0 and \"\" are true in Lua."
+  ]
+ ],
+ "perl": [
+  [
+   "In Perl, after \"2024-05\" =~ /(\\d+)-(\\d+)/, what does $2 contain?",
+   "\"05\"",
+   [
+    "\"2024\"",
+    "\"2024-05\"",
+    "5"
+   ],
+   "Each pair of parentheses creates a numbered capture. $1 holds the first group and $2 the second, as a string."
+  ],
+  [
+   "In Perl, what does $1 hold after \"abcbc\" =~ /a(.*)c/?",
+   "\"bcb\"",
+   [
+    "\"b\"",
+    "\"bcbc\"",
+    "\"bc\""
+   ],
+   "The greedy .* grabs as much as possible and backtracks only to the last c. The non-greedy /a(.*?)c/ would capture \"b\"."
+  ],
+  [
+   "Which Perl statement replaces every \"cat\" in $s with \"dog\"?",
+   "$s =~ s/cat/dog/g;",
+   [
+    "$s =~ s/cat/dog/;",
+    "$s =~ tr/cat/dog/;",
+    "$s = s/cat/dog/g;"
+   ],
+   "The g flag makes s/// replace all matches, not just the first. tr/// maps individual characters, and without =~ the substitution applies to $_."
+  ],
+  [
+   "In Perl, given my %h = (a => 1), which expression reads the value for key a?",
+   "$h{a}",
+   [
+    "%h{a}",
+    "@h{a}",
+    "$h[a]"
+   ],
+   "A single hash element is a scalar, so it uses the $ sigil with curly braces. Square brackets index arrays."
+  ],
+  [
+   "In Perl, after $h{k} = undef;, what are exists $h{k} and defined $h{k}?",
+   "exists is true, defined is false",
+   [
+    "Both are true",
+    "Both are false",
+    "exists is false, defined is true"
+   ],
+   "exists checks whether the key is present, while defined checks whether its value is not undef."
+  ],
+  [
+   "In Perl, given my @a = (10, 20, 30);, what is $#a?",
+   "2",
+   [
+    "3",
+    "30",
+    "-1"
+   ],
+   "$#a is the index of the last element. The element count is scalar(@a), which is 3."
+  ],
+  [
+   "In Perl, given my @a = (10, 20, 30);, what are $n and $first after my $n = @a; my ($first) = @a;?",
+   "$n is 3 and $first is 10",
+   [
+    "$n is 10 and $first is 10",
+    "$n is 3 and $first is 3",
+    "$n is 30 and $first is 10"
+   ],
+   "Assigning an array to a scalar gives its length (scalar context). Parentheses on the left create list context, which takes the first element."
+  ],
+  [
+   "What does Perl print for print scalar reverse(\"hello\");?",
+   "olleh",
+   [
+    "hello",
+    "5",
+    "h"
+   ],
+   "In scalar context reverse concatenates its arguments and reverses the characters. Without scalar, print gives list context and reverses a one-element list, printing hello."
+  ],
+  [
+   "Which Perl line opens data.txt for reading and stops with the system error if that fails?",
+   "open(my $fh, '<', 'data.txt') or die \"Cannot open: $!\";",
+   [
+    "open(my $fh, '>', 'data.txt') or die \"Cannot open: $!\";",
+    "open(my $fh, '<', 'data.txt') || warn \"Cannot open: $@\";",
+    "open(my $fh, 'data.txt', '<') and die \"Cannot open: $!\";"
+   ],
+   "The three-argument form with '<' reads, '>' truncates for writing. $! holds the OS error, while $@ holds eval errors."
+  ],
+  [
+   "In Perl, which open mode appends to log.txt without erasing its contents?",
+   "'>>'",
+   [
+    "'>'",
+    "'<'",
+    "'+<'"
+   ],
+   "'>>' opens for appending. '>' truncates the file first, and '+<' opens an existing file for reading and writing."
+  ],
+  [
+   "Inside while (my $line = <$fh>) { ... } in Perl, what does chomp $line; do?",
+   "Removes the trailing newline",
+   [
+    "Removes all whitespace",
+    "Removes the last character whatever it is",
+    "Splits the line into words"
+   ],
+   "chomp removes a trailing input record separator (a newline by default). chop removes the last character unconditionally."
+  ],
+  [
+   "Which command line tool is commonly used to install Perl modules from CPAN?",
+   "cpanm",
+   [
+    "pip",
+    "gem",
+    "composer"
+   ],
+   "cpanm (App::cpanminus) installs modules from CPAN with their dependencies. pip, gem and composer serve Python, Ruby and PHP."
+  ],
+  [
+   "Where does Perl look for the CPAN module JSON::PP when it runs use JSON::PP;?",
+   "A file JSON/PP.pm under one of the directories in @INC",
+   [
+    "A file JSON-PP.pl in the current directory only",
+    "A file JSON.PP.pm under the directories in $PATH",
+    "A file named PP.pm in the JSON environment variable"
+   ],
+   "Package separators :: map to directory separators, and Perl searches the directories listed in @INC."
+  ],
+  [
+   "In Perl, given my @a = (1, 2, 3); my $r = \\@a;, which expression returns 1?",
+   "$r->[0]",
+   [
+    "$r[0]",
+    "@r[0]",
+    "$$r{0}"
+   ],
+   "The arrow dereferences an array reference. $r[0] would index a different array @r, and $$r{0} treats $r as a hash reference."
+  ],
+  [
+   "In Perl, what does ref([1, 2]) return?",
+   "\"ARRAY\"",
+   [
+    "\"LIST\"",
+    "\"REF\"",
+    "2"
+   ],
+   "Square brackets create an anonymous array reference, and ref reports its type. Curly braces would give \"HASH\"."
+  ],
+  [
+   "Given my %data = (list => [10, 20]);, which Perl expression returns 20?",
+   "$data{list}[1]",
+   [
+    "$data{list}{1}",
+    "@data{list}[1]",
+    "$data[list][1]"
+   ],
+   "The hash value is an array reference. Between subscripts the arrow is optional, so $data{list}[1] means $data{list}->[1]."
+  ],
+  [
+   "What does this Perl code print? our $x = 1; sub show { print $x } sub test { local $x = 2; show() } test();",
+   "2",
+   [
+    "1",
+    "Nothing, it is a compile error",
+    "An empty line"
+   ],
+   "local temporarily replaces the global's value until test returns, and show sees it. With my $x = 2 inside test, show would print 1."
+  ],
+  [
+   "Which Perl declaration creates a variable visible only inside the enclosing block or file?",
+   "my",
+   [
+    "our",
+    "local",
+    "use vars"
+   ],
+   "my creates a lexical variable. our and use vars declare package globals, and local only saves and restores a global's value."
+  ],
+  [
+   "In a Perl subroutine, where do the arguments passed by the caller arrive?",
+   "In the array @_",
+   [
+    "In the scalar $_",
+    "In the hash %ARGV",
+    "In the array @ARGV"
+   ],
+   "Arguments arrive in @_, often unpacked with my ($a, $b) = @_;. @ARGV holds the script's command line arguments."
+  ],
+  [
+   "A Perl sub is called as f(@a, @b). Why is it hard for f to tell where @a ends?",
+   "Both arrays are flattened into one list in @_",
+   [
+    "Only the first array is passed to the sub",
+    "Each array arrives as a separate string",
+    "Perl passes arrays by name, not by value"
+   ],
+   "Perl flattens list arguments. Pass references, as in f(\\@a, \\@b), to keep the arrays separate."
+  ]
+ ],
+ "bash": [
+  [
+   "In Bash, what does $? hold right after a command finishes successfully?",
+   "0",
+   [
+    "1",
+    "true",
+    "An empty string"
+   ],
+   "$? is the exit status of the last command. By convention 0 means success and any nonzero value means failure."
+  ],
+  [
+   "In Bash, var=\"a b\". Why does [ $var = \"a b\" ] fail while [[ $var = \"a b\" ]] works?",
+   "[ is a command, so unquoted $var splits into two words",
+   [
+    "[ does not support the = operator at all",
+    "[[ ]] converts both sides to numbers first",
+    "[ only works on file tests, not strings"
+   ],
+   "[ is an ordinary builtin, so its arguments undergo word splitting. [[ ]] is shell syntax and does not split unquoted variables. Quoting \"$var\" also fixes [."
+  ],
+  [
+   "What does this Bash line print? name=John; [[ $name == J* ]] && echo yes || echo no",
+   "yes",
+   [
+    "no",
+    "An error about the asterisk",
+    "Nothing"
+   ],
+   "Inside [[ ]], an unquoted right side of == is a glob pattern, so J* matches John. With [ ] the asterisk would be treated differently."
+  ],
+  [
+   "What does this Bash line print? [[ 10 < 9 ]] && echo yes || echo no",
+   "yes",
+   [
+    "no",
+    "An error about the < operator",
+    "Nothing"
+   ],
+   "Inside [[ ]], < compares strings lexicographically, and \"1\" sorts before \"9\". For numbers use (( 10 < 9 )) or [[ 10 -lt 9 ]]."
+  ],
+  [
+   "In Bash, with default options, what is $? after false | true?",
+   "0",
+   [
+    "1",
+    "2",
+    "An empty string"
+   ],
+   "A pipeline's status is the status of its last command. With set -o pipefail it would be 1 because false failed."
+  ],
+  [
+   "In Bash with default options, what does this print? count=0; printf 'a\\nb\\n' | while read -r l; do count=$((count+1)); done; echo $count",
+   "0",
+   [
+    "2",
+    "1",
+    "An error"
+   ],
+   "Each part of a pipeline runs in a subshell, so the loop's changes to count are lost. Use done < file or process substitution instead."
+  ],
+  [
+   "What does this Bash loop print? for i in {1..3}; do echo -n \"$i \"; done",
+   "1 2 3 ",
+   [
+    "{1..3} ",
+    "1 3 ",
+    "0 1 2 "
+   ],
+   "Brace expansion turns {1..3} into the words 1 2 3 before the loop runs."
+  ],
+  [
+   "In Bash, f=\"report.tar.gz\". What does echo ${f%.*} print?",
+   "report.tar",
+   [
+    "report",
+    "gz",
+    "tar.gz"
+   ],
+   "% removes the shortest match of .* from the end. %% would remove the longest match and leave report."
+  ],
+  [
+   "In Bash, path=\"/var/log/app.log\". Which expansion prints app.log?",
+   "${path##*/}",
+   [
+    "${path%/*}",
+    "${path#*/}",
+    "${path%%/*}"
+   ],
+   "## removes the longest prefix matching */, leaving the file name. ${path%/*} would give /var/log."
+  ],
+  [
+   "In Bash, NAME is unset. What does echo ${NAME:-guest} print, and does it change NAME?",
+   "It prints guest and leaves NAME unset",
+   [
+    "It prints guest and sets NAME to guest",
+    "It prints nothing and sets NAME",
+    "It prints an error and exits"
+   ],
+   ":- substitutes a default without assigning it. ${NAME:=guest} would also assign the value."
+  ],
+  [
+   "In Bash, what does this print? x=1; (x=2); echo $x",
+   "1",
+   [
+    "2",
+    "An empty line",
+    "An error"
+   ],
+   "Parentheses run the commands in a subshell, a child copy of the shell. Variable changes there do not affect the parent."
+  ],
+  [
+   "A Bash script runs (cd /tmp && ls) and then pwd. What does pwd print?",
+   "The directory the script was in before",
+   [
+    "/tmp",
+    "The home directory",
+    "/"
+   ],
+   "The cd happens only inside the subshell. Grouping with { ...; } instead would change the current shell's directory."
+  ],
+  [
+   "Which Bash line removes a temporary file however the script exits, including on errors with set -e?",
+   "trap 'rm -f \"$tmp\"' EXIT",
+   [
+    "trap 'rm -f \"$tmp\"' KILL",
+    "trap 'rm -f \"$tmp\"' ERR STOP",
+    "trap 'rm -f \"$tmp\"' DEBUG"
+   ],
+   "The EXIT trap runs when the shell exits for any reason it can handle. KILL and STOP cannot be trapped at all."
+  ],
+  [
+   "Which signal can a Bash trap never catch?",
+   "SIGKILL",
+   [
+    "SIGTERM",
+    "SIGINT",
+    "SIGHUP"
+   ],
+   "SIGKILL (and SIGSTOP) are handled by the kernel and cannot be caught or ignored. kill without options sends SIGTERM, which can be trapped."
+  ],
+  [
+   "In Bash, which command sends both stdout and stderr of cmd to out.log?",
+   "cmd > out.log 2>&1",
+   [
+    "cmd 2>&1 > out.log",
+    "cmd 2> out.log 1>&3",
+    "cmd >> out.log 2>1"
+   ],
+   "Redirections apply left to right. 2>&1 > out.log duplicates stderr to the old stdout (the terminal) before stdout moves. 2>1 writes to a file named 1."
+  ],
+  [
+   "In Bash, what is the difference between echo hi > f.txt and echo hi >> f.txt?",
+   "> truncates f.txt first, while >> appends to it",
+   [
+    "> appends to f.txt, while >> truncates it",
+    "> writes stdout, while >> writes stderr",
+    "> fails if f.txt exists, while >> creates it"
+   ],
+   "Single > overwrites the file. Failing on an existing file only happens with set -o noclobber."
+  ],
+  [
+   "In Bash, after arr=(a b c), what does echo ${arr[1]} print?",
+   "b",
+   [
+    "a",
+    "c",
+    "a b c"
+   ],
+   "Indexed arrays start at 0. Plain $arr refers to the first element, and \"${arr[@]}\" expands to all elements."
+  ],
+  [
+   "In Bash, after arr=(a b c); arr+=(d), what does echo ${#arr[@]} print?",
+   "4",
+   [
+    "3",
+    "1",
+    "7"
+   ],
+   "+=( ) appends elements, and ${#arr[@]} gives the number of elements. ${#arr} would give the length of the first element."
+  ],
+  [
+   "A Bash script is run as ./s.sh \"a b\" c. How many words does for x in \"$@\"; do echo $x; done loop over?",
+   "2",
+   [
+    "3",
+    "1",
+    "0"
+   ],
+   "\"$@\" expands to each argument as a separate word, keeping spaces inside arguments. Unquoted $@ or $* would split \"a b\" into two words."
+  ],
+  [
+   "A Bash script is run as ./s.sh one two three. What does echo $# print in it?",
+   "3",
+   [
+    "4",
+    "one",
+    "two"
+   ],
+   "$# is the number of positional arguments, not counting $0 (the script name)."
+  ]
+ ],
+ "powershell": [
+  [
+   "Which naming pattern do built-in PowerShell cmdlets follow?",
+   "Verb-Noun, such as Get-Process",
+   [
+    "Noun-Verb, such as Process-Get",
+    "verb_noun, such as get_process",
+    "Noun.Verb, such as Process.Get"
+   ],
+   "Cmdlets use an approved verb plus a singular noun. Get-Verb lists the approved verbs."
+  ],
+  [
+   "Which cmdlet shows the properties and methods of the objects coming down a PowerShell pipeline?",
+   "Get-Member",
+   [
+    "Get-Help",
+    "Get-Command",
+    "Get-ItemProperty"
+   ],
+   "Piping to Get-Member (alias gm) lists the object's type, properties and methods. Get-Command finds commands, Get-Help shows documentation."
+  ],
+  [
+   "In Get-Process | Where-Object { $_.CPU -gt 100 }, what does $_ refer to?",
+   "The current process object in the pipeline",
+   [
+    "The text line printed by Get-Process",
+    "The last error that occurred",
+    "The script's first argument"
+   ],
+   "PowerShell pipes .NET objects, not text. $_ (also $PSItem) is the current object, so its properties can be read directly."
+  ],
+  [
+   "Which PowerShell pipeline returns the five processes using the most CPU time?",
+   "Get-Process | Sort-Object CPU -Descending | Select-Object -First 5",
+   [
+    "Get-Process | Select-Object -First 5 | Sort-Object CPU -Descending",
+    "Get-Process | Where-Object CPU -First 5 | Sort-Object",
+    "Get-Process -Top 5 | Sort-Object CPU -Ascending"
+   ],
+   "Sort first, then take the first five. Selecting before sorting only sorts five arbitrary processes."
+  ],
+  [
+   "What does adding -WhatIf to Get-Service spooler | Stop-Service do?",
+   "Shows what would be stopped without stopping it",
+   [
+    "Stops the service and logs each step",
+    "Asks for confirmation before stopping it",
+    "Stops the service only if it is idle"
+   ],
+   "-WhatIf describes the action without performing it. -Confirm is the parameter that prompts before acting."
+  ],
+  [
+   "What does this PowerShell script output? $x = 1; function f { $x = 2 }; f; $x",
+   "1",
+   [
+    "2",
+    "Nothing",
+    "An error"
+   ],
+   "Assigning inside a function creates a variable in the function's local scope. To change the outer one, use a scope modifier such as $script:x."
+  ],
+  [
+   "How do you read the PATH environment variable in PowerShell?",
+   "$env:PATH",
+   [
+    "%PATH%",
+    "$PATH",
+    "Get-Env PATH"
+   ],
+   "Environment variables are exposed through the env: drive, so $env:NAME reads them. %PATH% is cmd.exe syntax."
+  ],
+  [
+   "Which operator tests whether $a is greater than $b in PowerShell?",
+   "$a -gt $b",
+   [
+    "$a > $b",
+    "$a >> $b",
+    "$a .gt. $b"
+   ],
+   "PowerShell uses -gt, -lt, -eq and similar operators. > is the output redirection operator, so $a > $b writes to a file named after $b."
+  ],
+  [
+   "What is the default PowerShell execution policy on Windows client editions such as Windows 10 and 11?",
+   "Restricted",
+   [
+    "RemoteSigned",
+    "Unrestricted",
+    "Bypass"
+   ],
+   "Restricted allows interactive commands but no script files. Windows Server defaults to RemoteSigned."
+  ],
+  [
+   "What does the RemoteSigned execution policy allow?",
+   "Local scripts run; downloaded scripts need a trusted signature",
+   [
+    "Only scripts signed by Microsoft can run",
+    "All scripts run, but remote ones show a warning",
+    "Scripts run only through PowerShell remoting"
+   ],
+   "Files marked as coming from the internet must be signed by a trusted publisher. Unblock-File removes that mark from a file you trust."
+  ],
+  [
+   "Which statement about PowerShell execution policies is correct?",
+   "They are a safety feature, not a security boundary",
+   [
+    "They block all malicious code from running",
+    "They can only be changed by domain admins",
+    "They apply to cmd.exe batch files as well"
+   ],
+   "Microsoft documents that execution policy prevents accidental script execution but is easy to bypass, for example by pasting the code."
+  ],
+  [
+   "Which command runs a script block on servers web01 and web02 over PowerShell remoting?",
+   "Invoke-Command -ComputerName web01, web02 -ScriptBlock { Get-Service }",
+   [
+    "Enter-PSSession -ComputerName web01, web02 { Get-Service }",
+    "Start-Job -ComputerName web01, web02 { Get-Service }",
+    "Get-Service | Send-Remote web01, web02"
+   ],
+   "Invoke-Command fans out to many computers. Enter-PSSession opens an interactive session with a single computer."
+  ],
+  [
+   "Which default TCP port does WinRM use for PowerShell remoting over HTTP?",
+   "5985",
+   [
+    "5986",
+    "3389",
+    "22"
+   ],
+   "WinRM listens on 5985 for HTTP and 5986 for HTTPS. 3389 is RDP and 22 is SSH."
+  ],
+  [
+   "Which cmdlet configures a Windows computer to accept PowerShell remoting connections?",
+   "Enable-PSRemoting",
+   [
+    "Enable-WinRMFirewall",
+    "Set-RemoteAccess",
+    "Start-PSRemote"
+   ],
+   "Enable-PSRemoting starts WinRM, creates listeners and session configurations, and adds firewall rules."
+  ],
+  [
+   "What does this PowerShell switch output? switch (3) { 1 { \"one\" } 3 { \"three\" } default { \"other\" } }",
+   "three",
+   [
+    "other",
+    "three other",
+    "one"
+   ],
+   "switch runs the block of each matching clause. default runs only when no clause matched."
+  ],
+  [
+   "Inside try { }, Get-Item C:\\missing.txt fails, but catch never runs. What fixes it?",
+   "Add -ErrorAction Stop to Get-Item",
+   [
+    "Add a finally block",
+    "Wrap the call in parentheses",
+    "Use catch [System.Object] instead"
+   ],
+   "Most cmdlet failures are non-terminating errors, which try/catch ignores. -ErrorAction Stop turns them into terminating errors."
+  ],
+  [
+   "Which command installs a module from the PowerShell Gallery for the current user only?",
+   "Install-Module PSReadLine -Scope CurrentUser",
+   [
+    "Import-Module PSReadLine -Scope CurrentUser",
+    "Add-Module PSReadLine -User",
+    "Get-Module PSReadLine -Install"
+   ],
+   "Install-Module downloads and installs from a repository. Import-Module only loads a module that is already installed."
+  ],
+  [
+   "In a script module (.psm1), which cmdlet limits the functions that importers can see?",
+   "Export-ModuleMember",
+   [
+    "Import-Module",
+    "Set-ModuleScope",
+    "New-ModuleManifest"
+   ],
+   "Export-ModuleMember chooses which functions, variables and aliases are public. A manifest can also restrict this with FunctionsToExport."
+  ],
+  [
+   "Get-ADUser -Identity jdoe does not show the LastLogonDate value. How do you include it?",
+   "Get-ADUser -Identity jdoe -Properties LastLogonDate",
+   [
+    "Get-ADUser -Identity jdoe -Select LastLogonDate",
+    "Get-ADUser -Identity jdoe -All",
+    "Get-ADUser -Identity jdoe -Extended"
+   ],
+   "Get-ADUser returns a small default set of attributes. Other attributes must be requested with -Properties."
+  ],
+  [
+   "Which ActiveDirectory module command finds user accounts that are currently locked out?",
+   "Search-ADAccount -LockedOut",
+   [
+    "Get-ADUser -LockedOut",
+    "Find-ADUser -Status Locked",
+    "Get-ADLockout -All"
+   ],
+   "Search-ADAccount supports switches such as -LockedOut, -AccountDisabled and -PasswordExpired. Unlock-ADAccount unlocks a user."
+  ]
+ ],
+ "webassembly": [
+  [
+   "How are .wasm and .wat files related?",
+   ".wasm is the binary format and .wat is its readable text format",
+   [
+    ".wat is compiled machine code and .wasm is its source",
+    ".wasm runs in browsers and .wat runs only on servers",
+    ".wat is a JavaScript wrapper that loads .wasm"
+   ],
+   "Both describe the same module. Tools such as wat2wasm and wasm2wat from WABT convert between them."
+  ],
+  [
+   "What does the WAT expression (i32.add (i32.const 2) (i32.const 3)) evaluate to?",
+   "The i32 value 5",
+   [
+    "The i32 value 23",
+    "The f32 value 5.0",
+    "A validation error"
+   ],
+   "WebAssembly is a stack machine. The two constants are pushed, and i32.add pops both and pushes their sum."
+  ],
+  [
+   "Which is not one of the four core numeric value types of WebAssembly 1.0?",
+   "i8",
+   [
+    "i32",
+    "f64",
+    "i64"
+   ],
+   "The core numeric types are i32, i64, f32 and f64. 8-bit and 16-bit values exist only as memory load and store widths."
+  ],
+  [
+   "Which four bytes start every binary WebAssembly module?",
+   "\\0asm (0x00 0x61 0x73 0x6D)",
+   [
+    "WASM (0x57 0x41 0x53 0x4D)",
+    "\\x7FELF (0x7F 0x45 0x4C 0x46)",
+    "PK (0x50 0x4B 0x03 0x04)"
+   ],
+   "The magic number \\0asm is followed by a 4-byte version. \\x7FELF is the Linux executable header and PK starts ZIP files."
+  ],
+  [
+   "Which toolchain is most commonly used to compile C and C++ to WebAssembly together with JavaScript glue code?",
+   "Emscripten",
+   [
+    "wasm-pack",
+    "AssemblyScript",
+    "Cargo"
+   ],
+   "Emscripten (emcc) compiles C/C++ through LLVM and generates glue code. wasm-pack and Cargo are Rust tools, AssemblyScript is a TypeScript-like language."
+  ],
+  [
+   "Which Rust crate generates the JavaScript bindings that let Wasm functions take and return strings and JS objects?",
+   "wasm-bindgen",
+   [
+    "serde",
+    "tokio",
+    "bindgen"
+   ],
+   "wasm-bindgen generates glue on both sides of the boundary. The similarly named bindgen generates Rust bindings for C headers."
+  ],
+  [
+   "Which Rust compilation target produces Wasm for browsers with no assumed host system interface?",
+   "wasm32-unknown-unknown",
+   [
+    "x86_64-unknown-linux-gnu",
+    "wasm64-browser-js",
+    "asmjs-unknown-web"
+   ],
+   "wasm32-unknown-unknown makes no assumptions about the host. wasm-pack uses it when building for the web."
+  ],
+  [
+   "How is WebAssembly linear memory organized?",
+   "As a contiguous, resizable array of bytes",
+   [
+    "As a garbage collected object heap",
+    "As separate memory for each function",
+    "As a key-value store of variables"
+   ],
+   "Linear memory is a flat byte array addressed by integer offsets. In JavaScript it appears as an ArrayBuffer."
+  ],
+  [
+   "What is the size of one WebAssembly memory page?",
+   "64 KiB",
+   [
+    "4 KiB",
+    "1 MiB",
+    "16 KiB"
+   ],
+   "memory.grow and the memory limits are counted in 64 KiB pages."
+  ],
+  [
+   "JS code created const view = new Uint8Array(memory.buffer). The module then grows its memory. What happens to view?",
+   "It is detached and must be recreated",
+   [
+    "It grows automatically with the memory",
+    "It still covers the old size and stays valid",
+    "It now points at the newly added pages only"
+   ],
+   "Growing a non-shared memory detaches the old ArrayBuffer. Create a new view from memory.buffer after any call that may grow memory."
+  ],
+  [
+   "How is a JavaScript string usually passed to a Wasm function exported from compiled C code?",
+   "Encoded into linear memory, then passed as a pointer and length",
+   [
+    "Passed directly as a string parameter type",
+    "Passed as a reference to the JS string's heap object",
+    "Passed by converting it to a single i64 value"
+   ],
+   "Core Wasm functions take only numbers and references. Glue code encodes the text, often as UTF-8, into linear memory and passes its offset."
+  ],
+  [
+   "A module was loaded with WebAssembly.instantiate(bytes, imports). Where do you find its exported add function?",
+   "result.instance.exports.add",
+   [
+    "result.module.add",
+    "result.exports.add",
+    "WebAssembly.exports.add"
+   ],
+   "instantiate with bytes resolves to { module, instance }. Exported functions, memories and tables live on instance.exports."
+  ],
+  [
+   "What is the importObject argument of WebAssembly.instantiateStreaming(fetch(url), importObject) for?",
+   "Supplying JS functions and values the module declares as imports",
+   [
+    "Listing which exports should be made public",
+    "Configuring the network request for the .wasm file",
+    "Choosing the compiler optimization level"
+   ],
+   "Wasm cannot call the host on its own. Everything it needs from outside, such as a log function or memory, is passed in as imports."
+  ],
+  [
+   "WebAssembly.instantiateStreaming fails with a type error, while fetching the file works. What is the most likely cause?",
+   "The server does not send Content-Type: application/wasm",
+   [
+    "The file is larger than one memory page",
+    "The module has no exported functions",
+    "The page is not using an ES module script"
+   ],
+   "Streaming compilation requires the application/wasm MIME type. Fix the server configuration or fall back to instantiate with an ArrayBuffer."
+  ],
+  [
+   "A Wasm function reads an address beyond the end of its linear memory. What happens?",
+   "It traps, and JS sees a WebAssembly.RuntimeError",
+   [
+    "It reads bytes from the browser's own memory",
+    "It returns 0 silently",
+    "The memory grows automatically"
+   ],
+   "Every memory access is bounds checked against the module's own memory, so a bad access stops execution instead of touching the host."
+  ],
+  [
+   "How can a WebAssembly module running in a browser modify the page's DOM?",
+   "Only by calling imported JavaScript functions",
+   [
+    "Directly, through built-in DOM instructions",
+    "Through a raw pointer to the DOM tree",
+    "Through operating system calls"
+   ],
+   "Wasm is sandboxed and has no direct access to browser APIs. It can only use capabilities the host passes in as imports."
+  ],
+  [
+   "C code with a buffer overflow is compiled to WebAssembly. What can the overflow still corrupt?",
+   "Data inside the module's own linear memory",
+   [
+    "Memory belonging to other browser tabs",
+    "The browser's JavaScript engine heap",
+    "Nothing, because Wasm checks all array bounds"
+   ],
+   "Wasm keeps the bug inside the sandbox, but bounds are checked only against the whole linear memory, so neighboring C data can still be overwritten."
+  ],
+  [
+   "Which Content Security Policy source keyword allows WebAssembly compilation without allowing JavaScript eval?",
+   "'wasm-unsafe-eval'",
+   [
+    "'unsafe-eval'",
+    "'unsafe-inline'",
+    "'strict-dynamic'"
+   ],
+   "'wasm-unsafe-eval' permits compiling Wasm only. 'unsafe-eval' would also allow eval and new Function."
+  ],
+  [
+   "For which task is moving code from JavaScript to WebAssembly most likely to give a big speedup?",
+   "Compute-heavy work like image filtering on large buffers",
+   [
+    "Frequent small DOM updates",
+    "Waiting for many network requests",
+    "Reading values from localStorage"
+   ],
+   "Wasm shines at tight numeric loops over memory. DOM work and I/O still go through JS APIs, and frequent boundary calls add overhead."
+  ],
+  [
+   "A Wasm function exported to JavaScript has an i64 parameter. Which JavaScript type must you pass?",
+   "BigInt",
+   [
+    "Number",
+    "String",
+    "Float64Array"
+   ],
+   "The JS API maps i64 to BigInt so 64-bit integers keep full precision. Passing a regular Number throws a TypeError."
+  ]
+ ]
+}

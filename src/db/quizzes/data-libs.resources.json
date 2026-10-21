@@ -1,0 +1,26 @@
+{
+ "numpy": [
+  "NumPy user guide",
+  "https://numpy.org/doc/stable/user/index.html"
+ ],
+ "pandas": [
+  "pandas User Guide",
+  "https://pandas.pydata.org/docs/user_guide/index.html"
+ ],
+ "polars": [
+  "Polars User Guide",
+  "https://docs.pola.rs/"
+ ],
+ "scipy": [
+  "SciPy User Guide",
+  "https://docs.scipy.org/doc/scipy/tutorial/index.html"
+ ],
+ "matplotlib": [
+  "Matplotlib Tutorials",
+  "https://matplotlib.org/stable/tutorials/index.html"
+ ],
+ "opencv": [
+  "OpenCV-Python Tutorials",
+  "https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html"
+ ]
+}
