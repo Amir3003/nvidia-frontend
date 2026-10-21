@@ -6,13 +6,13 @@
    [
     "(3, 1)",
     "(1, 4)",
-    "It raises a ValueError"
+    "(4, 3)"
    ],
    "Broadcasting aligns shapes from the right: (3, 1) and (4,) become (3, 1) and (1, 4), and each size-1 dimension stretches, giving (3, 4)."
   ],
   [
    "What happens when you run np.ones(3) + np.ones(4) in NumPy?",
-   "It raises a ValueError",
+   "It raises a broadcasting ValueError",
    [
     "It returns an array of shape (4,)",
     "It returns an array of shape (3, 4)",
@@ -26,7 +26,7 @@
    [
     "(3,)",
     "(2,)",
-    "It raises a ValueError"
+    "(3, 2)"
    ],
    "The (3,) array is treated as (1, 3) and broadcast across both rows, so the result keeps shape (2, 3). This is how you subtract a per-column mean."
   ],
@@ -75,7 +75,7 @@
    "array([0, 2, 4, 6])",
    [
     "array([1, 3, 5])",
-    "array([ True, False,  True, False,  True, False,  True])",
+    "array([1, 0, 1, 0, 1, 0, 1])",
     "array([0, 1, 2, 3])"
    ],
    "The condition builds a boolean mask, and indexing with a boolean mask returns a 1-D array of the elements where the mask is True."
@@ -84,9 +84,9 @@
    "Why is np.sqrt(arr) usually much faster than [math.sqrt(v) for v in arr] on a large NumPy array?",
    "The loop runs in compiled code over a typed, contiguous buffer",
    [
-    "NumPy caches the results of previous square roots",
-    "NumPy automatically runs the operation on the GPU",
-    "Python list comprehensions are executed lazily"
+    "NumPy caches the results of previous square roots in memory",
+    "NumPy automatically runs the operation on the GPU when one exists",
+    "Python list comprehensions are executed lazily, one item at a time"
    ],
    "Vectorized ufuncs loop in C over raw typed memory, avoiding per-element Python object overhead. NumPy does not use the GPU on its own."
   ],
@@ -105,7 +105,7 @@
    "array([4, 6])",
    [
     "array([3, 7])",
-    "10",
+    "array([10])",
     "array([[4, 6]])"
    ],
    "axis=0 collapses the rows, summing down each column: 1+3 and 2+4. axis=1 would sum across each row and give array([3, 7])."
@@ -126,7 +126,7 @@
    [
     "array([5, 7])",
     "array([1, 0, 1])",
-    "3"
+    "array([3])"
    ],
    "argmax returns positions, not values. In row 0 the maximum 5 is at index 1, and in row 1 the maximum 7 is at index 0."
   ],
@@ -135,8 +135,8 @@
    "C order (row-major)",
    [
     "Fortran order (column-major)",
-    "A layout chosen randomly per call",
-    "A strided layout with no contiguity"
+    "Random order per call",
+    "Strided, non-contiguous"
    ],
    "NumPy creates arrays in C order by default, so elements of each row are adjacent in memory. Pass order='F' for column-major layout."
   ],
@@ -164,17 +164,17 @@
    "A C extension requires a C-contiguous array, but your input is a transposed view. Which call gives it a valid array?",
    "np.ascontiguousarray(x)",
    [
-    "x.view()",
-    "np.asarray(x)",
+    "np.asanyarray(x)",
+    "np.asarray(x, order='K')",
     "x.reshape(x.shape)"
    ],
-   "np.ascontiguousarray returns x unchanged if it is already C-contiguous and copies it into C order otherwise. view, asarray and same-shape reshape keep the original layout."
+   "np.ascontiguousarray returns x unchanged if it is already C-contiguous and copies it into C order otherwise. asanyarray, asarray with order='K' and same-shape reshape keep the original layout."
   ],
   [
    "For A = np.array([[1, 2], [3, 4]]) and I = np.eye(2), how do A * I and A @ I differ?",
    "A * I is elementwise and A @ I is a matrix product",
    [
-    "Both compute the matrix product",
+    "Both compute the matrix product of A and I",
     "A * I is a matrix product and A @ I is elementwise",
     "Both are elementwise, but @ is faster"
    ],
@@ -186,7 +186,7 @@
    [
     "np.linalg.inv(A) @ b",
     "np.linalg.det(A) * b",
-    "A.T @ b"
+    "np.dot(A.T, b)"
    ],
    "solve uses an LU factorization directly, which is faster and numerically more stable than forming the explicit inverse and multiplying."
   ],
@@ -236,9 +236,9 @@
    "What does pd.Series([1, 2], index=['a', 'b']) + pd.Series([10, 20], index=['b', 'c']) produce?",
    "a: NaN, b: 12.0, c: NaN",
    [
-    "a: 11, b: 22",
+    "a: 11.0, b: 22.0",
     "a: 1, b: 12, c: 20",
-    "A ValueError about unequal indexes"
+    "A ValueError on indexes"
    ],
    "pandas aligns on index labels before adding. Only 'b' exists in both, so it gets 2 + 10; labels present in one Series only become NaN."
   ],
@@ -256,9 +256,9 @@
    "What kind of columns does df.groupby('k').agg({'v': ['sum', 'max']}) produce?",
    "A MultiIndex with ('v', 'sum') and ('v', 'max')",
    [
-    "Two flat columns named sum and max",
+    "Two flat columns named sum and max, with no v level",
     "A single column holding (sum, max) tuples",
-    "Columns named v_sum and v_max"
+    "Flat columns named v_sum and v_max"
    ],
    "Passing a list of functions per column creates a two-level column MultiIndex. Use named aggregation, such as agg(v_sum=('v', 'sum')), to get flat names."
   ],
@@ -268,9 +268,9 @@
    [
     "df.groupby('g')['x'].agg('mean')",
     "df.groupby('g')['x'].mean().values",
-    "df.groupby('g').size()"
+    "df.groupby('g')['x'].expanding().mean()"
    ],
-   "transform returns a result aligned to the original rows, so it can be assigned directly. agg and mean return one value per group, which is shorter."
+   "transform returns a result aligned to the original rows, so it can be assigned directly. agg and mean return one value per group, and expanding().mean() gives a running mean, not the group mean."
   ],
   [
    "For df = pd.DataFrame({'k': ['a', 'a', 'b'], 'v': [1, None, 3]}), what is df.groupby('k')['v'].count() for group 'a'?",
@@ -306,8 +306,8 @@
    "Both DataFrames have a non-key column named x. What columns does pd.merge(l, r, on='id') produce?",
    "id, x_x, x_y",
    [
-    "id, x",
     "id, x, x",
+    "id, x_l, x_r",
     "id, x_left, x_right"
    ],
    "Overlapping non-key columns get the default suffixes ('_x', '_y'). Pass suffixes=('_l', '_r') to choose different ones."
@@ -378,19 +378,19 @@
    [
     "Timestamp('2024-03-01 00:00:00')",
     "Timestamp('2024-02-28 00:00:01')",
-    "A TypeError"
+    "A TypeError, unsupported operand"
    ],
    "2024 is a leap year, so February has 29 days and adding one day lands on February 29. pandas handles calendar rules for you."
   ],
   [
    "Which is the fastest way to double every value in a large numeric column df['a']?",
-   "df['a'] * 2",
+   "np.multiply(df['a'], 2)",
    [
     "df['a'].apply(lambda x: x * 2)",
     "df['a'].map(lambda x: x * 2)",
     "pd.Series([x * 2 for x in df['a']])"
    ],
-   "Arithmetic on a Series is vectorized and runs in compiled code. apply and map call a Python function once per element, which is much slower."
+   "np.multiply, like df['a'] * 2, is vectorized and runs in compiled code. apply and map call a Python function once per element, which is much slower."
   ],
   [
    "What does df.apply(f, axis=1) pass to the function f?",
@@ -428,9 +428,9 @@
    "What is the main advantage of Polars lazy mode over eager mode?",
    "A query optimizer can rewrite the whole plan before running it",
    [
-    "Every operation is cached on disk between steps",
-    "It avoids having to choose column data types",
-    "It runs Python lambdas in parallel without the GIL"
+    "Every operation is cached on disk between steps for reuse",
+    "It avoids having to choose column data types at all",
+    "It runs Python lambdas in parallel across all cores without the GIL"
    ],
    "In lazy mode Polars sees the full query and applies optimizations such as predicate and projection pushdown before any data is processed."
   ],
@@ -438,9 +438,9 @@
    "In a Polars lazy query, what does predicate pushdown do with a .filter() placed after several other steps?",
    "Applies the filter as early as possible, ideally during the scan",
    [
-    "Moves the filter to the very end of the plan",
-    "Converts the filter into a join",
-    "Runs the filter only on the first batch of rows"
+    "Moves the filter to the very end of the plan, after joins",
+    "Converts the filter into an inner join against the source",
+    "Runs the filter only on the first batch of rows read from the source"
    ],
    "Pushing predicates toward the data source means fewer rows are read and processed by later steps, which saves both time and memory."
   ],
@@ -469,8 +469,8 @@
    "Apache Arrow columnar format",
    [
     "Row-oriented Python dictionaries",
-    "NumPy object arrays",
-    "SQLite pages"
+    "NumPy object arrays per column",
+    "SQLite database pages in memory"
    ],
    "Polars stores each column as Arrow-style contiguous buffers with a validity bitmap, which enables fast vectorized and cache-friendly processing."
   ],
@@ -480,7 +480,7 @@
    [
     "Polars compresses data before converting it",
     "PyArrow reads the data back from a CSV file",
-    "Polars keeps a second, hidden copy in Python lists"
+    "Polars keeps a second, hidden copy of the data in Python lists"
    ],
    "Because the memory layout matches, conversion can usually hand over existing buffers instead of copying every value."
   ],
@@ -508,9 +508,9 @@
    "How does df.with_columns(...) differ from df.select(...) in Polars?",
    "with_columns keeps all existing columns and adds or replaces some",
    [
-    "with_columns drops all columns not listed",
-    "select modifies the DataFrame in place",
-    "select only works on LazyFrames"
+    "with_columns drops all columns that are not listed in it",
+    "select modifies the original DataFrame in place instead of returning a copy",
+    "select only works on LazyFrames, never on eager DataFrames"
    ],
    "with_columns returns the original columns plus the new or overwritten ones, while select returns only the listed expressions. Neither modifies in place."
   ],
@@ -559,8 +559,8 @@
    "Processing data in batches so it can exceed available RAM",
    [
     "Reading data from Kafka topics in real time",
-    "Sending query results to a web browser",
-    "Running queries on multiple machines in a cluster"
+    "Sending query results to a web browser as they arrive",
+    "Running queries on multiple machines in a distributed cluster"
    ],
    "The streaming engine runs a lazy query chunk by chunk instead of loading everything at once, so larger-than-memory datasets can be processed on one machine."
   ],
@@ -576,11 +576,11 @@
   ],
   [
    "Why does df.with_columns(pl.col('x').map_elements(lambda v: v * 2)) run much slower than pl.col('x') * 2 in Polars?",
-   "It calls Python per value under the GIL, blocking native parallel execution",
+   "It calls Python per value under the GIL, blocking native parallelism",
    [
-    "map_elements always converts the DataFrame to pandas",
-    "Lambdas force Polars to write temporary files",
-    "map_elements forces eager mode and disables Arrow"
+    "map_elements always converts the whole DataFrame to pandas first",
+    "Lambdas force Polars to write temporary files to disk for each value",
+    "map_elements forces eager mode and disables the Arrow memory format"
    ],
    "Native expressions run in multithreaded Rust code. A Python function must be called once per element while holding the GIL, so it is slow and single-threaded."
   ],
@@ -668,11 +668,11 @@
   ],
   [
    "What is the defining property of scipy.interpolate.CubicSpline built from points (x, y)?",
-   "It passes through every point with continuous first and second derivatives",
+   "It passes through every point and has continuous second derivatives",
    [
-    "It fits a single cubic polynomial by least squares",
-    "It connects the points with straight line segments",
-    "It smooths the data and may miss the points"
+    "It fits a single cubic polynomial to all points by least squares",
+    "It connects the points with straight line segments between knots",
+    "It smooths the data like a regression curve and may miss some points"
    ],
    "A cubic spline is piecewise cubic, interpolates every data point exactly and is smooth up to the second derivative at the knots."
   ],
@@ -690,9 +690,9 @@
    "Why use scipy.signal.filtfilt instead of scipy.signal.lfilter with the same filter coefficients?",
    "It filters forward and backward, giving zero phase shift",
    [
-    "It runs the filter on the GPU",
-    "It designs the filter coefficients for you",
-    "It works only on complex-valued signals"
+    "It runs the same filter on the GPU for faster results",
+    "It designs the filter coefficients for you automatically",
+    "It works only on complex-valued signals such as I/Q data"
    ],
    "filtfilt applies the filter twice in opposite directions, cancelling the phase delay. lfilter is causal and shifts features in time."
   ],
@@ -813,7 +813,7 @@
    "A Figure and a single Axes",
    [
     "An Axes and a list of Figures",
-    "Two Axes objects",
+    "Two Axes objects in a tuple",
     "A Figure and a NumPy array of Axes"
    ],
    "With no grid arguments, plt.subplots creates one Figure containing one Axes and returns both. A grid such as (2, 2) returns an array of Axes instead."
@@ -822,9 +822,9 @@
    "In Matplotlib, what is an Axes object?",
    "One plot area with its own coordinate system, inside a Figure",
    [
-    "The whole window or image that holds every plot",
-    "A single x or y axis line with its ticks",
-    "A saved image file on disk"
+    "The whole window or image that holds every plot and figure",
+    "A single x or y axis line, together with its tick marks and labels",
+    "A saved image file on disk that contains the plot"
    ],
    "A Figure is the top-level container, and each Axes is a plotting region with x and y Axis objects, a title and labels."
   ],
@@ -870,11 +870,11 @@
   ],
   [
    "Axis labels in your subplot grid overlap neighboring plots. Which fix is the standard one?",
-   "Call fig.tight_layout() or create the figure with layout='constrained'",
+   "Call fig.tight_layout() or use layout='constrained'",
    [
-    "Increase plt.rcParams['font.size']",
-    "Call ax.autoscale() on every Axes",
-    "Save the figure with dpi=300"
+    "Increase plt.rcParams['font.size'] for all text",
+    "Call ax.autoscale() on every Axes in the grid",
+    "Save the figure with dpi=300 so the text renders more sharply"
    ],
    "Both tight_layout and the constrained layout engine adjust subplot spacing to fit labels and titles. Higher dpi or font size makes overlap worse, not better."
   ],
@@ -933,7 +933,7 @@
    "cmap='viridis_r'",
    [
     "cmap='-viridis'",
-    "cmap='viridis', reverse=True",
+    "cmap='reverse_viridis'",
     "cmap='rev_viridis'"
    ],
    "Every registered colormap has a reversed twin named with an _r suffix. A Colormap object also offers a .reversed() method."
@@ -942,9 +942,9 @@
    "Which call adds a color scale bar for the image returned by im = ax.imshow(data)?",
    "fig.colorbar(im, ax=ax)",
    [
-    "ax.colorbar()",
+    "ax.colorbar(im)",
     "im.add_colorbar(ax)",
-    "plt.legend(im)"
+    "plt.legend(handles=[im])"
    ],
    "colorbar needs the mappable (here the AxesImage) to know the colormap and normalization. A legend is for labeled lines and markers, not color scales."
   ],
@@ -953,8 +953,8 @@
    "10",
    [
     "20",
-    "Square root of len(data)",
-    "One per unique value"
+    "50",
+    "'auto'"
    ],
    "The default comes from rcParams['hist.bins'], which is 10. Pass bins='auto' or an integer for a better choice on your data."
   ],
@@ -972,9 +972,9 @@
    "You call plt.savefig('chart.svg'). What kind of file is produced?",
    "A vector SVG, with the format inferred from the extension",
    [
-    "A PNG image renamed to .svg",
-    "A raster image at 300 dpi",
-    "An error, since format must be passed"
+    "A PNG raster image that is simply renamed to .svg",
+    "A raster image at 300 dpi saved with an .svg name",
+    "An error, since the format argument must always be passed explicitly"
    ],
    "savefig infers the format from the file extension. SVG, PDF and EPS are vector formats that stay sharp at any zoom level."
   ],
@@ -982,9 +982,9 @@
    "Your saved chart has large empty margins. Which savefig option trims them?",
    "bbox_inches='tight'",
    [
-    "pad=0",
-    "crop=True",
-    "margins='none'"
+    "margins='none'",
+    "crop='tight'",
+    "trim_margins=True"
    ],
    "bbox_inches='tight' computes the tight bounding box of the drawn content and crops the output to it. pad_inches controls the remaining padding."
   ],
@@ -1025,8 +1025,8 @@
    "cv2.cvtColor(img, cv2.COLOR_BGR2RGB)",
    [
     "cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)",
-    "cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX)",
-    "img.astype('float32')"
+    "cv2.normalize(img, None, 0, 255)",
+    "img.astype('float32') / 255"
    ],
    "Converting BGR to RGB swaps the red and blue channels so Matplotlib shows true colors. Normalizing or changing the dtype does not reorder channels."
   ],
@@ -1042,11 +1042,11 @@
   ],
   [
    "What does cv2.imread('missing.jpg') do if the file does not exist?",
-   "Returns None",
+   "It returns None silently",
    [
-    "Raises FileNotFoundError",
-    "Returns an empty black image",
-    "Raises cv2.error"
+    "It raises FileNotFoundError",
+    "It returns an empty black image",
+    "It raises a cv2.error"
    ],
    "imread does not raise on a missing or unreadable file, it returns None. Check for None before use, or later calls fail with confusing errors."
   ],
@@ -1124,9 +1124,9 @@
    "What does cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY) return?",
    "A tuple of the threshold value used and the output image",
    [
-    "Only the thresholded image",
-    "A boolean NumPy array",
-    "A list of pixel coordinates above 127"
+    "Only the thresholded image as a NumPy array",
+    "A boolean NumPy array marking pixels above 127",
+    "A list of pixel coordinates above the threshold value 127"
    ],
    "threshold returns (retval, dst). With a fixed threshold, retval is 127; with Otsu it is the computed value. Forgetting to unpack is a common bug."
   ],
@@ -1134,9 +1134,9 @@
    "What does adding cv2.THRESH_OTSU to cv2.THRESH_BINARY in cv2.threshold do?",
    "Computes the threshold from the histogram and ignores the given value",
    [
-    "Applies the threshold separately to each color channel",
-    "Inverts the output so objects become black",
-    "Uses a different threshold for each image region"
+    "Applies the threshold separately to each color channel of the image",
+    "Inverts the output so that the objects become black on white",
+    "Uses a different threshold for each image region based on its neighbors"
    ],
    "Otsu's method picks the threshold that best separates the two histogram classes, which works well for bimodal images. It requires a single-channel grayscale image."
   ],
@@ -1145,8 +1145,8 @@
    "cv2.adaptiveThreshold",
    [
     "cv2.equalizeHist",
-    "cv2.Canny",
-    "cv2.inRange"
+    "cv2.fastNlMeansDenoising",
+    "cv2.morphologyEx"
    ],
    "adaptiveThreshold computes a separate threshold for each pixel from its neighborhood, handling uneven lighting that defeats one global value."
   ],
@@ -1154,9 +1154,9 @@
    "In cv2.Canny(img, 50, 150), what happens to a pixel whose gradient magnitude is 100?",
    "It is kept only if connected to a strong edge",
    [
-    "It is always kept as an edge",
-    "It is always discarded",
-    "It is marked as a corner"
+    "It is always kept as an edge pixel in the output",
+    "It is always discarded as weak edge noise",
+    "It is always kept, since it is above the lower threshold"
    ],
    "Canny uses hysteresis: above 150 is a strong edge, below 50 is rejected, and values between are kept only when they connect to a strong edge."
   ],
@@ -1174,9 +1174,9 @@
    "findContours returns one huge contour around the whole image instead of around your dark objects on a white background. What is the likely fix?",
    "Invert the binary image so the objects are white",
    [
-    "Convert the image from BGR to RGB first",
-    "Use cv2.CHAIN_APPROX_NONE instead",
-    "Increase the image resolution"
+    "Convert the image from BGR to RGB before thresholding",
+    "Use cv2.CHAIN_APPROX_NONE instead of SIMPLE",
+    "Increase the image resolution before the call"
    ],
    "findContours treats nonzero (white) pixels as foreground. Use THRESH_BINARY_INV or cv2.bitwise_not so the objects are white on black."
   ],
@@ -1185,10 +1185,10 @@
    "cv2.RETR_EXTERNAL",
    [
     "cv2.RETR_TREE",
-    "cv2.RETR_LIST",
+    "cv2.RETR_FLOODFILL",
     "cv2.RETR_CCOMP"
    ],
-   "RETR_EXTERNAL returns only the outermost contours. RETR_TREE and RETR_CCOMP also return inner contours and a hierarchy, and RETR_LIST returns all contours without parent-child links."
+   "RETR_EXTERNAL returns only the outermost contours. RETR_TREE and RETR_CCOMP also return inner contours and a hierarchy, and RETR_FLOODFILL is a special mode meant for flood-fill segmentation."
   ],
   [
    "An image has salt-and-pepper noise (random white and black pixels). Which filter removes it best?",
@@ -1196,7 +1196,7 @@
    [
     "cv2.blur",
     "cv2.Sobel",
-    "cv2.filter2D with a sharpening kernel"
+    "cv2.filter2D"
    ],
    "A median filter replaces each pixel with the neighborhood median, so isolated outliers disappear. A box blur only spreads them out."
   ],

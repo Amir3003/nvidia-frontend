@@ -42,11 +42,11 @@
   ],
   [
    "In Julia 1.x, what happens when you evaluate [1, 2, 3] + 1 (no dot)?",
-   "A MethodError, since + is not defined for a vector and a scalar",
+   "A MethodError, as + has no vector-scalar method",
    [
-    "It returns [2, 3, 4] by implicit broadcasting",
-    "It returns [1, 2, 3, 1] by appending",
-    "It returns 7 by summing everything"
+    "It returns [2, 3, 4] through implicit broadcasting",
+    "It returns [1, 2, 3, 1] by appending the value",
+    "It returns 7 by summing every element together"
    ],
    "Julia does not broadcast implicitly; you must write [1, 2, 3] .+ 1 to add a scalar to every element."
   ],
@@ -54,7 +54,7 @@
    "What does the @. macro do in the Julia line @. y = 2x^2 + 1?",
    "Turns every operator, call and assignment into its dotted form",
    [
-    "Runs the right-hand side on all available threads",
+    "Runs the whole right-hand side in parallel on all available threads",
     "Marks the expression as type-stable for the compiler",
     "Evaluates the expression once and caches the result"
    ],
@@ -62,11 +62,11 @@
   ],
   [
    "Why is the Julia function f(x) = x > 0 ? 1 : 1.0 considered a performance problem?",
-   "Its return type depends on a runtime value, so it is not type-stable",
+   "Its return type depends on a runtime value, so it is type-unstable",
    [
-    "Ternary expressions cannot be compiled to native code",
-    "Comparing with 0 forces a conversion to BigInt",
-    "Float literals in functions disable JIT compilation"
+    "Ternary expressions cannot be compiled to native code by the JIT",
+    "Comparing an integer with 0 forces a slow conversion to BigInt",
+    "Float literals inside function bodies disable JIT compilation entirely"
    ],
    "The result may be Int64 or Float64 depending on x, so callers cannot be specialized on a single concrete type."
   ],
@@ -74,9 +74,9 @@
    "Why do non-constant global variables used in hot loops slow Julia code down?",
    "The compiler cannot assume their type, which may change at any time",
    [
-    "Globals are reloaded from disk on every access",
-    "Globals are copied into each loop iteration",
-    "Globals disable broadcasting inside the loop"
+    "Globals are reloaded from disk on every single access in the loop",
+    "Globals are deep-copied into each iteration of the loop body",
+    "Globals disable broadcasting and SIMD inside every loop that uses them"
    ],
    "Code touching an untyped global must handle any type, so it cannot be specialized. Pass values as function arguments or declare them const."
   ],
@@ -84,7 +84,7 @@
    "Why is the first call of a Julia function in a new session often much slower than later calls?",
    "The method is compiled to native code for those argument types",
    [
-    "The first call is interpreted and its result is cached",
+    "The first call is interpreted and its result is cached for later",
     "Packages are downloaded during the first call",
     "The garbage collector runs a full sweep before it"
    ],
@@ -94,9 +94,9 @@
    "What is the main use of the @code_warntype macro in Julia?",
    "Showing inferred types and highlighting type instability",
    [
-    "Printing the native assembly code for a method",
-    "Listing all warnings emitted by the parser",
-    "Checking that a package has no deprecations"
+    "Printing the native assembly code generated for a method",
+    "Listing all warnings emitted by the parser for a file",
+    "Checking that a package has no deprecated function calls"
    ],
    "@code_warntype shows the types the compiler inferred and marks abstract types such as Any. @code_native is the one that prints assembly."
   ],
@@ -105,7 +105,7 @@
    "The unevaluated expressions of its arguments",
    [
     "The evaluated values of its arguments",
-    "The compiled native code of its arguments",
+    "The compiled native machine code of its arguments",
     "Only string literals passed to it"
    ],
    "Macros run when code is expanded, before evaluation; they take Expr and Symbol objects and return a new expression to be compiled."
@@ -154,9 +154,9 @@
    "For a square matrix A and vector b in Julia, what does A \\ b compute?",
    "The solution x of the linear system A * x = b",
    [
-    "The elementwise division of b by A",
+    "The elementwise division of b by each entry of A",
     "The inverse of A multiplied by itself",
-    "The left bit shift of A by b"
+    "The left bit shift of A by b positions"
    ],
    "The backslash operator solves linear systems with an appropriate factorization, which is faster and more accurate than inv(A) * b."
   ],
@@ -164,9 +164,9 @@
    "For a complex matrix A in Julia, what does A' return?",
    "The adjoint (conjugate transpose) of A",
    [
-    "The inverse of A",
-    "The determinant of A",
-    "A flattened into a vector"
+    "The plain transpose of A, without conjugation",
+    "The determinant of A as a scalar",
+    "A flattened into a column vector"
    ],
    "A' is adjoint(A), which conjugates complex entries. Use transpose(A) when you need a transpose without conjugation."
   ],
@@ -216,9 +216,9 @@
    "What does c(1, 2, 3, 4) + c(10, 20) return in R?",
    "11 22 13 24",
    [
-    "11 22",
+    "11 22 NA NA",
     "11 22 3 4",
-    "An error about unequal lengths"
+    "A length error"
    ],
    "R recycles the shorter vector, so it becomes 10 20 10 20. A warning appears only when the longer length is not a multiple of the shorter."
   ],
@@ -226,8 +226,8 @@
    "Why is sum(x) on a large numeric vector usually much faster than summing with an explicit R for loop?",
    "sum() runs one compiled loop in C over the whole vector",
    [
-    "sum() spreads the work over all CPU cores",
-    "sum() caches results from earlier calls",
+    "sum() spreads the work over all available CPU cores",
+    "sum() caches results from earlier calls on the same vector",
     "for loops in R copy the vector on each pass"
    ],
    "Vectorized built-ins do the loop in compiled code, avoiding the per-iteration interpreter overhead of an R-level loop."
@@ -347,7 +347,7 @@
    "A list of length 3",
    [
     "A numeric vector of length 3",
-    "A 3 by 1 matrix",
+    "A 3 by 1 numeric matrix",
     "A data frame with 3 rows"
    ],
    "lapply() always returns a list. sapply() would simplify this result to the numeric vector 2 4 6."
@@ -366,11 +366,11 @@
    "Which R call downloads and installs the dplyr package from CRAN?",
    "install.packages(\"dplyr\")",
    [
-    "library(dplyr)",
-    "require(dplyr)",
-    "load(\"dplyr\")"
+    "library(\"dplyr\")",
+    "download.packages(\"dplyr\")",
+    "require(\"dplyr\")"
    ],
-   "install.packages() fetches from CRAN once. library() and require() only attach an already installed package, and load() reads saved .RData files."
+   "install.packages() fetches the package from CRAN and installs it. download.packages() only saves the source files, while library() and require() only attach a package that is already installed."
   ],
   [
    "Which R call fits a logistic regression of a binary outcome y on x?",
@@ -384,11 +384,11 @@
   ],
   [
    "In R, what does g() return after x <- 1; g <- function() { x <- 2; h <- function() x; h() }?",
-   "2",
+   "The value 2",
    [
-    "1",
-    "NULL",
-    "An error that x is not found"
+    "The value 1",
+    "The value NULL",
+    "An error: x not found"
    ],
    "R uses lexical scoping: h looks up x in the environment where h was defined, which is inside g, where x is 2."
   ],
@@ -430,7 +430,7 @@
    [
     "10",
     "3",
-    "An index error"
+    "[]"
    ],
    "end inside an index means the last position. MATLAB indexing starts at 1."
   ],
@@ -446,11 +446,11 @@
   ],
   [
    "In MATLAB, with x = [1 2 3], what happens when you evaluate x^2?",
-   "An error, since ^ is a matrix power needing a square matrix",
+   "An error, since x^2 needs a square matrix",
    [
-    "It returns [1 4 9]",
-    "It returns 14",
-    "It returns [2 4 6]"
+    "It returns [1 4 9], squaring each element",
+    "It returns 14, the dot product of x with x",
+    "It returns [2 4 6], doubling each element"
    ],
    "^ means matrix power. Use the elementwise operator x.^2 to get [1 4 9]."
   ],
@@ -488,9 +488,9 @@
    "What is the key difference between a MATLAB script file and a function file?",
    "A function has its own workspace; a script uses the caller's",
    [
-    "A script cannot contain loops or if blocks",
-    "A function cannot call any other function",
-    "A script must start with the function keyword"
+    "A script cannot contain loops or if blocks, only statements",
+    "A function cannot call any other function or a script",
+    "A script must start with the function keyword on its first line"
    ],
    "Variables created by a script appear in the base (or calling) workspace, while a function's variables are local unless returned."
   ],
@@ -528,9 +528,9 @@
    "In Simulink, what does a continuous Integrator block (shown as 1/s) output?",
    "The integral of its input signal over time",
    [
-    "The derivative of its input signal",
-    "The average of its input signal",
-    "The input multiplied by a constant"
+    "The derivative of its input signal over time",
+    "The running average of its input signal",
+    "The input multiplied by a constant gain"
    ],
    "1/s is the Laplace-domain form of integration. A Derivative block computes du/dt and a Gain block multiplies by a constant."
   ],
@@ -549,18 +549,18 @@
    "readtable",
    [
     "fopen",
-    "imread",
+    "textscan",
     "load"
    ],
-   "readtable detects the header and column types and returns a table. fopen only opens a file handle and imread reads images."
+   "readtable detects the header and column types and returns a table. fopen only opens a file handle, textscan returns a cell array, and load reads MAT files or plain numeric text."
   ],
   [
    "In MATLAB, what does fid = fopen('missing.txt', 'r') set fid to when the file does not exist?",
    "-1",
    [
     "0",
-    "An empty array []",
-    "It raises an error instead"
+    "[]",
+    "NaN"
    ],
    "fopen returns -1 on failure rather than throwing, so check fid before reading. The optional second output gives the error message."
   ],
@@ -568,9 +568,9 @@
    "Why is x = A \\ b usually preferred over x = inv(A) * b in MATLAB?",
    "It solves the system directly, faster and more accurately",
    [
-    "It works only for diagonal matrices",
-    "It returns the inverse as a side effect",
-    "It avoids needing b to be a column"
+    "It works only for diagonal and triangular matrices",
+    "It returns the inverse of A as a side effect",
+    "It avoids the need for b to be a column vector with matching rows"
    ],
    "Backslash picks a suitable factorization and never forms the inverse, which costs more and amplifies rounding errors."
   ],
@@ -579,8 +579,8 @@
    "V holds eigenvectors as columns, D the eigenvalues on its diagonal",
    [
     "V holds eigenvalues as a vector, D the eigenvectors as rows",
-    "V is the inverse of A, D its determinant",
-    "V holds singular values, D the rank of A"
+    "V is the inverse of A and D holds its determinant on the diagonal",
+    "V holds singular values as columns, D the rank of A on its diagonal"
    ],
    "eig returns matrices satisfying A*V = V*D. Singular values come from svd, not eig."
   ],
@@ -588,11 +588,11 @@
    "Which MATLAB function minimizes a multivariable function without derivatives, using the Nelder-Mead simplex method?",
    "fminsearch",
    [
-    "fzero",
     "fminbnd",
-    "linprog"
+    "lsqnonlin",
+    "fzero"
    ],
-   "fminsearch is derivative-free and unconstrained. fzero finds roots of a one-variable function and fminbnd minimizes one variable on an interval."
+   "fminsearch is derivative-free and unconstrained. fzero finds roots of a one-variable function, fminbnd minimizes one variable on an interval, and lsqnonlin solves nonlinear least squares."
   ],
   [
    "Which MATLAB command makes execution pause at the line where an error occurs, so you can inspect variables?",
@@ -600,9 +600,9 @@
    [
     "dbcont",
     "dbquit",
-    "echo on"
+    "dbclear if error"
    ],
-   "dbstop if error enters debug mode at the failing line. dbcont resumes execution and dbquit exits debug mode."
+   "dbstop if error enters debug mode at the failing line. dbclear if error removes that breakpoint, dbcont resumes execution and dbquit exits debug mode."
   ]
  ],
  "haskell": [
@@ -610,7 +610,7 @@
    "What does take 3 [1..] evaluate to in Haskell?",
    "[1,2,3]",
    [
-    "It loops forever building the list",
+    "An infinite loop",
     "[1,2,3,4]",
     "A type error"
    ],
@@ -618,11 +618,11 @@
   ],
   [
    "In Haskell, what does length [1, 2, undefined] return?",
-   "3",
+   "The value 3",
    [
-    "2",
-    "It throws an exception",
-    "It never terminates"
+    "The value 2",
+    "An exception",
+    "No result, it loops"
    ],
    "length only counts list cells and never evaluates the elements, so the undefined element is not forced."
   ],
@@ -630,9 +630,9 @@
    "What does referential transparency mean in Haskell?",
    "An expression can be replaced by its value without changing behavior",
    [
-    "Every variable can be reassigned only once per scope",
-    "All functions must declare their types explicitly",
-    "References to data are visible to all threads"
+    "Every variable can be reassigned only once within its enclosing scope",
+    "All functions must declare their argument and result types explicitly",
+    "References to data are shared and visible to all running threads"
    ],
    "Pure functions always give the same result for the same input and have no side effects, so substitution is always safe."
   ],
@@ -640,9 +640,9 @@
    "Why does getLine have the type IO String rather than String in Haskell?",
    "Reading input is a side effect, so it is tracked by the IO type",
    [
-    "Strings in Haskell are always lazy IO streams",
-    "String values are not allowed in pure code",
-    "IO makes the function run faster on large input"
+    "Strings in Haskell are always lazy IO streams read from stdin",
+    "String values are not allowed in pure code, only inside IO",
+    "IO makes the function run faster when it reads large or streamed input"
    ],
    "IO marks actions that interact with the world, keeping pure functions free of effects and preserving referential transparency."
   ],
@@ -660,9 +660,9 @@
    "What does deriving (Show, Eq) do in data Color = Red | Green deriving (Show, Eq)?",
    "Generates Show and Eq instances for Color automatically",
    [
-    "Makes Color a subclass of Show and Eq",
-    "Converts Red and Green into strings",
-    "Exports Color from the current module"
+    "Makes Color a subclass of both the Show and Eq classes",
+    "Converts Red and Green into strings at compile time",
+    "Exports Color and its constructors from the current module"
    ],
    "The compiler writes standard instances, so show Red gives \"Red\" and Red == Green works."
   ],
@@ -671,8 +671,8 @@
    "Double -> Double -> Shape",
    [
     "Shape -> Double -> Double",
-    "(Double, Double)",
-    "Shape"
+    "(Double, Double) -> Shape",
+    "Double -> Shape"
    ],
    "Data constructors are functions: Rect takes two Doubles and returns a Shape."
   ],
@@ -681,8 +681,8 @@
    "Nothing",
    [
     "Just 1",
-    "0",
-    "A runtime error"
+    "Just 0",
+    "An error"
    ],
    "The Maybe functor applies the function only inside Just. Nothing stays Nothing."
   ],
@@ -740,9 +740,9 @@
    "A Haskell function has only the equation g (Just x) = x. What happens when g Nothing is evaluated?",
    "A runtime exception for non-exhaustive patterns",
    [
-    "It returns Nothing",
-    "It returns the default value of x",
-    "It returns undefined without failing"
+    "It returns Nothing, passing the input through",
+    "It returns the default value for the type of x",
+    "It returns undefined lazily without ever failing"
    ],
    "GHC compiles incomplete patterns (it may warn) and throws an exception when no equation matches at runtime."
   ],
@@ -750,9 +750,9 @@
    "In Haskell, given add :: Int -> Int -> Int, what is the type of add 2?",
    "Int -> Int",
    [
-    "Int",
+    "Int -> Int -> Int",
     "(Int, Int) -> Int",
-    "A type error, too few arguments"
+    "A type error"
    ],
    "Functions are curried, so applying one argument returns a function waiting for the rest."
   ],
@@ -762,7 +762,7 @@
    [
     "Negative numbers cannot appear inside lists",
     "map only accepts functions of two arguments",
-    "subtract is a macro expanded at compile time"
+    "subtract is a special macro that GHC expands at compile time"
    ],
    "Haskell treats (-1) as a literal, so map gets a number instead of a function. subtract 1 (or (\\x -> x - 1)) gives [4, 5]."
   ],
@@ -781,16 +781,16 @@
    "Monad m => m a -> (a -> m b) -> m b",
    [
     "Monad m => (a -> b) -> m a -> m b",
-    "Monad m => m (m a) -> m a",
-    "Monad m => a -> m a"
+    "Monad m => m a -> (a -> b) -> m b",
+    "Monad m => (a -> m b) -> m a -> m b"
    ],
-   "Bind feeds the result of a monadic value into a function that returns a new monadic value. The other types belong to fmap, join and return."
+   "Bind feeds the result of a monadic value into a function that returns a new monadic value. The other types belong to fmap, a flipped fmap, and =<< (bind with its arguments flipped)."
   ],
   [
    "In Haskell, what does foldr (\\x acc -> x || acc) False (repeat True) return?",
-   "True",
+   "It returns True",
    [
-    "False",
+    "It returns False",
     "It never terminates",
     "A stack overflow"
    ],
@@ -853,7 +853,7 @@
    "'_weak1 list ref",
    [
     "'a list ref",
-    "unit ref",
+    "'a. 'a list ref",
     "int list ref"
    ],
    "The value restriction stops generalizing ref [], so it gets a weak type variable that becomes fixed on first use."
@@ -872,9 +872,9 @@
    "In OCaml, let f = function Some x -> x has no None case. What does the compiler do?",
    "Warns the match is not exhaustive; f None raises Match_failure",
    [
-    "Refuses to compile the function at all",
-    "Adds a default case returning None",
-    "Infers that f only accepts int values"
+    "Refuses to compile the function until a None case is added",
+    "Adds a default case that returns None for missing input",
+    "Infers that f only accepts values of type int option, and compiles"
    ],
    "Non-exhaustive matches produce a warning (warning 8) with an example of an unmatched value, and fail at runtime if it occurs."
   ],
@@ -930,11 +930,11 @@
   ],
   [
    "What happens if you define a recursive OCaml function with let instead of let rec?",
-   "The inner call refers to an earlier binding of the name, or fails as unbound",
+   "The inner call uses an earlier binding of the name, or is unbound",
    [
-    "The compiler adds rec automatically",
-    "The function runs but only once",
-    "The function becomes tail-recursive"
+    "The compiler adds rec automatically when it sees a self call",
+    "The function runs only once and then returns its argument unchanged",
+    "The function silently becomes tail-recursive and runs faster"
    ],
    "Without rec, the name is not in scope inside its own definition, so you get Unbound value or silently use an older definition."
   ],
@@ -942,9 +942,9 @@
    "In OCaml, with let p = {x = 1; y = 2}, what does {p with x = 5} do?",
    "Returns a new record with x = 5 and y = 2, leaving p unchanged",
    [
-    "Changes the x field of p to 5 in place",
-    "Returns only the x field, set to 5",
-    "Fails because records are immutable"
+    "Changes the x field of p to 5 in place and returns unit",
+    "Returns only the x field of p, now set to the value 5",
+    "Fails to compile because record fields can never be changed at all"
    ],
    "Functional update copies the record with the listed fields replaced. Records are immutable unless fields are declared mutable."
   ],
@@ -952,9 +952,9 @@
    "In OCaml, with type t = {x : int} and p : t, what happens with p.x <- 3?",
    "A compile error, since the field x is not mutable",
    [
-    "p.x becomes 3 in place",
-    "A new record is returned with x = 3",
-    "A runtime exception is raised"
+    "p.x becomes 3 in place, mutating the record",
+    "A new record is returned with x = 3 and p unchanged",
+    "A runtime exception is raised on the assignment"
    ],
    "Only fields declared mutable, as in {mutable x : int}, can be assigned with <-."
   ],
@@ -973,7 +973,7 @@
    "10",
    [
     "1",
-    "A compile error, arrays are immutable",
+    "()",
     "[|10; 2; 3|]"
    ],
    "Arrays are mutable in OCaml, unlike lists. a.(i) <- v updates an element in place."
@@ -983,8 +983,8 @@
    "(int * int) list",
    [
     "int list",
-    "int array",
-    "int * int"
+    "int * int list",
+    "(int, int) list"
    ],
    "Commas build tuples, so this is a one-element list containing the pair (1, 2). List elements are separated by semicolons."
   ],
@@ -992,9 +992,9 @@
    "Compared with ordinary OCaml variants, what is special about polymorphic variants?",
    "They need no prior type declaration and a tag can belong to many types",
    [
-    "They can only hold values of type int",
-    "They are checked at runtime instead of compile time",
-    "They cannot be used in pattern matching"
+    "They can only hold values of type int as their payload",
+    "They are checked at runtime instead of at compile time by the type checker",
+    "They cannot be used in pattern matching or function arguments"
    ],
    "Polymorphic variant tags exist independently of any type definition, so different functions can share and extend sets of tags."
   ],
@@ -1002,9 +1002,9 @@
    "In an OCaml polymorphic variant type written [> ...], what does the > mean?",
    "The type contains at least the listed tags and possibly more",
    [
-    "The type contains at most the listed tags",
-    "The type contains exactly the listed tags",
-    "The listed tags are sorted in descending order"
+    "The type contains at most the listed tags and possibly fewer",
+    "The type contains exactly the listed tags and nothing else",
+    "The listed tags are sorted in descending order by their hash value"
    ],
    "> marks an open type with a lower bound on tags; < marks an upper bound, and no sign means exactly those tags."
   ]
@@ -1054,7 +1054,7 @@
    "In Elixir, after x = 1, what happens when you evaluate ^x = 2?",
    "A MatchError is raised",
    [
-    "x is rebound to 2",
+    "x is rebound to the value 2",
     "It returns false",
     "x becomes [1, 2]"
    ],
@@ -1062,10 +1062,10 @@
   ],
   [
    "In Elixir, what does f.() return after x = 1; f = fn -> x end; x = 2?",
-   "1",
+   "The value 1",
    [
-    "2",
-    "nil",
+    "The value 2",
+    "The value nil",
     "A CompileError"
    ],
    "Data is immutable and closures capture the value bound when they are created. Rebinding x later creates a new binding."
@@ -1074,25 +1074,25 @@
    "What is an Elixir process?",
    "A lightweight BEAM process with its own heap, communicating by messages",
    [
-    "An operating system thread sharing memory with others",
-    "A separate operating system process per function",
-    "A coroutine running on a heap shared with others"
+    "An operating system thread that shares memory with other threads",
+    "A separate operating system process started for each function call",
+    "A green thread that runs on a single heap shared with every other thread"
    ],
    "BEAM processes are cheap and isolated; they share nothing and interact only by sending messages, which makes millions of them practical."
   ],
   [
    "In Elixir, what does send(self(), {:hi, 5}); receive do {:hi, n} -> n end return?",
-   "5",
+   "The integer 5",
    [
-    "{:hi, 5}",
-    ":ok",
-    "It blocks forever"
+    "The tuple {:hi, 5}",
+    "The atom :ok",
+    "Nothing, it blocks"
    ],
    "The message is already in the process mailbox, so receive matches it and returns n."
   ],
   [
    "In Elixir, what does receive do {:ok, v} -> v end do when no matching message ever arrives and there is no after clause?",
-   "It waits indefinitely",
+   "It waits indefinitely for a match",
    [
     "It returns nil immediately",
     "It raises after 5 seconds",
@@ -1124,9 +1124,9 @@
    "In Elixir, what happens by default when GenServer.call gets no reply within 5 seconds?",
    "The calling process exits with a timeout",
    [
-    "The call returns nil",
-    "The call is retried once",
-    "The server process is restarted"
+    "The call returns nil to the calling process",
+    "The call is retried once with a longer timeout",
+    "The server process is restarted by its supervisor"
    ],
    "The default call timeout is 5000 ms. On timeout the caller exits unless the exit is caught, and the server is not affected."
   ],
@@ -1145,8 +1145,8 @@
    "That child and the children started after it are restarted",
    [
     "Only the children started before it are restarted",
-    "Every child under the supervisor is restarted",
-    "Only the crashed child is restarted"
+    "Every child under the supervisor is restarted at once",
+    "Only the crashed child is restarted, the others keep running"
    ],
    ":rest_for_one fits when later children depend on earlier ones, so they restart along with the failed one."
   ],
@@ -1154,9 +1154,9 @@
    "What does the \"let it crash\" approach mean in Elixir and Erlang?",
    "Let a failing process die and have a supervisor restart it cleanly",
    [
-    "Wrap every function call in try and rescue",
-    "Ignore errors and keep the corrupted state",
-    "Restart the whole BEAM node on any error"
+    "Wrap every function call in try and rescue so nothing ever fails",
+    "Ignore errors and keep running with the corrupted process state in memory",
+    "Restart the entire BEAM node and every application on any error"
    ],
    "Instead of defensive code everywhere, failures are isolated in processes and supervisors restore a known good state."
   ],
@@ -1174,9 +1174,9 @@
    "What is OTP in the Elixir and Erlang ecosystem?",
    "A set of libraries and behaviours such as GenServer and Supervisor",
    [
-    "A web framework for building HTTP servers",
-    "The package manager used to install Hex packages",
-    "The compiler that turns Elixir into bytecode"
+    "A web framework for building HTTP servers and real-time apps",
+    "The package manager used to install and publish Hex packages",
+    "The compiler that turns Elixir source code into BEAM bytecode files"
    ],
    "OTP ships with Erlang and provides design principles and tools for building concurrent, fault-tolerant systems."
   ],
@@ -1204,9 +1204,9 @@
    "How does Phoenix LiveView keep server-rendered pages interactive?",
    "Through a persistent WebSocket that sends rendered diffs",
    [
-    "By shipping the whole app as client JavaScript",
-    "By reloading the page on every user event",
-    "By polling a REST API from a service worker"
+    "By shipping the whole app to the browser as client JavaScript",
+    "By reloading the full page on every user event",
+    "By polling a REST API from a service worker every second"
    ],
    "LiveView keeps state on the server in a process and pushes minimal HTML diffs over a WebSocket after each event."
   ]
@@ -1216,19 +1216,19 @@
    "In Solidity 0.8 or later, with uint8 x = 255, what happens when x + 1 is evaluated outside an unchecked block?",
    "The transaction reverts due to overflow",
    [
-    "It wraps around to 0",
+    "It wraps around to 0 as in older versions",
     "It becomes 256 in a wider type",
-    "It saturates and stays 255"
+    "It saturates and stays at 255"
    ],
    "Since 0.8.0 arithmetic is checked by default and overflow causes a revert with a Panic error."
   ],
   [
    "In Solidity 0.8 or later, with uint8 x = 255, what is the result of x + 1 inside an unchecked { } block?",
-   "0",
+   "It wraps to 0",
    [
-    "256",
-    "255",
-    "The transaction reverts"
+    "It becomes 256",
+    "It stays at 255",
+    "It reverts"
    ],
    "unchecked disables overflow checks, so the value wraps modulo 2^8. It saves gas but only when overflow is impossible or intended."
   ],
@@ -1258,7 +1258,7 @@
    [
     "Adding two uint256 values on the stack",
     "Reading a function argument from calldata",
-    "Emitting an event with one indexed topic"
+    "Emitting an event with one indexed topic and data"
    ],
    "Setting a zero storage slot to a nonzero value is one of the most expensive operations, far above arithmetic, calldata reads or logs."
   ],
@@ -1276,9 +1276,9 @@
    "Why mark a Solidity state variable that is set once in the constructor as immutable?",
    "Its value is placed in the contract bytecode, so reads avoid storage",
    [
-    "It encrypts the value so others cannot read it",
-    "It lets the owner change the value later",
-    "It moves the value into calldata for each call"
+    "It encrypts the value so that other accounts cannot read it",
+    "It lets the owner change the value later through a setter",
+    "It moves the value into calldata so that it is passed along with each call"
    ],
    "immutable values are embedded in the deployed code, so reading them is much cheaper than an SLOAD. They are still publicly visible."
   ],
@@ -1288,7 +1288,7 @@
    [
     "Make external calls before checking inputs",
     "Emit events before validating msg.sender",
-    "Avoid require statements in public functions"
+    "Avoid require statements in public and external functions"
    ],
    "Validate first, then change state, then interact. A reentrant call then sees the already updated state."
   ],
@@ -1297,18 +1297,18 @@
    "Set the balance to 0 before the external call",
    [
     "Send the ETH twice to confirm the payment",
-    "Replace msg.sender with tx.origin",
-    "Mark the function as view"
+    "Replace msg.sender with tx.origin in the call",
+    "Mark the function as view to block state changes"
    ],
    "The attacker's fallback can call withdraw again while the balance is still nonzero. Zeroing first (or a reentrancy guard) blocks this."
   ],
   [
    "What does the nonReentrant modifier from OpenZeppelin ReentrancyGuard do?",
-   "Reverts if a guarded function is entered again before the first call finishes",
+   "Reverts if a guarded function is re-entered before the first call ends",
    [
-    "Limits each address to one call per block",
-    "Blocks calls from any contract address",
-    "Refunds unused gas to the original caller"
+    "Limits each address to one call per block to stop repeated calls",
+    "Blocks calls from any contract address, allowing only wallets",
+    "Refunds all unused gas to the original caller once the function finishes"
    ],
    "It sets a status flag on entry and clears it on exit, so a nested call into any nonReentrant function reverts."
   ],
@@ -1326,9 +1326,9 @@
    "For an ERC-20 token whose decimals() returns 18, how is a balance of 1 whole token stored?",
    "As 10^18 base units",
    [
-    "As 1 with 18 decimal places in a float",
     "As 18 base units",
-    "As 1 base unit"
+    "As 1 base unit",
+    "As a float 1.0"
    ],
    "Solidity has no floats. decimals only tells wallets how to display the integer amount, so 1 token is 1 followed by 18 zeros."
   ],
@@ -1336,9 +1336,9 @@
    "What is the main difference between ERC-721 and ERC-20 tokens?",
    "Each ERC-721 token has a unique tokenId and is non-fungible",
    [
-    "ERC-721 tokens cannot be transferred",
-    "ERC-721 tokens always use 18 decimals",
-    "ERC-721 has no ownership lookup function"
+    "ERC-721 tokens cannot be transferred after they are minted",
+    "ERC-721 tokens always use 18 decimals like most ERC-20 tokens",
+    "ERC-721 has no function to look up who owns a given token"
    ],
    "ERC-20 units are interchangeable. ERC-721 tracks individual tokens, each with ownerOf(tokenId)."
   ],
@@ -1346,9 +1346,9 @@
    "In a Solidity modifier, what does the _; statement mean?",
    "The point where the body of the modified function runs",
    [
-    "The end of the contract's storage layout",
-    "A wildcard matching any function name",
-    "A placeholder for the default return value"
+    "The end of the contract's storage layout for the modifier",
+    "A wildcard that matches any function name in the contract",
+    "A placeholder for the default return value of the function"
    ],
    "Code before _; runs first, then the function body, then any code after _;."
   ],
@@ -1376,19 +1376,19 @@
    "What does marking a Solidity event parameter as indexed do?",
    "Stores it as a log topic so clients can filter by it",
    [
-    "Saves it in contract storage for later reads",
-    "Makes it hidden from block explorers",
-    "Sorts the events by that parameter"
+    "Saves it in contract storage for later contract reads",
+    "Makes it hidden from block explorers and wallets",
+    "Sorts the emitted events by that parameter value"
    ],
    "Indexed parameters become topics that nodes can filter on. A non-anonymous event can have up to 3 indexed parameters."
   ],
   [
    "A Solidity contract has both receive() external payable and fallback() external payable. ETH arrives with empty calldata. Which runs?",
-   "receive()",
+   "Only receive()",
    [
-    "fallback()",
+    "Only fallback()",
     "Both, receive first",
-    "Neither, the transfer reverts"
+    "Neither; it reverts"
    ],
    "receive handles plain ETH transfers with empty calldata. fallback runs when calldata matches no function, or when receive is absent."
   ],
@@ -1406,9 +1406,9 @@
    "Why is require(tx.origin == owner) discouraged for authorization in Solidity?",
    "A malicious contract the owner interacts with can pass the check",
    [
-    "tx.origin is not available after Solidity 0.8",
-    "tx.origin costs more gas than any other check",
-    "tx.origin is always the zero address in calls"
+    "tx.origin is not available in contracts after Solidity 0.8",
+    "tx.origin costs more gas than any other authorization check",
+    "tx.origin is always the zero address when called through another contract"
    ],
    "tx.origin is the account that started the transaction, even through other contracts. Use msg.sender, the immediate caller."
   ]

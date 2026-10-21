@@ -85,8 +85,8 @@
    "Outside code can only subscribe or unsubscribe, not invoke it",
    [
     "Outside code can invoke it but cannot subscribe to it",
-    "It can hold only one handler at a time",
-    "Its handlers must be static methods"
+    "It can hold only one handler at a time, unlike a delegate field",
+    "Its handlers must be static methods declared in the same class"
    ],
    "An event exposes only += and -= to other classes; only the declaring class can raise it or replace the handler list."
   ],
@@ -126,7 +126,7 @@
    [
     "false",
     "A compile error",
-    "It depends on the hash codes"
+    "Hash-dependent"
    ],
    "Records get compiler-generated value equality, so two instances with equal property values compare equal with ==, unlike ordinary classes."
   ],
@@ -184,9 +184,9 @@
    "What does a C# using statement such as using (var f = File.OpenRead(path)) { ... } guarantee?",
    "f.Dispose() is called when the block exits, even on exceptions",
    [
-    "f is garbage collected right after the block ends",
-    "f is reopened automatically if an exception occurs",
-    "f can be shared safely across several threads"
+    "f is garbage collected right after the block ends, freeing memory",
+    "f is reopened automatically if an exception occurs in the block",
+    "f can be shared safely across several threads inside the block"
    ],
    "using compiles to try/finally that calls Dispose, so the file handle is released deterministically. Memory is still reclaimed later by the GC."
   ],
@@ -194,8 +194,8 @@
    "In the .NET dispose pattern, why does Dispose() call GC.SuppressFinalize(this)?",
    "Cleanup is already done, so the finalizer need not run",
    [
-    "It forces an immediate garbage collection",
-    "It prevents Dispose from being called twice",
+    "It forces an immediate garbage collection of the object",
+    "It prevents Dispose from being called a second time",
     "It frees the managed memory of the object"
    ],
    "Objects with finalizers survive an extra GC and go through the finalization queue. After explicit cleanup, SuppressFinalize removes that cost."
@@ -226,9 +226,9 @@
    "Which garbage collector does the HotSpot JVM use by default on server-class machines since Java 9?",
    "G1 (Garbage-First)",
    [
-    "Serial",
-    "Parallel",
-    "CMS"
+    "Serial (single-threaded)",
+    "Parallel (throughput)",
+    "CMS (Concurrent Mark Sweep)"
    ],
    "JEP 248 made G1 the default in Java 9. Parallel was the previous default, and CMS was later removed in Java 14."
   ],
@@ -278,7 +278,7 @@
    [
     "false",
     "A compile error",
-    "A ClassCastException at run time"
+    "An exception"
    ],
    "Generic type arguments are erased at compile time, so both objects have the same runtime class, java.util.ArrayList."
   ],
@@ -326,9 +326,9 @@
    "What does Stream.of(1, 2, 3).peek(System.out::print).map(x -> x * 2); print in Java if no terminal operation follows?",
    "Nothing is printed",
    [
-    "123",
-    "246",
-    "123246"
+    "It prints 123",
+    "It prints 246",
+    "It prints 123 then 246"
    ],
    "Intermediate operations are lazy; the pipeline runs only when a terminal operation such as forEach or toList is called."
   ],
@@ -336,9 +336,9 @@
    "Why does int n = 0; Runnable r = () -> n++; fail to compile in Java?",
    "Lambdas can capture only effectively final local variables",
    [
-    "Runnable lambdas cannot read any local variables",
-    "The ++ operator is not allowed inside a lambda",
-    "Runnable lambdas must return an int value"
+    "Runnable lambdas cannot read any local variables at all",
+    "The ++ operator is not allowed inside any lambda expression body",
+    "Runnable lambdas must return an int value to the caller"
    ],
    "A lambda may read captured locals only if they are never reassigned. n++ modifies n, so the compiler rejects it."
   ],
@@ -356,9 +356,9 @@
    "A Java class overrides equals() but not hashCode(). What problem appears when its objects are used as HashMap keys?",
    "Equal keys may land in different buckets, so lookups fail",
    [
-    "HashMap refuses to compile with such a key type",
-    "Every key is placed into the same bucket",
-    "The map sorts its keys using equals()"
+    "The code fails to compile when such a class is used as a HashMap key",
+    "Every key is placed into the same bucket, so lookups slow down",
+    "The map sorts its keys using equals() instead of hashCode()"
    ],
    "HashMap finds the bucket by hashCode() first. Equal objects with different identity hash codes end up in different buckets, so get() can return null."
   ],
@@ -368,7 +368,7 @@
    [
     "A",
     "AB",
-    "A compile error"
+    "BA"
    ],
    "Instance methods are dispatched on the runtime type of the object (dynamic dispatch), so B's override runs even through an A reference."
   ],
@@ -378,7 +378,7 @@
    [
     "B",
     "AB",
-    "A compile error"
+    "BA"
    ],
    "Static methods are not overridden but hidden, and calls are bound by the declared type of the reference, so A.f() runs. The compiler only warns about calling it through an instance."
   ],
@@ -397,8 +397,8 @@
    "2",
    [
     "1",
-    "A compile error",
-    "It throws an exception"
+    "Nothing",
+    "An exception"
    ],
    "The finally block runs after the try's return value is computed, and its own return replaces that value. Returning from finally is legal but discouraged."
   ]
@@ -409,8 +409,8 @@
    "0",
    [
     "null",
-    "A NullPointerException is thrown",
-    "A compile error"
+    "An exception",
+    "-1"
    ],
    "The safe call ?. yields null instead of throwing, and the Elvis operator ?: then substitutes 0."
   ],
@@ -448,9 +448,9 @@
    "In Kotlin: coroutineScope { launch { error(\"x\") }; launch { delay(5000) } }. What happens to the second child when the first one throws?",
    "It is cancelled, and the exception propagates from coroutineScope",
    [
-    "It keeps running for 5 seconds, then the scope ends",
-    "It restarts automatically with a fresh Job",
-    "It is promoted to replace the failed coroutine"
+    "It keeps running for the full 5 seconds, and then the scope ends normally",
+    "It restarts automatically with a fresh Job after the failure",
+    "It is promoted to replace the failed coroutine in the scope"
    ],
    "Structured concurrency: a failing child cancels its parent scope, which cancels all other children, and coroutineScope rethrows the exception. supervisorScope behaves differently."
   ],
@@ -460,7 +460,7 @@
    [
     "false",
     "A compile error",
-    "It depends on object identity"
+    "Identity-based"
    ],
    "Data classes generate equals() and hashCode() from the primary constructor properties, and == calls equals()."
   ],
@@ -498,7 +498,7 @@
    "Why can a Kotlin when expression on a value of a sealed class type omit the else branch?",
    "The compiler knows every subclass and checks exhaustiveness",
    [
-    "when returns null by default when nothing matches",
+    "when returns null by default whenever no branch matches the value",
     "A sealed class is limited to exactly two subclasses",
     "else is added implicitly and throws at run time"
    ],
@@ -568,9 +568,9 @@
    "What happens when a cold Kotlin Flow is built with flow { emit(1) } but collect is never called on it?",
    "The block does not run and nothing is emitted",
    [
-    "It emits 1 immediately into a buffer",
-    "It throws because no collector exists",
-    "It runs once on Dispatchers.Default"
+    "It emits 1 immediately into an internal buffer",
+    "It throws because no collector has been attached",
+    "It runs once on Dispatchers.Default in the background"
    ],
    "Flows built with flow { } are cold: the block runs anew for each collector, and only when collection starts."
   ],
@@ -630,9 +630,9 @@
    "When is unowned preferred over weak for a reference in Swift?",
    "When the referenced object is sure to outlive the reference",
    [
-    "When the reference must become nil automatically",
+    "When the reference should become nil automatically after deallocation",
     "When the referenced type is a struct, not a class",
-    "When the reference must keep its object alive"
+    "When the reference must keep its object alive for its lifetime"
    ],
    "unowned is non-optional and does not become nil; accessing it after the object is freed traps. Use it only when the lifetime guarantee holds."
   ],
@@ -652,7 +652,7 @@
    [
     "Add stored properties to every conforming type",
     "Make a protocol inherit from a concrete class",
-    "Make a struct conform to a protocol at run time"
+    "Make a struct conform to a protocol dynamically at run time"
    ],
    "Protocol extensions add methods and computed properties with bodies, which every conforming type gets unless it provides its own."
   ],
@@ -690,9 +690,9 @@
    "What must the else branch of a Swift guard let statement do?",
    "Exit the current scope, for example with return or throw",
    [
-    "Assign a default value to the guarded variable",
+    "Assign a default value to the guarded variable and continue",
     "Force-unwrap the optional with the ! operator",
-    "Fall through into the code that follows it"
+    "Fall through into the code that follows the guard statement"
    ],
    "The compiler requires guard's else to leave the scope (return, throw, break, continue or a Never call), so the unwrapped value is safe afterward."
   ],
@@ -702,7 +702,7 @@
    [
     "2",
     "nil",
-    "A compile error"
+    "0"
    ],
    "Structs are value types: var b = a copies the value, so changing b does not change a. With a class, a.x would be 2."
   ],
@@ -732,7 +732,7 @@
    [
     "Actor methods are compiled as throwing functions",
     "await converts the result into an optional value",
-    "await blocks the caller's thread until it returns"
+    "await blocks the caller's thread until the actor method returns"
    ],
    "Crossing into actor isolation is a potential suspension point; the caller's task suspends without blocking its thread."
   ],
@@ -762,7 +762,7 @@
    [
     "When it can throw an error during the call",
     "When it captures no variables from outer scope",
-    "When it is called more than once inside the body"
+    "When it is called more than once inside the function body"
    ],
    "Closure parameters are non-escaping by default. Storing one in a property or calling it asynchronously later needs @escaping."
   ],
@@ -832,7 +832,7 @@
    "Under manual retain-release (MRC), what does a retain property setter typically do?",
    "Retains the new value and releases the old one",
    [
-    "Copies the new value and retains the old one",
+    "Copies the new value and retains the old one as a backup",
     "Releases the new value and keeps the old one",
     "Assigns the new value with no memory calls"
    ],
@@ -852,7 +852,7 @@
    "What does the Objective-C compiler turn a message send like [obj doSomething:42] into?",
    "A call to objc_msgSend with obj, the selector and 42",
    [
-    "A direct C function call resolved at link time",
+    "A direct C function call that is resolved at link time",
     "A vtable lookup fixed at compile time",
     "A performSelector call on the main thread"
    ],
@@ -862,7 +862,7 @@
    "What is a SEL in Objective-C?",
    "The runtime identifier for a method name",
    [
-    "A pointer to a method's compiled code",
+    "A pointer to a method's compiled code in the class",
     "A reference to an object's class",
     "A block that wraps a method call"
    ],
@@ -872,8 +872,8 @@
    "By default, what happens when an Objective-C object receives a message it does not implement and has no forwarding set up?",
    "An unrecognized selector exception is raised",
    [
-    "The call quietly returns 0 or nil",
-    "The runtime adds an empty method for it",
+    "The call quietly returns 0 or nil to the sender",
+    "The runtime adds an empty method for it and continues",
     "The superclass's init method is called"
    ],
    "After resolution and forwarding fail, doesNotRecognizeSelector: raises NSInvalidArgumentException (\"unrecognized selector sent to instance\")."
@@ -904,7 +904,7 @@
    [
     "2",
     "0",
-    "A compile error"
+    "12"
    ],
    "A block captures local variables by value when it is created, so later changes to x are not seen. Declaring x with __block would print 2."
   ],
@@ -913,7 +913,7 @@
    "To avoid a retain cycle between self and the block",
    [
     "To make the block run faster on the main thread",
-    "To let the block change self's class at run time",
+    "To let the block change self's class dynamically at run time",
     "To give the block a copied snapshot of self"
    ],
    "A block retains objects it captures. If self also owns the block, capturing self strongly creates a cycle that ARC cannot free."
@@ -924,7 +924,7 @@
    [
     "Weak properties are faster to read than strong ones",
     "Protocol-typed properties cannot be declared strong",
-    "Weak makes all delegate methods optional to implement"
+    "Weak makes all of the delegate methods optional to implement"
    ],
    "A view controller typically owns a table view and is also its delegate; a strong back reference would keep both alive forever."
   ],
@@ -962,9 +962,9 @@
    "In Objective-C: NSString *s = nil; NSUInteger n = [s length]; What is n?",
    "0",
    [
-    "The app crashes before n is set",
-    "An exception is thrown and n is unset",
-    "A random leftover value"
+    "NSNotFound",
+    "A crash",
+    "An exception"
    ],
    "Sending a message to nil does nothing and returns zero for integer and pointer return types, so n is 0."
   ],
@@ -972,9 +972,9 @@
    "Messaging nil is safe in Objective-C, so why does [mutableArray addObject:nil] crash?",
    "The receiver is valid, and collections reject nil elements",
    [
-    "Messaging nil is safe only on the main thread",
-    "nil is converted to NSNull and then released",
-    "addObject: is a C function, not a message"
+    "Messaging nil is safe only on the main thread, not on queues",
+    "nil is converted to NSNull and then released by the array",
+    "addObject: is a plain C function, so nil is dereferenced"
    ],
    "Here the receiver is not nil; the argument is. Foundation collections cannot store nil and throw NSInvalidArgumentException. Use NSNull instead."
   ],
@@ -992,7 +992,7 @@
    "What is the correct way to compare the text of two NSString objects a and b in Objective-C?",
    "[a isEqualToString:b]",
    [
-    "a == b",
+    "a == b && a != nil",
     "[a compare:b] == YES",
     "strcmp(a, b) == 0"
    ],
@@ -1002,9 +1002,9 @@
    "What does the literal @[@1, @2] create in Objective-C?",
    "An immutable NSArray of two NSNumber objects",
    [
-    "A mutable NSMutableArray of two ints",
-    "A C array of two int values",
-    "An NSSet containing two NSNumbers"
+    "A mutable NSMutableArray holding two plain C ints",
+    "A C array of two int values on the stack",
+    "An NSSet containing two NSNumber objects"
    ],
    "@[...] is array literal syntax for NSArray, and @1 boxes the number into an NSNumber."
   ]
@@ -1034,7 +1034,7 @@
    "What does List(1, 2, 3) match { case x :: rest => rest; case Nil => Nil } return in Scala?",
    "List(2, 3)",
    [
-    "1",
+    "List(1, 2)",
     "List(1)",
     "Nil"
    ],
@@ -1106,7 +1106,7 @@
    [
     "Once",
     "Zero times",
-    "Once, then the value is cached"
+    "Three times"
    ],
    "x is a by-name parameter, so the argument expression is evaluated each time x is used inside the method, here twice."
   ],
@@ -1126,7 +1126,7 @@
    [
     "2",
     "0",
-    "6"
+    "-2"
    ],
    "foldLeft goes left to right: ((0 - 1) - 2) - 3 = -6. foldRight with the same function would give 1 - (2 - (3 - 0)) = 2."
   ],
@@ -1136,7 +1136,7 @@
    [
     "null",
     "None",
-    "A NullPointerException"
+    "An exception"
    ],
    "Option.apply turns null into None, map on None stays None, and getOrElse returns the default 0."
   ],
@@ -1156,7 +1156,7 @@
    [
     "false",
     "A compile error",
-    "It depends on reference identity"
+    "Identity-based"
    ],
    "Case classes get structural equals and hashCode generated from their constructor parameters, so equal fields mean equal objects."
   ],
@@ -1176,7 +1176,7 @@
    [
     "5",
     "1",
-    "A compile error"
+    "An exception"
    ],
    "add has two parameter lists; supplying only the first and eta-expanding with _ gives a function Int => Int that adds 1."
   ],

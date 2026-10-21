@@ -4,7 +4,7 @@
    "In the React Native New Architecture, what does JSI (JavaScript Interface) provide?",
    "A C++ API that lets JavaScript hold references to native objects and call them directly",
    [
-    "A JSON message queue that batches calls asynchronously between JS and native",
+    "A JSON message queue that batches every call asynchronously between JS and native code",
     "A compiler that turns JavaScript into native machine code ahead of time",
     "A layout engine that converts Flexbox styles into native view frames"
    ],
@@ -15,7 +15,7 @@
    "The new rendering system that replaces the legacy UI Manager",
    [
     "The new native module system that loads modules lazily",
-    "The JavaScript engine that React Native ships by default",
+    "The JavaScript engine that React Native ships by default on both platforms",
     "The tool that generates typed bindings from JS specs"
    ],
    "Fabric is the renderer. Lazy native modules are TurboModules, the default engine is Hermes and the binding generator is Codegen."
@@ -44,7 +44,7 @@
    "In the React Native New Architecture, what does Codegen do?",
    "Generates native interface code from typed JS or TypeScript specs",
    [
-    "Minifies the JavaScript bundle before it is shipped to the store",
+    "Minifies and obfuscates the JavaScript bundle before it is shipped to the store",
     "Converts class components into function components automatically",
     "Translates Flexbox styles into platform-specific layout files"
    ],
@@ -66,7 +66,7 @@
    [
     "Hello is rendered using the default system font and size",
     "Nothing is rendered and no warning or error is shown",
-    "Hello is rendered on iOS but silently ignored on Android"
+    "Hello is rendered on iOS, but on Android it is silently dropped from the view"
    ],
    "In React Native every piece of text must be inside a Text component. A raw string inside a View throws a runtime error."
   ],
@@ -84,7 +84,7 @@
    "In React Native, you render <Image source={{ uri: 'https://example.com/a.png' }} /> with no style. What do you see?",
    "Nothing visible, because network images need explicit width and height",
    [
-    "The image at its intrinsic size, read from the downloaded file",
+    "The image at its intrinsic size, read from the file once it finishes downloading",
     "The image stretched to fill the whole width of its parent view",
     "A build-time error because remote images must be bundled"
    ],
@@ -124,7 +124,7 @@
    "In React Native, what does flex: 1 on a child view usually do?",
    "Makes it expand to fill the remaining space along the main axis",
    [
-    "Sets its width to exactly one density-independent pixel",
+    "Sets its width to exactly one density-independent pixel inside the parent",
     "Places it first in the visual order of its siblings",
     "Makes it shrink to the size of its own content only"
    ],
@@ -175,8 +175,8 @@
    "The JavaScript bundler that builds and serves the app code",
    [
     "The native build system that compiles the Android APK",
-    "The default navigation library for React Native apps",
-    "The testing framework bundled with React Native"
+    "The default navigation library that ships with React Native apps",
+    "The testing framework bundled with React Native for unit tests"
    ],
    "Metro transforms and bundles JavaScript and assets and serves them to the app during development. Gradle and Xcode handle the native builds."
   ],
@@ -195,8 +195,8 @@
    "Button.android.js",
    [
     "Button.ios.js",
-    "An error, because Button.js does not exist",
-    "Both files, merged into one module"
+    "A module not found error",
+    "Both files merged"
    ],
    "Metro resolves platform-specific extensions, picking .android.js on Android and .ios.js on iOS, so the base file is not required."
   ]
@@ -226,9 +226,9 @@
    "When should a Flutter widget be a StatefulWidget rather than a StatelessWidget?",
    "When it holds data that changes over its lifetime and affects the UI",
    [
-    "When it is used more than once in the same widget tree",
-    "When it receives constructor parameters from its parent",
-    "When it needs to use the current theme or text style"
+    "When the same widget is used more than once in a single widget tree",
+    "When it receives constructor parameters that come from its parent widget",
+    "When it needs to read the current theme or the default text style"
    ],
    "A StatefulWidget has a State object that persists across rebuilds and can call setState. Constructor parameters and theme access work fine in stateless widgets."
   ],
@@ -247,28 +247,28 @@
    "initState",
    [
     "build",
-    "didChangeDependencies",
+    "deactivate",
     "dispose"
    ],
-   "initState runs once when the State is inserted into the tree. build can run many times, and dispose is where you release those resources."
+   "initState runs once when the State is inserted into the tree. build can run many times, deactivate runs when the State is removed, and dispose is where you release those resources."
   ],
   [
    "What is a BuildContext in Flutter?",
-   "A handle to the widget's location in the tree, implemented by its Element",
+   "A handle to the widget's location in the tree (its Element)",
    [
-    "A global object holding the entire app state and theme",
-    "The canvas object that the widget paints onto",
-    "A copy of the widget's constructor parameters"
+    "A global object that holds the entire app state and the theme",
+    "The canvas object that the widget paints its pixels onto",
+    "A copy of the constructor parameters passed to the widget"
    ],
    "Each widget gets a BuildContext, which is its Element. It is used to look up ancestors such as Theme, MediaQuery or a Provider."
   ],
   [
    "In Flutter, a widget calls Scaffold.of(context) inside the same build method that creates the Scaffold, and gets an error. Why?",
-   "That context belongs to a widget above the Scaffold, so no Scaffold is found",
+   "That context is above the Scaffold, so the lookup finds no Scaffold",
    [
-    "Scaffold.of can only be called from inside initState",
-    "Scaffold.of works only when the app uses Material 2",
-    "The Scaffold has not been given a GlobalKey yet"
+    "Scaffold.of can only be called from inside initState of a State object",
+    "Scaffold.of works only when the app is still using Material 2 widgets",
+    "The Scaffold has not been given a GlobalKey, so it cannot be looked up"
    ],
    "of(context) searches up from the given context. Using a Builder widget, or a separate child widget, gives a context that is below the Scaffold."
   ],
@@ -276,9 +276,9 @@
    "Why can calling Theme.of(context) inside initState of a Flutter State cause an error?",
    "Inherited widgets cannot be read in initState; use didChangeDependencies",
    [
-    "Theme.of is only available inside a StatelessWidget",
-    "initState runs on a background isolate without a theme",
-    "The context is null until dispose has been called"
+    "Theme.of is only available inside the build method of a StatelessWidget class",
+    "initState runs on a background isolate, where no theme is available yet",
+    "The context is null until dispose has been called on the State object"
    ],
    "Looking up inherited widgets in initState is not allowed because dependencies are not set up yet. didChangeDependencies runs right after and whenever they change."
   ],
@@ -314,11 +314,11 @@
   ],
   [
    "Which statement about Riverpod compared with the provider package is correct?",
-   "Riverpod providers are declared globally and do not depend on BuildContext lookup",
+   "Riverpod providers are global declarations that need no BuildContext lookup",
    [
-    "Riverpod requires every provider to extend ChangeNotifier",
-    "Riverpod stores state inside StatefulWidget objects only",
-    "Riverpod can only be used together with the Bloc library"
+    "Riverpod requires every provider class to extend ChangeNotifier from Flutter",
+    "Riverpod stores all state inside StatefulWidget objects of the widget tree",
+    "Riverpod can only be used together with the Bloc library for state changes"
    ],
    "Riverpod providers are top-level declarations read through a ref, so they are compile-safe and can be read outside the widget tree. Provider relies on InheritedWidget lookups."
   ],
@@ -336,9 +336,9 @@
    "In Flutter, a Column contains a ListView directly and you get an unbounded height error. What is a common fix?",
    "Wrap the ListView in Expanded so it gets a bounded height",
    [
-    "Wrap the Column in a Center widget",
-    "Set mainAxisAlignment to MainAxisAlignment.start",
-    "Replace the Column with a Stack widget"
+    "Wrap the Column in a Center widget to center its children",
+    "Set mainAxisAlignment to MainAxisAlignment.start on the Column",
+    "Wrap the ListView in a Padding widget to give it some insets"
    ],
    "A Column gives its children unbounded height, and a ListView wants to be as tall as possible. Expanded (or a fixed-height SizedBox) gives it a finite constraint."
   ],
@@ -346,9 +346,9 @@
    "In a Flutter Row, what does wrapping a child in Expanded do?",
    "Makes the child fill the remaining space along the row's main axis",
    [
-    "Lets the child overflow the row without an error",
-    "Centers the child vertically inside the row",
-    "Gives the child a fixed width of the screen width"
+    "Lets the child overflow past the row's bounds without showing an error",
+    "Centers the child vertically and horizontally inside the row",
+    "Gives the child a fixed width equal to the full screen width"
    ],
    "Expanded forces a child of a Row, Column or Flex to fill the free space on the main axis, shared by flex factor with other Expanded children."
   ],
@@ -356,19 +356,19 @@
    "Your Flutter Row shows a yellow and black striped warning on the right edge. What does it mean?",
    "The children are wider than the row's constraints, so content overflows",
    [
-    "The app is running in debug mode without hot reload",
-    "An image inside the row failed to load from the network",
-    "The row has no key, so it cannot be rebuilt correctly"
+    "The app is running in debug mode with hot reload currently disabled",
+    "An image inside the row failed to load from the network or from assets",
+    "The row has no key, so Flutter cannot rebuild it correctly on changes"
    ],
    "That stripe is Flutter's debug overflow indicator. Common fixes are Expanded or Flexible on a child, or making the content scrollable."
   ],
   [
    "What does the const keyword in const Text('Hi') give you in Flutter?",
-   "A compile-time constant instance that Flutter can reuse instead of rebuilding",
+   "A compile-time constant instance that Flutter can reuse across rebuilds",
    [
-    "A widget that can never be removed from the widget tree",
-    "A widget that ignores the current theme and text style",
-    "A widget that is rendered on a separate isolate"
+    "A widget that can never be removed from the widget tree once it is built",
+    "A widget that ignores the current theme and the inherited text style",
+    "A widget that is built and rendered on a separate background isolate"
    ],
    "Const widgets are canonicalized at compile time, so identical instances are shared and Flutter can skip rebuilding them when the parent rebuilds."
   ],
@@ -394,11 +394,11 @@
   ],
   [
    "Why does Flutter run heavy Dart computations with Isolate.run or compute instead of a plain async function?",
-   "An isolate runs on a separate thread with its own memory, so the UI does not freeze",
+   "An isolate runs on its own thread and memory, so the UI does not freeze",
    [
-    "Async functions are not allowed to return values in Dart",
-    "Isolates share memory with the UI thread, which makes them faster",
-    "The Dart VM disables async code in release builds"
+    "Async functions in Dart cannot return values, so results would be lost",
+    "Isolates share memory with the UI thread, which makes data transfer faster",
+    "The Dart VM disables async and await in release builds for performance"
    ],
    "async and await still run on the same isolate, so CPU-heavy work blocks frames. A separate isolate runs in parallel and communicates by message passing."
   ]
@@ -428,11 +428,11 @@
    "What must the elements of an array conform to for SwiftUI's List(items) { item in Text(item.name) } to compile without an id: parameter?",
    "Identifiable",
    [
-    "Hashable",
+    "Comparable",
     "Equatable",
-    "Codable"
+    "Hashable"
    ],
-   "List and ForEach need a stable identity for each element. Without an id: key path, the element type must conform to Identifiable."
+   "List and ForEach need a stable identity for each element. Without an id: key path, the element type must conform to Identifiable. Hashable is only needed when you pass id: \\.self."
   ],
   [
    "What must a type implement to conform to SwiftUI's View protocol?",
@@ -459,8 +459,8 @@
    "They are lightweight value types that SwiftUI can recreate cheaply",
    [
     "Structs are the only types allowed to own UIKit views",
-    "Classes cannot conform to protocols in Swift",
-    "Structs keep their stored properties alive between app launches"
+    "Classes cannot conform to protocols in Swift, only structs can",
+    "Structs keep their stored properties alive between separate app launches"
    ],
    "View values are just descriptions and are created and discarded often. Persistent state lives in storage managed by SwiftUI through wrappers like @State."
   ],
@@ -488,9 +488,9 @@
    "In SwiftUI, what does the $ in Toggle(\"Wi-Fi\", isOn: $isOn) pass, given @State var isOn = false?",
    "A Binding<Bool> that reads and writes the state",
    [
-    "A copy of the current Bool value",
-    "A Publisher that emits each change",
-    "A pointer to the view's memory"
+    "A copy of the current Bool value at render time",
+    "A Publisher that emits each change to the toggle",
+    "A raw pointer to the view's memory for that property"
    ],
    "The $ prefix accesses the projected value of the property wrapper, which for @State is a Binding."
   ],
@@ -498,9 +498,9 @@
    "A SwiftUI view declares @ObservedObject var model = ViewModel(), and the model's data is lost whenever the parent view refreshes. What is the fix?",
    "Declare it with @StateObject so the view owns the object's lifetime",
    [
-    "Declare it with @Binding so the parent passes it down",
-    "Mark the ViewModel class as final to keep it in memory",
-    "Move the model creation into the body property instead"
+    "Declare it with @Binding so that the parent view passes it down instead",
+    "Mark the ViewModel class as final so it stays in memory across refreshes",
+    "Move the model creation into the body property so it is rebuilt fresh"
    ],
    "@ObservedObject does not own the object, so creating it inline recreates it on each init. @StateObject creates it once and keeps it for the view's lifetime."
   ],
@@ -589,7 +589,7 @@
    ".navigationDestination(for: Book.self) { book in BookView(book: book) }",
    [
     ".sheet(item: $book) { book in BookView(book: book) }",
-    ".onTapGesture { BookView(book: book) }",
+    ".fullScreenCover(item: $book) { book in BookView(book: book) }",
     ".navigationTitle(for: Book.self) { book in BookView(book: book) }"
    ],
    "Value-based links are resolved by a navigationDestination modifier for that value type, declared inside the stack."
@@ -620,9 +620,9 @@
    "In Jetpack Compose, what does a typical UI function such as @Composable fun Greeting(name: String) return?",
    "Unit, because it emits UI instead of returning a view",
    [
-    "A View object that is added to the layout",
-    "A Widget instance that the framework renders",
-    "A LayoutParams object describing its size"
+    "A View object that is added to the current layout tree",
+    "A Widget instance that the framework renders on screen",
+    "A LayoutParams object describing its width and height"
    ],
    "Composables that emit UI return Unit. They describe the UI by calling other composables, and the runtime builds the UI tree."
   ],
@@ -638,11 +638,11 @@
   ],
   [
    "What does state hoisting mean in Jetpack Compose?",
-   "Moving state up to a caller and passing down the value and an event callback",
+   "Moving state to a caller that passes down the value and a change callback",
    [
-    "Storing every piece of UI state in one global singleton object",
-    "Saving state to disk so it survives the app process dying",
-    "Converting state objects into constants at compile time"
+    "Storing every piece of UI state in one global singleton object for the app",
+    "Saving state to disk so that it survives the app process being killed",
+    "Converting mutable state objects into constants at compile time for speed"
    ],
    "Hoisting makes a composable stateless: it receives value: T and onValueChange: (T) -> Unit. The caller owns the state."
   ],
@@ -650,8 +650,8 @@
    "Which signature follows the state hoisting pattern for a reusable Jetpack Compose text field?",
    "fun NameField(name: String, onNameChange: (String) -> Unit)",
    [
-    "fun NameField(): String",
-    "fun NameField(context: Context, id: Int)",
+    "fun NameField(onDone: () -> Unit): String",
+    "fun NameField(context: Context, id: Int, hint: String)",
     "fun NameField(initial: String): MutableList<String>"
    ],
    "A hoisted composable takes the current value and a callback for changes, so the caller controls the state and the field stays stateless."
@@ -660,15 +660,15 @@
    "What is a main benefit of state hoisting in Jetpack Compose?",
    "Stateless composables are easier to reuse, preview and test",
    [
-    "Hoisted state skips recomposition completely",
-    "Hoisting removes the need for the remember function",
+    "Hoisted state skips recomposition completely for that subtree",
+    "Hoisting removes the need for the remember function entirely",
     "Hoisted composables run on a background thread"
    ],
    "When a composable gets its state from parameters, you can drive it from any source, including previews and tests, and share state between siblings."
   ],
   [
    "In Jetpack Compose, a counter is written as var count by mutableStateOf(0) without remember, and clicking a button does count++. What happens?",
-   "count resets to 0 on each recomposition, so the displayed value does not keep the change",
+   "count resets to 0 on each recomposition, so the displayed value loses the change",
    [
     "The counter works normally, because mutableStateOf survives recomposition on its own",
     "The app crashes immediately because mutableStateOf requires a coroutine scope",
@@ -690,8 +690,8 @@
    "In Jetpack Compose, what does by do in var count by remember { mutableStateOf(0) }?",
    "Kotlin property delegation, so you use count instead of count.value",
    [
-    "It marks count as a lazy value computed on first access",
-    "It binds count to a field in the ViewModel automatically",
+    "It marks count as a lazy value that is computed on first access",
+    "It binds count to a field of the same name in the ViewModel automatically",
     "It makes count read only after the first composition"
    ],
    "MutableState provides getValue and setValue operators, so the by delegate lets you read and write the value directly."
@@ -720,7 +720,7 @@
    "By convention, which parameter should a reusable Jetpack Compose component expose so callers can adjust its layout?",
    "modifier: Modifier = Modifier",
    [
-    "style: Style? = null",
+    "style: TextStyle? = null",
     "layout: LayoutParams = LayoutParams()",
     "params: Map<String, Any> = emptyMap()"
    ],
@@ -740,9 +740,9 @@
    "What is the main difference between Column and LazyColumn in Jetpack Compose?",
    "LazyColumn composes and lays out only the items that are visible",
    [
-    "LazyColumn can contain only Text composables",
-    "LazyColumn lays out items horizontally instead",
-    "LazyColumn requires a RecyclerView adapter"
+    "LazyColumn can contain only Text composables as its items",
+    "LazyColumn lays out its items horizontally instead of vertically",
+    "LazyColumn requires a RecyclerView adapter to supply its items"
    ],
    "Column composes all children at once. LazyColumn is the Compose counterpart of RecyclerView and is better for long or unbounded lists."
   ],
@@ -758,11 +758,11 @@
   ],
   [
    "Why pass key = { it.id } to items() in a Jetpack Compose LazyColumn?",
-   "So each item's remembered state stays with the right item when the list changes",
+   "So each item's remembered state follows that item when the list changes",
    [
-    "So the list is sorted by id before it is shown",
-    "So the items are loaded from the database by id",
-    "So the list scrolls to the item with that id"
+    "So the list is sorted by id each time before it is shown in the LazyColumn",
+    "So the items are loaded lazily from the database by their id",
+    "So the list automatically scrolls to the item with that id"
    ],
    "By default, item state is tied to position. Stable keys let Compose keep state and animations with the item when items are inserted, removed or reordered."
   ],
@@ -770,7 +770,7 @@
    "Which statement about recomposition in Jetpack Compose is correct?",
    "Composables may run often, in any order, or be skipped, so they should be free of side effects",
    [
-    "Composables run exactly once, in source order, every time any state anywhere changes",
+    "Composables run exactly once, in source order, every time any state anywhere in the app changes",
     "Composables are re-executed only when the activity is recreated by the system",
     "Composables must finish running on a background thread before the UI can update"
    ],
@@ -780,9 +780,9 @@
    "When can Jetpack Compose skip recomposing a composable during recomposition?",
    "When all of its parameters are stable and equal to the previous values",
    [
-    "When the composable has no Modifier parameter",
-    "When the composable is declared as private",
-    "When the composable returns a value instead of Unit"
+    "When the composable has no Modifier parameter in its signature",
+    "When the composable is declared as private or internal in its file",
+    "When the composable returns a value instead of returning Unit as usual"
    ],
    "Skipping relies on stability: if the inputs are stable and unchanged, Compose reuses the previous result. Unstable parameters such as plain mutable classes can prevent skipping."
   ],
@@ -810,7 +810,7 @@
  "electron": [
   [
    "How many main processes does a running Electron app have?",
-   "Exactly one",
+   "One for the whole app",
    [
     "One for each open window",
     "One per CPU core",
@@ -832,7 +832,7 @@
    "In Electron, what runs inside a renderer process?",
    "The web page of a window: its HTML, CSS and JavaScript",
    [
-    "The app lifecycle code that handles the ready event",
+    "The app lifecycle code that handles the ready and quit events",
     "The native installer and auto-update service",
     "The Node.js event loop shared by all windows"
    ],
@@ -842,7 +842,7 @@
    "In Electron, when is it safe to create the first BrowserWindow?",
    "After the app is ready, for example inside app.whenReady().then(...)",
    [
-    "At the very top of the main script, before importing modules",
+    "At the very top of the main script, before importing any other modules",
     "Inside the preload script, before the page starts to load",
     "Only after the renderer sends a ready message over IPC"
    ],
@@ -910,11 +910,11 @@
   ],
   [
    "Where do you set the preload script for an Electron window?",
-   "In webPreferences.preload when constructing the BrowserWindow",
+   "In webPreferences.preload when creating the BrowserWindow",
    [
-    "In the scripts field of package.json",
-    "In a script tag inside the window's index.html",
-    "In app.setPreload() before the ready event"
+    "In the scripts field of package.json for the Electron app",
+    "In a script tag inside the window's index.html file",
+    "In app.setPreload(path), called before the ready event fires"
    ],
    "The preload path is a webPreferences option. It runs before the page loads, with access to a limited set of Electron APIs."
   ],
@@ -922,9 +922,9 @@
    "Which Electron API calls build and install an application menu from a template array?",
    "Menu.buildFromTemplate(template) and Menu.setApplicationMenu(menu)",
    [
-    "new MenuBar(template) and app.setMenuBar(menuBar)",
-    "Menu.create(template) and win.attachMenu(menu)",
-    "app.createMenu(template) and app.showMenu(menu)"
+    "new MenuBar(template) and BrowserWindow.setMenuBar(menuBar)",
+    "Menu.createFromTemplate(template) and win.attachMenu(menu)",
+    "app.createMenu(template) and app.setApplicationMenu(menu)"
    ],
    "buildFromTemplate turns an array of menu item descriptors into a Menu, and setApplicationMenu installs it for the app."
   ],
@@ -952,7 +952,7 @@
    "On macOS, what does Electron do with the first top-level item of the application menu template?",
    "It appears under the app's name as the application menu",
    [
-    "It is hidden and used only for keyboard shortcuts",
+    "It is hidden and used only for registering keyboard shortcuts",
     "It appears as the Help menu at the right end",
     "It is shown inside the window's title bar"
    ],
@@ -960,11 +960,11 @@
   ],
   [
    "In Electron, what does contextIsolation: true do?",
-   "Runs the preload script and Electron internals in a JavaScript context separate from the page",
+   "Runs preload and Electron internals in a JS context separate from the page",
    [
     "Runs every BrowserWindow inside a separate operating system user account",
-    "Blocks the page from making any network requests to other origins",
-    "Encrypts all IPC messages that are sent between main and renderer"
+    "Blocks the page from sending any network requests to third-party origins",
+    "Encrypts all IPC messages that are sent between the main and renderer processes"
    ],
    "With context isolation, page scripts cannot tamper with the preload's globals or Electron APIs. Only what contextBridge exposes crosses over."
   ],
@@ -973,8 +973,8 @@
    "true",
    [
     "false",
-    "undefined, so it must be set",
-    "'auto', decided per window"
+    "undefined",
+    "'auto'"
    ],
    "Electron 12 enabled context isolation by default, and the security guide recommends keeping it enabled."
   ],
@@ -982,9 +982,9 @@
    "Why should an Electron window that loads any untrusted or remote content keep nodeIntegration set to false?",
    "Otherwise an XSS bug in the page can run Node.js code with full system access",
    [
-    "Otherwise the window cannot load pages over HTTPS",
-    "Otherwise the page will run slower in the renderer",
-    "Otherwise the window loses access to localStorage"
+    "Otherwise the window cannot load pages over HTTPS with valid certificates",
+    "Otherwise every page in the renderer runs much slower due to the Node.js overhead",
+    "Otherwise the window loses access to localStorage and other web storage APIs"
    ],
    "With Node.js available in the renderer, injected script could read files or spawn processes. That turns a web bug into remote code execution."
   ],
@@ -1000,11 +1000,11 @@
   ],
   [
    "An Electron app passes URLs taken from web content straight to shell.openExternal. What is the main risk?",
-   "Attacker-supplied URLs can launch other apps or protocol handlers on the user's machine",
+   "Attacker-supplied URLs can launch other apps or protocol handlers on the machine",
    [
-    "The URLs will open inside the app's own window and replace its content",
-    "shell.openExternal only accepts file paths, so the app will crash",
-    "The URLs will be cached and slow down the app's start time"
+    "The URLs will open inside the app's own main window and replace its current content",
+    "shell.openExternal only accepts file paths, so the app will crash on a URL",
+    "The URLs will be cached on disk and slow down the app's start time"
    ],
    "openExternal hands the URL to the operating system. Validate the scheme and host (for example, allow only https and known domains) before calling it."
   ]
@@ -1024,7 +1024,7 @@
    "How does a Tauri app render its user interface?",
    "In the operating system's webview, such as WebView2 on Windows or WKWebView on macOS",
    [
-    "In a copy of Chromium that is bundled inside every Tauri application installer",
+    "In a copy of Chromium that is bundled inside every Tauri application's installer package",
     "With a native widget toolkit generated from the app's HTML at compile time",
     "In a Node.js process that draws the HTML onto a canvas element"
    ],
@@ -1034,9 +1034,9 @@
    "Which frontend stack does Tauri require for the user interface?",
    "Any framework or plain code that outputs HTML, CSS and JavaScript",
    [
-    "React only, because Tauri ships React bindings",
-    "Svelte only, because it compiles to native code",
-    "A Rust-only UI toolkit such as egui or iced"
+    "React only, because Tauri ships its own React bindings and renderer",
+    "Svelte only, because it is the only framework that compiles to native code",
+    "A Rust-only UI toolkit such as egui or iced, with no HTML involved"
    ],
    "Tauri is frontend-agnostic. You can use React, Vue, Svelte, Solid, plain HTML or a Rust-to-WASM framework, as long as the result is web assets."
   ],
@@ -1064,8 +1064,8 @@
    "After writing #[tauri::command] fn greet(), what else is needed before the frontend can call greet?",
    "Register it with .invoke_handler(tauri::generate_handler![greet])",
    [
-    "Export it from lib.rs with pub use greet as command",
-    "List it in the dependencies section of package.json",
+    "Export it from lib.rs with pub use greet as command so Tauri finds it",
+    "List it in the dependencies section of the frontend's package.json",
     "Add it as a script tag in the frontend's index.html"
    ],
    "Commands must be registered on the Builder through invoke_handler. Unregistered commands return an error when invoked."
@@ -1104,7 +1104,7 @@
    "Why should a slow, blocking Tauri command usually be declared async (or with #[tauri::command(async)])?",
    "Commands without async run on the main thread, so blocking work can freeze the UI",
    [
-    "Async commands are the only kind allowed to return values to JavaScript",
+    "Async commands are the only kind of command allowed to return values to JavaScript",
     "Commands without async are not compiled in release builds",
     "Async commands skip the permission checks, so they run faster"
    ],
@@ -1114,7 +1114,7 @@
    "In Tauri, how can the Rust side push a progress update to the frontend without the frontend calling a command first?",
    "Emit an event from Rust and subscribe in JavaScript with listen()",
    [
-    "Write the update to a file the frontend polls every second",
+    "Write the update to a file that the frontend polls once every second",
     "Call invoke() from Rust with the frontend's function name",
     "Send an HTTP request to the frontend's dev server URL"
    ],
@@ -1124,7 +1124,7 @@
    "In Tauri, how do commands share a value such as a database pool that was created once at startup?",
    "Register it with .manage(value) and take State<'_, T> as a command parameter",
    [
-    "Store it in a static mut variable that every command reads directly",
+    "Store it in a static mut variable that every command reads and writes directly",
     "Serialize it to JSON and pass it from JavaScript on every call",
     "Put it in window.localStorage and read it in each command"
    ],
@@ -1135,18 +1135,18 @@
    "Tauri uses the OS webview instead of bundling Chromium and Node.js",
    [
     "Tauri compresses JavaScript into WebAssembly at build time",
-    "Tauri downloads the app's code from a server at first launch",
+    "Tauri downloads the app's code from a remote server at the first launch",
     "Tauri removes CSS and images from the final bundle"
    ],
    "An Electron app ships its own Chromium and Node.js runtime. A Tauri app ships a compiled Rust binary and web assets and relies on the system webview."
   ],
   [
    "What is a real trade-off of Tauri's use of the system webview?",
-   "Rendering and web API support can differ between platforms, so you must test on each OS",
+   "Rendering and web API support can differ by platform, so you must test on each OS",
    [
-    "Apps cannot use any CSS features newer than the CSS 2.1 specification",
-    "The app must run as administrator to access the system webview",
-    "Each window needs its own separate Rust process to render"
+    "Apps are limited to the CSS features defined in the CSS 2.1 specification on every OS",
+    "The app must run as administrator on every OS to access the system webview",
+    "Each window needs its own separate Rust process to render its web content"
    ],
    "WebView2 (Chromium based), WKWebView and WebKitGTK are different engines and versions, so some features or styles can behave differently."
   ],
@@ -1154,9 +1154,9 @@
    "In Tauri 2, what controls which commands and plugin APIs a given window is allowed to use?",
    "Capability files that grant permissions to windows",
    [
-    "The allowlist section in package.json",
-    "The Content-Security-Policy meta tag only",
-    "Rust feature flags set in Cargo.toml"
+    "The allowlist section in the frontend's package.json",
+    "The Content-Security-Policy meta tag in index.html",
+    "Rust feature flags set in Cargo.toml for the app"
    ],
    "Tauri 2 introduced capabilities (usually in src-tauri/capabilities) that list permissions per window or webview."
   ],
@@ -1164,9 +1164,9 @@
    "A Tauri 2 frontend calls readTextFile from the fs plugin and gets a 'not allowed' error. What is the right fix?",
    "Add the needed fs permission and scope to the window's capability",
    [
-    "Run the app with administrator rights on every launch",
-    "Disable the CSP in tauri.conf.json for the window",
-    "Call the fs plugin through fetch instead of invoke"
+    "Run the app with administrator rights so the fs plugin can read files",
+    "Disable the CSP in tauri.conf.json for the window that calls it",
+    "Call the fs plugin through fetch instead of invoke to skip the check"
    ],
    "Plugin commands are denied unless a capability grants them, for example an fs read permission with a scope that limits which paths are allowed."
   ],
@@ -1204,9 +1204,9 @@
    "Which installer formats can Tauri produce for Windows?",
    "MSI (via WiX) and an NSIS setup.exe",
    [
-    "DMG and a .app bundle",
-    "AppImage and a .deb package",
-    "APK and an AAB bundle"
+    "DMG and a signed macOS .app bundle",
+    "AppImage, Flatpak and a Debian .deb package",
+    "APK and an Android AAB bundle"
    ],
    "On Windows, Tauri bundles MSI installers with WiX and setup executables with NSIS. DMG is for macOS and AppImage or .deb for Linux."
   ]
@@ -1226,7 +1226,7 @@
    "In the CAP theorem, what does the C (consistency) mean?",
    "Every read sees the most recent write or returns an error",
    [
-    "Every node stores data in the same file format",
+    "Every node stores its data in the same on-disk file format",
     "Transactions keep all database constraints valid",
     "Each request is answered within a fixed time limit"
    ],
@@ -1246,7 +1246,7 @@
    "Which behavior during a network partition is typical of an AP system?",
    "Both sides keep accepting reads and writes, and divergent data is reconciled later",
    [
-    "Only the side holding a majority keeps serving, and the minority returns errors",
+    "Only the side holding a majority keeps serving, and the minority side returns errors",
     "All nodes stop serving until the partition is repaired by the network team",
     "Writes are accepted only after every replica confirms them synchronously"
    ],
@@ -1257,7 +1257,7 @@
    "Even without a partition, a system trades off latency against consistency",
    [
     "Partitions can be avoided entirely with enough redundant hardware",
-    "Consistency and availability can both be guaranteed during partitions",
+    "Consistency and availability can both be guaranteed during partitions with quorums",
     "Every system must sacrifice durability to gain partition tolerance"
    ],
    "PACELC: if Partition, choose A or C; Else, choose Latency or Consistency. Synchronous replication for consistency costs latency even when the network is healthy."
@@ -1276,9 +1276,9 @@
    "In Raft, what does a candidate need in order to become leader for a term?",
    "Votes from a majority of the servers in the cluster",
    [
-    "Votes from every server in the cluster",
-    "The lowest server ID among all live nodes",
-    "Approval from an external configuration service"
+    "Votes from every server in the cluster, including itself",
+    "The lowest server ID among all of the live nodes in the cluster",
+    "Approval from an external configuration service such as ZooKeeper"
    ],
    "A candidate wins with a majority of votes. Requiring a majority guarantees at most one leader per term, since two majorities always overlap."
   ],
@@ -1317,7 +1317,7 @@
    "No deterministic consensus algorithm can guarantee termination in an asynchronous system if even one process may crash",
    [
     "No consensus algorithm can tolerate more than one third of nodes being malicious in a synchronous network",
-    "No distributed system can provide both consistency and availability while a network partition is happening",
+    "No distributed system can provide both linearizable consistency and availability while a network partition is happening",
     "No algorithm can order events across processes without perfectly synchronized physical clocks"
    ],
    "Fischer, Lynch and Paterson proved this in 1985. Practical protocols like Raft and Paxos stay safe always and rely on timeouts to make progress in practice."
@@ -1336,7 +1336,7 @@
    "What is split brain in a cluster that uses leader election?",
    "Two nodes both believe they are the leader and accept writes",
    [
-    "The leader runs two threads that process the same request",
+    "The leader runs two threads that both process the same client request",
     "A follower stores two copies of the same log entry",
     "The cluster elects a leader in two separate rounds"
    ],
@@ -1344,11 +1344,11 @@
   ],
   [
    "Why does Raft use randomized election timeouts?",
-   "To make it unlikely that several followers start elections at the same moment and split the vote",
+   "To make it unlikely that several followers start elections at once and split the vote",
    [
-    "To make sure the node with the most data always starts the first election",
-    "To spread the CPU load of heartbeat processing evenly across nodes",
-    "To hide the identity of the current leader from untrusted clients"
+    "To make sure the node with the most log entries always starts the first election",
+    "To spread the CPU load of heartbeat processing evenly across all the nodes",
+    "To hide the identity of the current leader from untrusted clients on the network"
    ],
    "If timeouts were equal, many candidates could split votes repeatedly. Randomization usually lets one server time out first and win."
   ],
@@ -1366,7 +1366,7 @@
    "Why should a distributed lock usually have a TTL (lease)?",
    "So the lock is released if the holder crashes or loses connectivity",
    [
-    "So the lock can be held by two clients at the same time",
+    "So the lock can be held by two clients at the same time without conflicts",
     "So the lock service can skip writing locks to disk",
     "So clients do not need to release the lock explicitly"
    ],
@@ -1404,7 +1404,7 @@
   ],
   [
    "A service measures how long a request took to enforce a timeout. Which clock should it use?",
-   "A monotonic clock",
+   "The system's monotonic clock",
    [
     "The wall clock synced by NTP",
     "The database server's timestamp",
@@ -1416,11 +1416,11 @@
  "microservices": [
   [
    "What problem does service discovery solve in a microservices system?",
-   "Finding the current network locations of service instances that start, stop and move",
+   "Finding the current network addresses of instances that start, stop and move",
    [
-    "Detecting which programming language each service was written in",
-    "Generating API documentation automatically from the service code",
-    "Choosing which developer team owns each service in the organization"
+    "Detecting which programming language and runtime each service was written in",
+    "Generating API documentation automatically from each service's source code",
+    "Choosing which developer team owns each service in the engineering organization"
    ],
    "Instances come and go with scaling and failures, so their addresses change. A registry or DNS lets callers find healthy instances at runtime."
   ],
@@ -1436,11 +1436,11 @@
   ],
   [
    "In Kubernetes, how does a pod usually reach another microservice?",
-   "Through the DNS name of a Service object, such as orders.default.svc.cluster.local",
+   "Through a Service's DNS name, such as orders.default.svc.cluster.local",
    [
-    "Through the pod IP address written into a ConfigMap",
-    "Through the node's hostname and a random high port",
-    "Through a shared volume mounted by both pods"
+    "Through the pod IP address that is written into a shared ConfigMap by hand",
+    "Through the node's hostname and a random high port opened on that node",
+    "Through a shared volume that both pods mount and use as a message drop"
    ],
    "A Kubernetes Service gets a stable DNS name and virtual IP that forward to the matching pods, so callers do not track individual pod IPs."
   ],
@@ -1448,9 +1448,9 @@
    "A service instance crashes without deregistering from a registry such as Consul or Eureka. How does the registry stop sending traffic to it?",
    "Failed health checks or missed heartbeats mark it unhealthy and remove it",
    [
-    "The crashed instance sends a final message during shutdown",
-    "The registry waits for an administrator to delete the entry",
-    "Clients edit the registry when their requests time out"
+    "The crashed instance sends a final deregistration message while it shuts down",
+    "The registry waits for an administrator to delete the stale entry by hand",
+    "Clients edit the registry entries themselves when their requests time out"
    ],
    "Registries rely on health checks or heartbeat leases, so dead instances drop out even if they never deregister."
   ],
@@ -1458,7 +1458,7 @@
    "What is the main role of an API gateway in a microservices architecture?",
    "Acting as a single entry point that routes client requests to the right services",
    [
-    "Storing the shared database that all services read from and write to",
+    "Storing the one shared database that all services read from and write to directly",
     "Compiling each service and deploying it to production servers",
     "Replacing the message broker for events between services"
    ],
@@ -1478,7 +1478,7 @@
    "What is the Backends for Frontends (BFF) pattern?",
    "A separate gateway or API layer tailored to each client type, such as web and mobile",
    [
-    "A single shared backend that every client type must call in the same way",
+    "A single shared backend API that every client type, web or mobile, calls the same way",
     "A frontend framework that renders server pages for every microservice",
     "A testing approach where frontend teams mock all backend services"
    ],
@@ -1496,19 +1496,19 @@
   ],
   [
    "A message broker guarantees at-least-once delivery. What property should event consumers have?",
-   "They should be idempotent, so processing the same message twice has no extra effect",
+   "They should be idempotent, so processing a message twice has no extra effect",
    [
     "They should be stateless, so they keep no record of messages at all",
     "They should be synchronous, so they block the producer until done",
-    "They should be single-threaded, so they process one message per hour"
+    "They should be single-threaded, so they process exactly one message per hour"
    ],
    "At-least-once means duplicates can happen, for example after a retry. Idempotent handling, such as tracking processed message IDs, makes duplicates safe."
   ],
   [
    "A service saves an order to its database and then publishes an OrderCreated event, but it sometimes crashes in between and the event is lost. Which pattern fixes this?",
-   "Transactional outbox: write the event to an outbox table in the same transaction, then relay it",
+   "Transactional outbox: write the event to an outbox table in the same transaction",
    [
-    "Circuit breaker: stop calling the broker after several failed publish attempts",
+    "Circuit breaker: stop calling the broker after several failed publish attempts in a row",
     "API gateway: send the event through the gateway before it reaches the broker",
     "Sidecar proxy: let the service mesh publish the event on the service's behalf"
    ],
@@ -1528,7 +1528,7 @@
    "What is the saga pattern in microservices?",
    "A sequence of local transactions where each failure is undone by compensating transactions",
    [
-    "A single distributed transaction that locks all databases until every service commits",
+    "A single distributed transaction that locks every database involved until all services commit",
     "A caching layer that stores the results of long-running requests between services",
     "A deployment strategy that releases one service at a time to production"
    ],
@@ -1556,11 +1556,11 @@
   ],
   [
    "Why do microservices often use sagas instead of two-phase commit (2PC) across services?",
-   "2PC holds locks across services and needs all participants available, which hurts availability",
+   "2PC holds locks across services and needs all participants up, hurting availability",
    [
-    "2PC cannot be used with relational databases such as PostgreSQL or MySQL",
-    "2PC always loses data when more than two services take part",
-    "Sagas guarantee isolation between concurrent transactions, unlike 2PC"
+    "2PC cannot be used with relational databases such as PostgreSQL or MySQL, only NoSQL stores",
+    "2PC always loses data when more than two services take part in the same transaction",
+    "Sagas guarantee full isolation between concurrent transactions, which 2PC cannot do"
    ],
    "2PC blocks while waiting for every participant and couples services tightly, and many brokers and NoSQL stores do not support it. Sagas trade isolation for availability."
   ],
@@ -1568,9 +1568,9 @@
    "A circuit breaker has been open for its timeout period. What state does it move to next?",
    "Half-open, letting a limited number of trial requests through",
    [
-    "Closed, letting all requests through immediately",
-    "Locked, rejecting requests until a manual reset",
-    "Degraded, sending requests to a random instance"
+    "Closed, letting all requests through to the service immediately",
+    "Locked, rejecting all requests until someone does a manual reset",
+    "Degraded, sending requests to a random healthy instance"
    ],
    "In half-open, trial calls test the dependency. Success closes the breaker, and failure opens it again for another timeout."
   ],
@@ -1586,11 +1586,11 @@
   ],
   [
    "Why add random jitter to exponential backoff when clients retry failed requests?",
-   "To stop many clients from retrying at the same moments and overloading the service again",
+   "To stop many clients from retrying at the same moments and overloading the service",
    [
-    "To guarantee that every retry succeeds on the second attempt",
-    "To make retries use less network bandwidth than the original request",
-    "To let the server know which client is retrying which request"
+    "To guarantee that every retry succeeds on the second attempt after a failure",
+    "To make retries use less network bandwidth than the original request did",
+    "To let the server know which client is retrying which of its failed requests"
    ],
    "Without jitter, clients that failed together retry together in waves. Randomizing the delay spreads retries out over time."
   ],
@@ -1598,7 +1598,7 @@
    "What is the core rule of the database-per-service pattern?",
    "Each service owns its data, and other services access it only through that service's API",
    [
-    "Each service gets its own database server, but all of them share one schema",
+    "Each service gets its own database server, but all of them must share one common table schema",
     "Each service reads other services' tables directly to avoid network calls",
     "Each table in the database belongs to a different deployment pipeline"
    ],
@@ -1621,7 +1621,7 @@
    "The application reads from the database, then stores the result in the cache",
    [
     "The cache itself loads the value from the database before replying",
-    "The application returns an error and retries after the cache warms up",
+    "The application returns an error to the caller and retries once the cache warms up",
     "The database pushes the value into the cache on a fixed schedule"
    ],
    "In cache-aside (lazy loading) the application manages the cache. When the cache does the loading itself, the pattern is called read-through."
@@ -1630,7 +1630,7 @@
    "What does the write-through caching strategy do on a write?",
    "Writes to the cache and the database synchronously as one operation",
    [
-    "Writes only to the cache and flushes to the database later",
+    "Writes only to the cache and flushes the change to the database later",
     "Writes only to the database and leaves the cache unchanged",
     "Writes to the database and deletes the whole cache"
    ],
@@ -1640,7 +1640,7 @@
    "What is the main risk of a write-back (write-behind) cache?",
    "Recent writes can be lost if the cache fails before it flushes them",
    [
-    "Reads become slower because each one goes to the database",
+    "Reads become slower because every one of them has to go to the database",
     "Every write must wait for the database to confirm it",
     "The cache can never hold more data than the database"
    ],
@@ -1658,11 +1658,11 @@
   ],
   [
    "A very popular cache key expires and thousands of requests hit the database at once to rebuild it. Which technique helps most?",
-   "Let one request rebuild the value while others wait or serve the stale copy",
+   "Let one request rebuild the value while others wait or get the stale copy",
    [
-    "Lower the TTL of the key so it expires more often",
-    "Add more application servers to send the queries",
-    "Disable the cache for that key during peak hours"
+    "Lower the TTL of the key so it expires and refreshes more often",
+    "Add more application servers so they can send the database queries faster",
+    "Disable the cache for that key during peak traffic hours"
    ],
    "This is a cache stampede. Request coalescing, a short rebuild lock, or serving stale data while refreshing in the background keeps the database from being flooded."
   ],
@@ -1671,10 +1671,10 @@
    "Least connections",
    [
     "Round robin",
-    "Static IP hash",
+    "Weighted round robin",
     "Random by DNS"
    ],
-   "Least connections sends new requests to the server with the fewest active ones, which adapts when some requests take much longer. Round robin ignores current load."
+   "Least connections sends new requests to the server with the fewest active ones, which adapts when some requests take much longer. Round robin and weighted round robin ignore current load."
   ],
   [
    "Which kind of load balancer can route /api requests and /images requests to different backend pools?",
@@ -1690,9 +1690,9 @@
    "What is the main purpose of health checks in a load balancer?",
    "To stop sending traffic to backends that are not responding correctly",
    [
-    "To measure how many users are logged in to each backend",
-    "To restart crashed backends automatically on a new host",
-    "To encrypt traffic between the balancer and its backends"
+    "To measure how many users are logged in to each backend right now",
+    "To restart crashed backends automatically on a new healthy host",
+    "To encrypt all traffic between the load balancer and each of its backends"
    ],
    "The load balancer probes each backend and removes failing ones from rotation until they pass again."
   ],
@@ -1720,9 +1720,9 @@
    "What is a key limitation of vertical scaling?",
    "There is a hardware ceiling, and one big machine is still a single point of failure",
    [
-    "It requires rewriting the application to run across many machines",
-    "It needs a load balancer in front of every single machine",
-    "It cannot be applied to database servers at all"
+    "It requires rewriting the application so it can run across many machines",
+    "It needs a separate load balancer in front of every single machine",
+    "It cannot be applied to database servers at all, only to app servers"
    ],
    "You can only buy so large a machine, costs rise steeply near the top, and if it fails the whole service is down."
   ],
@@ -1732,7 +1732,7 @@
    [
     "Stores the primary copy of a site's database",
     "Compiles site JavaScript into native machine code",
-    "Assigns IP addresses to devices on a local network"
+    "Assigns IP addresses to the devices on a company's local network"
    ],
    "Edge servers serve cached responses from nearby locations, which lowers latency and offloads traffic from the origin."
   ],
@@ -1761,7 +1761,7 @@
    "Splitting rows across several database nodes by a shard key",
    [
     "Copying the full database to read-only replicas",
-    "Splitting one table's columns into separate tables",
+    "Splitting one table's columns into separate tables on one server",
     "Compressing old rows into an archive database"
    ],
    "Each shard holds a subset of the rows, so storage and write load are spread out. Replication copies all data, which helps reads but not write capacity."
@@ -1800,7 +1800,7 @@
    "A producer pushes events into an unbounded in-memory queue faster than the consumer can process them. What eventually happens?",
    "Memory use and latency grow until the process slows down or crashes",
    [
-    "The queue drops old events automatically to stay within limits",
+    "The queue drops the oldest events automatically to stay within its limits",
     "The producer slows down on its own to match the consumer",
     "The consumer gets faster because it has more work waiting"
    ],
@@ -1810,9 +1810,9 @@
    "Which response is a form of backpressure from an overloaded HTTP service?",
    "Returning 429 or 503 with a Retry-After header when its queue is full",
    [
-    "Returning 200 and quietly discarding the request body",
-    "Returning 301 to redirect the client to the same URL",
-    "Returning 404 so the client stops calling the endpoint"
+    "Returning 200 and quietly discarding the request body it received",
+    "Returning 301 to redirect the client back to the same URL again",
+    "Returning 404 so the client stops calling that endpoint for good"
    ],
    "Signaling overload tells clients to slow down and retry later, instead of letting requests pile up inside the service."
   ]
@@ -1862,8 +1862,8 @@
    "Why do real-time voice and video calls often use UDP instead of TCP?",
    "Late packets are useless, and TCP retransmission would add delay",
    [
-    "UDP encrypts all audio and video data by default",
-    "UDP guarantees that every packet arrives exactly once",
+    "UDP encrypts all audio and video data by default, unlike TCP",
+    "UDP guarantees that every packet arrives exactly once and in order",
     "TCP cannot carry binary data such as audio frames"
    ],
    "For live media, a small loss is better than a stall. TCP head-of-line blocking holds back later data while it waits for a lost packet."
@@ -1922,7 +1922,7 @@
    "Host A is 10.0.1.5/24 and host B is 10.0.2.5/24 on the same physical switch. Can they talk directly without a router?",
    "No, they are in different subnets, so traffic must go through a gateway",
    [
-    "Yes, because both addresses start with 10.0 and share a network",
+    "Yes, because both addresses start with 10.0, so they share one private network",
     "Yes, because a switch routes between any two IP subnets",
     "No, because 10.x addresses cannot be used on a switch at all"
    ],
@@ -1944,7 +1944,7 @@
    [
     "The example.com server, then a .com TLD server, then a root server",
     "A .com TLD server, then a root server, then the local hosts file",
-    "The authoritative server only, because it knows every domain on the internet"
+    "The authoritative server only, because it already knows every domain on the internet"
    ],
    "Each level refers the resolver to the next one down the hierarchy, until the authoritative server returns the record."
   ],
@@ -1990,11 +1990,11 @@
   ],
   [
    "Which TLS extension lets a server hosting many HTTPS domains on one IP address pick the right certificate?",
-   "Server Name Indication (SNI)",
+   "Server Name Indication",
    [
-    "Application-Layer Protocol Negotiation (ALPN)",
-    "OCSP stapling",
-    "Session tickets"
+    "Protocol negotiation (ALPN)",
+    "OCSP certificate stapling",
+    "TLS session tickets"
    ],
    "The client sends the hostname in the ClientHello through SNI. ALPN negotiates the application protocol, such as h2, not the certificate."
   ],
@@ -2002,7 +2002,7 @@
    "What does NAT (more precisely, port address translation) on a typical home router do?",
    "Maps many private addresses to the router's public IP, using port numbers to tell connections apart",
    [
-    "Assigns each device in the home its own public IPv4 address from the internet provider",
+    "Assigns each device in the home its own public IPv4 address taken from the internet provider's pool",
     "Encrypts all traffic between home devices and the internet provider's network",
     "Translates domain names into IP addresses for devices on the home network"
    ],
@@ -2022,11 +2022,11 @@
  "cybersecurity": [
   [
    "What is the goal of threat modeling?",
-   "Identifying likely threats and weaknesses in a system so they can be addressed early",
+   "Identifying likely threats and weaknesses in a design so they are addressed early",
    [
-    "Scanning running servers for known software vulnerabilities",
-    "Writing signatures that antivirus tools use to detect malware",
-    "Recovering data from systems after a breach has happened"
+    "Scanning running production servers for known software vulnerabilities on a schedule",
+    "Writing the signatures that antivirus tools use to detect known malware",
+    "Recovering data and systems after a breach has already happened"
    ],
    "Threat modeling is a structured design-time activity that asks what can go wrong and how to mitigate it, before the system is attacked."
   ],
@@ -2054,7 +2054,7 @@
    "What is the difference between a vulnerability scan and a penetration test?",
    "A scan finds and lists known weaknesses; a pen test actively tries to exploit them",
    [
-    "A scan is done by attackers; a pen test is done only by software tools",
+    "A scan is done by outside attackers; a pen test is done only by automated software tools",
     "A scan tests web apps only; a pen test tests networks only",
     "A scan requires source code; a pen test never needs any access"
    ],
@@ -2062,11 +2062,11 @@
   ],
   [
    "An authenticated vulnerability scan is run with valid credentials rather than unauthenticated. What is the main benefit?",
-   "It sees installed software and patch levels, so it finds more issues with fewer false results",
+   "It sees installed software and patch levels, so it finds more issues more accurately",
    [
-    "It avoids generating any network traffic that could be logged",
-    "It can only be run from outside the organization's firewall",
-    "It guarantees that every finding is a confirmed exploit"
+    "It avoids generating any network traffic that could be logged by the target",
+    "It can only be run from outside the organization's perimeter firewall, like a real attacker",
+    "It guarantees that every finding it reports is a confirmed, working exploit"
    ],
    "Logging in lets the scanner inspect the host directly, giving far more accurate results than guessing from the outside."
   ],
@@ -2074,7 +2074,7 @@
    "What is an attack surface?",
    "The sum of points where an attacker could try to enter or extract data",
    [
-    "The list of users who have administrator rights on a system",
+    "The full list of users who have administrator rights on a system or network",
     "The physical area a data center occupies in a building",
     "The total number of lines of code in an application"
    ],
@@ -2094,9 +2094,9 @@
    "What is the core principle of zero-trust architecture?",
    "Never trust by default; verify every request regardless of network location",
    [
-    "Trust any device once it is connected to the internal network",
-    "Trust traffic that comes from inside the corporate firewall",
-    "Trust users permanently after a single successful login"
+    "Trust any device automatically once it is connected to the internal corporate network",
+    "Trust traffic that comes from inside the corporate firewall by default",
+    "Trust users permanently after a single successful login with a password"
    ],
    "Zero trust assumes the network is hostile and requires continuous verification of identity, device and context for each access, inside or outside the perimeter."
   ],
@@ -2105,18 +2105,18 @@
    "There is no implicitly trusted internal network; every access is checked",
    [
     "A strong perimeter firewall makes internal checks unnecessary",
-    "Once inside the VPN, a user can reach any internal service freely",
+    "Once inside the VPN, a user can reach any internal service freely without more checks",
     "Only external traffic needs authentication and authorization"
    ],
    "The castle-and-moat model trusted everything inside the perimeter. Zero trust removes that implicit trust and verifies each request."
   ],
   [
    "What makes an authentication scheme count as multi-factor authentication (MFA)?",
-   "It combines factors from at least two different categories, such as something you know and something you have",
+   "It combines at least two factor categories, such as something you know and something you have",
    [
-    "It requires two passwords that the user must type one after the other",
-    "It asks the same security question twice before granting access",
-    "It uses one very long and complex password instead of a short one"
+    "It requires two different passwords that the user must type one after the other",
+    "It asks the same security question twice, once before and once after the password",
+    "It uses one very long and complex password instead of a short and simple one"
    ],
    "The factor categories are knowledge, possession and inherence. Two items from the same category, like two passwords, are not multi-factor."
   ],
@@ -2124,7 +2124,7 @@
    "Which authentication factor is an example of something you are (inherence)?",
    "A fingerprint scan",
    [
-    "A one-time code from an authenticator app",
+    "An authenticator app code",
     "A hardware security key",
     "A memorized PIN"
    ],
@@ -2134,9 +2134,9 @@
    "Why are hardware security keys using FIDO2/WebAuthn considered strong against phishing?",
    "The key signs a challenge bound to the site's origin, so a fake site cannot reuse it",
    [
-    "The key displays a six digit code the user types into any site",
-    "The key stores the user's password and types it automatically",
-    "The key sends the login code to the user by SMS message"
+    "The key displays a six digit code that the user types into whichever site asks",
+    "The key stores the user's password and types it in automatically on each login",
+    "The key sends a one-time login code to the user's phone by SMS message"
    ],
    "WebAuthn ties the credential to the real origin. A phishing site has a different origin, so the signature it would receive is useless."
   ],
@@ -2174,7 +2174,7 @@
    "What does defense in depth mean?",
    "Using multiple layers of controls so that one failure does not breach the whole system",
    [
-    "Relying on one very strong control, such as a firewall, for all protection",
+    "Relying on one very strong control, such as a perimeter firewall, for all of the protection",
     "Encrypting data so strongly that no other controls are needed",
     "Hiding the system's design so attackers cannot understand it"
    ],
@@ -2184,9 +2184,9 @@
    "Why should passwords be stored as salted hashes rather than encrypted?",
    "Hashing is one-way, so a database leak does not reveal the original passwords",
    [
-    "Encryption makes login checks too slow for a real service",
-    "Hashing lets the server recover a user's forgotten password",
-    "Encrypted passwords cannot be compared at login time"
+    "Encryption makes login checks too slow for a real service at scale",
+    "Hashing lets the server recover and email a user's forgotten password on request",
+    "Encrypted passwords cannot be compared with the input at login time"
    ],
    "A one-way hash means there is no key to steal that reverses it. The salt makes each hash unique so precomputed (rainbow) tables do not work."
   ],
@@ -2214,9 +2214,9 @@
    "In incident response, why is containment typically prioritized early, before full eradication?",
    "To stop the attacker from spreading or causing more damage while you investigate",
    [
-    "To avoid alerting the attacker that they have been detected",
-    "To restore all systems to normal before gathering any evidence",
-    "To assign blame to a specific team as quickly as possible"
+    "To avoid alerting the attacker that they have already been detected by the security team",
+    "To restore all systems to normal operation before gathering any evidence",
+    "To assign blame to a specific team or person as quickly as possible"
    ],
    "Containment (isolating affected systems) limits the blast radius first. Eradication of the root cause and recovery follow once spread is under control."
   ]
@@ -2227,8 +2227,8 @@
    "SQL injection",
    [
     "Cross-site scripting",
-    "Cross-site request forgery",
-    "Server-side request forgery"
+    "Command injection",
+    "Path traversal"
    ],
    "SQL injection mixes attacker data into a query so it is executed as code. It is part of the broader Injection category in the OWASP Top 10."
   ],
@@ -2246,9 +2246,9 @@
    "What does a stored (persistent) XSS attack do?",
    "Saves a malicious script on the server so it runs for other users who view it",
    [
-    "Tricks a logged-in user's browser into sending a forged request",
-    "Reads files from the server's disk through a crafted URL",
-    "Floods the server with requests until it stops responding"
+    "Tricks a logged-in user's browser into sending a forged request to the server",
+    "Reads files from the server's disk through a crafted path in the URL",
+    "Floods the server with requests until it stops responding to other users"
    ],
    "Stored XSS persists the script (for example in a comment) and serves it to every viewer. Reflected XSS instead bounces a script back in a single response."
   ],
@@ -2276,9 +2276,9 @@
    "Which defense is specifically designed to stop CSRF?",
    "A per-request anti-CSRF token that attacker pages cannot read",
    [
-    "Hashing passwords with a strong, salted algorithm",
-    "Encoding all output to prevent script injection",
-    "Rate limiting the number of logins per minute"
+    "Hashing all stored passwords with a strong, salted algorithm",
+    "Encoding all output on every page to prevent script injection",
+    "Rate limiting the number of login attempts per minute per user"
    ],
    "A secret token tied to the session, or SameSite cookies, ensures the request came from the real site, which a cross-origin page cannot forge."
   ],
@@ -2296,7 +2296,7 @@
    "Which fix addresses an IDOR vulnerability?",
    "Check on the server that the logged-in user owns or may access the requested object",
    [
-    "Replace the numeric id with a longer random id and change nothing else",
+    "Replace the numeric id with a longer random id and change nothing else on the server",
     "Hide the id parameter by sending it in a POST body instead of the URL",
     "Add client-side JavaScript that disables editing of the id field"
    ],
@@ -2308,17 +2308,17 @@
    [
     "Deleting log files so the test leaves no trace",
     "Escalating from a normal user to an administrator",
-    "Writing the final report for the client"
+    "Writing the final report and findings summary for the client"
    ],
    "Recon collects domains, IPs, services, employees and technologies. It shapes which attacks to try next and is the first step of the methodology."
   ],
   [
    "What is the difference between passive and active reconnaissance?",
-   "Passive recon uses third-party sources without touching the target; active recon probes it directly",
+   "Passive recon avoids touching the target and uses public sources; active recon probes it",
    [
     "Passive recon scans open ports, while active recon only reads public records",
     "Passive recon needs valid credentials, while active recon never needs them",
-    "Passive recon is always illegal, while active recon is always fully permitted"
+    "Passive recon is always illegal, while active recon is always fully permitted by law"
    ],
    "Passive recon (WHOIS, search engines, certificate transparency) avoids contacting the target. Active recon such as port scanning interacts with it and is more detectable."
   ],
@@ -2336,7 +2336,7 @@
    "What is privilege escalation?",
    "Gaining higher permissions than those first obtained on a system",
    [
-    "Moving laterally to a different host on the same network",
+    "Moving laterally to a different host on the same internal network",
     "Encrypting a victim's files and demanding a ransom",
     "Flooding a server with traffic to take it offline"
    ],
@@ -2348,7 +2348,7 @@
    [
     "Vertical moves to another host, while horizontal escalation stays on one host",
     "Vertical escalation is network based, while horizontal needs physical access",
-    "Vertical escalation targets Linux hosts, while horizontal targets Windows hosts"
+    "Vertical escalation targets Linux hosts, while horizontal escalation targets Windows hosts"
    ],
    "Vertical escalation raises the privilege level (user to admin). Horizontal escalation takes over a different peer account, such as another user's data."
   ],
@@ -2377,7 +2377,7 @@
    "An in-memory payload that gives an interactive session with many post-exploitation commands",
    [
     "A port scanner module that maps the whole target network before exploitation",
-    "A password cracking tool used for fast offline attacks against captured hashes",
+    "A password cracking tool used for fast offline dictionary attacks against stolen password hashes",
     "A web proxy that intercepts and lets you edit HTTP requests in the browser"
    ],
    "Meterpreter runs in memory to stay stealthy and offers features like file transfer, privilege escalation and pivoting through one session."
@@ -2397,7 +2397,7 @@
    "A hub repeats every frame to all ports, while a switch sends frames only to the right port",
    [
     "A hub encrypts all of the traffic, so the attacker must decrypt it with a key",
-    "A switch is designed to broadcast all of the traffic it receives to every port",
+    "A switch is designed to broadcast all of the traffic it receives out to every one of its ports",
     "A hub assigns one and the same IP address to every single connected device"
    ],
    "On a hub, all hosts see all frames, so a sniffer captures everything. On a switch, an attacker typically needs techniques such as ARP spoofing to intercept traffic."
@@ -2406,7 +2406,7 @@
    "Why should a penetration test begin only after a signed scope and authorization (rules of engagement)?",
    "Testing systems without permission is illegal and the scope defines what is allowed",
    [
-    "The scope document lists all of the passwords that the tester is going to need",
+    "The scope document lists all of the passwords and accounts that the tester is going to need",
     "A signed authorization makes the tester a permanent employee of the client",
     "The rules of engagement guarantee that no system under test will ever crash"
    ],
@@ -2446,11 +2446,11 @@
   ],
   [
    "Why is the AES ECB mode discouraged for encrypting data such as images?",
-   "Identical plaintext blocks produce identical ciphertext blocks, leaking patterns",
+   "Identical plaintext blocks give identical ciphertext blocks, leaking patterns",
    [
-    "It uses a key that is too short to be secure anymore",
-    "It can only encrypt data that is a single block long",
-    "It requires a new key for every block of plaintext"
+    "It uses a key that is too short to be secure against modern brute force",
+    "It can only encrypt data that is exactly one block long, so large images will not fit",
+    "It requires a new key for every block of plaintext, which is impractical"
    ],
    "ECB encrypts each block independently, so repetition in the plaintext shows up in the ciphertext. Modes like CBC, CTR or GCM avoid this with an IV or counter."
   ],
@@ -2486,11 +2486,11 @@
   ],
   [
    "In practice, why are large files usually not encrypted directly with RSA?",
-   "RSA is slow and limited to small inputs, so it is used to wrap a symmetric key instead",
+   "RSA is slow and limited to small inputs, so it wraps a symmetric key instead",
    [
-    "RSA cannot encrypt binary data, only printable text",
-    "RSA keys change on every message, so files cannot be stored",
-    "RSA provides integrity but not confidentiality for files"
+    "RSA cannot encrypt binary data, only printable text characters",
+    "RSA keys change with every message, so encrypted files could never be decrypted later",
+    "RSA provides integrity but not confidentiality for large files"
    ],
    "This hybrid approach uses RSA (or ECC) to protect a random AES key, then encrypts the bulk data with fast symmetric AES."
   ],
@@ -2508,9 +2508,9 @@
    "Which property of a cryptographic hash function means it is infeasible to find two different inputs with the same output?",
    "Collision resistance",
    [
-    "Reversibility",
-    "Idempotence",
-    "Commutativity"
+    "Preimage resistance",
+    "Avalanche effect",
+    "Deterministic output"
    ],
    "Collision resistance is why hashes can stand in for data in signatures and integrity checks. Preimage resistance is the related property of not inverting the hash."
   ],
@@ -2518,7 +2518,7 @@
    "Why should a general-purpose fast hash such as SHA-256 not be used directly to store user passwords?",
    "It is too fast, so attackers can try billions of guesses per second",
    [
-    "It produces a digest that is too short to store a password",
+    "It produces a 256-bit digest, which is too short to store a password safely",
     "It cannot hash strings that contain special characters",
     "It is reversible, so the password can be recovered from it"
    ],
@@ -2530,7 +2530,7 @@
    [
     "Confidentiality, so that only the recipient can read the data",
     "Faster transmission by compressing the data before sending",
-    "Anonymity, so the signer's identity stays hidden from all parties"
+    "Anonymity, so the signer's identity stays hidden from all other parties involved"
    ],
    "A valid signature shows the data came from the holder of the private key and was not altered. It does not hide the contents."
   ],
@@ -2538,7 +2538,7 @@
    "How is a digital signature created in schemes such as RSA or ECDSA?",
    "The signer hashes the message and signs the hash with their private key",
    [
-    "The signer encrypts the whole message with the recipient's public key",
+    "The signer encrypts the whole message with the recipient's public key first",
     "The signer hashes the message with a secret shared with the verifier",
     "The signer appends a random number chosen by the verifier"
    ],
@@ -2568,9 +2568,9 @@
    "What does a public key infrastructure (PKI) certificate bind together?",
    "A public key and an identity, vouched for by a certificate authority",
    [
-    "A password and a username stored by a login server",
-    "A symmetric key and the IP address of a server",
-    "A private key and the serial number of a hard disk"
+    "A password and a username that are stored by a login server",
+    "A symmetric key and the IP address of the server that uses it",
+    "A private key and the serial number of the hard disk that stores it on the server"
    ],
    "A certificate is a signed statement linking an identity (such as a domain) to its public key, so relying parties can trust that key."
   ],
@@ -2578,9 +2578,9 @@
    "In PKI, why can a browser trust a website's certificate it has never seen before?",
    "It is signed by a certificate authority in the browser's trusted root store",
    [
-    "The website sends its private key so the browser can check it",
-    "The certificate contains the user's own password as proof",
-    "The browser contacts the website owner by email to confirm"
+    "The website sends its private key so the browser can check it directly",
+    "The certificate contains the user's own password as proof of identity",
+    "The browser contacts the website owner by email to confirm the certificate is real"
    ],
    "Trust chains from a built-in trusted root CA down through intermediates to the site certificate. The private key is never shared."
   ],
@@ -2588,7 +2588,7 @@
    "What is the purpose of a certificate revocation list (CRL) or OCSP in PKI?",
    "To let clients learn that a certificate was revoked before it expires",
    [
-    "To renew a certificate automatically when it is about to expire",
+    "To renew a certificate automatically with the CA when it is about to expire",
     "To store the private keys of all issued certificates safely",
     "To translate a domain name into the server's IP address"
    ],
@@ -2598,9 +2598,9 @@
    "Why does a certificate authority sign a certificate using an intermediate CA rather than its root key directly?",
    "To keep the root key offline and limit damage if an intermediate is compromised",
    [
-    "To make certificates expire faster than the root certificate",
-    "To let website owners issue their own certificates for free",
-    "To avoid having to include the public key in the certificate"
+    "To make issued certificates expire much faster than the long-lived root certificate",
+    "To let website owners issue their own certificates for free without checks",
+    "To avoid having to include the public key inside the issued certificate"
    ],
    "The root's private key stays offline and protected. Intermediates do day-to-day signing and can be revoked without replacing the root."
   ],
@@ -2608,9 +2608,9 @@
    "A one-time pad offers perfect secrecy. Why is it rarely practical?",
    "The key must be truly random, as long as the message, and never reused",
    [
-    "It can only encrypt text, not any form of binary data",
-    "It is easily broken by modern computers within seconds",
-    "It requires a public and private key pair for each message"
+    "It can only encrypt text, not images or any other form of binary data",
+    "It is easily broken by modern computers within a few seconds of effort",
+    "It requires a separate public and private key pair for each message sent"
    ],
    "The requirements for a truly random key the size of all data, shared securely and used once, make it unworkable for most real systems."
   ],
@@ -2618,9 +2618,9 @@
    "What does a nonce or initialization vector (IV) do in encryption modes such as AES-CTR or AES-GCM?",
    "It ensures that encrypting the same plaintext twice gives different ciphertext",
    [
-    "It replaces the secret key so the key never has to be shared",
-    "It compresses the plaintext before it is encrypted",
-    "It stores the authentication tag used to detect tampering"
+    "It replaces the secret key so the key never has to be shared with anyone",
+    "It compresses the plaintext before it is encrypted so the ciphertext comes out shorter",
+    "It stores the authentication tag that is used to detect any tampering"
    ],
    "A unique IV or nonce per encryption randomizes the output, which is why reusing a nonce with the same key in these modes is a serious weakness."
   ]
@@ -2630,7 +2630,7 @@
    "What is a blockchain?",
    "An append-only ledger of blocks, each linked to the previous by its hash",
    [
-    "A relational database controlled by a single trusted company",
+    "A relational database controlled by a single trusted company or government",
     "A peer-to-peer file sharing network for large media files",
     "A cloud service that stores encrypted backups for users"
    ],
@@ -2640,9 +2640,9 @@
    "Why is a distributed ledger described as tamper-evident?",
    "Changing one block alters its hash and breaks every link after it",
    [
-    "Only administrators are allowed to edit older blocks",
-    "Each block is encrypted so its contents cannot be read",
-    "The ledger is stored on a single secured server"
+    "Only administrators are allowed to edit older blocks in the ledger",
+    "Each block is encrypted so that its contents cannot be read by anyone",
+    "The ledger is stored on a single secured server run by one operator"
    ],
    "Because each block commits to the previous hash, editing old data invalidates all later blocks, which honest nodes would reject."
   ],
@@ -2650,9 +2650,9 @@
    "What problem do blockchain consensus mechanisms solve?",
    "Agreeing on one valid ledger history among distributed, untrusting nodes",
    [
-    "Compressing the ledger so it uses less disk space",
-    "Encrypting transactions so only the sender can read them",
-    "Assigning human-readable names to wallet addresses"
+    "Compressing the ledger so that it uses less disk space on every node",
+    "Encrypting every transaction so that only its sender is able to read it later",
+    "Assigning human-readable names to wallet addresses across the network"
    ],
    "In a decentralized network with no central authority, consensus rules decide which transactions and ordering everyone accepts."
   ],
@@ -2661,7 +2661,7 @@
    "Find a nonce so the block's hash meets a difficulty target, which takes much computation",
    [
     "Prove ownership of the largest number of coins in the whole network",
-    "Collect valid digital signatures from a clear majority of the network users",
+    "Collect valid digital signatures from a clear majority of the network's users and full nodes",
     "Be selected by a central scheduling server that decides the order of miners"
    ],
    "Miners repeatedly hash the block with different nonces until the output is below the target. The work is hard to do but easy for others to verify."
@@ -2680,7 +2680,7 @@
    "What is a 51% attack on a Proof of Work blockchain?",
    "One party controls most mining power and can reorder or reverse recent transactions",
    [
-    "An attacker manages to guess 51% of all users' private keys at the same time",
+    "An attacker manages to guess 51% of all users' private keys at the same time using brute force",
     "More than half of the full nodes go offline at once, which stops the chain",
     "A software bug lets anyone mint 51% more coins than the protocol allows"
    ],
@@ -2710,7 +2710,7 @@
    "Why does changing a single old transaction require redoing the Proof of Work for many blocks?",
    "The edit changes that block's hash, so every later block's reference becomes invalid",
    [
-    "Each transaction is individually mined with its own separate difficulty puzzle",
+    "Each transaction is individually mined with its own separate difficulty puzzle and nonce",
     "Miners store only the single latest block and must recompute all of the rest",
     "The whole network re-encrypts the entire chain after any change is detected"
    ],
@@ -2760,7 +2760,7 @@
    "In a peer-to-peer blockchain network, how does a new transaction reach the miners or validators?",
    "Nodes broadcast it and relay it to their peers across the network",
    [
-    "It is sent to one central server that forwards it to miners",
+    "It is sent to one central server that forwards it on to all the miners",
     "It is emailed directly to the operator of each mining pool",
     "It is written to a shared cloud folder the miners read"
    ],
@@ -2768,10 +2768,10 @@
   ],
   [
    "When two valid blocks are mined at nearly the same time in Proof of Work, how is the fork usually resolved?",
-   "Nodes follow the chain with the most accumulated work once a later block extends one branch",
+   "Nodes follow the chain with the most accumulated work once a block extends one branch",
    [
     "A central authority steps in and deletes one of the two competing blocks",
-    "Both of the competing blocks are merged together into a single larger block",
+    "Both of the competing blocks are merged together into a single larger block by the nodes",
     "The block that happens to have the lower hash value always wins instantly"
    ],
    "Temporary forks happen, but nodes adopt the longest (heaviest) valid chain, so one branch wins and the other's blocks become orphaned."
@@ -2782,7 +2782,7 @@
    [
     "Each confirmation lowers the transaction fee that was paid",
     "The network re-signs the transaction with each new block",
-    "Confirmations encrypt the transaction more strongly each time"
+    "Confirmations encrypt the transaction more strongly each time a block is added"
    ],
    "A reorg would have to outpace all the work in the blocks built on top, so deeper transactions are exponentially harder to reverse."
   ],
@@ -2800,9 +2800,9 @@
    "Why does a public blockchain use economic incentives such as block rewards and fees?",
    "To motivate participants to spend resources securing and extending the chain",
    [
-    "To hide the identities of everyone who sends transactions",
-    "To guarantee that transactions are completely free for users",
-    "To let a central bank control the total money supply"
+    "To hide the real-world identities of everyone who sends transactions on the chain",
+    "To guarantee that sending transactions stays completely free for all users",
+    "To let a central bank control the total money supply of the network"
    ],
    "Rewards and fees pay miners or validators for their work or stake, aligning their incentive to behave honestly with the network's security."
   ],
@@ -2811,7 +2811,7 @@
    "Once data is deeply confirmed, it is extremely costly and unlikely to be changed",
    [
     "Confirmed data literally cannot be altered by any physical means at all",
-    "Confirmed data is deleted automatically after a fixed period of time passes",
+    "Confirmed data is deleted automatically after a fixed period of time passes by design",
     "Only the original author of the data is ever able to edit it again later"
    ],
    "Immutability is economic and probabilistic, not absolute: rewriting confirmed history would require overwhelming resources and is rejected by honest nodes."
@@ -2820,7 +2820,7 @@
    "Why is losing the private key to a blockchain wallet usually permanent?",
    "There is no central authority that can reset or recover it",
    [
-    "The key is stored only on the exchange's servers",
+    "The key is stored only on the exchange's servers, not by the user",
     "A new key is automatically generated each month",
     "The network emails a backup key to every user"
    ],
@@ -2833,7 +2833,7 @@
    "The address is derived from the public key, which is derived from the private key",
    [
     "The private key is derived from the public address each time you log in",
-    "The address and the private key are two completely unrelated random strings",
+    "The address and the private key are two completely unrelated random strings of text",
     "The private key is simply the hash of the matching public wallet address"
    ],
    "A private key produces a public key, and the address is derived from that public key. The derivation is one-way, so the address cannot reveal the private key."
@@ -2850,11 +2850,11 @@
   ],
   [
    "Why should a wallet's private key or seed phrase never be entered on a website?",
-   "A legitimate dApp never needs it, and any site asking for it is a scam that can steal all funds",
+   "A legitimate dApp never needs it, and any site asking for it is a scam that can steal funds",
    [
     "Websites are technically unable to process more than twelve words at once",
-    "The private key will only work correctly inside the official mobile wallet app",
-    "Entering it on a website makes all of your later transactions cost higher gas fees"
+    "The private key will only work correctly inside the official mobile wallet app for that chain",
+    "Entering it on a website makes all of your later transactions cost much higher gas fees"
    ],
    "Signing happens inside the wallet, which never exposes the key to sites. A page requesting your seed phrase or private key is phishing."
   ],
@@ -2882,9 +2882,9 @@
    "In a browser dApp, what does window.ethereum usually refer to?",
    "The injected provider from a wallet extension such as MetaMask",
    [
-    "A built-in browser API defined by the HTML standard",
-    "A direct TCP socket to an Ethereum validator node",
-    "The private key of the currently connected account"
+    "A built-in browser API that is defined by the HTML standard itself",
+    "A direct TCP socket to an Ethereum validator node on the network",
+    "The private key of the account that is currently connected"
    ],
    "Wallet extensions inject an EIP-1193 provider at window.ethereum, which the dApp uses to request accounts and send signing requests."
   ],
@@ -2893,7 +2893,7 @@
    "It proves the transaction was authorized by the account owner without revealing the key",
    [
     "It encrypts the whole transaction so that only miners are able to read it",
-    "It pays the required gas fee for the transaction directly out of the private key",
+    "It pays the required gas fee for the transaction directly out of the private key's own balance",
     "It permanently deletes the private key afterwards as a built-in safety measure"
    ],
    "The signature lets anyone verify, using the public key or address, that the account holder authorized the exact transaction, while the key stays secret."
@@ -2913,7 +2913,7 @@
    "A Provider reads chain data; a Signer can sign and send transactions",
    [
     "A Provider signs transactions; a Signer only reads data",
-    "A Provider stores private keys; a Signer stores public keys",
+    "A Provider stores the private keys; a Signer only stores the public keys",
     "They are the same object with two different names"
    ],
    "A Provider is a read-only connection. A Signer holds or represents a key (often via a wallet) and is needed to authorize state-changing calls."
@@ -2932,7 +2932,7 @@
    "What is the ABI (Application Binary Interface) of a smart contract?",
    "A description of its functions and events that lets clients encode calls",
    [
-    "The compiled bytecode of the contract that runs on the virtual machine",
+    "The compiled bytecode of the contract that runs on the Ethereum virtual machine",
     "The private key that is used to control all of the contract's funds",
     "The physical network address of the node that happens to store it"
    ],
@@ -2942,9 +2942,9 @@
    "What is gas on Ethereum?",
    "A unit measuring the computational work a transaction consumes",
    [
-    "The native token used to vote on protocol upgrades",
-    "A fee paid only when deploying a new contract",
-    "The time in seconds a transaction waits in the pool"
+    "The native token that holders use to vote on protocol upgrades",
+    "A fee that is paid only when deploying a brand new contract",
+    "The time in seconds that a transaction waits in the mempool"
    ],
    "Each operation costs gas, and the fee is gas used times the gas price, which compensates validators and limits resource use."
   ],
@@ -2954,7 +2954,7 @@
    [
     "Approving first converts the ERC-20 tokens into native ether automatically",
     "The allowance encrypts the tokens so that the dApp is able to read them",
-    "Without an approval first, the tokens would simply be burned on any transfer"
+    "Without an approval first, the tokens would simply be burned on any transfer attempt"
    ],
    "The approve/transferFrom pattern lets a contract spend up to an approved amount. Granting unlimited allowances to untrusted contracts is a common risk."
   ],
@@ -3004,7 +3004,7 @@
    [
     "IPFS automatically pays all of the storage costs on behalf of every user",
     "IPFS guarantees that files stay online forever with no effort from anyone",
-    "IPFS encrypts all stored files so that only the owner is able to view them"
+    "IPFS encrypts all stored files so that only the owner's wallet is able to view or download them"
    ],
    "A CID commits to exact content, so a token that points to a CID cannot have its image changed underneath it. IPFS does not guarantee permanence without pinning."
   ],
@@ -3024,7 +3024,7 @@
    [
     "The balance held by the contract can never be changed by anyone at all",
     "The contract automatically finds and fixes its own bugs as time goes on",
-    "Only the original deployer of the contract is ever able to call its functions"
+    "Only the original deployer of the contract is ever able to call any of its public functions"
    ],
    "Deployed bytecode normally cannot be edited, so teams plan for proxy-based upgrade patterns or redeploys, and audit carefully before launch."
   ]

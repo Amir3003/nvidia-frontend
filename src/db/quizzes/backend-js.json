@@ -16,7 +16,7 @@
    [
     "promise, then tick",
     "Only tick is printed",
-    "The order is random on each run"
+    "Random order each run"
    ],
    "Node.js drains the process.nextTick queue before the promise microtask queue, so tick is printed first even though it was scheduled second."
   ],
@@ -42,11 +42,11 @@
   ],
   [
    "What does it mean that Node.js uses non-blocking I/O?",
-   "The main thread starts an I/O operation and keeps running other code until a callback reports the result",
+   "The thread starts I/O and runs other code until a callback returns the result",
    [
     "Each incoming request is handled by its own dedicated operating system thread",
-    "I/O calls run on the main thread but are given a higher priority",
-    "JavaScript code is paused while the disk or network is busy"
+    "I/O calls run on the main thread but are given a higher scheduling priority",
+    "JavaScript code is paused while the disk or network is busy with the request"
    ],
    "Node.js delegates I/O to the OS or libuv and continues executing; results come back later as events processed by the event loop."
   ],
@@ -132,21 +132,21 @@
   ],
   [
    "What happens when a Node.js EventEmitter emits an 'error' event and no 'error' listener is registered?",
-   "The error is thrown, which crashes the process if uncaught",
+   "The error is thrown, crashing the process if uncaught",
    [
-    "The event is silently ignored",
-    "The error is logged and execution continues",
-    "The emitter retries the event once"
+    "The event is silently ignored since nothing listens",
+    "The error is logged to stderr and execution continues",
+    "The emitter retries the event once a listener is added"
    ],
    "'error' is special: without a listener, emit('error') throws the error. Always attach an 'error' listener to emitters such as streams and sockets."
   ],
   [
    "In Node.js, what is printed by: const e = new EventEmitter(); e.once('x', () => console.log('hi')); e.emit('x'); e.emit('x');",
-   "hi once",
+   "hi is printed once",
    [
-    "hi twice",
-    "Nothing",
-    "An error on the second emit"
+    "hi is printed twice",
+    "Nothing is printed",
+    "hi, then an error"
    ],
    "A listener added with once() is removed right before it is invoked the first time, so the second emit has no listeners."
   ],
@@ -155,18 +155,18 @@
    "1, then 2",
    [
     "2, then 1",
-    "Only 2",
-    "1 and 2 in random order"
+    "Only 2 is printed",
+    "1 and 2, random order"
    ],
    "EventEmitter.emit() calls listeners synchronously in the order they were registered, so the listener runs before the next line."
   ],
   [
    "Your Node.js service must resize images (CPU-heavy) without blocking request handling. Which built-in module fits best?",
-   "worker_threads",
+   "The worker_threads module",
    [
-    "cluster with one process",
-    "events",
-    "async_hooks"
+    "One cluster worker process",
+    "The events module",
+    "The async_hooks module"
    ],
    "worker_threads runs JavaScript in parallel threads, keeping the main event loop free. async_hooks only tracks async resources and does not add parallelism."
   ],
@@ -192,11 +192,11 @@
   ],
   [
    "A Node.js ES module runs: import pkg from './legacy.cjs'; where legacy.cjs sets module.exports = { a: 1 }. What is pkg?",
-   "The object { a: 1 }",
+   "The plain object { a: 1 }",
    [
-    "undefined",
-    "A Promise resolving to { a: 1 }",
-    "An object { default: { a: 1 } } nested twice"
+    "The value undefined",
+    "A Promise of { a: 1 }",
+    "A wrapper { default: { a: 1 } }"
    ],
    "When ESM imports CommonJS, the default export is the value of module.exports, so pkg is { a: 1 }."
   ]
@@ -207,8 +207,8 @@
    "It has four parameters: (err, req, res, next)",
    [
     "It is registered with app.error() instead of app.use()",
-    "Its name starts with the word error",
-    "It returns a rejected Promise"
+    "Its function name begins with the word error",
+    "It returns a rejected Promise to Express"
    ],
    "Express checks the function's arity. Only functions with exactly four parameters are treated as error handlers, so keep next even if unused."
   ],
@@ -227,7 +227,7 @@
    "Register app.use(express.json()) before the route",
    [
     "Read the body from req.params instead",
-    "Add res.json() at the start of the handler",
+    "Add res.json() at the very start of the handler",
     "Change the route from app.post to app.all"
    ],
    "Express does not parse bodies by default. express.json() populates req.body, and it must be registered before the routes that need it."
@@ -297,8 +297,8 @@
    "express.urlencoded({ extended: true })",
    [
     "express.json({ strict: false })",
-    "express.text()",
-    "express.raw()"
+    "express.text({ defaultCharset: 'utf-8' })",
+    "express.raw({ limit: '100kb' })"
    ],
    "express.urlencoded parses URL-encoded form bodies. express.json only parses bodies whose content type is JSON."
   ],
@@ -344,10 +344,10 @@
   ],
   [
    "In Express 4, an async route handler throws an error after an await. What happens if you do not catch it?",
-   "It becomes an unhandled rejection; error middleware never sees it",
+   "An unhandled rejection; error middleware never sees it",
    [
     "Express catches it and passes it to error-handling middleware",
-    "Express retries the handler once",
+    "Express retries the handler once before failing the request",
     "Express responds with 400 Bad Request and logs it"
    ],
    "Express 4 does not inspect promises returned by handlers. You must catch and call next(err), use a wrapper, or upgrade to Express 5, which forwards rejections."
@@ -357,8 +357,8 @@
    "After all routes and other middleware",
    [
     "Before any routes, right after app is created",
-    "Inside every route handler",
-    "In a separate Express app"
+    "Inside every route handler that may throw",
+    "In a separate Express app mounted at /error"
    ],
    "Errors passed to next(err) travel forward through the stack, so error handlers must come after the routes that may produce errors."
   ],
@@ -368,7 +368,7 @@
    [
     "A 404 response with an empty body",
     "A 404 page generated by Express",
-    "A 200 response"
+    "A default 200 OK response"
    ],
    "res.status() only sets the status code and returns res for chaining. A method like res.send(), res.json() or res.end() must actually send the response."
   ],
@@ -387,7 +387,7 @@
    "The request is rejected with 413 Payload Too Large",
    [
     "The body is silently truncated to the first 100 kB",
-    "The body is parsed normally",
+    "The body is parsed normally, just more slowly",
     "req.body is set to an empty object"
    ],
    "express.json() has a default limit of 100kb. Larger bodies produce a 413 error unless you raise the limit option."
@@ -448,19 +448,19 @@
    "What does the @Injectable() decorator do for a NestJS class?",
    "Marks it as a provider that the DI container can manage",
    [
-    "Registers it as an HTTP route handler",
-    "Makes it a global module automatically",
-    "Turns it into a request-scoped singleton"
+    "Registers it as an HTTP route handler for the controller",
+    "Makes it a global module available to every other module",
+    "Turns it into a request-scoped provider for each call"
    ],
    "@Injectable() attaches metadata so Nest can instantiate the class and inject it where needed, after it is listed in a module's providers."
   ],
   [
    "What is the default scope of a NestJS provider?",
-   "Singleton, shared across the whole application",
+   "A singleton shared across the whole application",
    [
-    "A new instance per request",
-    "A new instance per injection",
-    "A new instance per module import"
+    "A new instance created for every incoming request",
+    "A new instance created for every class that injects it",
+    "A new instance created for every module that imports it"
    ],
    "By default providers are singletons. Scope.REQUEST or Scope.TRANSIENT can be set explicitly when needed."
   ],
@@ -468,9 +468,9 @@
    "NestJS throws: Nest can't resolve dependencies of the OrdersService (?). UsersService lives in UsersModule. What is the usual fix?",
    "Export UsersService from UsersModule and import UsersModule in OrdersModule",
    [
-    "Add @Injectable() to OrdersModule",
-    "Make UsersService a static class",
-    "Call new UsersService() inside the constructor"
+    "Add @Injectable() to OrdersModule so Nest can resolve its providers",
+    "Make UsersService a static class so it never needs to be injected",
+    "Call new UsersService() manually inside the OrdersService constructor"
    ],
    "A provider is private to its module unless exported. The consuming module must import the module that exports it."
   ],
@@ -518,9 +518,9 @@
    "In a NestJS app, ValidationPipe is configured with whitelist: true. What happens to body properties that have no class-validator decorator in the DTO?",
    "They are stripped from the validated object",
    [
-    "They cause a 400 error",
-    "They are kept unchanged",
-    "They are converted to strings"
+    "They make the request fail with a 400 error",
+    "They are kept on the object unchanged",
+    "They are converted to strings on the object"
    ],
    "whitelist: true removes non-decorated properties. Adding forbidNonWhitelisted: true makes them produce an error instead."
   ],
@@ -528,9 +528,9 @@
    "What does transform: true do in NestJS's ValidationPipe?",
    "Converts payloads into DTO class instances and primitive types",
    [
-    "Converts the response body to JSON",
-    "Renames properties to camelCase",
-    "Transforms validation errors into 500 errors"
+    "Converts the response body to JSON before it is sent",
+    "Renames incoming properties to camelCase automatically",
+    "Transforms validation errors into 500 Internal Server errors"
    ],
    "With transform enabled, the plain body becomes an instance of the DTO class, and params declared as number can be converted from strings."
   ],
@@ -548,9 +548,9 @@
    "Why does NestJS recommend defining DTOs as classes rather than TypeScript interfaces?",
    "Interfaces are erased at runtime, so pipes cannot use them",
    [
-    "Interfaces cannot have optional properties",
-    "Classes compile to smaller JavaScript",
-    "Interfaces cannot be exported from modules"
+    "Interfaces cannot have optional properties in NestJS",
+    "Classes compile to smaller and faster JavaScript output",
+    "Interfaces cannot be exported from NestJS modules"
    ],
    "ValidationPipe relies on runtime metadata from classes and their decorators. Interfaces disappear after compilation."
   ],
@@ -558,9 +558,9 @@
    "Which method must a NestJS interceptor implement, and what does it call to run the route handler?",
    "intercept(context, next), calling next.handle()",
    [
-    "use(req, res, next), calling next()",
-    "canActivate(context), calling handler()",
-    "transform(value), calling next.run()"
+    "use(req, res, next), calling next() when done",
+    "canActivate(context), calling context.handler()",
+    "transform(value, metadata), calling next.run()"
    ],
    "next.handle() returns an RxJS Observable of the handler's result, so interceptors can map, time or cache the response."
   ],
@@ -670,28 +670,28 @@
    "How can Deno code check at runtime whether it has network permission?",
    "await Deno.permissions.query({ name: 'net' })",
    [
-    "Deno.hasPermission('net')",
-    "Deno.env.get('DENO_NET')",
-    "await Deno.permissions.check('net')"
+    "await Deno.hasPermission({ name: 'net' })",
+    "Deno.env.get('DENO_ALLOW_NET') === 'true'",
+    "await Deno.permissions.check({ name: 'net' })"
    ],
    "Deno.permissions.query returns a PermissionStatus whose state is 'granted', 'prompt' or 'denied'. Deno.permissions.request can ask for it."
   ],
   [
    "How do you run a TypeScript file main.ts with Deno?",
-   "deno run main.ts",
+   "deno run main.ts, with no build step",
    [
-    "Compile with tsc, then run deno run main.js",
+    "tsc main.ts, then deno run main.js",
     "deno run --typescript main.ts",
-    "deno compile main.ts, then run the .js output"
+    "deno compile main.ts, then run main.js"
    ],
    "Deno executes TypeScript directly without a separate build step or extra configuration."
   ],
   [
    "In Deno 2, does deno run main.ts type-check the code by default?",
-   "No; it skips type checking unless you use deno check or --check",
+   "No; type checking needs deno check or --check",
    [
     "Yes, and it refuses to run on any type error",
-    "Yes, but it only reports warnings",
+    "Yes, but type errors are only shown as warnings",
     "No; Deno strips TypeScript and has no type checker"
    ],
    "Since Deno 1.23, deno run only transpiles. Use deno check main.ts or deno run --check to get full type checking."
@@ -731,8 +731,8 @@
    "crypto.subtle.digest()",
    [
     "require('crypto').createHash()",
-    "Deno.hash.sha256()",
-    "window.digest()"
+    "Deno.hash.sha256(data)",
+    "window.digest('SHA-256')"
    ],
    "Deno implements the Web Crypto API as a global. require is not available in native Deno modules."
   ],
@@ -740,9 +740,9 @@
    "As of Deno 2, where is the official Deno standard library (such as @std/path) published?",
    "On the JSR registry under the @std scope",
    [
-    "On npm under the @deno scope",
-    "Only inside the Deno binary",
-    "On GitHub releases as zip files"
+    "On npm under the @deno organization scope",
+    "Only inside the Deno binary itself",
+    "On GitHub releases as zip archives"
    ],
    "The standard library moved to JSR, so you import it like jsr:@std/path or add it with deno add jsr:@std/path."
   ],
@@ -840,11 +840,11 @@
   ],
   [
    "When Bun runs a .ts file directly with bun index.ts, what happens to type errors?",
-   "They are not reported; Bun transpiles without type checking",
+   "They are not reported; Bun transpiles without checking",
    [
-    "Bun refuses to run the file",
-    "Bun prints them as warnings and continues",
-    "Bun fixes them automatically"
+    "Bun refuses to run the file until they are fixed",
+    "Bun prints them as warnings and then continues running",
+    "Bun fixes them automatically before running the code"
    ],
    "Bun strips types and executes the code. Run tsc --noEmit separately, for example in CI, to catch type errors."
   ],
@@ -893,8 +893,8 @@
    "bun.lock, a text-based file",
    [
     "bun.lockb, a binary file",
-    "package-lock.json",
-    "yarn.lock"
+    "package-lock.json, as npm does",
+    "yarn.lock, in Yarn v1 format"
    ],
    "Bun 1.2 switched the default to the text bun.lock, which is easier to review in diffs. Older versions used the binary bun.lockb."
   ],
@@ -922,9 +922,9 @@
    "A dependency in a Bun project has a postinstall script, and bun install does not run it. Why?",
    "Bun only runs lifecycle scripts of packages in trustedDependencies",
    [
-    "Bun does not support lifecycle scripts at all",
-    "postinstall scripts only run on Windows",
-    "The script runs later, on first import"
+    "Bun does not support lifecycle scripts at all in any package",
+    "postinstall scripts only run when bun install is executed on Windows",
+    "The script is deferred and runs later, on the first import"
    ],
    "For security, Bun skips dependency lifecycle scripts unless the package is listed in trustedDependencies in package.json (a set of popular packages is trusted by default)."
   ],
@@ -950,11 +950,11 @@
   ],
   [
    "A Bun project has a .env file with API_KEY=123 and no dotenv package. What is process.env.API_KEY when you run bun index.ts?",
-   "'123'",
+   "The string '123'",
    [
-    "undefined",
-    "An error about a missing dotenv package",
-    "'API_KEY=123'"
+    "The value undefined",
+    "A missing dotenv error",
+    "The string 'API_KEY=123'"
    ],
    "Bun loads .env files automatically (along with variants like .env.local), so dotenv is not needed. Values are also available on Bun.env."
   ],
@@ -962,8 +962,8 @@
    "In Bun, what does const f = Bun.file('data.txt'); do before you await f.text()?",
    "Creates a lazy reference; nothing is read yet",
    [
-    "Reads the whole file into memory",
-    "Opens the file for writing",
+    "Reads the whole file into memory immediately and caches it",
+    "Opens the file for writing and truncates it",
     "Throws if the file is larger than 1 MB"
    ],
    "Bun.file returns a BunFile that reads lazily. Data is loaded only when you call methods such as text(), json() or arrayBuffer()."
@@ -982,11 +982,11 @@
    "With bun:sqlite, how do you create a temporary database that lives only in memory?",
    "new Database(':memory:')",
    [
-    "new Database()",
+    "new Database('memory.db')",
     "Database.memory()",
-    "new Database('temp', { ram: true })"
+    "new Database({ ram: true })"
    ],
-   "':memory:' is the standard SQLite name for an in-memory database, which disappears when the connection closes."
+   "':memory:' is the standard SQLite name for an in-memory database, which disappears when the connection closes. A name like 'memory.db' creates a file on disk."
   ],
   [
    "With bun:sqlite, which code safely looks up a user by an id that came from user input?",
@@ -1015,8 +1015,8 @@
    "The field can never be null",
    [
     "The field is required as an argument",
-    "The field is deprecated",
-    "The field is a list"
+    "The field is deprecated and hidden",
+    "The field is a list of strings"
    ],
    "! marks a type as non-null. A resolver returning null for it is an error."
   ],
@@ -1034,9 +1034,9 @@
    "Which three root operation types can a GraphQL schema define?",
    "Query, Mutation, Subscription",
    [
-    "Get, Post, Delete",
-    "Read, Write, Stream",
-    "Query, Command, Event"
+    "Get, Post, Subscription",
+    "Read, Write, Subscribe",
+    "Query, Mutation, Notifications"
    ],
    "Query is required. Mutation and Subscription are optional root types for writes and real-time events."
   ],
@@ -1044,8 +1044,8 @@
    "What problem does GraphQL address by letting the client choose exactly which fields to fetch?",
    "Over-fetching and under-fetching data",
    [
-    "Slow database indexes",
-    "Lack of HTTPS support",
+    "Slow database indexes on the server",
+    "Lack of HTTPS support in plain REST",
     "Missing database transactions in the API layer"
    ],
    "Clients ask only for the fields they need, often in one request, instead of calling several fixed REST endpoints."
@@ -1065,7 +1065,7 @@
    "Aliases, like a: user(id: 1) and b: user(id: 2)",
    [
     "Fragments, like ...UserFields on both fields",
-    "Directives, like @include",
+    "Directives, like @include(if: true) on one field",
     "Variables, like $id1 and $id2 for each field"
    ],
    "Two selections of the same field with different arguments conflict. Aliases give each result its own key in the response."
@@ -1105,7 +1105,7 @@
    "Over a long-lived connection such as a WebSocket",
    [
     "Through repeated GET requests every second",
-    "Through email notifications",
+    "Through email or push notifications for each event",
     "Inside the response headers of a mutation"
    ],
    "Subscriptions push events as they happen, usually over WebSockets (for example the graphql-ws protocol) or server-sent events."
@@ -1126,7 +1126,7 @@
    [
     "The info argument",
     "The root type definition",
-    "A global variable in the schema file"
+    "A schema-level global"
    ],
    "The context is created once per request and passed to every resolver, which makes it the right place for per-request data like the current user."
   ],
@@ -1135,8 +1135,8 @@
    "The field errors and null bubbles up to the nearest nullable parent",
    [
     "The field is returned as an empty string with a warning",
-    "The whole HTTP request fails with status 500 and no data at all",
-    "The field is silently left out"
+    "The whole HTTP request fails with status 500 and returns no data at all",
+    "The field is silently left out of the response data"
    ],
    "A null in a non-null position is a field error; the null propagates upward until it reaches a field that is allowed to be null."
   ],
@@ -1144,9 +1144,9 @@
    "In GraphQL.js, a field has no resolver defined. What does the default resolver do?",
    "Returns parent[fieldName] from the parent object",
    [
-    "Returns null for every value",
-    "Throws an error at startup",
-    "Queries the database table that has the same name as the field"
+    "Returns null, since no resolver was registered",
+    "Throws a missing resolver error at startup",
+    "Queries the database table named after the field"
    ],
    "The default resolver reads parent[fieldName], calling it if it is a function. That is why simple fields often need no resolver."
   ],
@@ -1194,9 +1194,9 @@
    "In GraphQL, Pet is an interface implemented by Dog, and only Dog has barkVolume. How do you request barkVolume in a pets query?",
    "pets { name ... on Dog { barkVolume } }",
    [
-    "pets { name barkVolume }",
-    "pets(type: Dog) { barkVolume }",
-    "pets { name Dog.barkVolume }"
+    "pets { name barkVolume @include(type: Dog) }",
+    "pets(type: Dog) { name barkVolume }",
+    "pets { name Dog { barkVolume } }"
    ],
    "Fields not declared on the interface must be selected with an inline fragment on the concrete type."
   ],
@@ -1237,8 +1237,8 @@
    "PATCH /users/7",
    [
     "PUT /users/7",
-    "POST /users/7/email/update",
-    "GET /users/7?email=a@b.kz"
+    "POST /users/7/email",
+    "GET /users/7?email=new"
    ],
    "PATCH applies a partial update. PUT replaces the whole resource, so fields missing from the body would be lost or reset."
   ],
@@ -1246,8 +1246,8 @@
    "A client sends DELETE /orders/5 twice. The first returns 204, the second returns 404. Is DELETE still idempotent here?",
    "Yes, because the server state is the same after both",
    [
-    "No, because the responses differ",
-    "No, DELETE is never idempotent",
+    "No, because the responses differ between the calls",
+    "No, DELETE is never idempotent by definition",
     "Only if the server returns 204 for both of the requests"
    ],
    "Idempotency is about the effect on server state, not identical responses. After either request the order does not exist."
@@ -1256,7 +1256,7 @@
    "A POST /articles request successfully creates a new article. What is the most appropriate response?",
    "201 Created with a Location header",
    [
-    "200 OK with no body",
+    "200 OK with an empty body",
     "202 Accepted with a Retry-After header",
     "204 No Content with a Location header"
    ],
@@ -1366,9 +1366,9 @@
    "Which OAuth 2.0 flow is recommended for a single-page app or mobile app that cannot keep a client secret?",
    "Authorization Code flow with PKCE",
    [
-    "Implicit flow",
+    "Implicit flow with response_type=token",
     "Resource Owner Password Credentials flow",
-    "Client Credentials flow"
+    "Client Credentials flow for the app"
    ],
    "Current OAuth security guidance recommends the Authorization Code flow with PKCE for public clients. The implicit flow is deprecated."
   ],
@@ -1394,21 +1394,21 @@
   ],
   [
    "Which standard defines a JSON format (media type application/problem+json) for HTTP API error responses?",
-   "Problem Details for HTTP APIs (RFC 9457)",
+   "Problem Details (RFC 9457)",
    [
-    "JSON:API Errors (RFC 7231)",
+    "JSON:API Error Objects (RFC 7231)",
     "OpenAPI Error Objects (RFC 6749)",
-    "JSON Schema Faults (RFC 8259)"
+    "JSON Schema Fault Reports (RFC 8259)"
    ],
-   "RFC 9457, which obsoletes RFC 7807, defines fields like type, title, status, detail and instance for machine-readable errors."
+   "RFC 9457, Problem Details for HTTP APIs, obsoletes RFC 7807 and defines fields like type, title, status, detail and instance for machine-readable errors."
   ],
   [
    "A REST API hits an unexpected database exception. What should the error response contain?",
    "A 500 status and a generic, consistent error body",
    [
-    "A 200 status with error: true and the exception message in the body",
-    "A 400 status with the full stack trace",
-    "A 404 status with the SQL query"
+    "A 200 status with error: true and the exception text",
+    "A 400 status with the full stack trace attached",
+    "A 404 status with the failing SQL query"
    ],
    "Server faults are 5xx. Clients get a stable error format, while stack traces and SQL stay in server logs to avoid leaking internals."
   ]
@@ -1426,11 +1426,11 @@
   ],
   [
    "In proto3, a client never sets the int32 field count. What value does the receiver read?",
-   "0",
+   "The value 0",
    [
-    "null",
-    "-1",
-    "An exception is thrown"
+    "The value null",
+    "The value -1",
+    "A thrown exception"
    ],
    "proto3 scalar fields have default values: 0 for numbers, empty string for strings, false for bools. Unset and zero look the same on the wire."
   ],
@@ -1438,9 +1438,9 @@
    "In proto3, you need to distinguish an unset int32 field from one explicitly set to 0. What can you use?",
    "Mark it optional, or use a wrapper type",
    [
-    "Use the required keyword",
-    "Give it field number 0",
-    "Declare it as repeated int32"
+    "Use the required keyword on the field",
+    "Give it field number 0 to mark it unset",
+    "Declare it as repeated int32 with one item"
    ],
    "proto3 optional fields (and wrappers like google.protobuf.Int32Value) track presence. required does not exist in proto3."
   ],
@@ -1478,9 +1478,9 @@
    "Which proto3 declaration defines a simple unary RPC?",
    "rpc GetUser (GetUserRequest) returns (User);",
    [
-    "rpc GetUser returns User;",
+    "rpc GetUser (GetUserRequest) returns User;",
     "service GetUser (GetUserRequest) -> User;",
-    "rpc GetUser (stream GetUserRequest);"
+    "rpc GetUser (GetUserRequest) returns (stream User);"
    ],
    "RPC methods are declared inside a service block with one request message type and one response message type."
   ],
@@ -1496,11 +1496,11 @@
   ],
   [
    "A client uploads a large file to a gRPC service in chunks and receives one summary at the end. Which RPC type fits?",
-   "Client streaming",
+   "A client-streaming RPC",
    [
-    "Unary",
-    "Server streaming",
-    "Bidirectional streaming"
+    "A unary RPC per chunk",
+    "A server-streaming RPC",
+    "A bidirectional-streaming RPC"
    ],
    "In client streaming the client sends a stream of messages and the server replies once after reading them."
   ],
@@ -1510,7 +1510,7 @@
    [
     "Client streaming",
     "Server streaming",
-    "Unary with polling"
+    "Unary with periodic polling"
    ],
    "With bidirectional streaming both client and server write independent message streams over the same call."
   ],
@@ -1526,11 +1526,11 @@
   ],
   [
    "Why can a browser not call a standard gRPC server directly with fetch?",
-   "Browsers do not expose the HTTP/2 control gRPC needs, like trailers",
+   "Browser APIs do not expose HTTP/2 trailers, which gRPC needs",
    [
-    "Browsers cannot send binary data",
-    "gRPC only works over UDP",
-    "Browsers block all HTTP/2 traffic"
+    "Browsers cannot send binary data in a fetch request body",
+    "gRPC only works over UDP, which browsers do not allow",
+    "Browsers block all HTTP/2 traffic to servers that are not web servers"
    ],
    "gRPC relies on HTTP/2 trailers and framing that browser APIs do not expose. gRPC-Web with a proxy such as Envoy fills the gap."
   ],
@@ -1608,8 +1608,8 @@
    "Why are gRPC messages usually smaller than equivalent JSON payloads?",
    "Protobuf is binary and uses field numbers, not names",
    [
-    "gRPC always gzips every message",
-    "Protobuf drops fields that are not strings",
+    "gRPC always gzips every message before sending it",
+    "Protobuf drops fields that are not strings or numbers",
     "HTTP/2 removes duplicate values from bodies"
    ],
    "Protobuf encodes compact varints and field tags instead of repeating text keys, which shrinks payloads and speeds up parsing."
@@ -1630,9 +1630,9 @@
    "How does a browser open a WebSocket connection to a server?",
    "An HTTP GET with Upgrade: websocket headers",
    [
-    "A POST with Content-Type: websocket",
-    "A raw UDP packet to port 80",
-    "A DNS lookup with a WS record"
+    "An HTTP POST request with Content-Type: websocket",
+    "A raw UDP packet sent to port 80 first",
+    "A DNS lookup that returns a WS record"
    ],
    "The client sends an HTTP/1.1 GET with Upgrade: websocket and Connection: Upgrade, plus a Sec-WebSocket-Key header."
   ],
@@ -1640,8 +1640,8 @@
    "What status code does a server return to accept a WebSocket upgrade request?",
    "101 Switching Protocols",
    [
-    "200 OK",
-    "201 Created",
+    "200 OK with an Upgrade header",
+    "201 Created for the socket",
     "426 Upgrade Required"
    ],
    "101 confirms the protocol switch, after which the connection speaks WebSocket framing instead of HTTP."
@@ -1651,8 +1651,8 @@
    "To prove the server understood the handshake",
    [
     "To encrypt every message that follows the handshake",
-    "To authenticate the user",
-    "To choose a compression algorithm"
+    "To authenticate the user who opens it",
+    "To choose a compression algorithm for frames"
    ],
    "The server hashes the key with a fixed GUID (SHA-1, then base64). It is not a security mechanism; TLS (wss://) provides encryption."
   ],
@@ -1701,8 +1701,8 @@
    "Frames sent from client to server",
    [
     "Frames sent from server to client",
-    "Only control frames",
-    "Only binary frames"
+    "Only control frames, in both directions",
+    "Only binary frames, in both directions"
    ],
    "Clients must mask every frame, and servers must not. Masking prevents cache poisoning attacks on intermediaries that misread the traffic."
   ],
@@ -1742,7 +1742,7 @@
    [
     "To measure the client's CPU speed and network latency",
     "To renew the TLS certificate before it expires",
-    "To reset the message counter"
+    "To reset the message counter on both sides"
    ],
    "A connection can be half-open with no error. Missing pongs reveal it, and regular traffic stops load balancers from closing idle connections."
   ],
@@ -1760,8 +1760,8 @@
    "A browser WebSocket fires the close event with code 1006. What does that mean?",
    "It closed abnormally, without a close frame",
    [
-    "The server closed it normally",
-    "The client sent invalid UTF-8",
+    "The server closed it normally with a close frame",
+    "The client sent invalid UTF-8 text data",
     "The message was too big for the server to process"
    ],
    "1006 is reserved for when the connection drops without a closing handshake; it is never sent in a frame. 1000 is normal closure, 1009 is message too big."
@@ -1791,8 +1791,8 @@
    "An adapter such as the Redis adapter",
    [
     "Increasing the ping interval on every instance",
-    "Switching to long-polling only",
-    "Using one room per server"
+    "Switching every client to long-polling only",
+    "Using one room per server instance"
    ],
    "Each instance only knows its own sockets. An adapter (Redis, Postgres and others) relays broadcasts between instances via pub/sub."
   ],
@@ -1801,8 +1801,8 @@
    "No, Socket.IO adds its own protocol on top",
    [
     "Yes, Socket.IO is plain WebSocket under another name",
-    "Yes, but only for text messages",
-    "Only if the server uses wss://"
+    "Yes, but only for plain text messages",
+    "Only if the server is served over wss://"
    ],
    "Socket.IO has its own packet format, handshake and fallbacks, so it needs a Socket.IO client library on the other side."
   ],
@@ -1811,7 +1811,7 @@
    "With a cookie, a short-lived URL token, or a first auth message",
    [
     "By passing an Authorization header in the WebSocket constructor",
-    "By sending the password in every frame",
+    "By sending the username and password inside every frame",
     "They cannot, so WebSocket endpoints must stay public"
    ],
    "Common options are session cookies (with an Origin check), a short-lived ticket in the query string, or an auth message right after connecting."

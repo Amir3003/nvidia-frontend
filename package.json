@@ -15,7 +15,8 @@
     "discord:setup": "node --env-file=.env bot/discord-setup.mjs",
     "bot:all": "concurrently \"npm run bot\" \"npm run bot:discord\"",
     "test:network": "node --test tests/network-db.test.mjs tests/network-social.test.mjs",
-    "test:network-ui": "playwright test --config playwright.network.config.ts"
+    "test:network-ui": "playwright test --config playwright.network.config.ts",
+    "check:quizzes": "node scripts/check-quizzes.mjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.10",

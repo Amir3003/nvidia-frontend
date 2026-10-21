@@ -26,7 +26,7 @@
    [
     "A 400 Bad Request response",
     "A 404 Not Found response",
-    "A 500 Internal Server Error"
+    "A 500 Internal Server Error response"
    ],
    "FastAPI validates path parameters against the type hint; 'abc' is not an int, so it returns 422 with details of the failed field."
   ],
@@ -44,8 +44,8 @@
    "In FastAPI, a POST handler has the parameter item: Item, where Item subclasses Pydantic BaseModel. Where does FastAPI read item from?",
    "The JSON request body",
    [
-    "The query string",
-    "Form data fields",
+    "The URL query string",
+    "Multipart form data fields",
     "A request cookie"
    ],
    "Parameters typed as Pydantic models are interpreted as the request body and parsed from JSON."
@@ -55,8 +55,8 @@
    "The integer 5",
    [
     "The string '5'",
-    "None",
-    "A ValidationError is raised"
+    "The float 5.0",
+    "A ValidationError"
    ],
    "In lax mode Pydantic coerces a numeric string to int. Strict mode (strict=True) would reject it instead."
   ],
@@ -74,9 +74,9 @@
    "A FastAPI endpoint has response_model=UserOut, where UserOut has no password field, and returns a dict that includes 'password'. What happens?",
    "The password key is left out of the response",
    [
-    "FastAPI raises a validation error",
-    "The password is sent unchanged",
-    "The password value is sent as null"
+    "FastAPI raises a response validation error",
+    "The password is sent unchanged to the client",
+    "The password value is sent as null in the JSON"
    ],
    "response_model validates and filters the output to the declared fields, which is a common way to avoid leaking secrets."
   ],
@@ -84,9 +84,9 @@
    "Inside an async def FastAPI endpoint, the code calls time.sleep(5). What is the effect?",
    "It blocks the event loop and stalls other requests",
    [
-    "FastAPI moves the call to a thread pool",
-    "Python turns it into a non-blocking sleep",
-    "Only this response waits, others proceed"
+    "FastAPI moves the blocking call to a thread pool",
+    "Python turns it into a non-blocking sleep automatically",
+    "Only this response waits, and other requests proceed"
    ],
    "Blocking calls inside async def run on the event loop thread. Use await asyncio.sleep() or a plain def endpoint for blocking work."
   ],
@@ -94,7 +94,7 @@
    "How does FastAPI run a path operation declared with plain def instead of async def?",
    "In a thread pool, so it does not block the loop",
    [
-    "Directly on the event loop thread",
+    "Directly on the event loop thread, like async code",
     "In a new process for each request",
     "It refuses to start: handlers must be async"
    ],
@@ -115,7 +115,7 @@
    "After the endpoint has finished, as cleanup",
    [
     "Before the endpoint function runs",
-    "Only when the endpoint raises an error",
+    "Only when the endpoint raises an unhandled error",
     "Never: yield is not allowed here"
    ],
    "Dependencies with yield provide the value to the endpoint and run the code after yield as teardown once the endpoint is done."
@@ -134,7 +134,7 @@
    "In FastAPI tests, which line replaces the get_db dependency with fake_db for every route?",
    "app.dependency_overrides[get_db] = fake_db",
    [
-    "app.mock_dependencies[get_db] = fake_db",
+    "app.state.dependency_overrides[get_db] = fake_db",
     "app.dependencies[get_db] = fake_db",
     "Depends.overrides[get_db] = fake_db"
    ],
@@ -216,7 +216,7 @@
    "In Django, what does Book.objects.filter(title='Dune') return when no book matches?",
    "An empty QuerySet",
    [
-    "None",
+    "The value None",
     "A Book.DoesNotExist error",
     "An empty Python list"
    ],
@@ -226,9 +226,9 @@
    "In Django, what happens when Book.objects.get(pk=999) finds no matching row?",
    "It raises Book.DoesNotExist",
    [
-    "It returns None",
+    "It returns None instead",
     "It returns an empty QuerySet",
-    "It raises KeyError"
+    "It raises a KeyError"
    ],
    "get() expects exactly one row: none raises DoesNotExist and several raise MultipleObjectsReturned."
   ],
@@ -236,7 +236,7 @@
    "In Django, the line qs = Book.objects.filter(year=2020) runs. When is the SQL query sent to the database?",
    "When qs is evaluated, e.g. iterated",
    [
-    "Immediately, on that same line",
+    "Immediately, on that same line of code",
     "When the server process starts",
     "When the model class is imported"
    ],
@@ -254,11 +254,11 @@
   ],
   [
    "Why is Product.objects.filter(pk=1).update(stock=F('stock') - 1) safer than reading stock in Python and saving it back?",
-   "The math runs inside one SQL UPDATE, so concurrent requests cannot lose updates",
+   "The math runs in one SQL UPDATE, so concurrent updates are not lost",
    [
-    "F() locks the whole table until the request ends",
-    "F() caches the value so the database is not queried",
-    "update() retries the save automatically on conflicts"
+    "F() locks the whole table until the request ends, blocking other writers",
+    "F() caches the value in Python so the database is not queried again",
+    "update() retries the save automatically when it detects a conflict"
    ],
    "F expressions refer to the column value in the database, so the decrement happens atomically in SQL instead of in a read-modify-write cycle."
   ],
@@ -307,7 +307,7 @@
    "makemigrations, then migrate",
    [
     "migrate, then makemigrations",
-    "syncdb, then migrate",
+    "syncdb, then makemigrations",
     "makemigrations, then collectstatic"
    ],
    "makemigrations writes a migration file from model changes; migrate applies pending migrations to the database."
@@ -346,9 +346,9 @@
    "In Django function middleware def mw(get_response): def m(request): ...; return m, what must m do to pass the request on to the view?",
    "Call get_response(request) and return its result",
    [
-    "Call next(request) and return nothing",
-    "Return the request object itself",
-    "Yield the request to the next layer"
+    "Call next(request) and return nothing to the caller",
+    "Return the request object itself to the framework",
+    "Yield the request to the next layer of middleware"
    ],
    "get_response calls the next middleware or the view; m must return the response, optionally after changing it."
   ],
@@ -397,10 +397,10 @@
    "IsAuthenticatedOrReadOnly",
    [
     "IsAuthenticated",
-    "AllowAny",
-    "IsAdminUser"
+    "DjangoModelPermissions",
+    "DjangoObjectPermissions"
    ],
-   "IsAuthenticatedOrReadOnly permits safe methods (GET, HEAD, OPTIONS) for anyone and requires authentication for the rest."
+   "IsAuthenticatedOrReadOnly permits safe methods (GET, HEAD, OPTIONS) for anyone and requires authentication for the rest. The Django model and object permission classes require login even for reads."
   ]
  ],
  "flask": [
@@ -408,9 +408,9 @@
    "Why is Flask usually created as app = Flask(__name__)?",
    "So Flask can find templates and static files",
    [
-    "So the app is named after the server",
-    "So Flask enables debug mode",
-    "So routes are registered automatically"
+    "So the app is named after the server it runs on",
+    "So Flask turns on debug mode for this module",
+    "So routes in the module are registered automatically"
    ],
    "The import name tells Flask where the application module lives, which it uses to locate resources such as templates and static files."
   ],
@@ -428,9 +428,9 @@
    "Which HTTP methods does a Flask route accept when @app.route('/') is given no methods argument?",
    "GET (with HEAD and OPTIONS added)",
    [
-    "GET and POST",
-    "All HTTP methods",
-    "POST only"
+    "GET and POST (with HEAD added)",
+    "All HTTP methods, including DELETE",
+    "POST only (with OPTIONS added)"
    ],
    "By default a route handles GET; Flask adds HEAD and OPTIONS automatically. Other methods need methods=[...]."
   ],
@@ -458,9 +458,9 @@
    "What is the main benefit of the Flask application factory pattern, def create_app(config): ... return app?",
    "Several app instances with different configs, e.g. for tests",
    [
-    "Routes are compiled ahead of time for speed",
-    "The app runs without a WSGI server",
-    "Blueprints no longer need registering"
+    "Routes are compiled ahead of time, so requests are handled faster",
+    "The app can run in production without any WSGI server",
+    "Blueprints no longer need to be registered on the app"
    ],
    "Creating the app inside a function avoids a global app object, so tests and environments can each build an app with their own settings."
   ],
@@ -468,7 +468,7 @@
    "With the Flask application factory pattern, how should Flask-SQLAlchemy be set up?",
    "db = SQLAlchemy() globally, then db.init_app(app) in create_app",
    [
-    "db = SQLAlchemy(app) globally, before create_app runs",
+    "db = SQLAlchemy(app) globally, before create_app runs at startup",
     "db = SQLAlchemy() created again inside every view",
     "db.register(app) called once from a blueprint"
    ],
@@ -499,8 +499,8 @@
    "app.register_blueprint(bp)",
    [
     "app.add_blueprint(bp)",
-    "app.include(bp)",
-    "bp.attach(app)"
+    "app.include_router(bp)",
+    "bp.register_on(app)"
    ],
    "register_blueprint records the blueprint's routes, handlers and templates on the app, optionally with a url_prefix."
   ],
@@ -518,9 +518,9 @@
    "How long does data stored on Flask's g object live?",
    "For one application context, usually one request",
    [
-    "For the whole process lifetime",
-    "For the user's session across requests",
-    "Until the server is restarted"
+    "For the whole lifetime of the worker process",
+    "For the user's whole session, across many requests",
+    "Until the server is restarted or redeployed"
    ],
    "g is tied to the application context and is reset for each request, so it suits per-request data like a database connection."
   ],
@@ -538,9 +538,9 @@
    "A Flask view calls render_template('page.html', name='<b>hi</b>') and the template contains {{ name }}. What is output?",
    "The escaped text &lt;b&gt;hi&lt;/b&gt;",
    [
-    "The bold word hi",
-    "An empty string",
-    "A TemplateSyntaxError"
+    "The bold word hi, rendered as HTML",
+    "An empty string, since tags are stripped",
+    "A TemplateSyntaxError from Jinja2"
    ],
    "Flask enables Jinja2 autoescaping for .html templates. Use the |safe filter or Markup only for trusted HTML."
   ],
@@ -611,7 +611,7 @@
    "@Configuration, @EnableAutoConfiguration, @ComponentScan",
    [
     "@Component, @EnableWebMvc, @ComponentScan",
-    "@Configuration, @EnableTransactionManagement, @Bean",
+    "@Configuration, @EnableTransactionManagement, @ComponentScan",
     "@Service, @EnableAutoConfiguration, @Import"
    ],
    "@SpringBootApplication marks a configuration class, turns on auto-configuration and scans the package of that class and its subpackages."
@@ -670,9 +670,9 @@
    "A Spring MVC handler has the parameter @RequestParam String q with no other attributes. What happens when a request has no q parameter?",
    "The request fails with 400 Bad Request",
    [
-    "q is set to null",
-    "q is set to an empty string",
-    "The request fails with 500"
+    "q is set to null and the handler runs",
+    "q is set to an empty string instead",
+    "The request fails with 500 Internal Server Error"
    ],
    "@RequestParam is required by default; a missing value triggers MissingServletRequestParameterException, mapped to 400. Use required = false or a default value."
   ],
@@ -680,9 +680,9 @@
    "In Spring Data JPA, UserRepository extends JpaRepository<User, Long> declares List<User> findByLastNameAndAge(String lastName, int age). What does this do?",
    "Spring derives a query filtering by both fields",
    [
-    "It fails until you write an @Query",
-    "It loads all users and filters in Java",
-    "It creates a new database index"
+    "It fails at startup until you write an @Query",
+    "It loads all users and filters them in Java",
+    "It creates a new database index on both columns"
    ],
    "Spring Data parses derived query method names and generates the query at startup, with no implementation needed."
   ],
@@ -690,7 +690,7 @@
    "In Spring Data JPA, what is the return type of findById(id) on a JpaRepository<User, Long>?",
    "Optional<User>",
    [
-    "User, or null if missing",
+    "User, or null",
     "List<User>",
     "ResponseEntity<User>"
    ],
@@ -700,9 +700,9 @@
    "By default, a Spring @Transactional method rolls back when it throws which kind of exception?",
    "Unchecked ones (RuntimeException, Error)",
    [
-    "Any exception, checked or not",
-    "Only checked exceptions",
-    "Only SQLException subclasses"
+    "Any exception, whether checked or unchecked",
+    "Only checked exceptions such as IOException",
+    "Only SQLException and its subclasses"
    ],
    "Checked exceptions commit by default. Use rollbackFor to roll back on them too."
   ],
@@ -730,9 +730,9 @@
    "You add spring-boot-starter-web to a Spring Boot app. What does auto-configuration provide without extra code?",
    "An embedded Tomcat and Spring MVC setup",
    [
-    "A configured H2 database and JPA",
-    "A login page for all endpoints",
-    "A Thymeleaf template engine"
+    "A configured H2 database and JPA repositories",
+    "A login page protecting all endpoints",
+    "A Thymeleaf template engine for views"
    ],
    "Auto-configuration reacts to the classpath: the web starter brings Tomcat and Spring MVC, which Boot then configures with sensible defaults."
   ],
@@ -772,7 +772,7 @@
    [
     "9090",
     "8080",
-    "The app fails to start"
+    "8443"
    ],
    "Command-line arguments have higher precedence than application.properties in Spring Boot's externalized configuration."
   ],
@@ -780,9 +780,9 @@
    "You add spring-boot-starter-security to a Spring Boot app with no security configuration. What happens?",
    "Every endpoint requires login with a generated password",
    [
-    "Nothing changes until you add a filter chain",
-    "Only POST endpoints require authentication",
-    "The app refuses to start without a user store"
+    "Nothing changes until you add a SecurityFilterChain bean",
+    "Only POST and PUT endpoints require authentication",
+    "The app refuses to start without a configured user store"
    ],
    "Security auto-configuration protects all endpoints and creates a user named 'user' whose random password is printed in the log at startup."
   ],
@@ -872,9 +872,9 @@
    "A Rails Post model has has_many :comments, dependent: :destroy. What happens when you call post.destroy?",
    "Each comment is destroyed too, running callbacks",
    [
-    "Comments stay but lose their post_id",
-    "Deletion fails while comments exist",
-    "Comments are archived in another table"
+    "Comments stay in the table but lose their post_id",
+    "Deletion fails while any comments still exist",
+    "Comments are archived into another table first"
    ],
    "dependent: :destroy loads and destroys each associated record. :delete_all removes them in SQL without callbacks."
   ],
@@ -914,7 +914,7 @@
    [
     "Maps /pages to the home action",
     "Makes PagesController the parent of all routes",
-    "Redirects /home to /pages"
+    "Redirects /home to the pages index"
    ],
    "root defines the route for the path / using the controller#action string."
   ],
@@ -932,9 +932,9 @@
    "In a Rails controller, User.new(params[:user]) is called without strong parameters. What happens?",
    "It raises ActiveModel::ForbiddenAttributesError",
    [
-    "All submitted attributes are assigned",
-    "Only string attributes are assigned",
-    "The user is built with no attributes"
+    "All submitted attributes are assigned to the user",
+    "Only the string attributes are assigned, others dropped",
+    "The user is built with no attributes and no error"
    ],
    "Rails refuses unpermitted mass assignment. Use params.require(:user).permit(:name, :email)."
   ],
@@ -952,9 +952,9 @@
    "In a Rails create action, why use render :new instead of redirect_to new_article_path when @article.save fails?",
    "render keeps @article and its errors for the form",
    [
-    "render runs the new action again first",
-    "redirect_to cannot be used after a save",
-    "render forces the browser to reload"
+    "render runs the new action again before showing it",
+    "redirect_to cannot be used after a failed save",
+    "render forces the browser to reload the form page"
    ],
    "render only renders a template within the same request, so the invalid object and its error messages stay available. A redirect starts a new request."
   ],
@@ -972,9 +972,9 @@
    "Why does the Rails asset pipeline add a digest to file names, as in application-3f2a9c.css?",
    "So browsers cache files long-term but fetch new versions",
    [
-    "So the asset files are encrypted on the server",
-    "So files of different users do not collide",
-    "So assets load in alphabetical order"
+    "So the asset files are encrypted on the server at rest",
+    "So files uploaded by different users do not collide",
+    "So assets load in alphabetical order on every page"
    ],
    "Fingerprinting changes the URL whenever the content changes, allowing far-future cache headers without serving stale files."
   ],
@@ -1002,7 +1002,7 @@
    "With resources :posts do resources :comments end, what is the path to the comments index of one post?",
    "/posts/:post_id/comments",
    [
-    "/comments/:post_id",
+    "/comments?post_id=:post_id",
     "/posts/comments/:id",
     "/post/:id/comments"
    ],
@@ -1065,8 +1065,8 @@
    "The property gives the loaded Collection, the method a query builder",
    [
     "The property gives a query builder, the method the Collection",
-    "Both return the same Collection object",
-    "The property only works after save()"
+    "Both return the same Collection object, so either works",
+    "The property only works after save() is called on the user"
    ],
    "The dynamic property runs the query and returns results. The method returns the relation, so you can chain constraints like ->where(...)->get()."
   ],
@@ -1085,7 +1085,7 @@
    "A 404 Not Found response",
    [
     "A null value passed to the view",
-    "A 500 error page",
+    "A 500 error page shown",
     "A redirect to the home page"
    ],
    "findOrFail throws ModelNotFoundException, which Laravel's exception handler turns into a 404 response."
@@ -1184,8 +1184,8 @@
    "A Laravel controller constructor type-hints PaymentGateway, an interface bound to StripeGateway in a provider. What does Laravel pass in?",
    "A StripeGateway instance from the container",
    [
-    "null, until you call app()->make()",
-    "A mock of PaymentGateway",
+    "null, until you call app()->make() yourself",
+    "A generated mock of PaymentGateway",
     "An error: interfaces cannot be injected"
    ],
    "The container resolves controller dependencies automatically and uses the binding to choose the concrete class."
@@ -1216,9 +1216,9 @@
    "What does the C# compiler produce from your source code in .NET?",
    "IL code that the CLR JIT-compiles at runtime",
    [
-    "Native machine code for one CPU only",
-    "JavaScript that runs in a V8 engine",
-    "Java bytecode for the JVM"
+    "Native machine code for one specific CPU only",
+    "JavaScript that runs in a bundled V8 engine",
+    "Java bytecode that runs on the JVM"
    ],
    "C# compiles to Intermediate Language in assemblies; the CLR's JIT turns it into native code when it runs (AOT is an optional alternative)."
   ],
@@ -1238,7 +1238,7 @@
    [
     "2",
     "0",
-    "A compile error"
+    "null"
    ],
    "Structs are value types, so assigning a to b copies it. Changing b does not affect a. With a class it would print 2."
   ],
@@ -1297,8 +1297,8 @@
    "One per HTTP request",
    [
     "One for the whole application",
-    "A new one each time it is injected",
-    "One per thread"
+    "A new one per injection",
+    "One per worker thread"
    ],
    "Scoped services live for one scope, which in ASP.NET Core is one request. Singleton is one for the app and transient is new on every resolve."
   ],
@@ -1306,9 +1306,9 @@
    "In ASP.NET Core Development mode, a singleton service takes a scoped service in its constructor. What happens?",
    "Scope validation throws an InvalidOperationException",
    [
-    "The scoped service becomes a singleton",
-    "A new scoped instance is made per call",
-    "Nothing, it is a supported pattern"
+    "The scoped service silently becomes a singleton for the app",
+    "A new scoped instance is made for every method call",
+    "Nothing happens, since it is a supported DI pattern"
    ],
    "Scope validation, enabled in Development, detects this captive dependency and refuses to resolve it. Without validation it would hold one scoped instance forever."
   ],

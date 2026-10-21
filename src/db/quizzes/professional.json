@@ -34,9 +34,9 @@
    "Which sentence follows common technical writing guidance best?",
    "Run the installer, then restart the server.",
    [
-    "The installer should be run, after which a restart of the server is to be performed.",
-    "It is recommended that the installer be run and the server restarted.",
-    "A restart of the server is needed once installation has been done by you."
+    "The installer should be run, then the server should be restarted.",
+    "It is recommended to run the installer and restart the server.",
+    "A restart of the server is needed once installation is done."
    ],
    "Clear technical writing prefers active voice, imperative mood for instructions and short sentences."
   ],
@@ -54,9 +54,9 @@
    "An API parameter is documented as \"limit: the limit\". What is the main problem?",
    "It repeats the name without saying type, allowed range or default",
    [
-    "It should be rewritten in passive voice, as reference style guides usually require",
+    "It should be rewritten in passive voice, as style guides require",
     "Parameter names must never appear in their own description",
-    "It is too long for a reference table"
+    "It is too long to fit in a reference table"
    ],
    "A useful parameter description states what it controls, its type, valid values and default, not just the name again."
   ],
@@ -64,9 +64,9 @@
    "Which code sample is most helpful in an API reference?",
    "A minimal, runnable example with realistic values and the expected response",
    [
-    "A large excerpt of real production code, including the unrelated business logic around it",
-    "Pseudocode that hides the real request format",
-    "A screenshot of code that cannot be copied"
+    "A large excerpt of production code, with the business logic around it",
+    "Pseudocode that hides the real request and response format",
+    "A screenshot of the code that readers cannot copy or run"
    ],
    "Copyable, minimal and realistic samples let developers verify behavior quickly. Screenshots and pseudocode block copying and testing."
   ],
@@ -94,9 +94,9 @@
    "Which section is most important to put near the top of a project README?",
    "What the project does and how to install and run it quickly",
    [
-    "The full list of contributors, their roles and how to contact each of them",
-    "The complete changelog since the first commit",
-    "Detailed internal architecture of every module"
+    "The full list of contributors and how to contact each of them",
+    "The complete changelog since the very first commit",
+    "A detailed internal architecture of every module"
    ],
    "A README is the entry point, so it should first answer what this is and how to get started."
   ],
@@ -216,9 +216,9 @@
    "A speaker reads dense bullet points word for word from the slides. What is the most likely effect?",
    "The audience reads ahead and stops listening to the speaker",
    [
-    "The audience remembers far more of the content than with spoken delivery",
-    "The talk feels more interactive and personal",
-    "Questions become shorter and more focused"
+    "The audience remembers more of the content than with speech alone",
+    "The talk feels more interactive and personal to everyone",
+    "Audience questions become shorter and more focused"
    ],
    "People cannot read and listen at the same time well, so dense text competes with the speaker instead of supporting them."
   ],
@@ -257,8 +257,8 @@
    "Stories make abstract information concrete and easier to remember",
    [
     "Stories replace the need for any data or evidence",
-    "Stories make the talk longer, which makes the speaker look more serious and prepared",
-    "Audiences expect stories only at the very end"
+    "Stories make the talk longer, so the speaker seems more serious and prepared",
+    "Audiences expect stories only at the very end of a talk"
    ],
    "A story gives context and emotion, which helps audiences remember the point. It should support evidence, not replace it."
   ],
@@ -266,8 +266,8 @@
    "In storytelling, what is the role of conflict or tension?",
    "It creates a problem the audience wants to see resolved",
    [
-    "It shows the audience that the speaker disagrees with their opinions",
-    "It replaces the conclusion of the talk",
+    "It shows the audience that the speaker disagrees with their views",
+    "It replaces the need for a conclusion at the end",
     "It is used only in fiction, not in business talks"
    ],
    "Tension, such as a failing system or an unmet need, makes the audience care about the resolution you present."
@@ -277,7 +277,7 @@
    "Pause briefly after a key point to let it land",
    [
     "Avoid pauses entirely to show confidence",
-    "Fill every pause with \"um\" so the audience knows you are thinking",
+    "Fill every pause with \"um\" to show you are thinking",
     "Pause only when you lose your place in the notes"
    ],
    "A deliberate pause signals importance and gives listeners time to process. Filler words weaken delivery."
@@ -286,7 +286,7 @@
    "A speaker is told they talk too fast when nervous. Which practice helps most?",
    "Rehearse aloud with a timer and mark planned pauses in the notes",
    [
-    "Add more slides so there is more to say",
+    "Add more slides so there is more material to cover",
     "Memorize the full script word for word and recite it as quickly as possible",
     "Drink an energy drink just before going on stage"
    ],
@@ -307,8 +307,8 @@
    "Say you do not know, and offer to follow up after checking",
    [
     "Invent a plausible answer on the spot to avoid looking unprepared",
-    "Ignore the question and move to the next slide",
-    "Tell them the question is not relevant"
+    "Ignore the question and move on to the next slide",
+    "Tell them that the question is not relevant to the talk"
    ],
    "Honesty preserves credibility. Following up shows respect for the question."
   ],
@@ -354,11 +354,11 @@
   ],
   [
    "You must show code in a talk. Which approach is best?",
-   "Show a short snippet in a large font and highlight the lines that matter",
+   "Show a short snippet in a large font, highlighting key lines",
    [
-    "Show the whole source file in a small font so that nothing important is missing",
-    "Show code only as a link and never on the slide",
-    "Scroll quickly through the code in your editor"
+    "Show the whole source file in a small font so nothing is missing",
+    "Show code only as a link and never on the slide itself",
+    "Scroll quickly through the full code in your editor"
    ],
    "Large, short and highlighted code lets the room read the relevant part. Full files in small fonts are unreadable."
   ],
@@ -366,9 +366,9 @@
    "When presenting a chart in a talk, what should you do first?",
    "Explain what the axes show, then state the key takeaway",
    [
-    "Read every number in the chart aloud",
-    "Move on immediately and let the audience interpret it",
-    "Apologize for the chart's colors"
+    "Read every number in the chart aloud, one by one",
+    "Move on right away and let the audience interpret it alone",
+    "Apologize for the chart's colors and its small labels"
    ],
    "Orient the audience to the axes, then tell them what to see, so everyone draws the right conclusion."
   ],
@@ -387,8 +387,8 @@
    "Rehearse several times aloud, ideally in front of others",
    [
     "Avoid rehearsing so the talk feels spontaneous",
-    "Read the slides silently once the night before, so the talk stays fresh",
-    "Write the talk on the day it is given"
+    "Read the slides silently once the night before so it feels fresh",
+    "Write the talk on the same day it is given"
    ],
    "Repeated out-loud rehearsal builds familiarity and confidence, and reveals timing problems."
   ],
@@ -468,9 +468,9 @@
    "What is the main goal of backlog refinement (backlog grooming)?",
    "Clarifying, splitting, estimating and ordering upcoming backlog items",
    [
-    "Reviewing the completed increment with stakeholders and collecting their feedback",
+    "Reviewing the completed increment with stakeholders for feedback",
     "Reflecting on how the team worked during the last sprint",
-    "Deploying finished features to production"
+    "Deploying finished features to production servers"
    ],
    "Refinement keeps the top of the backlog ready for upcoming sprints. Reviewing the increment happens in the Sprint Review."
   ],
@@ -480,7 +480,7 @@
    [
     "The Scrum Master",
     "The Developers",
-    "The most senior stakeholder"
+    "The lead stakeholder"
    ],
    "The Scrum Guide makes the Product Owner accountable for Product Backlog management, including ordering items."
   ],
@@ -488,9 +488,9 @@
    "A backlog has grown to 600 items, many years old. What is a sensible refinement action?",
    "Archive or delete stale items that no longer align with goals",
    [
-    "Estimate every single item in detail with the whole team before the next sprint",
-    "Move all items into the current sprint",
-    "Split each item into ten smaller tasks"
+    "Estimate every single item in detail with the whole team first",
+    "Move all of the items into the current sprint",
+    "Split each item into ten smaller tasks first"
    ],
    "A huge, stale backlog hides priorities. Removing items that no longer matter keeps it useful."
   ],
@@ -578,7 +578,7 @@
    "In the MoSCoW method, what does the \"W\" stand for?",
    "Won't have (this time)",
    [
-    "Wish list",
+    "Wish list items",
     "Will have later this sprint",
     "Weighted priority"
    ],
@@ -630,8 +630,8 @@
    "What is a user persona?",
    "A fictional but research-based profile representing a key user group",
    [
-    "A real customer who is chosen by the team to approve every design decision",
-    "A list of all user accounts in the database",
+    "A real customer chosen by the team to approve every design",
+    "A list of all user accounts stored in the database",
     "The designer's own preferences written as a profile"
    ],
    "Personas summarize patterns from real research so the team can design for specific needs and goals."
@@ -641,7 +641,7 @@
    "Moderated usability sessions where users think aloud at checkout",
    [
     "A survey asking users to rate the brand on a scale from 1 to 10",
-    "Counting page views on the homepage over the last month",
+    "Counting page views on the homepage over the last month in analytics",
     "Asking the sales team what they think customers dislike"
    ],
    "Observing users think aloud uncovers the reasons behind behavior. Analytics show where they leave but not why."
@@ -652,7 +652,7 @@
    [
     "Qualitative relies on numbers; quantitative relies on open interviews",
     "Qualitative is done after launch; quantitative is done only before launch",
-    "Qualitative is optional for teams; quantitative is mandatory for every project"
+    "Qualitative is optional for most teams; quantitative is mandatory for every project"
    ],
    "Interviews and usability tests answer why; surveys and analytics answer how many."
   ],
@@ -690,7 +690,7 @@
    "A date field accepts free text and rejects bad formats only after the form is submitted. Which Nielsen heuristic suggests a date picker or inline validation?",
    "Error prevention",
    [
-    "Aesthetic and minimalist design",
+    "Visibility of system status",
     "Consistency and standards",
     "Help and documentation"
    ],
@@ -711,7 +711,7 @@
    "Recognition rather than recall",
    [
     "User control and freedom",
-    "Error prevention",
+    "Visibility of system status",
     "Aesthetic and minimalist design"
    ],
    "Making options visible reduces memory load: recognizing is easier than recalling."
@@ -780,9 +780,9 @@
    "Per WCAG 2.x level AA, what is the minimum contrast ratio for normal-size body text?",
    "4.5:1",
    [
-    "3:1",
-    "7:1",
-    "2:1"
+    "3.0:1",
+    "7.0:1",
+    "2.5:1"
    ],
    "WCAG AA requires 4.5:1 for normal text and 3:1 for large text. 7:1 is the AAA level."
   ],
@@ -790,7 +790,7 @@
    "What does Fitts's law imply for interface design?",
    "Larger and closer targets are faster to click or tap",
    [
-    "Users read every page in a strict left-to-right, top-to-bottom order",
+    "Users read every page from left to right, top to bottom",
     "More choices always make decisions faster",
     "Users remember about seven items at once"
    ],
@@ -801,7 +801,7 @@
    "Decision time grows with the number and complexity of choices",
    [
     "Users tend to click the first option they see on any page",
-    "Larger buttons get clicked more often regardless of position",
+    "Larger buttons get clicked more often regardless of their position",
     "Users stop reading most pages after about three paragraphs"
    ],
    "Hick's law suggests reducing or grouping choices to speed up decisions."
@@ -813,10 +813,10 @@
    "Shift + A",
    [
     "Ctrl/Cmd + G",
-    "Ctrl/Cmd + Alt/Option + K",
+    "Ctrl/Cmd + Alt + K",
     "Shift + R"
    ],
-   "Shift + A adds Auto Layout. Ctrl/Cmd + G groups layers, Ctrl/Cmd + Alt/Option + K creates a component."
+   "Shift + A adds Auto Layout. Ctrl/Cmd + G groups layers, and Ctrl/Cmd + Alt + K (Option on Mac) creates a component."
   ],
   [
    "A button uses Auto Layout. You want it to grow wider as the label text gets longer. Which horizontal resizing setting should the button frame use?",
@@ -852,7 +852,7 @@
    "How do you make one layer inside an Auto Layout frame ignore the layout flow, such as a badge pinned to a corner?",
    "Enable Absolute position on that layer",
    [
-    "Lock the layer",
+    "Lock the layer and move it into the corner",
     "Set its opacity to 0 and duplicate it",
     "Convert the parent frame to a group"
    ],
@@ -892,7 +892,7 @@
    "Which component property lets an instance replace its nested icon with any other icon component?",
    "Instance swap property",
    [
-    "Boolean property",
+    "Boolean toggle property",
     "Text property",
     "Constraint property"
    ],
@@ -982,9 +982,9 @@
    "How do you make your file's styles and components available in other team files?",
    "Publish them as a team library",
    [
-    "Export the file as PNG",
+    "Export the file as PNG images",
     "Copy the file link into a comment",
-    "Duplicate the file for each team member"
+    "Duplicate the file for every teammate"
    ],
    "Publishing to a library lets other files enable it and use, then update, its styles and components."
   ],
@@ -1002,9 +1002,9 @@
    "What do constraints control for a layer inside a regular (non-Auto Layout) frame?",
    "How the layer moves or resizes when the parent frame is resized",
    [
-    "The order in which layers appear in the layers panel when the frame is resized",
-    "The export format of the layer",
-    "Which users can edit the layer"
+    "The order of layers in the layers panel after a resize",
+    "The export format and scale of the layer",
+    "Which users are allowed to edit the layer"
    ],
    "Constraints like Left, Right, Center or Scale define how a child responds when its frame changes size."
   ]
@@ -1014,9 +1014,9 @@
    "What is the main goal of Exploratory Data Analysis (EDA)?",
    "Understanding the data's structure, quirks and relationships before modeling",
    [
-    "Deploying a trained model to production and monitoring its predictions for real users",
-    "Writing the final polished report for executives",
-    "Proving a hypothesis that was chosen in advance"
+    "Deploying a trained model to production and then monitoring its predictions",
+    "Writing the final polished report for the executive team",
+    "Proving a hypothesis that was chosen before seeing the data"
    ],
    "EDA, promoted by John Tukey, uses summaries and plots to learn what the data looks like and what questions are worth asking."
   ],
@@ -1024,9 +1024,9 @@
    "A column of incomes has mean 95,000 and median 52,000. What does this most likely indicate?",
    "The distribution is right-skewed by a few very high incomes",
    [
-    "The distribution is perfectly symmetric",
+    "The distribution is perfectly symmetric around its center value",
     "The distribution is left-skewed by a few very low incomes",
-    "The data contains no outliers"
+    "The data contains no outliers at either end"
    ],
    "When the mean is far above the median, a long right tail of large values is pulling the mean up."
   ],
@@ -1035,7 +1035,7 @@
    "Histogram",
    [
     "Pie chart",
-    "Line chart over categories",
+    "Line chart",
     "Stacked bar chart"
    ],
    "A histogram shows how values are distributed across bins, revealing skew, modes and gaps."
@@ -1044,9 +1044,9 @@
    "Using the IQR rule, a value is commonly flagged as an outlier when it is:",
    "Below Q1 - 1.5 x IQR or above Q3 + 1.5 x IQR",
    [
-    "More than 1.5 times the mean",
-    "Below the median or above the mean by more than one unit",
-    "Outside the range of Q1 to Q3"
+    "More than 1.5 times the mean value of the whole column",
+    "More than one unit away from the median",
+    "Outside the range of Q1 to Q3 by any amount"
    ],
    "The 1.5 x IQR fence is Tukey's standard rule and is what box plot whiskers usually use."
   ],
@@ -1054,8 +1054,8 @@
    "What does a Pearson correlation coefficient of r = -0.9 between two variables indicate?",
    "A strong negative linear relationship",
    [
-    "A weak negative relationship",
-    "No relationship at all",
+    "A weak negative linear relationship",
+    "No relationship of any kind",
     "That one variable causes the other to fall"
    ],
    "r near -1 means that as one variable rises, the other tends to fall along a line. Correlation alone does not show causation."
@@ -1066,7 +1066,7 @@
    [
     "X and Y are completely unrelated to each other",
     "The scatter plot must have been drawn incorrectly",
-    "The data must contain a calculation error somewhere"
+    "The data must contain a calculation error somewhere in it"
    ],
    "Pearson r measures only linear association. Always plot the data, as Anscombe's quartet famously shows."
   ],
@@ -1074,9 +1074,9 @@
    "Ice cream sales and drowning incidents are positively correlated. What is the most likely explanation?",
    "A confounding variable, hot weather, drives both",
    [
-    "Eating ice cream causes drowning",
+    "Eating ice cream causes drowning incidents",
     "Drowning causes people to buy ice cream",
-    "The strong correlation proves a direct causal link between them"
+    "The strong correlation proves a direct causal link"
    ],
    "Both rise in summer. A third variable creating a spurious correlation is a classic confounder example."
   ],
@@ -1095,8 +1095,8 @@
    "Standardize them to one canonical value before grouping",
    [
     "Delete every row whose country is not \"USA\"",
-    "Leave them as they are, since grouping will merge them",
-    "Convert the column to numeric type"
+    "Leave them as they are, since grouping will merge them anyway",
+    "Convert the column to a numeric type first"
    ],
    "Inconsistent labels split one category into several groups, so they must be normalized first."
   ],
@@ -1135,7 +1135,7 @@
    "Seasonality",
    [
     "A random walk",
-    "A long-term trend reversal",
+    "A trend reversal",
     "Measurement error"
    ],
    "A pattern that repeats at a fixed calendar interval is seasonality, which should be separated from the trend."
@@ -1228,7 +1228,7 @@
    [
     "Pie chart with 12 slices",
     "Line chart connecting categories",
-    "3D cone chart"
+    "3D cone chart per category"
    ],
    "People compare lengths more accurately than angles, and sorting plus horizontal labels makes 12 categories easy to read."
   ],
@@ -1246,7 +1246,7 @@
    "Why are pie charts generally discouraged for comparing many similar values?",
    "People judge angles and areas less accurately than lengths",
    [
-    "Pie charts cannot display percentages or labels at all",
+    "Pie charts cannot display percentages or data labels at all",
     "Pie charts are not supported by most charting tools",
     "Pie charts only work when the data has negative values"
    ],
@@ -1276,8 +1276,8 @@
    "In a chart about one important product among ten, what is an effective way to highlight it?",
    "Color the focus product strongly and show the others in muted gray",
    [
-    "Give each of the ten products its own different bright, saturated color",
-    "Make all lines dashed except one dotted line",
+    "Give each of the ten products its own different bright, saturated hue",
+    "Make all lines dashed except for one dotted line",
     "Remove the other products from the axis labels only"
    ],
    "Using gray for context and one accent color makes the focus stand out immediately."
@@ -1287,8 +1287,8 @@
    "Sequential scheme, light to dark of one hue",
    [
     "Qualitative scheme with several unrelated hues",
-    "Rainbow scheme with many hues",
-    "Random colors per region"
+    "Rainbow scheme cycling through many hues",
+    "Random colors assigned to each region"
    ],
    "Ordered numeric data needs a sequential scheme where lightness clearly encodes order."
   ],
@@ -1297,7 +1297,7 @@
    "Diverging scheme with a neutral middle",
    [
     "Sequential scheme using one hue",
-    "Qualitative scheme of unrelated hues",
+    "Qualitative scheme of several unrelated hues",
     "Grayscale scheme with no hue at all"
    ],
    "Diverging schemes use two hues that move away from a neutral center to show direction and magnitude."
@@ -1448,9 +1448,9 @@
    "What does =XLOOKUP(\"P7\", A2:A100, C2:C100, \"Not found\") return if \"P7\" is not in A2:A100?",
    "The text Not found",
    [
-    "#N/A",
-    "0",
-    "The last value in C2:C100"
+    "The #N/A error",
+    "The number 0",
+    "The last value in C100"
    ],
    "XLOOKUP's fourth argument, if_not_found, replaces the #N/A error with a custom value."
   ],
@@ -1580,7 +1580,7 @@
    [
     "Conditional formatting with a color scale",
     "Protect Sheet with a password",
-    "A PivotTable filter"
+    "A PivotTable report filter"
    ],
    "Data > Data Validation > List creates an in-cell dropdown and rejects other entries by default."
   ],
@@ -1599,7 +1599,7 @@
    "Importing, cleaning and reshaping data with repeatable steps",
    [
     "Writing VBA macros that run when users click buttons",
-    "Designing printable page layouts with headers and footers",
+    "Designing printable page layouts with headers, footers and margins",
     "Creating interactive 3D maps of geographic data"
    ],
    "Power Query (Get & Transform) records transformation steps that can be refreshed when the source changes."
@@ -1610,7 +1610,7 @@
    [
     "Pivot Column",
     "Merge Queries",
-    "Group By"
+    "Add Index Column"
    ],
    "Unpivot turns wide columns into attribute-value rows, the tidy format needed for PivotTables and charts."
   ]
@@ -1630,9 +1630,9 @@
    "Why does Tableau show an error for the calculation [Sales] / SUM([Sales])?",
    "It mixes an aggregate and a non-aggregate argument",
    [
-    "Division is not supported between fields in calculated fields",
-    "Field names cannot be repeated",
-    "SUM only works on dimensions"
+    "Division is not supported between fields in calculations",
+    "Field names cannot be repeated in a formula",
+    "SUM can only be applied to dimension fields"
    ],
    "Tableau requires arguments to be all aggregated or all row level; wrap [Sales] in an aggregation or use a table calculation."
   ],
@@ -1641,7 +1641,7 @@
    "IF [Sales] > 1000 THEN \"High\" ELSE \"Low\" END",
    [
     "CASE [Sales] WHEN > 1000 THEN \"High\" ELSE \"Low\" END",
-    "IIF([Sales] > 1000) THEN \"High\"",
+    "IIF([Sales] > 1000) THEN \"High\" END",
     "WHEN [Sales] > 1000 RETURN \"High\""
    ],
    "Tableau IF statements use IF ... THEN ... ELSE ... END syntax; CASE compares exact values, not ranges."
@@ -1702,7 +1702,7 @@
    [
     "Convert the filter to a measure filter",
     "Move the LOD to the Rows shelf",
-    "Change FIXED to MIN"
+    "Wrap the FIXED LOD in ATTR()"
    ],
    "In Tableau's order of operations, FIXED LODs are computed before regular dimension filters but after context filters."
   ],
@@ -1730,9 +1730,9 @@
    "Why might a dashboard designer prefer a Fixed dashboard size over Automatic?",
    "It gives a predictable layout and can improve server caching",
    [
-    "Fixed size allows unlimited sheets",
-    "Automatic sizing is not supported once a dashboard is published to Tableau Server",
-    "Fixed size removes the need for filters"
+    "Fixed size allows an unlimited number of sheets",
+    "Automatic sizing is not supported on Tableau Server",
+    "Fixed size removes the need for any filters"
    ],
    "Fixed sizes render consistently on all screens; Automatic resizes and can shift elements unpredictably."
   ],
@@ -1750,7 +1750,7 @@
    "How does data blending differ from a join in Tableau?",
    "Blending aggregates each source first, then combines; a join combines rows first",
    [
-    "Blending can only combine sources that live in the same database, while joins work across any",
+    "Blending only works for sources in the same database; joins work across any",
     "Joins are only available on Tableau Server, not in Tableau Desktop",
     "Blending duplicates every row of the secondary data source"
    ],
@@ -1852,9 +1852,9 @@
    "What does ALL(Product) do when used inside CALCULATE?",
    "Removes filters from the Product table for that calculation",
    [
-    "Selects all columns of Product for display",
-    "Counts all rows in Product",
-    "Adds a filter that keeps every product visible in visuals"
+    "Selects all columns of Product for display in a table",
+    "Counts all rows in the Product table, ignoring blanks",
+    "Adds a filter that keeps every product visible in all visuals"
    ],
    "ALL removes filters, which is commonly used to compute a grand total for percent-of-total measures."
   ],
@@ -1873,8 +1873,8 @@
    "SAMEPERIODLASTYEAR",
    [
     "STARTOFQUARTER",
-    "EOMONTH",
-    "PREVIOUSDAY"
+    "PREVIOUSQUARTER",
+    "OPENINGBALANCEYEAR"
    ],
    "CALCULATE([Sales], SAMEPERIODLASTYEAR('Date'[Date])) returns last year's value for the current period; it needs a proper date table."
   ],
@@ -1932,8 +1932,8 @@
    "In a relationship between a Customers dimension and a Sales fact table, what is the usual cardinality?",
    "One-to-many from Customers to Sales",
    [
-    "Many-to-many",
-    "One-to-one",
+    "Many-to-many in both directions",
+    "One-to-one between the two tables",
     "Many-to-one from Customers to Sales"
    ],
    "Each customer appears once in Customers and many times in Sales."
@@ -1942,9 +1942,9 @@
    "What is the default and generally recommended cross-filter direction for a one-to-many relationship?",
    "Single, from the one side to the many side",
    [
-    "Both directions",
-    "None",
-    "From the many side to the one side only"
+    "Both, so filters flow in either direction",
+    "None, so the tables never filter each other",
+    "Single, from the many side to the one side"
    ],
    "Single direction avoids ambiguity and performance issues; bidirectional filtering should be used sparingly."
   ],
@@ -1992,9 +1992,9 @@
    "A dynamic RLS rule should show each salesperson only their own rows. Which DAX function is typically used?",
    "USERPRINCIPALNAME()",
    [
-    "TODAY()",
+    "USERELATIONSHIP()",
     "SELECTEDVALUE()",
-    "RELATED()"
+    "SELECTEDMEASURENAME()"
    ],
    "USERPRINCIPALNAME returns the signed-in user's UPN (often their email), which is compared to a column in the security table."
   ],
@@ -2002,7 +2002,7 @@
    "A Power BI semantic model uses Import mode with on-premises SQL Server. What is required for scheduled refresh in the Power BI service?",
    "An on-premises data gateway",
    [
-    "A Premium capacity license in all cases",
+    "A Premium capacity license",
     "A DirectQuery connection",
     "Publishing to the web"
    ],

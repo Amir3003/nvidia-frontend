@@ -14,9 +14,9 @@
    "What type does TypeScript infer for x in const x = \"hello\";?",
    "The literal type \"hello\"",
    [
-    "The type string",
-    "The type unknown",
-    "The type any"
+    "The primitive type string",
+    "The top type unknown",
+    "The implicit type any"
    ],
    "A const binding cannot be reassigned, so TypeScript keeps the narrow literal type. With let x = \"hello\" it would widen to string."
   ],
@@ -55,10 +55,10 @@
    "{ a: 1, b: \"x\" }",
    [
     "{ a: 1 }",
-    "{ b: \"x\" }",
-    "{}"
+    "{ a: \"1\", b: \"x\" }",
+    "{ a: 1, b: 2 }"
    ],
-   "An intersection type requires all members of both types, so the object needs both a and b."
+   "An intersection type requires all members of both types with their declared types, so the object needs a as a number and b as a string."
   ],
   [
    "What does TypeScript reduce the type string & number to?",
@@ -85,8 +85,8 @@
    "A union such as string | number",
    [
     "An object type with methods",
-    "Optional properties",
-    "An index signature"
+    "Optional and readonly properties",
+    "A string index signature"
    ],
    "An interface always describes an object shape. Unions of primitives require a type alias."
   ],
@@ -105,7 +105,7 @@
    "{ port: number }",
    [
     "{ port: 3000 }",
-    "\"object\"",
+    "{ port: any }",
     "{ readonly port: 3000 }"
    ],
    "Type-level typeof reads the inferred type of the variable. Property values in a mutable object literal widen to number; as const would keep 3000 and add readonly."
@@ -124,7 +124,7 @@
    "What does the -? modifier do in the mapped type { [K in keyof T]-?: T[K] }?",
    "Removes optionality, making every property required",
    [
-    "Makes every property optional",
+    "Makes every property optional, like Partial does",
     "Removes the readonly modifier from every property",
     "Removes properties whose type is undefined"
    ],
@@ -136,7 +136,7 @@
    [
     "\"no\"",
     "\"yes\"",
-    "never"
+    "\"yes\" & \"no\""
    ],
    "Conditional types distribute over unions when the checked type is a naked type parameter, so each member is evaluated separately."
   ],
@@ -154,11 +154,11 @@
    "What is Omit<{ a: number; b: string; c: boolean }, \"a\">?",
    "{ b: string; c: boolean }",
    [
-    "{ a: number }",
+    "{ a: number; c: boolean }",
     "{ a?: number; b: string; c: boolean }",
     "{ b?: string; c?: boolean }"
    ],
-   "Omit builds a type with all properties except the listed keys. Pick<T, \"a\"> would give { a: number } instead."
+   "Omit builds a type with all properties except the listed keys, so a is removed entirely rather than made optional."
   ],
   [
    "Which tsconfig.json setting turns on strictNullChecks, noImplicitAny and the other strict family checks at once?",
@@ -192,10 +192,10 @@
   ],
   [
    "What happens when you compile let v: unknown = \"hi\"; v.toUpperCase();?",
-   "A compile error, because unknown must be narrowed first",
+   "A compile error: unknown must be narrowed first",
    [
-    "It compiles and returns \"HI\"",
-    "It compiles but always throws at runtime",
+    "It compiles and returns \"HI\" at runtime",
+    "It compiles but throws a TypeError when it runs",
     "It compiles because unknown behaves like any"
    ],
    "unknown is the type-safe counterpart of any: you must narrow it, for example with typeof v === \"string\", before using it."
@@ -228,7 +228,7 @@
    [
     "0 1 2",
     "0 0 0",
-    "undefined undefined undefined"
+    "2 2 2"
    ],
    "var is function scoped, so all three closures share one i, which is 3 when the timers fire. Using let creates a new binding per iteration."
   ],
@@ -256,7 +256,7 @@
    "Given class Animal {} and class Dog extends Animal {}, what does Object.getPrototypeOf(Dog.prototype) return?",
    "Animal.prototype",
    [
-    "Dog",
+    "Dog.prototype",
     "Object.prototype",
     "Function.prototype"
    ],
@@ -277,7 +277,7 @@
    "The enclosing lexical scope",
    [
     "The object it is called on",
-    "The global object",
+    "The global object, such as window",
     "The first argument passed to it"
    ],
    "Arrow functions have no own this binding, so call, apply and bind cannot change it."
@@ -288,7 +288,7 @@
    [
     "2",
     "undefined",
-    "It throws a TypeError"
+    "NaN"
    ],
    "A bound function permanently fixes this. A later call or apply cannot override it."
   ],
@@ -296,8 +296,8 @@
    "Given async function f() { return 5; }, what does f() return?",
    "A Promise that resolves to 5",
    [
-    "The number 5",
-    "undefined",
+    "The number 5, returned synchronously",
+    "A Promise that rejects with the value 5",
     "A Promise that resolves to undefined"
    ],
    "An async function always returns a Promise. A returned value becomes the resolution value."
@@ -308,17 +308,17 @@
    [
     "Promise.all",
     "Promise.race",
-    "Promise.any"
+    "Promise.withResolvers"
    ],
    "Promise.all rejects as soon as one input rejects. allSettled always resolves with an array of { status, value | reason } objects."
   ],
   [
    "What does this print? console.log(a); var a = 5;",
-   "undefined",
+   "It prints undefined",
    [
-    "5",
+    "It prints the number 5",
     "A ReferenceError",
-    "null"
+    "It prints null"
    ],
    "The var declaration is hoisted and initialized to undefined. The assignment stays in place."
   ],
@@ -327,8 +327,8 @@
    "A ReferenceError is thrown",
    [
     "It prints undefined",
-    "It prints 5",
-    "It prints null"
+    "It prints the number 5",
+    "A TypeError is thrown"
    ],
    "let and const are hoisted but stay uninitialized in the temporal dead zone until the declaration line runs."
   ],
@@ -356,7 +356,7 @@
    "What does this print? if (true) { var a = 1; let b = 2; } console.log(a, typeof b);",
    "1 undefined",
    [
-    "1 2",
+    "1 number",
     "A ReferenceError",
     "undefined undefined"
    ],
@@ -378,7 +378,7 @@
    [
     "el.innerHTML = input",
     "el.outerHTML = input",
-    "el.insertAdjacentHTML(\"beforeend\", input)"
+    "document.write(input)"
    ],
    "textContent inserts plain text and never parses HTML, which prevents script injection. The other options parse markup."
   ],
@@ -409,8 +409,8 @@
    "respond_to_missing?",
    [
     "respond_to?",
-    "method_added",
-    "define_method"
+    "method_defined?",
+    "singleton_method_added"
    ],
    "Ruby's respond_to? calls respond_to_missing? for methods that are not defined. Overriding it keeps respond_to? and method objects consistent."
   ],
@@ -438,7 +438,7 @@
    "What does p = proc { |a, b| [a, b] }; p.call(1) return?",
    "[1, nil]",
    [
-    "An ArgumentError",
+    "ArgumentError",
     "[1]",
     "nil"
    ],
@@ -479,8 +479,8 @@
    "In the singleton class of Foo",
    [
     "In Foo's instance method table",
-    "In Object",
-    "In Module"
+    "In Foo's superclass, Object",
+    "In the Module class that all classes share"
    ],
    "Class methods are singleton methods of the class object, so they live in Foo's singleton class (its eigenclass)."
   ],
@@ -566,11 +566,11 @@
   ],
   [
    "In Rails, what does User.where(active: true) return?",
-   "An ActiveRecord::Relation that runs its query lazily",
+   "An ActiveRecord::Relation that runs lazily",
    [
-    "An Array of loaded User objects",
-    "The first matching User",
-    "A raw SQL string"
+    "An Array of User objects loaded right away",
+    "The first matching User record, or nil",
+    "A raw SQL string ready to be executed"
    ],
    "where builds a chainable Relation. The query runs only when results are needed, for example on each, to_a or first."
   ],
@@ -578,7 +578,7 @@
    "In Rails, no user has id 999. What does User.find(999) do?",
    "It raises ActiveRecord::RecordNotFound",
    [
-    "It returns nil",
+    "It returns nil without an error",
     "It returns an empty Relation",
     "It creates a new user with id 999"
    ],
@@ -660,9 +660,9 @@
    "What happens when you run new Loggable() where Loggable is a trait?",
    "An Error, because traits cannot be instantiated",
    [
-    "A new object with the trait's methods",
-    "A new stdClass object",
-    "A deprecation notice, then an object"
+    "A new object that exposes all of the trait's methods",
+    "A new empty stdClass object with no methods",
+    "A deprecation notice, and then a new object"
    ],
    "Traits are only for reuse inside classes through use. They cannot be instantiated on their own."
   ],
@@ -720,9 +720,9 @@
    "What does OPcache store to speed up PHP?",
    "Compiled script bytecode in shared memory",
    [
-    "Rendered HTML responses",
-    "Database query results",
-    "Session data for each user"
+    "Rendered HTML responses for each page URL",
+    "Database query results keyed by the SQL text",
+    "Session data for each logged-in user"
    ],
    "OPcache saves PHP from parsing and compiling scripts on every request. Caching responses or queries needs other tools."
   ],
@@ -730,9 +730,9 @@
    "Production has opcache.validate_timestamps=0. You deploy new PHP files. What happens?",
    "The old code keeps running until OPcache is reset or PHP restarts",
    [
-    "PHP detects the changes on the next request",
-    "PHP returns a 500 error until the cache rebuilds",
-    "OPcache disables itself because files changed"
+    "PHP notices the changed files on the very next request and recompiles them",
+    "PHP returns a 500 error until the cache rebuilds itself",
+    "OPcache disables itself because the files on disk changed"
    ],
    "With timestamp validation off, OPcache never checks files for changes. Deploy scripts must reset the cache, for example by reloading PHP-FPM."
   ],
@@ -740,9 +740,9 @@
    "Right after a user logs in, which call helps prevent session fixation attacks?",
    "session_regenerate_id(true)",
    [
-    "session_start()",
     "session_write_close()",
-    "session_unset()"
+    "session_set_cookie_params(0)",
+    "session_cache_expire(30)"
    ],
    "Regenerating issues a new session ID once privileges change, so an ID an attacker planted earlier becomes useless."
   ],
@@ -750,19 +750,19 @@
    "With PHP's default session settings, where is $_SESSION data stored?",
    "In files on the server, keyed by the session ID",
    [
-    "Inside the session cookie in the browser",
-    "In localStorage in the browser",
-    "In the URL of every request"
+    "Inside the session cookie, encrypted in the browser",
+    "In the browser's localStorage for the site",
+    "In the query string of every request URL"
    ],
    "The PHPSESSID cookie only carries the ID. The default files handler keeps the data on the server."
   ],
   [
    "What does match(\"1\") { 1 => \"int\", default => \"other\" } return?",
-   "\"other\"",
+   "It returns \"other\"",
    [
-    "\"int\"",
-    "null",
-    "An UnhandledMatchError"
+    "It returns \"int\"",
+    "It returns null",
+    "It throws an error"
    ],
    "match compares with strict identity (===), so the string \"1\" does not equal the integer 1. switch would use loose comparison."
   ],
@@ -788,21 +788,21 @@
   ],
   [
    "What does public function __construct(private LoggerInterface $logger) {} do in PHP 8?",
-   "It declares a private $logger property and assigns the argument to it",
+   "It declares and sets a private $logger property",
    [
     "It declares a local variable that is lost after construction",
-    "It makes the constructor private",
+    "It makes the constructor itself private, so new fails outside",
     "It injects a logger from a global container automatically"
    ],
    "Constructor property promotion declares and assigns the property in one step. Wiring the dependency is still up to the caller or DI container."
   ],
   [
    "A PHP REST endpoint receives a JSON request body. Why is $_POST empty, and what reads the data?",
-   "$_POST only parses form encodings; use json_decode(file_get_contents('php://input'), true)",
+   "$_POST only parses form bodies; read json_decode(file_get_contents('php://input'))",
    [
-    "$_POST is filled only over HTTPS; use $_REQUEST['json'] instead",
-    "$_POST needs session_start(); call it and then read $_POST",
-    "$_POST is filled only for PUT requests; use $_GET['body'] instead"
+    "$_POST is filled only over HTTPS; read $_REQUEST['json'] with json_decode() instead",
+    "$_POST needs session_start() first; call it at the top and then read $_POST as usual",
+    "$_POST is filled only for PUT requests; read the raw body from $_GET['body'] instead"
    ],
    "PHP fills $_POST only for form encoded and multipart bodies. A JSON body must be read from php://input and decoded."
   ]
@@ -832,9 +832,9 @@
    "Parsing a very large JSON file freezes a Flutter app's UI. Which fix actually removes the jank?",
    "Run the parsing in another isolate with Isolate.run or compute",
    [
-    "Mark the parsing function as async",
-    "Wrap the parsing in Future.delayed(Duration.zero)",
-    "Convert the parsed result into a Stream"
+    "Mark the parsing function as async and await its result",
+    "Wrap the parsing call in Future.delayed(Duration.zero)",
+    "Convert the parsing into a Stream that emits each decoded item later"
    ],
    "async code still runs on the main isolate, so CPU heavy work blocks frames. A separate isolate does the work in parallel."
   ],
@@ -842,8 +842,8 @@
    "With sound null safety, what happens when you compile String? name; print(name.length);?",
    "A compile error, because name might be null",
    [
-    "It prints 0",
-    "It prints null",
+    "It compiles and prints 0, the default length",
+    "It compiles and prints null for the length",
     "It compiles and throws only if name is null"
    ],
    "A nullable type cannot be dereferenced directly. Use name?.length, a null check, or the ! operator."
@@ -852,18 +852,18 @@
    "What happens when code reads a late String s; field before anything has been assigned to it?",
    "A LateInitializationError is thrown at runtime",
    [
-    "It returns an empty string",
-    "It returns null",
-    "A compile error is reported"
+    "It returns an empty string as the default value",
+    "It returns null, like any unassigned variable",
+    "A compile error is reported at the read site"
    ],
    "late moves the initialization check from compile time to runtime, so reading too early throws."
   ],
   [
    "What does this Dart code print? int? x; x ??= 5; print(x);",
-   "5",
+   "It prints 5",
    [
-    "null",
-    "0",
+    "It prints null",
+    "It prints 0",
     "A compile error"
    ],
    "A nullable local without an initializer starts as null, and ??= assigns only when the current value is null."
@@ -904,17 +904,17 @@
    [
     "build",
     "didUpdateWidget",
-    "didChangeDependencies"
+    "activate"
    ],
-   "initState is the place to create controllers and subscriptions. build can run many times, and didChangeDependencies can run again when inherited widgets change."
+   "initState is the place to create controllers and subscriptions. build can run many times, and activate can run again when the State is reinserted into the tree."
   ],
   [
    "A StatefulWidget creates an AnimationController in initState. Where should controller.dispose() be called?",
    "In the State's dispose method",
    [
-    "In build",
-    "In didUpdateWidget",
-    "In deactivate"
+    "In the State's build method",
+    "In the State's didUpdateWidget method",
+    "In the State's deactivate method"
    ],
    "dispose runs when the State is removed permanently, which is the right moment to release controllers, streams and listeners."
   ],
@@ -932,18 +932,18 @@
    "What does mixin Swimmer on Animal { } mean in Dart?",
    "Swimmer can only be mixed into classes that are subtypes of Animal",
    [
-    "Swimmer automatically extends every subclass of Animal",
-    "Swimmer replaces Animal's methods for all classes",
-    "Swimmer can be instantiated only through Animal"
+    "Swimmer automatically extends every subclass of Animal in the program",
+    "Swimmer replaces Animal's methods in every class that uses it",
+    "Swimmer can be instantiated only through an Animal instance"
    ],
    "The on clause restricts which classes can use the mixin and lets the mixin call Animal members, including through super."
   ],
   [
    "Mixins A and B both define hello(). Which version runs for C().hello() when class C with A, B {}?",
-   "B's version",
+   "B's version, since B is applied last",
    [
-    "A's version",
-    "Both, in order A then B",
+    "A's version, since A is listed first",
+    "Both run, in order A then B",
     "A compile error about the conflict"
    ],
    "Mixins are applied left to right, each one a new superclass layer, so the last mixin listed overrides earlier ones."
@@ -954,15 +954,15 @@
    [
     "A const constructor",
     "A named generative constructor",
-    "A redirecting generative constructor"
+    "A redirecting constructor"
    ],
    "A factory constructor is not required to create a new instance and can return a cached object or a subtype. Generative constructors always create one."
   ],
   [
    "Given class Point { final int x, y; const Point(this.x, this.y); }, what does identical(const Point(1, 2), const Point(1, 2)) return?",
-   "true",
+   "It returns true",
    [
-    "false",
+    "It returns false",
     "A compile error",
     "It depends on the platform"
    ],
@@ -972,9 +972,9 @@
    "Which requirement must a class meet to have a const constructor?",
    "All of its instance fields must be final",
    [
-    "It must have no methods",
-    "It must extend a const class",
-    "Its fields must all be static"
+    "It must not declare any methods at all",
+    "It must not have any named constructors",
+    "All of its fields must be declared static"
    ],
    "A const constructor builds compile-time constants, so the object's state must be immutable. That requires final instance fields."
   ],
@@ -982,9 +982,9 @@
    "Given extension on String { bool get isBlank => trim().isEmpty; }, what happens with dynamic d = '  '; print(d.isBlank);?",
    "It throws NoSuchMethodError at runtime",
    [
-    "It prints true",
-    "It prints false",
-    "It is a compile error"
+    "It prints true, since the string is blank",
+    "It prints false, since d holds two spaces",
+    "It is a compile error on the d.isBlank call"
    ],
    "Extension members are resolved from the static type. With a dynamic receiver the extension is not applied, so the runtime lookup fails."
   ],
@@ -1003,8 +1003,8 @@
    "Map<dynamic, dynamic>",
    [
     "Set<dynamic>",
-    "List<dynamic>",
-    "Object"
+    "LinkedHashSet<dynamic>",
+    "Map<Object, Object>"
    ],
    "An empty {} is a map literal. To create an empty set, write <String>{} or declare the type, as in Set<String> s = {}."
   ]
@@ -1045,7 +1045,7 @@
    "It removes the key from the table",
    [
     "It stores nil as a real value under the key",
-    "It raises an error",
+    "It raises an error for the nil value",
     "It sets the field to an empty string"
    ],
    "Tables never store nil values. Assigning nil is how you delete a key."
@@ -1065,7 +1065,7 @@
    "hi!",
    [
     "nil",
-    "An error: field hi not found",
+    "hi",
     "table: hi"
    ],
    "__index runs when a key is absent from the table. Here the function builds a value from the missing key."
@@ -1132,11 +1132,11 @@
   ],
   [
    "What does this print in Lua? local x = 1; do local x = 2 end; print(x)",
-   "1",
+   "It prints 1",
    [
-    "2",
-    "nil",
-    "An error about redeclaring x"
+    "It prints 2",
+    "It prints nil",
+    "An error: x redeclared"
    ],
    "The inner local x is scoped to the do ... end block and shadows the outer x only there."
   ],
@@ -1165,7 +1165,7 @@
    "Through a virtual stack of Lua values",
    [
     "Through shared C global variables",
-    "Through JSON strings",
+    "Through JSON strings passed by value",
     "Through a pipe between processes"
    ],
    "Functions such as lua_pushnumber and lua_tostring push and read values on a stack owned by the lua_State."
@@ -1192,20 +1192,20 @@
   ],
   [
    "A Lua program calls require(\"util\") in two different files. How many times does util.lua run?",
-   "Once, then the result is reused from package.loaded",
+   "Once; later calls reuse package.loaded",
    [
-    "Once per calling file",
-    "Every time require is called",
-    "Never until a field is used"
+    "Once per calling file, so it runs twice",
+    "Every time require is called from any file",
+    "Never, until one of its fields is first used"
    ],
-   "require caches each module's return value in package.loaded and returns the cached value on later calls."
+   "require caches each module's return value in package.loaded and returns the cached value on later calls, so the file runs only once."
   ],
   [
    "In Lua, which values are treated as false in an if condition?",
    "Only nil and false",
    [
     "nil, false and 0",
-    "nil, false, 0 and the empty string",
+    "nil, false, 0 and \"\"",
     "Only nil"
    ],
    "Unlike C or JavaScript, 0 and \"\" are true in Lua."
@@ -1256,8 +1256,8 @@
    "In Perl, after $h{k} = undef;, what are exists $h{k} and defined $h{k}?",
    "exists is true, defined is false",
    [
-    "Both are true",
-    "Both are false",
+    "exists and defined are both true",
+    "exists and defined are both false",
     "exists is false, defined is true"
    ],
    "exists checks whether the key is present, while defined checks whether its value is not undef."
@@ -1316,7 +1316,7 @@
    "Inside while (my $line = <$fh>) { ... } in Perl, what does chomp $line; do?",
    "Removes the trailing newline",
    [
-    "Removes all whitespace",
+    "Removes all whitespace from the line",
     "Removes the last character whatever it is",
     "Splits the line into words"
    ],
@@ -1374,11 +1374,11 @@
   ],
   [
    "What does this Perl code print? our $x = 1; sub show { print $x } sub test { local $x = 2; show() } test();",
-   "2",
+   "It prints 2",
    [
-    "1",
-    "Nothing, it is a compile error",
-    "An empty line"
+    "It prints 1",
+    "A compile error",
+    "It prints nothing"
    ],
    "local temporarily replaces the global's value until test returns, and show sees it. With my $x = 2 inside test, show would print 1."
   ],
@@ -1420,7 +1420,7 @@
    [
     "1",
     "true",
-    "An empty string"
+    "-1"
    ],
    "$? is the exit status of the last command. By convention 0 means success and any nonzero value means failure."
   ],
@@ -1428,9 +1428,9 @@
    "In Bash, var=\"a b\". Why does [ $var = \"a b\" ] fail while [[ $var = \"a b\" ]] works?",
    "[ is a command, so unquoted $var splits into two words",
    [
-    "[ does not support the = operator at all",
-    "[[ ]] converts both sides to numbers first",
-    "[ only works on file tests, not strings"
+    "[ does not support the = operator for strings at all",
+    "[[ ]] converts both sides to numbers before it compares them",
+    "[ only works on file tests, not on string comparisons"
    ],
    "[ is an ordinary builtin, so its arguments undergo word splitting. [[ ]] is shell syntax and does not split unquoted variables. Quoting \"$var\" also fixes [."
   ],
@@ -1439,7 +1439,7 @@
    "yes",
    [
     "no",
-    "An error about the asterisk",
+    "yes no",
     "Nothing"
    ],
    "Inside [[ ]], an unquoted right side of == is a glob pattern, so J* matches John. With [ ] the asterisk would be treated differently."
@@ -1449,7 +1449,7 @@
    "yes",
    [
     "no",
-    "An error about the < operator",
+    "yes no",
     "Nothing"
    ],
    "Inside [[ ]], < compares strings lexicographically, and \"1\" sorts before \"9\". For numbers use (( 10 < 9 )) or [[ 10 -lt 9 ]]."
@@ -1460,7 +1460,7 @@
    [
     "1",
     "2",
-    "An empty string"
+    "127"
    ],
    "A pipeline's status is the status of its last command. With set -o pipefail it would be 1 because false failed."
   ],
@@ -1489,7 +1489,7 @@
    "report.tar",
    [
     "report",
-    "gz",
+    "report.tar.gz",
     "tar.gz"
    ],
    "% removes the shortest match of .* from the end. %% would remove the longest match and leave report."
@@ -1528,9 +1528,9 @@
    "A Bash script runs (cd /tmp && ls) and then pwd. What does pwd print?",
    "The directory the script was in before",
    [
-    "/tmp",
-    "The home directory",
-    "/"
+    "/tmp, where the subshell changed to",
+    "The home directory of the user",
+    "The filesystem root directory /"
    ],
    "The cd happens only inside the subshell. Grouping with { ...; } instead would change the current shell's directory."
   ],
@@ -1710,9 +1710,9 @@
    "What does the RemoteSigned execution policy allow?",
    "Local scripts run; downloaded scripts need a trusted signature",
    [
-    "Only scripts signed by Microsoft can run",
-    "All scripts run, but remote ones show a warning",
-    "Scripts run only through PowerShell remoting"
+    "Only scripts signed by Microsoft itself are allowed to run",
+    "All scripts run, but downloaded ones show a warning first",
+    "Scripts run only when they are sent through PowerShell remoting sessions"
    ],
    "Files marked as coming from the internet must be signed by a trusted publisher. Unblock-File removes that mark from a file you trust."
   ],
@@ -1720,7 +1720,7 @@
    "Which statement about PowerShell execution policies is correct?",
    "They are a safety feature, not a security boundary",
    [
-    "They block all malicious code from running",
+    "They block all malicious code from running on the machine",
     "They can only be changed by domain admins",
     "They apply to cmd.exe batch files as well"
    ],
@@ -1730,9 +1730,9 @@
    "Which command runs a script block on servers web01 and web02 over PowerShell remoting?",
    "Invoke-Command -ComputerName web01, web02 -ScriptBlock { Get-Service }",
    [
-    "Enter-PSSession -ComputerName web01, web02 { Get-Service }",
-    "Start-Job -ComputerName web01, web02 { Get-Service }",
-    "Get-Service | Send-Remote web01, web02"
+    "Enter-PSSession -ComputerName web01, web02 -ScriptBlock { Get-Service }",
+    "Start-Job -ComputerName web01, web02 -ScriptBlock { Get-Service }",
+    "Get-Service | Send-Remote -ComputerName web01, web02"
    ],
    "Invoke-Command fans out to many computers. Enter-PSSession opens an interactive session with a single computer."
   ],
@@ -1770,7 +1770,7 @@
    "Inside try { }, Get-Item C:\\missing.txt fails, but catch never runs. What fixes it?",
    "Add -ErrorAction Stop to Get-Item",
    [
-    "Add a finally block",
+    "Add a finally block after catch",
     "Wrap the call in parentheses",
     "Use catch [System.Object] instead"
    ],
@@ -1781,8 +1781,8 @@
    "Install-Module PSReadLine -Scope CurrentUser",
    [
     "Import-Module PSReadLine -Scope CurrentUser",
-    "Add-Module PSReadLine -User",
-    "Get-Module PSReadLine -Install"
+    "Add-Module PSReadLine -Scope CurrentUser",
+    "Get-Module PSReadLine -ListAvailable -Install"
    ],
    "Install-Module downloads and installs from a repository. Import-Module only loads a module that is already installed."
   ],
@@ -1801,8 +1801,8 @@
    "Get-ADUser -Identity jdoe -Properties LastLogonDate",
    [
     "Get-ADUser -Identity jdoe -Select LastLogonDate",
-    "Get-ADUser -Identity jdoe -All",
-    "Get-ADUser -Identity jdoe -Extended"
+    "Get-ADUser -Identity jdoe -IncludeAllProperties",
+    "Get-ADUser -Identity jdoe -Extended LastLogonDate"
    ],
    "Get-ADUser returns a small default set of attributes. Other attributes must be requested with -Properties."
   ],
@@ -1872,11 +1872,11 @@
    "Which Rust crate generates the JavaScript bindings that let Wasm functions take and return strings and JS objects?",
    "wasm-bindgen",
    [
-    "serde",
-    "tokio",
-    "bindgen"
+    "bindgen",
+    "cbindgen",
+    "wasm-encoder"
    ],
-   "wasm-bindgen generates glue on both sides of the boundary. The similarly named bindgen generates Rust bindings for C headers."
+   "wasm-bindgen generates glue on both sides of the boundary. The similarly named bindgen generates Rust bindings for C headers, and cbindgen generates C headers from Rust."
   ],
   [
    "Which Rust compilation target produces Wasm for browsers with no assumed host system interface?",
@@ -1922,9 +1922,9 @@
    "How is a JavaScript string usually passed to a Wasm function exported from compiled C code?",
    "Encoded into linear memory, then passed as a pointer and length",
    [
-    "Passed directly as a string parameter type",
-    "Passed as a reference to the JS string's heap object",
-    "Passed by converting it to a single i64 value"
+    "Passed directly as a string parameter type in the function signature",
+    "Passed as a raw pointer into the JS engine's own string heap",
+    "Passed by packing all its characters into a single i64 value"
    ],
    "Core Wasm functions take only numbers and references. Glue code encodes the text, often as UTF-8, into linear memory and passes its offset."
   ],
@@ -1942,9 +1942,9 @@
    "What is the importObject argument of WebAssembly.instantiateStreaming(fetch(url), importObject) for?",
    "Supplying JS functions and values the module declares as imports",
    [
-    "Listing which exports should be made public",
-    "Configuring the network request for the .wasm file",
-    "Choosing the compiler optimization level"
+    "Listing which of the module's exports should be made public",
+    "Configuring the fetch request headers and credentials for the .wasm file",
+    "Choosing the compiler optimization level for the module code"
    ],
    "Wasm cannot call the host on its own. Everything it needs from outside, such as a log function or memory, is passed in as imports."
   ],
@@ -1952,9 +1952,9 @@
    "WebAssembly.instantiateStreaming fails with a type error, while fetching the file works. What is the most likely cause?",
    "The server does not send Content-Type: application/wasm",
    [
-    "The file is larger than one memory page",
-    "The module has no exported functions",
-    "The page is not using an ES module script"
+    "The file is larger than one 64 KiB memory page of data",
+    "The module has no exported functions for JavaScript to call",
+    "The page loads the script without type=module set on it"
    ],
    "Streaming compilation requires the application/wasm MIME type. Fix the server configuration or fall back to instantiate with an ArrayBuffer."
   ],
@@ -1962,9 +1962,9 @@
    "A Wasm function reads an address beyond the end of its linear memory. What happens?",
    "It traps, and JS sees a WebAssembly.RuntimeError",
    [
-    "It reads bytes from the browser's own memory",
-    "It returns 0 silently",
-    "The memory grows automatically"
+    "It reads bytes from the browser's own process memory",
+    "It returns 0 silently and execution continues",
+    "The memory grows automatically to fit the address"
    ],
    "Every memory access is bounds checked against the module's own memory, so a bad access stops execution instead of touching the host."
   ],
@@ -1973,8 +1973,8 @@
    "Only by calling imported JavaScript functions",
    [
     "Directly, through built-in DOM instructions",
-    "Through a raw pointer to the DOM tree",
-    "Through operating system calls"
+    "Through a raw pointer into the browser's DOM tree",
+    "Through direct calls to the operating system"
    ],
    "Wasm is sandboxed and has no direct access to browser APIs. It can only use capabilities the host passes in as imports."
   ],
@@ -2002,9 +2002,9 @@
    "For which task is moving code from JavaScript to WebAssembly most likely to give a big speedup?",
    "Compute-heavy work like image filtering on large buffers",
    [
-    "Frequent small DOM updates",
-    "Waiting for many network requests",
-    "Reading values from localStorage"
+    "Frequent small DOM updates such as toggling CSS classes on nodes",
+    "Waiting on many network requests to finish in parallel",
+    "Reading many small values from localStorage in a loop"
    ],
    "Wasm shines at tight numeric loops over memory. DOM work and I/O still go through JS APIs, and frequent boundary calls add overhead."
   ],

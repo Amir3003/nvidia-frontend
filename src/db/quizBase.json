@@ -1,0 +1,1674 @@
+{
+ "docker": [
+  [
+   "Which Dockerfile instruction copies build artifacts from an earlier stage in a multi-stage build?",
+   "COPY --from=builder /app/dist /app",
+   [
+    "RUN export ARTIFACTS=/app/dist",
+    "STAGE prod FROM builder /app/dist",
+    "EXTRACT /app/dist TO /app"
+   ],
+   "COPY --from=<stage> transfers files from a named build stage, leaving compilers and dev dependencies behind."
+  ],
+  [
+   "What is the difference between CMD and ENTRYPOINT?",
+   "ENTRYPOINT sets the executable; CMD supplies default arguments you can override",
+   [
+    "CMD runs as root, while ENTRYPOINT runs as an unprivileged user",
+    "ENTRYPOINT only works in Docker Swarm services, while CMD works in plain docker run",
+    "CMD runs before container networking is initialized; ENTRYPOINT runs after it"
+   ],
+   "Arguments passed to docker run replace CMD but are appended to ENTRYPOINT."
+  ],
+  [
+   "Why should frequently changing instructions like COPY . . come late in a Dockerfile?",
+   "To keep earlier layers cached so rebuilds are faster",
+   [
+    "Because COPY must always be the last instruction",
+    "To reduce the number of exposed ports",
+    "Because Docker executes instructions bottom to top"
+   ],
+   "Each instruction creates a cached layer; a change invalidates that layer and every layer after it."
+  ],
+  [
+   "Which file excludes local files from the build context?",
+   ".dockerignore",
+   [
+    ".gitignore",
+    "docker-compose.yml",
+    "Dockerfile.exclude"
+   ],
+   ".dockerignore keeps node_modules, secrets and large files out of the build context."
+  ],
+  [
+   "How do you persist database data beyond the life of a container?",
+   "Mount a named volume, e.g. -v pgdata:/var/lib/postgresql/data",
+   [
+    "Run docker commit after every write to snapshot the data",
+    "Store the data in an environment variable such as PGDATA_CACHE",
+    "Raise the container memory limit so the data stays in RAM"
+   ],
+   "Volumes live outside the container filesystem and survive container removal."
+  ],
+  [
+   "What does docker run -p 8080:80 nginx do?",
+   "Maps port 8080 on the host to port 80 in the container",
+   [
+    "Maps port 80 on the host to 8080 in the container",
+    "Limits the container to 80 MB of memory on port 8080",
+    "Runs 80 replicas of nginx behind host port 8080"
+   ],
+   "The format is HOST_PORT:CONTAINER_PORT."
+  ],
+  [
+   "In docker compose, how do services reach each other by default?",
+   "By service name over the default project network",
+   [
+    "Only through localhost, since all services share one host",
+    "Only via ports published on the host with the ports key",
+    "They cannot reach each other without a Kubernetes cluster"
+   ],
+   "Compose creates a network where each service name resolves via Docker DNS."
+  ],
+  [
+   "Which command shows logs of a running container named api?",
+   "docker logs api",
+   [
+    "docker inspect api --logs",
+    "docker attach --history api",
+    "docker events api"
+   ],
+   "docker logs prints stdout and stderr; add -f to follow."
+  ],
+  [
+   "Why run the application as a non-root USER inside the image?",
+   "It limits damage if the process is compromised",
+   [
+    "It makes the final image noticeably smaller on disk",
+    "Root cannot open network ports in containers",
+    "Docker refuses to start root containers"
+   ],
+   "Least privilege reduces the impact of a container escape or exploited dependency."
+  ],
+  [
+   "What is the main benefit of a slim or distroless base image?",
+   "Smaller size and fewer packages that could contain vulnerabilities",
+   [
+    "Faster CPU execution of Python code thanks to a lighter interpreter",
+    "Automatic GPU support because the CUDA drivers are preinstalled",
+    "Built-in database drivers that remove extra install steps"
+   ],
+   "Fewer packages mean less attack surface and faster pulls."
+  ],
+  [
+   "Which flag lets a container access NVIDIA GPUs (with the NVIDIA Container Toolkit installed)?",
+   "--gpus all",
+   [
+    "--cuda enable",
+    "--device-gpu",
+    "--runtime=gpu-only"
+   ],
+   "docker run --gpus all exposes host GPUs to the container."
+  ],
+  [
+   "What does the HEALTHCHECK instruction do?",
+   "Runs a command periodically to mark the container healthy or unhealthy",
+   [
+    "Restarts the host machine automatically whenever available memory runs low",
+    "Scans the image for known CVEs each time the container starts up",
+    "Validates the Dockerfile syntax before every build of the image"
+   ],
+   "Orchestrators can use the health status to restart or route around failing containers."
+  ],
+  [
+   "How should secrets like API keys be provided to a container?",
+   "At runtime via environment variables or secret mounts, not baked into the image",
+   [
+    "Hardcoded in the Dockerfile with ENV so that every build and every container gets them",
+    "Committed in an image layer and then deleted in a later layer",
+    "Placed in an image label, which only the Docker daemon can read"
+   ],
+   "Anything in a layer stays in the image history even if deleted in a later layer."
+  ],
+  [
+   "What is the difference between an image and a container?",
+   "An image is a read-only template; a container is a running instance of it",
+   [
+    "They are identical terms that Docker uses interchangeably in its documentation",
+    "A container is just a compressed image that has been unpacked for faster pulls",
+    "An image runs on the host, while a container runs in the cloud"
+   ],
+   "A container adds a writable layer on top of the read-only image. Many containers can be started from one image."
+  ],
+  [
+   "Which Linux kernel features provide container isolation and resource limits?",
+   "Namespaces and cgroups",
+   [
+    "Swap space and inodes",
+    "Systemd and cron",
+    "SELinux and GRUB"
+   ],
+   "Namespaces isolate what a process sees; cgroups limit what it can use."
+  ]
+ ],
+ "pytorch": [
+  [
+   "What does loss.backward() do?",
+   "Computes gradients of the loss for tensors that require grad",
+   [
+    "Updates the model weights using the gradients just computed",
+    "Resets all gradients to zero before the next training batch",
+    "Moves the model and all of its gradients back to the CPU for saving"
+   ],
+   "The optimizer step applies the update; backward only fills .grad."
+  ],
+  [
+   "Why call optimizer.zero_grad() each training iteration?",
+   "Gradients accumulate by default and must be cleared",
+   [
+    "It initializes the weights with fresh random values each step",
+    "It frees the GPU memory used by the model activations",
+    "It switches the model to eval mode for the next batch"
+   ],
+   "Without zeroing, gradients from previous batches are summed in."
+  ],
+  [
+   "What does model.eval() change?",
+   "Puts layers like Dropout and BatchNorm into inference behavior",
+   [
+    "Disables gradient computation for every tensor in the model",
+    "Freezes all parameters permanently so they cannot be trained",
+    "Compiles the model into an optimized graph for inference"
+   ],
+   "Use torch.no_grad() separately to skip gradient tracking."
+  ],
+  [
+   "Which context manager disables gradient tracking during inference?",
+   "torch.no_grad()",
+   [
+    "torch.eval()",
+    "torch.freeze()",
+    "torch.inference_off()"
+   ],
+   "It saves memory and compute when gradients are not needed."
+  ],
+  [
+   "How do you move a model and a batch to the GPU?",
+   "model.to(\"cuda\") and batch.to(\"cuda\")",
+   [
+    "torch.gpu(model) and torch.gpu(batch)",
+    "model.cuda_enable(True) and batch.cuda_enable(True)",
+    "Set CUDA=1 in the dataset and the model config"
+   ],
+   "Model and inputs must be on the same device."
+  ],
+  [
+   "What is the role of a DataLoader?",
+   "Batches, shuffles and loads samples, optionally with parallel workers",
+   [
+    "Defines the model architecture and the order its layers run in",
+    "Computes the loss for each batch and passes it to the optimizer",
+    "Saves model checkpoints to disk automatically at the end of every epoch"
+   ],
+   "Dataset defines how to get one item; DataLoader handles batching and iteration."
+  ],
+  [
+   "Which loss is standard for multi-class classification with raw logits?",
+   "nn.CrossEntropyLoss",
+   [
+    "nn.MSELoss on logits",
+    "nn.SmoothL1Loss",
+    "nn.BCELoss on logits"
+   ],
+   "CrossEntropyLoss combines LogSoftmax and NLLLoss and expects unnormalized logits."
+  ],
+  [
+   "What does the shape (32, 3, 224, 224) usually mean for an image batch?",
+   "Batch of 32 RGB images, 224 by 224 pixels",
+   [
+    "32 channels across 3 images, each 224 by 224",
+    "224 batches of 32 images with 3 channels each",
+    "A 3D video clip of 32 frames at 224 by 224"
+   ],
+   "PyTorch uses NCHW layout by default."
+  ],
+  [
+   "What is the recommended way to save a model for later loading?",
+   "torch.save(model.state_dict(), path)",
+   [
+    "pickle the whole training script",
+    "torch.export(model.grad).save(path)",
+    "Save only the optimizer to path"
+   ],
+   "state_dict stores parameters and is robust to code refactors."
+  ],
+  [
+   "What does torch.compile() aim to do?",
+   "Speed up models by capturing and optimizing the computation graph",
+   [
+    "Convert the model to TensorFlow so TF Serving can host it",
+    "Quantize all weights to int4 automatically to cut memory use",
+    "Prune unused layers from the model before it is exported"
+   ],
+   "Introduced in PyTorch 2.0, it uses TorchDynamo and backend compilers."
+  ],
+  [
+   "What is mixed precision training (torch.autocast)?",
+   "Running some ops in float16 or bfloat16 to save memory and time",
+   [
+    "Training two models at once that share a single optimizer",
+    "Mixing CPU and GPU batches in the same training step to raise throughput",
+    "Combining L1 and L2 loss terms into a single training objective"
+   ],
+   "Precision-sensitive operations stay in float32 automatically."
+  ],
+  [
+   "What does requires_grad=False on a parameter do?",
+   "Excludes it from gradient computation, effectively freezing it",
+   [
+    "Deletes the parameter from the model's state_dict",
+    "Sets the parameter's values to zero before each forward pass runs",
+    "Moves the parameter to the CPU to save GPU memory"
+   ],
+   "Commonly used to freeze a pretrained backbone during fine-tuning."
+  ],
+  [
+   "Which module combines a linear transform with learnable weights and bias?",
+   "nn.Linear",
+   [
+    "nn.ReLU",
+    "nn.Dropout",
+    "nn.Flatten"
+   ],
+   "nn.Linear(in_features, out_features) computes xW^T + b."
+  ],
+  [
+   "What problem does a learning rate scheduler address?",
+   "Adjusting the learning rate over training for better convergence",
+   [
+    "Choosing the batch size based on available GPU memory",
+    "Shuffling the dataset differently at the start of each epoch",
+    "Selecting which GPU each training process should run on"
+   ],
+   "Warmup and decay schedules often improve final accuracy."
+  ],
+  [
+   "What does DistributedDataParallel (DDP) do?",
+   "Replicates the model across processes/GPUs and synchronizes gradients",
+   [
+    "Splits a single layer across several CPUs and merges the outputs",
+    "Shards the dataset to disk so each epoch reads only one part",
+    "Runs a hyperparameter search in parallel, with one trial per GPU process"
+   ],
+   "DDP is the standard approach for multi-GPU data-parallel training."
+  ]
+ ],
+ "vector-dbs": [
+  [
+   "What does a vector database primarily store and search?",
+   "High-dimensional embeddings, searched by similarity",
+   [
+    "Relational tables joined by keys",
+    "Raw video files, searched by frame timestamps",
+    "Time series of CPU metrics, searched by time range"
+   ],
+   "Queries return the nearest vectors to a query embedding."
+  ],
+  [
+   "Which similarity metric is most common for normalized text embeddings?",
+   "Cosine similarity",
+   [
+    "Hamming distance",
+    "Levenshtein distance",
+    "Jaccard index"
+   ],
+   "Cosine compares direction, which captures semantic similarity for embeddings."
+  ],
+  [
+   "What does ANN stand for in vector search?",
+   "Approximate Nearest Neighbor",
+   [
+    "Artificial Neural Network",
+    "Adaptive Node Navigation",
+    "Aggregated Numeric Normalization"
+   ],
+   "ANN trades a little recall for large speed gains over exact search."
+  ],
+  [
+   "What is HNSW?",
+   "A graph-based index for fast approximate nearest neighbor search",
+   [
+    "A subword text tokenizer used before computing embeddings",
+    "A lossy compression codec for storing images in vector form",
+    "A hash-based SQL join algorithm used for very large relational tables"
+   ],
+   "Hierarchical Navigable Small World graphs give high recall at low latency."
+  ],
+  [
+   "Why split documents into chunks before embedding for RAG?",
+   "Smaller passages give more precise retrieval and fit the model context",
+   [
+    "Embeddings cannot represent more than one word, so text must be split",
+    "Vector databases reject files over 1 KB, so documents must be split",
+    "Chunking encrypts the data so the embedding service cannot read it"
+   ],
+   "Chunk size and overlap strongly affect retrieval quality."
+  ],
+  [
+   "What is metadata filtering in a vector database?",
+   "Restricting similarity search to items matching attributes like date or source",
+   [
+    "Deleting all vectors that were inserted without any metadata attached",
+    "Encrypting the metadata fields so only the query owner can read them",
+    "Sorting the similarity results alphabetically by their source metadata"
+   ],
+   "It combines structured filters with semantic search."
+  ],
+  [
+   "What is hybrid search?",
+   "Combining keyword (e.g. BM25) and vector similarity scores",
+   [
+    "Searching two separate vector databases at once and merging results",
+    "Running the same query on CPU and GPU together for speed",
+    "Mixing SQL and NoSQL stores behind one query interface"
+   ],
+   "Hybrid search helps with exact terms like product codes that embeddings miss."
+  ],
+  [
+   "Which PostgreSQL extension adds vector similarity search?",
+   "pgvector",
+   [
+    "PostGIS",
+    "pg_cron",
+    "TimescaleDB"
+   ],
+   "pgvector adds a vector type and indexes like HNSW and IVFFlat."
+  ],
+  [
+   "What does product quantization (PQ) do?",
+   "Compresses vectors to reduce memory, at some cost to accuracy",
+   [
+    "Increases the number of embedding dimensions to improve accuracy",
+    "Sorts vectors by their norm so that search can stop early",
+    "Converts raw text into vectors before they are indexed"
+   ],
+   "PQ splits vectors into sub-vectors and encodes each with a small codebook."
+  ],
+  [
+   "What must stay the same between indexing and querying?",
+   "The embedding model used to create vectors",
+   [
+    "The number of documents stored in the index",
+    "The IP address of the server hosting the index",
+    "The order in which the chunks were inserted"
+   ],
+   "Vectors from different models live in incompatible spaces."
+  ],
+  [
+   "What does recall@k measure in retrieval?",
+   "The fraction of relevant items found in the top k results",
+   [
+    "The query latency measured when k users search the index at once",
+    "The memory used to store each block of k vectors",
+    "The number of shards that hold the top k results"
+   ],
+   "It is a standard metric to evaluate ANN indexes and RAG retrievers."
+  ],
+  [
+   "What is a reranker in a retrieval pipeline?",
+   "A model that rescores retrieved candidates for better ordering",
+   [
+    "A tool that rebuilds the vector index nightly with fresh data",
+    "A load balancer that spreads incoming queries across replica servers",
+    "A tokenizer that reorders query terms before they are embedded"
+   ],
+   "Cross-encoder rerankers improve precision after a fast first-stage search."
+  ],
+  [
+   "Which library from Meta is widely used for efficient similarity search?",
+   "FAISS",
+   [
+    "Pandas",
+    "Kafka",
+    "Redux"
+   ],
+   "FAISS provides CPU and GPU implementations of many ANN indexes."
+  ],
+  [
+   "Why normalize embeddings to unit length?",
+   "So dot product equals cosine similarity",
+   [
+    "To make them human readable",
+    "To increase dimensionality",
+    "Because databases reject negative numbers"
+   ],
+   "Many engines use inner product for speed on normalized vectors."
+  ],
+  [
+   "What is the typical role of a vector database in RAG?",
+   "Retrieve relevant context passages to include in the LLM prompt",
+   [
+    "Train the LLM from scratch on the documents in the index",
+    "Store the LLM weights so the model loads faster at startup",
+    "Generate the final answer from the closest stored vectors"
+   ],
+   "Retrieved passages ground the model answer in your own data."
+  ]
+ ],
+ "python": [
+  [
+   "Which module provides an event loop for asynchronous coroutines?",
+   "asyncio",
+   [
+    "multiprocessing",
+    "threading",
+    "subprocess"
+   ],
+   "async/await code runs on an asyncio event loop."
+  ],
+  [
+   "What does a list comprehension [x * 2 for x in nums if x > 0] return?",
+   "A new list with doubled positive numbers",
+   [
+    "A generator yielding all the numbers doubled",
+    "The original list, modified in place to keep positives",
+    "A dictionary mapping each number to its double"
+   ],
+   "Comprehensions build a new list; nums is unchanged."
+  ],
+  [
+   "What is the danger of def f(items=[])?",
+   "The default list is shared across calls",
+   [
+    "It raises a SyntaxError when f is defined",
+    "Lists cannot be used as default arguments",
+    "It turns f into a generator function"
+   ],
+   "Defaults are evaluated once; use None and create the list inside."
+  ],
+  [
+   "What does the GIL limit in CPython?",
+   "Only one thread executes Python bytecode at a time",
+   [
+    "The number of processes a program can start",
+    "The maximum size of integers in arithmetic",
+    "The number of network connections per process"
+   ],
+   "CPU-bound work uses multiprocessing or native extensions to bypass it."
+  ],
+  [
+   "What does the with statement guarantee?",
+   "Cleanup code (__exit__) runs even if an exception occurs",
+   [
+    "The block runs in a new thread that is joined at the end",
+    "Variables assigned inside the block stay private to it",
+    "The block is retried once automatically if it raises an error"
+   ],
+   "Context managers are used for files, locks and connections."
+  ],
+  [
+   "What does yield turn a function into?",
+   "A generator that produces values lazily",
+   [
+    "An async coroutine that must be awaited",
+    "A class whose instances hold the yielded values",
+    "A decorator that wraps the calling function"
+   ],
+   "Generators keep state between yields and save memory."
+  ],
+  [
+   "Which type is immutable?",
+   "tuple",
+   [
+    "list",
+    "dict",
+    "bytearray"
+   ],
+   "Tuples cannot be changed after creation and can be dictionary keys."
+  ],
+  [
+   "What does @functools.lru_cache do?",
+   "Caches function results for repeated arguments",
+   [
+    "Logs every call and its arguments to stderr",
+    "Runs the function asynchronously",
+    "Limits the recursion depth of the function"
+   ],
+   "Useful for expensive pure functions."
+  ],
+  [
+   "What is the difference between is and ==?",
+   "is checks identity; == checks equality",
+   [
+    "They are identical operators with different speed",
+    "is compares types only; == compares values",
+    "== compares memory addresses; is compares values"
+   ],
+   "Use is for None checks and == for values."
+  ],
+  [
+   "How do you create an isolated environment for project dependencies?",
+   "python -m venv .venv",
+   [
+    "pip install --global",
+    "python --isolate",
+    "export PYTHONPATH=/"
+   ],
+   "Virtual environments keep dependencies per project."
+  ],
+  [
+   "What does *args collect in a function signature?",
+   "Extra positional arguments as a tuple",
+   [
+    "Extra keyword arguments as a dictionary",
+    "Only the first positional argument passed",
+    "A list of the default values of parameters"
+   ],
+   "**kwargs collects extra keyword arguments into a dict."
+  ],
+  [
+   "What are type hints like def f(x: int) -> str used for?",
+   "Documentation and static checking, not runtime enforcement",
+   [
+    "Converting arguments to the hinted types automatically at call time",
+    "Making the code run faster by letting CPython skip type checks",
+    "Satisfying the interpreter, which requires them since Python 3.10"
+   ],
+   "They are not enforced at runtime by default; tools like mypy or pyright check them."
+  ],
+  [
+   "Which data structure gives average O(1) membership tests?",
+   "set",
+   [
+    "list",
+    "tuple",
+    "str"
+   ],
+   "Sets and dicts are hash tables."
+  ],
+  [
+   "What does a @dataclass generate automatically?",
+   "__init__, __repr__ and __eq__ based on fields",
+   [
+    "A database table with one column per field",
+    "A REST endpoint exposing each field as JSON",
+    "A singleton instance shared by all callers"
+   ],
+   "It reduces boilerplate for data-holding classes."
+  ],
+  [
+   "What happens if an exception is not caught?",
+   "It propagates up the call stack and ends the program with a traceback",
+   [
+    "It is silently ignored and execution continues on the next line",
+    "The function that raised it returns None to its caller instead",
+    "Python retries the failing line once before moving on to the next"
+   ],
+   "Use try/except to handle expected errors."
+  ]
+ ],
+ "llms": [
+  [
+   "What is a token in the context of LLMs?",
+   "A unit of text, often a word piece, that the model processes",
+   [
+    "A user session ID that the API attaches to each request",
+    "One full sentence, split off at each period in the input",
+    "A small GPU kernel that the model launches for each layer it runs"
+   ],
+   "Pricing and context limits are measured in tokens."
+  ],
+  [
+   "What does the context window limit?",
+   "How many tokens of input plus output the model can consider at once",
+   [
+    "How many users can call the same API key at the same time",
+    "The number of transformer layers the model may run per request",
+    "The size of the training dataset the model was built from"
+   ],
+   "Long documents must be chunked or summarized to fit."
+  ],
+  [
+   "What does a higher temperature usually do?",
+   "Makes outputs more random and varied",
+   [
+    "Makes the model generate tokens faster",
+    "Makes outputs identical on every run",
+    "Increases the size of the context window"
+   ],
+   "Low temperature is preferred for extraction and deterministic tasks."
+  ],
+  [
+   "What is retrieval-augmented generation (RAG)?",
+   "Fetching relevant documents and adding them to the prompt",
+   [
+    "Retraining the model on the relevant documents for every query",
+    "Generating images from the text of retrieved documents",
+    "Compressing model weights so more documents fit in memory"
+   ],
+   "RAG grounds answers in fresh or private data without fine-tuning."
+  ],
+  [
+   "What is tool use (function calling)?",
+   "The model outputs structured calls that your code runs, then returns results",
+   [
+    "The model runs arbitrary code on the provider's servers by itself, then answers",
+    "A way to speed up tokenization by calling an external tokenizer service",
+    "Training the model with external GPUs that are rented per function call"
+   ],
+   "Your application stays in control of execution."
+  ],
+  [
+   "What is a hallucination?",
+   "Fluent output that is factually wrong or unsupported",
+   [
+    "A rate-limit error returned when too many requests arrive",
+    "A very long answer that runs past the output token limit",
+    "A refusal to answer a question the model considers unsafe"
+   ],
+   "Grounding, citations and verification steps reduce it."
+  ],
+  [
+   "What is the purpose of a system prompt?",
+   "Setting persistent instructions, role and constraints for the chat",
+   [
+    "Encrypting user messages before they are sent to the model provider",
+    "Choosing which GPU the conversation should run on during inference",
+    "Storing the full chat history so the model can recall past sessions"
+   ],
+   "It shapes behavior across all turns."
+  ],
+  [
+   "What does fine-tuning change?",
+   "The model weights, using task-specific training examples",
+   [
+    "Only the prompt template that is sent with every request",
+    "The tokenizer vocabulary, which is swapped at runtime per task",
+    "The API endpoint that requests are routed to for the task"
+   ],
+   "LoRA and similar methods fine-tune efficiently by training small adapters."
+  ],
+  [
+   "What is prompt injection?",
+   "Untrusted content with instructions that try to override intended behavior",
+   [
+    "A faster way to send prompts by injecting them straight into the model's KV cache",
+    "Adding worked examples to a prompt to steer the format of the output",
+    "A tokenizer bug that injects stray control tokens into the user's prompt"
+   ],
+   "Treat retrieved or user-supplied text as data, not instructions."
+  ],
+  [
+   "What is few-shot prompting?",
+   "Including a few input and output examples in the prompt",
+   [
+    "Training the model on a few GPUs instead of a large cluster",
+    "Limiting the output to a few tokens to keep answers short",
+    "Sending the same prompt several times and picking the best"
+   ],
+   "Examples help the model infer format and style."
+  ],
+  [
+   "Why stream responses token by token?",
+   "To show output to users sooner and improve perceived latency",
+   [
+    "To reduce the token cost, since streamed tokens are billed less",
+    "To increase accuracy by letting the model revise earlier tokens",
+    "To bypass rate limits, which apply only to full responses"
+   ],
+   "Total generation time is similar, but users see progress immediately."
+  ],
+  [
+   "What is quantization of an LLM?",
+   "Storing weights in lower precision (e.g. 8-bit or 4-bit) to save memory",
+   [
+    "Splitting text into tokens of a fixed size before it reaches the model",
+    "Removing safety training so the model's weights become smaller",
+    "Translating the model and its training data into another language"
+   ],
+   "It enables running larger models on smaller GPUs with some quality trade-off."
+  ],
+  [
+   "What is an embedding model used for?",
+   "Turning text into vectors for search, clustering or classification",
+   [
+    "Generating long essays from a short outline in a single pass",
+    "Rendering images from text prompts at high resolution",
+    "Running SQL queries against a vector database for the user"
+   ],
+   "Embeddings power semantic search and RAG retrieval."
+  ],
+  [
+   "How can you get reliably parseable output from an LLM?",
+   "Request a JSON schema or structured output mode and validate the result",
+   [
+    "Ask it politely in the prompt to return correct and complete JSON",
+    "Use the highest temperature so the model explores more formats",
+    "Remove the system prompt so the model has fewer rules to follow"
+   ],
+   "Always validate and handle parse failures in code."
+  ],
+  [
+   "What does an \"agent\" usually mean in LLM applications?",
+   "A loop where the model plans, calls tools and uses results until done",
+   [
+    "A single API call that returns a complete answer without any tools",
+    "A human moderator who reviews each model reply before the user sees it",
+    "A model checkpoint file that stores the planner and tool weights together"
+   ],
+   "Agents need guardrails, limits and clear tool definitions."
+  ]
+ ],
+ "go": [
+  [
+   "What keyword starts a goroutine?",
+   "go",
+   [
+    "async",
+    "spawn",
+    "thread"
+   ],
+   "go f() runs f concurrently in a lightweight goroutine."
+  ],
+  [
+   "What is a channel used for?",
+   "Communicating and synchronizing between goroutines",
+   [
+    "Declaring constants that are shared between packages",
+    "Importing packages lazily when they are first used",
+    "Handling HTTP routing between handlers in a server"
+   ],
+   "Do not communicate by sharing memory; share memory by communicating."
+  ],
+  [
+   "What does select do?",
+   "Waits on multiple channel operations and runs the first one ready",
+   [
+    "Selects a database row with a query built from struct fields",
+    "Picks a random goroutine to kill when memory runs low",
+    "Chooses a build target from the list of supported platforms"
+   ],
+   "A default case makes select non-blocking."
+  ],
+  [
+   "How does Go handle errors conventionally?",
+   "Functions return an error value that callers check",
+   [
+    "Functions throw exceptions that callers catch with try/catch",
+    "Functions declare checked exceptions that callers must handle",
+    "Every error is a panic that the runtime prints and exits on"
+   ],
+   "if err != nil { return err } is idiomatic."
+  ],
+  [
+   "What does defer do?",
+   "Schedules a call to run when the surrounding function returns",
+   [
+    "Delays the start of a goroutine by one second to avoid data races",
+    "Skips the next statement unless the function returns early",
+    "Marks a variable as lazy so it is computed on first access"
+   ],
+   "Commonly used to close files and unlock mutexes."
+  ],
+  [
+   "How is an interface satisfied in Go?",
+   "Implicitly, by implementing its methods",
+   [
+    "Explicitly, with an implements keyword",
+    "By embedding the interface name",
+    "By registering it in init()"
+   ],
+   "Implicit interfaces decouple packages."
+  ],
+  [
+   "What tool manages dependencies in modern Go?",
+   "Go modules (go.mod)",
+   [
+    "npm with a package.json",
+    "GOPATH vendor scripts only",
+    "pip with requirements.txt"
+   ],
+   "go mod tidy adds missing and removes unused modules."
+  ],
+  [
+   "What is the zero value of a pointer, slice or map?",
+   "nil",
+   [
+    "0",
+    "empty string",
+    "undefined"
+   ],
+   "Writing to a nil map panics; initialize it with make."
+  ],
+  [
+   "What does sync.WaitGroup help with?",
+   "Waiting for a collection of goroutines to finish",
+   [
+    "Locking a map so that only one goroutine can write it",
+    "Rate limiting outgoing HTTP calls from many goroutines",
+    "Generating unique IDs for each goroutine that starts"
+   ],
+   "Call Add, Done in each goroutine, and Wait."
+  ],
+  [
+   "What is context.Context typically used for?",
+   "Cancellation, deadlines and request-scoped values",
+   [
+    "Storing global configuration that is loaded once at program startup",
+    "Defining structs that are shared across packages",
+    "Logging only, by attaching a logger to each call"
+   ],
+   "Pass ctx as the first argument through call chains."
+  ],
+  [
+   "What is the difference between an array and a slice?",
+   "Arrays have a fixed length in their type; slices are dynamic views",
+   [
+    "They are the same type; slice is just the name used in function signatures",
+    "Slices cannot be appended to; arrays grow when you call append",
+    "Arrays are always heap allocated; slices always live on the stack"
+   ],
+   "Slices are views over a backing array; append may allocate a new one."
+  ],
+  [
+   "Which tool detects data races?",
+   "go test -race",
+   [
+    "go vet --threads",
+    "gofmt -race",
+    "go build -safe"
+   ],
+   "The -race flag enables the race detector, which instruments memory access at runtime."
+  ],
+  [
+   "What does an unbuffered channel send do?",
+   "Blocks until a receiver is ready",
+   [
+    "Returns immediately always",
+    "Drops the value if no receiver",
+    "Panics without a receiver"
+   ],
+   "Unbuffered channels synchronize sender and receiver."
+  ],
+  [
+   "How are exported identifiers marked?",
+   "By starting the name with an uppercase letter",
+   [
+    "With the export keyword before a declaration",
+    "With a public modifier on the declaration",
+    "By placing them in a file named main.go"
+   ],
+   "Lowercase names are package-private."
+  ],
+  [
+   "What does gofmt do?",
+   "Formats Go source code in the standard style",
+   [
+    "Compiles Go source code to WebAssembly modules",
+    "Runs the benchmarks defined in _test.go files",
+    "Generates documentation sites from comments"
+   ],
+   "Consistent formatting is enforced across the ecosystem."
+  ]
+ ],
+ "linux": [
+  [
+   "What does chmod 755 script.sh set?",
+   "Owner read/write/execute; group and others read/execute",
+   [
+    "Read, write and execute for everyone: owner, group and others",
+    "Owner read only; group and others get no access at all",
+    "Removes all permissions from owner, group and others alike"
+   ],
+   "7 = rwx, 5 = r-x."
+  ],
+  [
+   "Which command shows running processes interactively?",
+   "top (or htop)",
+   [
+    "ls -p (or ls -l)",
+    "cat /proc (or lsof)",
+    "df -h (or du -h)"
+   ],
+   "top shows CPU and memory usage per process."
+  ],
+  [
+   "What does the pipe | do in a shell?",
+   "Sends the stdout of one command to the stdin of the next",
+   [
+    "Runs both commands in parallel, each on a different CPU core",
+    "Writes the output of a command into a file on disk",
+    "Comments out the rest of the line so the shell ignores it"
+   ],
+   "Example: ps aux | grep python."
+  ],
+  [
+   "Which command searches text in files?",
+   "grep",
+   [
+    "find",
+    "sed -n",
+    "locate"
+   ],
+   "grep -r \"pattern\" . searches recursively."
+  ],
+  [
+   "What does sudo do?",
+   "Runs a command with another user's privileges, usually root",
+   [
+    "Switches the current shell to zsh for the rest of the session",
+    "Shuts down the system after the running command finishes",
+    "Updates all installed packages to their newest versions"
+   ],
+   "Access is controlled through the sudoers file."
+  ],
+  [
+   "Which directory holds most system configuration files?",
+   "/etc",
+   [
+    "/bin",
+    "/home",
+    "/tmp"
+   ],
+   "For example /etc/hosts and /etc/ssh/sshd_config."
+  ],
+  [
+   "How do you check disk space usage of filesystems?",
+   "df -h",
+   [
+    "du -s /",
+    "free -m",
+    "lsblk -u"
+   ],
+   "du shows usage per directory; df shows per filesystem."
+  ],
+  [
+   "What is systemd?",
+   "The init system and service manager on most modern distributions",
+   [
+    "A terminal text editor bundled with most modern distributions",
+    "A package format used to ship software on most distributions",
+    "A journaling filesystem used by default on most distributions"
+   ],
+   "systemctl start, stop and enable manage services."
+  ],
+  [
+   "What does kill -9 PID send?",
+   "SIGKILL, which cannot be caught or ignored",
+   [
+    "SIGTERM, a polite shutdown the process can handle",
+    "SIGHUP, which tells the process to reload its config",
+    "SIGSTOP, which pauses the process until it is resumed"
+   ],
+   "Prefer SIGTERM first so processes can clean up."
+  ],
+  [
+   "What does > versus >> do with output redirection?",
+   "> overwrites the file; >> appends to it",
+   [
+    "Both append to the end of the file",
+    "> appends to the file; >> overwrites it",
+    "Both read input from the file instead"
+   ],
+   "Use 2> to redirect stderr."
+  ],
+  [
+   "Which command connects securely to a remote machine?",
+   "ssh user@host",
+   [
+    "telnet host",
+    "ftp host",
+    "nc -secure host"
+   ],
+   "Use key-based authentication instead of passwords."
+  ],
+  [
+   "What does the PATH environment variable control?",
+   "Which directories the shell searches for executables",
+   [
+    "The current working directory of the shell",
+    "The default text editor that the shell opens",
+    "The home directory of the current user"
+   ],
+   "Directories are searched in order, separated by colons."
+  ],
+  [
+   "What do cgroups provide?",
+   "Limits and accounting for CPU, memory and IO of process groups",
+   [
+    "File compression for process groups that write large logs",
+    "User authentication for processes started by a login",
+    "Network routing tables shared by groups of processes"
+   ],
+   "Containers rely on cgroups for resource limits."
+  ],
+  [
+   "Which command shows the last lines of a log and keeps following it?",
+   "tail -f /var/log/syslog",
+   [
+    "head -n /var/log/syslog",
+    "less -r /var/log/syslog",
+    "cat -follow /var/log/syslog"
+   ],
+   "journalctl -f does the same for systemd journals."
+  ],
+  [
+   "What is a symbolic link?",
+   "A file that points to another path",
+   [
+    "A compressed copy of another file",
+    "A hidden file with a dotted name",
+    "A hardware device under /dev"
+   ],
+   "Create one with ln -s target linkname."
+  ]
+ ],
+ "ros2": [
+  [
+   "What is a ROS 2 node?",
+   "A process that computes and communicates over topics, services or actions",
+   [
+    "A physical robot joint that the control software moves through a hardware driver",
+    "A launch file that starts and configures several processes together",
+    "A message type that defines the fields sent between robot programs"
+   ],
+   "Systems are composed of many small nodes."
+  ],
+  [
+   "What is a topic used for?",
+   "Anonymous publish/subscribe streaming of messages",
+   [
+    "One-time request and response between a client and a server",
+    "Long-running goals that report feedback and can be cancelled",
+    "Storing node parameters on disk between runs"
+   ],
+   "Sensors usually publish on topics."
+  ],
+  [
+   "When should you use a service instead of a topic?",
+   "For a request that needs a single response",
+   [
+    "For continuous, high-rate sensor data streams",
+    "For broadcasting the same data to many nodes",
+    "For video streaming from a camera to a viewer"
+   ],
+   "Services are synchronous request/response."
+  ],
+  [
+   "What are actions designed for?",
+   "Long-running goals with feedback and cancellation",
+   [
+    "Quick reads of a node's parameters at startup",
+    "Logging node output to the console and to files",
+    "Serializing messages into bytes before they are sent over the network"
+   ],
+   "Navigation to a goal pose is a classic action."
+  ],
+  [
+   "Which middleware standard does ROS 2 use for communication?",
+   "DDS",
+   [
+    "MQTT only",
+    "HTTP/REST",
+    "CORBA"
+   ],
+   "DDS provides discovery and configurable QoS."
+  ],
+  [
+   "What do QoS settings control?",
+   "Reliability, durability and history of message delivery",
+   [
+    "CPU frequency scaling on the robot's computer",
+    "Robot battery level reporting and low-power behavior",
+    "Build optimization levels for the packages"
+   ],
+   "Mismatched QoS between publisher and subscriber can block communication."
+  ],
+  [
+   "Which command lists active topics?",
+   "ros2 topic list",
+   [
+    "ros2 list topics",
+    "rostopic show",
+    "ros2 node topics"
+   ],
+   "ros2 topic echo /name prints messages."
+  ],
+  [
+   "What is the standard build tool for ROS 2 workspaces?",
+   "colcon",
+   [
+    "catkin_make",
+    "cmake --ros",
+    "rosmake"
+   ],
+   "colcon build compiles all packages in the workspace."
+  ],
+  [
+   "What does tf2 manage?",
+   "Coordinate frame transforms over time",
+   [
+    "Text formatting of node log messages",
+    "Topic filtering by message type",
+    "Thread scheduling across executors"
+   ],
+   "It lets you transform points between frames like map, odom and base_link."
+  ],
+  [
+   "What is URDF?",
+   "An XML format describing a robot's links, joints and geometry",
+   [
+    "A binary message encoding used by DDS on the wire",
+    "A navigation algorithm that plans paths around obstacles",
+    "A simulator that models robot physics and sensors"
+   ],
+   "URDF is used for visualization, simulation and kinematics."
+  ],
+  [
+   "What are launch files used for?",
+   "Starting and configuring multiple nodes together",
+   [
+    "Compiling custom message and service definitions",
+    "Flashing firmware onto the robot's microcontrollers",
+    "Recording topic data to a bag file for later replay"
+   ],
+   "ROS 2 launch files are commonly written in Python."
+  ],
+  [
+   "Which tool records and replays topic data?",
+   "ros2 bag",
+   [
+    "ros2 tape",
+    "rviz2",
+    "rqt_graph"
+   ],
+   "Bags are essential for debugging and dataset creation."
+  ],
+  [
+   "What does RViz2 do?",
+   "Visualizes sensor data, transforms and robot models",
+   [
+    "Simulates robot physics, contacts and sensor noise",
+    "Builds packages in a workspace and reports errors",
+    "Generates URDF files automatically from CAD models"
+   ],
+   "For physics simulation use Gazebo or Isaac Sim."
+  ],
+  [
+   "What is Nav2?",
+   "The ROS 2 navigation stack for path planning and control",
+   [
+    "A message type for sending velocity commands to a mobile base",
+    "A DDS vendor implementation bundled with ROS 2 releases",
+    "A camera driver package for depth sensors on mobile robots"
+   ],
+   "Nav2 uses behavior trees to orchestrate navigation."
+  ],
+  [
+   "How are node parameters typically changed at runtime?",
+   "ros2 param set /node name value",
+   [
+    "Editing the compiled node binary",
+    "Restarting the DDS daemon",
+    "ros2 topic pub /param name value"
+   ],
+   "Nodes can declare parameters and react to changes."
+  ]
+ ],
+ "machine-learning": [
+  [
+   "What is overfitting?",
+   "The model fits training data well but generalizes poorly to new data",
+   [
+    "The model is too small to learn the patterns in the training data",
+    "Training takes too long because the dataset has too many rows",
+    "The dataset is so balanced the model cannot separate classes"
+   ],
+   "Regularization, more data and early stopping help."
+  ],
+  [
+   "Why keep a separate test set?",
+   "To estimate performance on unseen data without bias",
+   [
+    "To speed up training by using fewer examples per epoch",
+    "To tune the learning rate and other settings on it",
+    "To increase the dataset size available for training"
+   ],
+   "Tune on validation data; evaluate once on test data."
+  ],
+  [
+   "What does k-fold cross-validation do?",
+   "Trains and evaluates k times on different train/validation splits",
+   [
+    "Trains k models on the full data and keeps the largest one",
+    "Splits the features into k groups and trains a separate model on each",
+    "Runs k epochs and reports the loss at the end of each one"
+   ],
+   "It gives a more stable estimate on small datasets."
+  ],
+  [
+   "Which metric is misleading on a 99% negative class dataset?",
+   "Accuracy",
+   [
+    "Recall",
+    "F1 score",
+    "PR AUC"
+   ],
+   "Predicting all negatives gives 99% accuracy but zero recall."
+  ],
+  [
+   "What is precision?",
+   "Of predicted positives, the fraction that are actually positive",
+   [
+    "Of actual positives, the fraction that the model correctly found",
+    "The fraction of all predictions, positive or negative, that are correct",
+    "The speed at which the model reaches a target training loss"
+   ],
+   "Recall is the fraction of actual positives found."
+  ],
+  [
+   "What does L2 regularization do?",
+   "Penalizes large weights to reduce overfitting",
+   [
+    "Removes useless features automatically by setting them to zero",
+    "Increases the learning rate when the loss stops falling",
+    "Normalizes the inputs to zero mean and unit variance"
+   ],
+   "L1 encourages sparsity; L2 shrinks weights smoothly."
+  ],
+  [
+   "What is gradient descent?",
+   "Iteratively updating parameters in the direction that reduces the loss",
+   [
+    "Sorting the training data by the size of each example's gradient",
+    "A clustering method that groups points by the slope of their features",
+    "A way to label data automatically using a model's descending confidence"
+   ],
+   "Stochastic variants use mini-batches."
+  ],
+  [
+   "What is data leakage?",
+   "Outside information, such as test data, leaking into features or training",
+   [
+    "Losing part of the data during upload to the training cluster",
+    "Encrypting the training data incorrectly so outsiders can read its features",
+    "Using so many epochs that the model memorizes the training rows"
+   ],
+   "Example: scaling with statistics computed on the full dataset including test."
+  ],
+  [
+   "Which algorithm is unsupervised?",
+   "k-means clustering",
+   [
+    "Logistic regression",
+    "Random forest classifier",
+    "Linear regression"
+   ],
+   "Unsupervised methods find structure without labels."
+  ],
+  [
+   "Why scale features (e.g. standardization)?",
+   "Many algorithms converge faster and work better with similar scales",
+   [
+    "It adds new features built from ratios of the existing ones",
+    "It removes outliers automatically by clipping extreme values",
+    "It is required by all tree-based models, which split on raw feature distances"
+   ],
+   "Tree-based models are largely scale-invariant."
+  ],
+  [
+   "What is the bias-variance trade-off?",
+   "Simpler models underfit (high bias), complex models overfit (high variance)",
+   [
+    "A trade-off between CPU and GPU time when training larger models",
+    "Choosing between classification and regression for the same target",
+    "Balancing the classes so that bias toward the majority class is lower"
+   ],
+   "The goal is minimal total generalization error."
+  ],
+  [
+   "What does a confusion matrix show?",
+   "Counts of true and false positives and negatives per class",
+   [
+    "Correlations between every pair of input features",
+    "Training and validation loss over time for each class",
+    "The model architecture and its parameter count"
+   ],
+   "It reveals which classes are confused with each other."
+  ],
+  [
+   "What is transfer learning?",
+   "Starting from a model pretrained on one task and adapting it to another",
+   [
+    "Moving the training data between servers to balance the load",
+    "Converting a model from one framework to another",
+    "Training on random labels first to transfer noise robustness"
+   ],
+   "It saves data and compute for new tasks."
+  ],
+  [
+   "What is an ensemble method?",
+   "Combining multiple models to improve predictions",
+   [
+    "Training a model on one carefully chosen sample",
+    "A single deep network with many parallel layers",
+    "A data cleaning tool that removes duplicate rows"
+   ],
+   "Random forests and gradient boosting are ensembles."
+  ],
+  [
+   "What is early stopping?",
+   "Stopping training when validation performance stops improving",
+   [
+    "Stopping after the first epoch to avoid wasting compute",
+    "Removing the last layer of the network once training loss levels off",
+    "Limiting the dataset size so that each epoch finishes sooner"
+   ],
+   "It is a simple and effective regularization method."
+  ]
+ ],
+ "research": [
+  [
+   "What is the main purpose of a literature review?",
+   "To understand existing work and position your contribution",
+   [
+    "To copy the results of related papers into your own",
+    "To increase the page count so the paper looks complete",
+    "To avoid running experiments by citing others instead"
+   ],
+   "It shows what is known and what gap you address."
+  ],
+  [
+   "What is a research hypothesis?",
+   "A testable prediction about the relationship between variables",
+   [
+    "A final conclusion that has already been proven true by the data",
+    "A summary of related work that motivates the study",
+    "A list of references that support the planned experiments"
+   ],
+   "Good hypotheses can be falsified by experiments."
+  ],
+  [
+   "What is an ablation study?",
+   "Removing or changing components to measure their contribution",
+   [
+    "Deleting parts of the dataset to see how fast training gets",
+    "Comparing the method only to random baselines on each benchmark",
+    "Reviewing the grammar and wording of each section of the paper"
+   ],
+   "Ablations show which parts of a method matter."
+  ],
+  [
+   "Why report results over multiple random seeds?",
+   "To show variance and ensure results are not due to chance",
+   [
+    "To make the results tables longer and more impressive",
+    "Because reviewers require exactly 3 seeds for every experiment",
+    "To speed up training by running several seeds in parallel"
+   ],
+   "Report mean and standard deviation or confidence intervals."
+  ],
+  [
+   "What is a baseline?",
+   "A simple or established method used for comparison",
+   [
+    "The final model that the paper proposes and evaluates",
+    "The first figure in a paper, showing the main result",
+    "The license under which the dataset can be used"
+   ],
+   "Strong baselines make improvements meaningful."
+  ],
+  [
+   "What does peer review aim to ensure?",
+   "Quality, correctness and novelty before publication",
+   [
+    "Fast publication of every submitted paper",
+    "That authors are anonymous forever",
+    "Higher citation counts for the accepted papers"
+   ],
+   "Reviewers evaluate methods, evidence and clarity."
+  ],
+  [
+   "What is p-hacking?",
+   "Trying many analyses until a statistically significant result appears",
+   [
+    "Hacking into a publisher's website to change a paper's p-values",
+    "Publishing preprints of every analysis before the results are peer reviewed",
+    "Using p-values correctly with a threshold chosen before analysis"
+   ],
+   "Pre-registration and correction for multiple comparisons help."
+  ],
+  [
+   "Which section should let others reproduce your work?",
+   "Methods (with code, data and hyperparameters)",
+   [
+    "Abstract (with a summary of key results)",
+    "Acknowledgements (with funding sources and helpers)",
+    "Title (with the main claim and keywords)"
+   ],
+   "Reproducibility is a core requirement of good research."
+  ],
+  [
+   "What is a confounding variable?",
+   "A factor that influences both the cause and the effect being studied",
+   [
+    "A variable with so many missing values that it must be dropped",
+    "The dependent variable that the study measures as the outcome",
+    "A constant that stays the same across all conditions"
+   ],
+   "Confounders can create false correlations."
+  ],
+  [
+   "What is the role of an abstract?",
+   "A short summary of the problem, method, results and conclusion",
+   [
+    "A full list of the experiments and their raw results",
+    "The bibliography of works cited, placed at the start of the paper",
+    "A cover letter that asks the editor to consider the paper"
+   ],
+   "Many readers decide from the abstract whether to read on."
+  ],
+  [
+   "What does \"statistically significant\" mean?",
+   "The result is unlikely under the null hypothesis at the chosen threshold",
+   [
+    "The effect is large and important enough to matter in real-world practice",
+    "The result has been proven true beyond any reasonable doubt",
+    "The sample size is large enough to rule out any measurement error"
+   ],
+   "Significance is not the same as practical importance."
+  ],
+  [
+   "What is a preprint server like arXiv used for?",
+   "Sharing papers publicly before or alongside peer review",
+   [
+    "Final publication only, once peer review has accepted the paper",
+    "Storing the datasets used in published papers",
+    "Hosting the code and models behind each paper"
+   ],
+   "Preprints speed up dissemination but are not peer reviewed."
+  ],
+  [
+   "How should you handle a result that contradicts your hypothesis?",
+   "Report it honestly and analyze why",
+   [
+    "Remove it from the paper quietly",
+    "Change the hypothesis silently to fit",
+    "Rerun the experiment until it agrees"
+   ],
+   "Negative results are informative."
+  ],
+  [
+   "What is proper citation practice?",
+   "Credit every idea, figure or text taken from others",
+   [
+    "Cite only famous papers so reviewers trust the work",
+    "Cite only your own work to show a consistent research line",
+    "Cite sources only after the paper has been accepted"
+   ],
+   "Missing citations can be considered plagiarism."
+  ],
+  [
+   "What makes a research question good?",
+   "It is specific, answerable and addresses a meaningful gap",
+   [
+    "It is as broad as possible so it covers the whole field",
+    "It has an obvious answer that is easy to confirm quickly",
+    "It avoids measurable outcomes that could be disputed"
+   ],
+   "Narrow questions lead to clear, defensible contributions."
+  ]
+ ],
+ "sql": [
+  [
+   "Which clause filters rows before grouping?",
+   "WHERE",
+   [
+    "HAVING",
+    "ORDER BY",
+    "LIMIT"
+   ],
+   "HAVING filters after GROUP BY aggregation."
+  ],
+  [
+   "What does an INNER JOIN return?",
+   "Rows with matching keys in both tables",
+   [
+    "All rows from both tables, matched or not",
+    "All rows from the left table, plus any matches",
+    "Only the rows that have no match in either table"
+   ],
+   "LEFT JOIN keeps all left rows with NULLs for missing matches."
+  ],
+  [
+   "How do you count rows per category?",
+   "SELECT category, COUNT(*) FROM t GROUP BY category",
+   [
+    "SELECT COUNT(category) FROM t ORDER BY category",
+    "SELECT DISTINCT category, COUNT(*) FROM t",
+    "SELECT category FROM t WHERE COUNT(*) > 0"
+   ],
+   "Aggregates are computed per group."
+  ],
+  [
+   "What is a primary key?",
+   "A column or set of columns that uniquely identifies each row",
+   [
+    "The first column of any table, whatever it holds",
+    "An index that speeds up searches on text columns",
+    "A reference to a row in a foreign table that must exist"
+   ],
+   "Primary keys are unique and not null."
+  ],
+  [
+   "What does a foreign key enforce?",
+   "That a value references an existing row in another table",
+   [
+    "That every value in the column is unique across the table",
+    "That values are encrypted before they are written to disk",
+    "That rows are kept sorted by the key in physical storage"
+   ],
+   "It maintains referential integrity."
+  ],
+  [
+   "Why use parameterized queries?",
+   "To prevent SQL injection",
+   [
+    "To make queries run in parallel",
+    "To format the output as JSON",
+    "To compress the result set"
+   ],
+   "Never build SQL by concatenating user input."
+  ],
+  [
+   "What does an index usually speed up?",
+   "Lookups and filtering on the indexed columns",
+   [
+    "All INSERT operations, since rows are placed in sorted order",
+    "Table creation and later schema migrations",
+    "Backups and restores of the whole database"
+   ],
+   "Indexes speed reads but add cost to writes."
+  ],
+  [
+   "What does a transaction guarantee with COMMIT and ROLLBACK?",
+   "A group of statements succeeds or fails as a unit",
+   [
+    "The queries inside it run faster than they would alone",
+    "The tables it touches stay locked until the server restarts",
+    "The results are cached for the next identical query"
+   ],
+   "This is the A (atomicity) in ACID."
+  ],
+  [
+   "How do you test for missing values?",
+   "WHERE column IS NULL",
+   [
+    "WHERE column = NULL",
+    "WHERE column == NONE",
+    "WHERE NULL(column)"
+   ],
+   "Comparisons with = NULL are never true."
+  ],
+  [
+   "What does a window function like ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at) do?",
+   "Numbers rows within each user, ordered by time",
+   [
+    "Deletes duplicate rows for each user, keeping the latest",
+    "Groups the rows into one summary row per user",
+    "Creates a new table with one numbered row per user"
+   ],
+   "Window functions compute across rows without collapsing them."
+  ],
+  [
+   "What is normalization?",
+   "Organizing tables to reduce redundancy and update anomalies",
+   [
+    "Scaling numeric columns to the range 0 to 1",
+    "Encrypting sensitive columns so only owners can read them",
+    "Adding indexes on every column to speed up all queries"
+   ],
+   "Normal forms guide schema design."
+  ],
+  [
+   "What does EXPLAIN (or EXPLAIN ANALYZE) show?",
+   "The query execution plan",
+   [
+    "The table schema and columns",
+    "The current user permissions",
+    "The database server version"
+   ],
+   "Use it to find missing indexes and slow scans."
+  ],
+  [
+   "What is a CTE (WITH clause)?",
+   "A named temporary result set used within a query",
+   [
+    "A permanent table created from the query result",
+    "A stored procedure that runs before the query",
+    "A backup command that snapshots the queried tables"
+   ],
+   "CTEs make complex queries more readable."
+  ],
+  [
+   "Which statement removes all rows but keeps the table?",
+   "TRUNCATE TABLE t (or DELETE FROM t)",
+   [
+    "DROP TABLE t (or DROP t)",
+    "ALTER TABLE t CLEAR (or CLEAR t)",
+    "REMOVE t (or REMOVE ALL FROM t)"
+   ],
+   "DROP removes the table definition entirely."
+  ],
+  [
+   "What does UNION do compared to UNION ALL?",
+   "UNION removes duplicates; UNION ALL keeps them",
+   [
+    "They are identical apart from the keyword used",
+    "UNION ALL removes duplicates; UNION keeps them",
+    "UNION joins columns side by side; UNION ALL stacks rows"
+   ],
+   "UNION ALL is faster when duplicates are acceptable."
+  ]
+ ]
+}
