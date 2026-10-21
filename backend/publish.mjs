@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { mergeOpportunities } from './merge.mjs';
+import { publishable } from './radar-quality.mjs';
 
 const input = path.resolve('backend/data/opportunities.json');
 const output = path.resolve('public/data/opportunities.json');
@@ -8,9 +9,9 @@ const results = JSON.parse(await fs.readFile(input, 'utf8'));
 
 // Keep the last published snapshot when a scan finds nothing usable.
 // The frontend filters expired deadlines even when a scan is delayed.
+const today = new Date().toISOString().slice(0, 10);
 if (!Array.isArray(results) || results.length === 0 ||
-    results.some((item) => !item || !/^https?:\/\//.test(item.url || '') ||
-      !item.title || !['HACKATHON', 'GRANT', 'INTERNSHIP'].includes(item.type))) {
+    results.some((item) => !publishable(item, today) || !item.deadlineEvidence)) {
   throw new Error('Scan produced no valid sourced opportunities; published data was kept');
 }
 
@@ -21,7 +22,7 @@ try {
   if (error.code !== 'ENOENT' && !(error instanceof SyntaxError)) throw error;
 }
 
-const merged = mergeOpportunities(previous, results, new Date().toISOString().slice(0, 10));
+const merged = mergeOpportunities(previous, results, today);
 await fs.mkdir(path.dirname(output), { recursive: true });
 await fs.writeFile(output, `${JSON.stringify(merged, null, 2)}\n`);
 console.log(`Published ${merged.length} opportunities (${results.length} from this scan)`);

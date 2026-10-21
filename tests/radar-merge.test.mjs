@@ -1,42 +1,67 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mergeOpportunities } from '../backend/merge.mjs';
+import { confirmedDeadline } from '../backend/radar-quality.mjs';
+import { validate } from '../backend/server.mjs';
+import { loadRadar } from '../bot/radar-data.mjs';
 
-const item = (url, deadline = null, extra = {}) => ({ url, title: url, type: 'HACKATHON', deadline, ...extra });
-
-test('keeps earlier items with future deadlines when a new scan is thin', () => {
-  const merged = mergeOpportunities([item('a', '2026-12-01'), item('b', '2026-11-01')], [item('c')], '2026-10-20');
-  assert.deepEqual(merged.map((x) => x.url), ['b', 'a', 'c']);
+const item = (url, deadline = '2026-12-01', extra = {}) => ({
+  url, title: 'AI Challenge', type: 'HACKATHON', organization: 'Organizer',
+  deadline, deadlineEvidence: deadline ? 'Apply by December 1, 2026' : null, ...extra,
 });
 
-test('drops expired deadlines and stale undated items', () => {
-  const previous = [item('old', '2026-10-01'), item('stale', null, { lastSeen: '2026-09-01' }), item('recent', null, { lastSeen: '2026-10-15' })];
-  const merged = mergeOpportunities(previous, [item('new')], '2026-10-20');
-  assert.deepEqual(merged.map((x) => x.url).sort(), ['new', 'recent']);
+test('removes expired and undated listings, including old undated records', () => {
+  const old = [item('https://example.org/old', '2026-10-01'),
+    item('https://example.org/undated', null), item('https://example.org/live')];
+  const merged = mergeOpportunities(old, [item('https://example.org/new')], '2026-10-21');
+  assert.deepEqual(merged.map((x) => x.url), ['https://example.org/live', 'https://example.org/new']);
 });
 
-test('legacy items without lastSeen get stamped so they can expire later', () => {
-  const merged = mergeOpportunities([item('legacy')], [item('n')], '2026-10-20').find((x) => x.url === 'legacy');
-  assert.equal(merged.lastSeen, '2026-10-20');
-  const later = mergeOpportunities([merged], [item('n')], '2026-11-20');
-  assert.equal(later.some((x) => x.url === 'legacy'), false);
+test('rejects unknown organization and directory pages', () => {
+  const merged = mergeOpportunities([], [item('https://devpost.com/c/artificial-intelligence'),
+    item('https://example.org/hackathon', '2026-12-01', { organization: 'Unknown' }),
+    item('https://example.org/real-hackathon')], '2026-10-21');
+  assert.deepEqual(merged.map((x) => x.url), ['https://example.org/real-hackathon']);
 });
 
-test('a rescan without evidence does not erase a confirmed deadline', () => {
-  const previous = [item('a', '2026-12-01', { deadlineEvidence: 'Apply by Dec 1', firstSeen: '2026-10-01' })];
-  const [merged] = mergeOpportunities(previous, [item('a')], '2026-10-20');
-  assert.equal(merged.deadline, '2026-12-01');
-  assert.equal(merged.deadlineEvidence, 'Apply by Dec 1');
-  assert.equal(merged.firstSeen, '2026-10-01');
-  assert.equal(merged.lastSeen, '2026-10-20');
+test('requires a real deadline explicitly supported by a quote on the same page', () => {
+  const page = 'Registration closes on October 30, 2026 for AI Challenge.';
+  assert.equal(confirmedDeadline('2026-10-30', 'Registration closes on October 30, 2026', page, '2026-10-21'), true);
+  assert.equal(confirmedDeadline('2026-10-29', 'Registration closes on October 30, 2026', page, '2026-10-21'), false);
+  assert.equal(confirmedDeadline('2026-10-30', 'Registration closes on October 30, 2026', page, '2026-10-31'), false);
+  assert.equal(confirmedDeadline('2026-02-30', 'Registration closes on February 30, 2026', page, '2026-01-01'), false);
 });
 
-test('ids are unique per URL even with a shared prefix', () => {
-  const merged = mergeOpportunities([], [item('https://www.a.org/x'), item('https://www.b.org/y')], '2026-10-20');
+test('scanner refuses undated, unknown, and non-event sources', () => {
+  const source = 'AI Challenge. Registration closes on October 30, 2026.';
+  const candidates = [
+    item('https://example.org/challenge', '2026-10-30'),
+    item('https://example.org/challenge', '2026-10-30', { organization: 'Unknown' }),
+    item('https://example.org/challenge', null),
+    item('https://example.org/challenge', '2026-10-29'),
+    item('https://devpost.com/c/artificial-intelligence', '2026-10-30'),
+  ].map((entry) => ({ ...entry, deadline_quote: 'Registration closes on October 30, 2026' }));
+  const sources = new Map([['https://example.org/challenge', source], ['https://devpost.com/c/artificial-intelligence', source]]);
+  const accepted = validate(candidates, sources, '2026-10-21');
+  assert.equal(accepted.length, 1);
+  assert.equal(accepted[0].deadline, '2026-10-30');
+});
+
+test('stable distinct ids and soonest deadline first', () => {
+  const merged = mergeOpportunities([], [item('https://www.a.org/x'),
+    item('https://www.b.org/y', '2026-11-05', { deadlineEvidence: 'Apply by November 5, 2026' })], '2026-10-21');
+  assert.deepEqual(merged.map((x) => x.url), ['https://www.b.org/y', 'https://www.a.org/x']);
   assert.equal(new Set(merged.map((x) => x.id)).size, 2);
 });
 
-test('confirmed deadlines sort first, soonest first', () => {
-  const merged = mergeOpportunities([], [item('x'), item('late', '2027-03-01'), item('soon', '2026-11-05')], '2026-10-20');
-  assert.deepEqual(merged.map((x) => x.url), ['soon', 'late', 'x']);
+test('bot does not show incomplete or expired feed records', async (t) => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => ({ ok: true, json: async () => [
+    item('https://example.org/past', '2020-01-01'),
+    item('https://example.org/undated', null),
+    item('https://example.org/unknown', '2099-12-01', { organization: 'Unknown' }),
+    item('https://example.org/current', '2099-12-01', { deadlineEvidence: 'Apply by December 1, 2099' }),
+  ] });
+  t.after(() => { globalThis.fetch = originalFetch; });
+  assert.deepEqual((await loadRadar()).map((entry) => entry.url), ['https://example.org/current']);
 });

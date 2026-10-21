@@ -1,0 +1,30 @@
+const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+
+export function confirmedDeadline(deadline, quote, source, today) {
+  if (typeof deadline !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(deadline)) return false;
+  const parsed = new Date(`${deadline}T00:00:00Z`);
+  if (Number.isNaN(parsed.valueOf()) || parsed.toISOString().slice(0, 10) !== deadline || deadline < today) return false;
+  if (typeof quote !== 'string' || !quote.trim() || !source.toLowerCase().includes(quote.trim().toLowerCase())) return false;
+  if (!/deadline|registration|apply|applications|submit|clos(e|es|ing)|due|until|last date/i.test(quote)) return false;
+  const [year, month, day] = deadline.split('-').map(Number);
+  const clean = quote.toLowerCase();
+  if (!clean.includes(String(year))) return false;
+  const monthName = MONTHS[month - 1];
+  const namedMonth = new RegExp(`\\b${monthName.slice(0, 3)}[a-z]*\\b`, 'i').test(clean);
+  const dayNumber = new RegExp(`(^|\\D)0?${day}(?:st|nd|rd|th)?(?!\\d)`, 'i').test(clean);
+  const numericDate = new RegExp(`\\b${year}[-/.]0?${month}[-/.]0?${day}\\b`).test(clean) ||
+    new RegExp(`\\b0?${day}[-/.]0?${month}[-/.]${year}\\b`).test(clean);
+  return numericDate || (namedMonth && dayNumber);
+}
+
+export function publishable(item, today) {
+  if (!item || !['HACKATHON', 'GRANT', 'INTERNSHIP'].includes(item.type)) return false;
+  if (!item.title || /^\s*(unknown|untitled|n\/?a)\s*$/i.test(item.title)) return false;
+  if (!item.organization || /^\s*(unknown|n\/?a)\s*$/i.test(item.organization)) return false;
+  if (!/^https:\/\/[^\s]+$/i.test(item.url || '')) return false;
+  if (!item.deadline || item.deadline < today || !/^\d{4}-\d{2}-\d{2}$/.test(item.deadline)) return false;
+  // Directory pages are not evidence for the deadline of any one event.
+  const pathname = new URL(item.url).pathname.replace(/\/$/, '');
+  if (/^\/(?:c|hackathons|events|search|category|categories)(?:\/[^/]+)?$/i.test(pathname)) return false;
+  return true;
+}

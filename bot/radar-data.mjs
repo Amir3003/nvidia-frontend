@@ -13,9 +13,10 @@ export async function loadRadar(limit = 5) {
   return data.flatMap((item) => {
     const title = String(item?.title || '').trim();
     const url = String(item?.url || '').trim();
-    if (!title || !/^https:\/\/[^\s]+$/i.test(url)) return [];
+    if (!title || /^unknown$/i.test(title) || !/^https:\/\/[^\s]+$/i.test(url)) return [];
     const deadline = /^\d{4}-\d{2}-\d{2}$/.test(item.deadline || '') ? item.deadline : null;
-    if (deadline && deadline < today) return [];
+    if (!deadline || deadline < today || !item.deadlineEvidence ||
+      !item.organization || /^unknown$/i.test(item.organization)) return [];
     const key = `${title.toLowerCase()}|${url}`;
     if (seen.has(key)) return [];
     seen.add(key);
