@@ -59,6 +59,7 @@ export const OnboardingWizard: React.FC = () => {
 
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAllGoals, setShowAllGoals] = useState(false);
 
   // Form State
   const [name, setName] = useState(userProfile.name || '');
@@ -204,7 +205,7 @@ export const OnboardingWizard: React.FC = () => {
       onClick={(e) => {
         if (e.target === e.currentTarget) setIsOnboardingOpen(false);
       }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
     >
       <div className="w-full max-w-2xl max-h-[85vh] my-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-[0_24px_60px_-15px_rgba(6,182,212,0.3)] flex flex-col overflow-hidden text-slate-900">
         
@@ -234,20 +235,28 @@ export const OnboardingWizard: React.FC = () => {
 
           <div className="flex items-center gap-3">
             {/* Step Progress indicators */}
-            <div className="flex items-center gap-1.5 font-mono text-mini">
+            <div className="flex items-center font-mono text-mini" aria-hidden="true">
               {[1, 2, 3, 4].map((s) => (
-                <span
-                  key={s}
-                  className={`w-6 h-6 rounded-btn flex items-center justify-center border text-[11px] font-semibold ${
-                    step === s
-                      ? 'border-emerald-600 bg-emerald-500 text-white shadow-xs'
-                      : step > s
-                      ? 'border-emerald-400 bg-emerald-100 text-emerald-800'
-                      : 'border-teal-200 bg-white/80 text-teal-700'
-                  }`}
-                >
-                  {step > s ? '✓' : s}
-                </span>
+                <React.Fragment key={s}>
+                  {s > 1 && (
+                    <span
+                      className={`w-3 sm:w-5 h-0.5 rounded-full ${
+                        step >= s ? 'bg-emerald-500' : 'bg-teal-200'
+                      }`}
+                    />
+                  )}
+                  <span
+                    className={`w-6 h-6 rounded-full flex items-center justify-center border text-[11px] font-semibold ${
+                      step === s
+                        ? 'border-emerald-600 bg-emerald-500 text-white shadow-xs'
+                        : step > s
+                        ? 'border-emerald-400 bg-emerald-100 text-emerald-800'
+                        : 'border-teal-200 bg-white/80 text-teal-700'
+                    }`}
+                  >
+                    {step > s ? '✓' : s}
+                  </span>
+                </React.Fragment>
               ))}
             </div>
 
@@ -578,7 +587,9 @@ export const OnboardingWizard: React.FC = () => {
                   Primary Objectives <span className="text-emerald-600">*</span>
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {CAREER_OBJECTIVES.map((goal) => {
+                  {CAREER_OBJECTIVES.filter(
+                    (goal, i) => showAllGoals || i < 6 || selectedGoals.includes(goal)
+                  ).map((goal) => {
                     const isSelected = selectedGoals.includes(goal);
                     return (
                       <button
@@ -596,6 +607,15 @@ export const OnboardingWizard: React.FC = () => {
                     );
                   })}
                 </div>
+                {CAREER_OBJECTIVES.length > 6 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAllGoals((v) => !v)}
+                    className="mt-2 text-[12px] font-mono font-semibold text-indigo-700 hover:text-indigo-900 cursor-pointer"
+                  >
+                    {showAllGoals ? 'Show fewer' : `Show all ${CAREER_OBJECTIVES.length} objectives`}
+                  </button>
+                )}
               </div>
 
               {/* Optional CV Summary */}

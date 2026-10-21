@@ -194,6 +194,7 @@ const ApplicationPrep: React.FC<{ currentOpp: Opportunity }> = ({ currentOpp }) 
   );
 
   const doneCount = steps.filter((s) => checked.includes(s.id)).length;
+  const currentStepId = steps.find((s) => !checked.includes(s.id))?.id;
   const progress = Math.round((doneCount / steps.length) * 100);
   const days = daysUntil(currentOpp.deadlineDate);
 
@@ -210,6 +211,16 @@ const ApplicationPrep: React.FC<{ currentOpp: Opportunity }> = ({ currentOpp }) 
   const handleGoToOfficial = () => {
     addLog('SYSTEM', `Opened official page for ${currentOpp.title}`);
   };
+
+  const actionClass = (primary: boolean) =>
+    primary
+      ? 'inline-flex items-center gap-1 mt-2 h-8 px-3 rounded-btn bg-emerald-600 hover:bg-emerald-500 text-white text-mini font-mono font-semibold transition-colors'
+      : 'inline-flex items-center gap-1 mt-1.5 text-mini font-mono font-medium text-teal-800 hover:text-emerald-700 hover:underline';
+
+  const copyAllValue = profileFields
+    .filter((f) => f.value && f.label !== 'Short bio')
+    .map((f) => `${f.label}: ${f.value}`)
+    .join('\n');
 
   const card =
     'rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] text-slate-900';
@@ -361,13 +372,27 @@ const ApplicationPrep: React.FC<{ currentOpp: Opportunity }> = ({ currentOpp }) 
               <ol className="mt-4 space-y-2">
                 {steps.map((step, i) => {
                   const isDone = checked.includes(step.id);
+                  const isCurrent = step.id === currentStepId;
                   return (
                     <li
                       key={step.id}
-                      className={`p-3 rounded-btn border transition-colors ${
-                        isDone ? 'bg-emerald-50/80 border-emerald-200' : 'bg-white/80 border-teal-200/80'
+                      aria-current={isCurrent ? 'step' : undefined}
+                      className={`relative p-3 rounded-btn border transition-colors ${
+                        isDone
+                          ? 'bg-emerald-50/80 border-emerald-200'
+                          : isCurrent
+                          ? 'bg-white border-emerald-400 ring-2 ring-emerald-200/70'
+                          : 'bg-white/80 border-teal-200/80'
                       }`}
                     >
+                      {i < steps.length - 1 && (
+                        <span
+                          aria-hidden="true"
+                          className={`absolute left-[23px] top-9 -bottom-5 w-0.5 rounded-full ${
+                            isDone ? 'bg-emerald-400' : 'bg-teal-200'
+                          }`}
+                        />
+                      )}
                       <div className="flex items-start gap-3">
                         <button
                           type="button"
@@ -375,7 +400,7 @@ const ApplicationPrep: React.FC<{ currentOpp: Opportunity }> = ({ currentOpp }) 
                           aria-checked={isDone}
                           aria-label={`Mark "${step.title}" as done`}
                           onClick={() => toggleStep(step.id)}
-                          className={`w-6 h-6 rounded-md border flex items-center justify-center flex-shrink-0 cursor-pointer transition-colors ${
+                          className={`relative z-10 w-6 h-6 rounded-md border flex items-center justify-center flex-shrink-0 cursor-pointer transition-colors ${
                             isDone
                               ? 'bg-emerald-500 border-emerald-600 text-white'
                               : 'bg-white border-teal-300 text-teal-700 text-[11px] font-mono font-bold'
@@ -394,7 +419,7 @@ const ApplicationPrep: React.FC<{ currentOpp: Opportunity }> = ({ currentOpp }) 
                                 href={step.action.href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 mt-1.5 text-mini font-mono font-semibold text-emerald-700 hover:underline"
+                                className={actionClass(isCurrent)}
                               >
                                 {step.action.label}
                                 <ExternalLinkIcon size={11} />
@@ -403,7 +428,7 @@ const ApplicationPrep: React.FC<{ currentOpp: Opportunity }> = ({ currentOpp }) 
                               <button
                                 type="button"
                                 onClick={() => step.action?.to && navigate(step.action.to)}
-                                className="inline-flex items-center gap-1 mt-1.5 text-mini font-mono font-semibold text-emerald-700 hover:underline cursor-pointer"
+                                className={`${actionClass(isCurrent)} cursor-pointer`}
                               >
                                 {step.action.label}
                                 <ChevronRightIcon size={11} />
@@ -421,11 +446,23 @@ const ApplicationPrep: React.FC<{ currentOpp: Opportunity }> = ({ currentOpp }) 
           {/* RIGHT: Copy-ready profile data for organizer forms */}
           <div className="lg:col-span-12 xl:col-span-3 space-y-4">
             <div className={`p-5 space-y-3 ${card}`}>
-              <div>
-                <h3 className="text-[15px] font-bold text-indigo-950">Quick Copy for Forms</h3>
-                <p className="text-[12px] text-teal-900 leading-relaxed mt-0.5">
-                  Copy your details into the organizer registration form in one click.
-                </p>
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div>
+                  <h3 className="text-[15px] font-bold text-indigo-950">Quick Copy for Forms</h3>
+                  <p className="text-[12px] text-teal-900 leading-relaxed mt-0.5">
+                    Prefilled from your profile. One click per field.
+                  </p>
+                </div>
+                {copyAllValue && (
+                  <button
+                    type="button"
+                    onClick={() => handleCopy('__all', copyAllValue)}
+                    className="h-8 px-3 rounded-btn border border-emerald-300 bg-white hover:bg-emerald-50 text-emerald-800 text-mini font-mono font-semibold flex items-center gap-1.5 flex-shrink-0 cursor-pointer"
+                  >
+                    {copiedField === '__all' ? <CheckIcon size={11} /> : <CopyIcon size={11} />}
+                    {copiedField === '__all' ? 'Copied' : 'Copy all'}
+                  </button>
+                )}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-1 gap-2">
                 {profileFields.map((f) => (
