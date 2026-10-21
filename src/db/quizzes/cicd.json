@@ -1,0 +1,2628 @@
+{
+ "git": [
+  [
+   "You just made a commit and nothing is staged. What does git commit --amend do?",
+   "Replaces the last commit with a new one and lets you edit its message",
+   [
+    "Adds a new empty commit on top with the same message",
+    "Reverts the last commit and keeps its changes staged",
+    "Pushes the last commit to the remote with a new message"
+   ],
+   "--amend rewrites the tip commit: it creates a new commit (new hash) with the staged content and an editable message, replacing the old one."
+  ],
+  [
+   "Which command commits modifications to already tracked files without running git add first?",
+   "git commit -a -m \"fix\"",
+   [
+    "git commit -s -m \"fix\"",
+    "git commit -n -m \"fix\"",
+    "git commit --staged -m \"fix\""
+   ],
+   "-a automatically stages modified and deleted tracked files. -s adds a Signed-off-by line and -n skips hooks; neither stages anything."
+  ],
+  [
+   "app.js is tracked and modified; notes.txt is new and was never added. What does git commit -a -m \"wip\" include?",
+   "Only the changes to app.js",
+   [
+    "Both app.js and notes.txt",
+    "Only the new file notes.txt",
+    "Nothing, because nothing was staged"
+   ],
+   "commit -a stages changes to tracked files only. Untracked files such as notes.txt still need an explicit git add."
+  ],
+  [
+   "How do teams practicing trunk-based development usually integrate their work?",
+   "Short-lived branches or small commits merged into main at least daily",
+   [
+    "Long-lived feature branches merged into main at release time",
+    "A develop branch plus separate release and hotfix branches",
+    "One permanent branch per developer, merged once per quarter"
+   ],
+   "Trunk-based development keeps branches very short-lived so main is integrated continuously. A develop branch with release and hotfix branches describes Git Flow."
+  ],
+  [
+   "In the Git Flow branching model, which branch is a hotfix branch created from?",
+   "main (the production branch)",
+   [
+    "develop",
+    "the newest feature branch",
+    "the most recent release branch"
+   ],
+   "Git Flow hotfixes start from the production branch (main or master) and are merged back into both main and develop."
+  ],
+  [
+   "You are on branch feature and run git rebase main. What happens?",
+   "Feature's commits are replayed on top of main, getting new commit hashes",
+   [
+    "A merge commit joining main into feature is created",
+    "Main's commits are moved onto feature with unchanged hashes",
+    "All feature commits are squashed into one commit on main"
+   ],
+   "Rebase rewrites the branch: each feature commit is reapplied on the tip of main, producing new commits with new hashes and a linear history."
+  ],
+  [
+   "Why should you avoid rebasing commits that are already pushed to a shared branch others work on?",
+   "It rewrites history, so collaborators' copies diverge from the new commits",
+   [
+    "It deletes the remote branch after the rebase finishes",
+    "It permanently removes the original commit messages",
+    "It disables fast-forward merges for the whole repository"
+   ],
+   "Rebased commits are new objects. Anyone who based work on the old commits now has diverging history and must reconcile it, often painfully."
+  ],
+  [
+   "A fast-forward is possible. What does git merge --no-ff feature do?",
+   "Creates a merge commit anyway",
+   [
+    "Fails with an error",
+    "Performs a fast-forward",
+    "Rebases feature onto the current branch"
+   ],
+   "--no-ff forces a merge commit even when Git could simply move the branch pointer, which keeps a visible record of the feature branch."
+  ],
+  [
+   "During git merge feature, a file contains <<<<<<< HEAD, then =======, then >>>>>>> feature. What is between <<<<<<< HEAD and =======?",
+   "The version from your current branch",
+   [
+    "The version from the feature branch",
+    "The common ancestor's version",
+    "The combined result Git suggests"
+   ],
+   "HEAD is the branch you are merging into, so its side comes first. The part after ======= up to >>>>>>> feature is the incoming branch's version."
+  ],
+  [
+   "You fixed the conflict markers in config.yml during a merge. How do you tell Git the conflict is resolved?",
+   "Stage the file with git add, then commit",
+   [
+    "Run git resolve config.yml",
+    "Run git merge --skip",
+    "Delete the .git/MERGE_HEAD file"
+   ],
+   "Staging a file marks its conflict as resolved. Once all files are staged, git commit (or git merge --continue) completes the merge."
+  ],
+  [
+   "A merge produced many conflicts and you want to return to the state before you started it. Which command does that?",
+   "git merge --abort",
+   [
+    "git merge --undo",
+    "git reset --soft HEAD~1",
+    "git checkout --theirs ."
+   ],
+   "git merge --abort restores the pre-merge state. reset --soft HEAD~1 would move the branch back one existing commit, since the merge was never committed."
+  ],
+  [
+   "What does git cherry-pick abc123 do?",
+   "Applies the changes of commit abc123 as a new commit on the current branch",
+   [
+    "Moves abc123 to the current branch and removes it from its original branch",
+    "Checks out commit abc123 in detached HEAD state",
+    "Merges the entire branch that contains abc123"
+   ],
+   "Cherry-pick copies one commit's changes into a new commit on HEAD. The original commit stays where it was."
+  ],
+  [
+   "Which git cherry-pick option appends a line like (cherry picked from commit ...) to the new commit message?",
+   "-x",
+   [
+    "-n",
+    "-e",
+    "-s"
+   ],
+   "-x records the source commit hash in the message. -n applies changes without committing, -e opens the editor and -s adds a Signed-off-by line."
+  ],
+  [
+   "A bad commit is already pushed to a shared main branch. Which command undoes it without rewriting history?",
+   "git revert <commit>",
+   [
+    "git reset --hard <commit>~1",
+    "git commit --amend",
+    "git rebase -i <commit>~1"
+   ],
+   "git revert adds a new commit that reverses the changes, so others can pull normally. Reset, amend and interactive rebase all rewrite history."
+  ],
+  [
+   "What does git reset --soft HEAD~1 do?",
+   "Moves the branch back one commit and keeps its changes staged",
+   [
+    "Moves the branch back one commit and keeps its changes unstaged",
+    "Moves the branch back one commit and discards its changes",
+    "Adds a new commit that undoes the last commit"
+   ],
+   "--soft only moves the branch pointer; index and working tree are untouched, so the changes stay staged. Unstaged is --mixed, discarded is --hard."
+  ],
+  [
+   "What mode does git reset HEAD~1 use when no mode option is given?",
+   "--mixed",
+   [
+    "--soft",
+    "--hard",
+    "--keep"
+   ],
+   "The default is --mixed: the branch and index move back, but the working tree keeps the changes as unstaged modifications."
+  ],
+  [
+   "You ran git reset --hard HEAD~3 by mistake. Which command most directly shows the hash of the commit you were on before?",
+   "git reflog",
+   [
+    "git log --oneline",
+    "git stash list",
+    "git status"
+   ],
+   "The reflog records every move of HEAD, including resets, so the old tip appears there. git log only shows commits reachable from the current HEAD."
+  ],
+  [
+   "Which statement about git reflog is true?",
+   "It is local to your repository and is not pushed to remotes",
+   [
+    "It is uploaded to the remote together with your commits",
+    "It records merge commits only, not resets or checkouts",
+    "It is stored inside every commit object as metadata"
+   ],
+   "The reflog lives in .git/logs of your clone and expires over time. It is a local safety net, not shared history."
+  ],
+  [
+   "You cloned a repository that uses submodules and the submodule folders are empty. Which command fetches and checks them out?",
+   "git submodule update --init --recursive",
+   [
+    "git submodule add --recursive",
+    "git pull --submodules-only",
+    "git fetch --all-submodules"
+   ],
+   "update --init registers the submodules from .gitmodules and checks out the recorded commits; --recursive handles nested ones. Cloning with --recurse-submodules does this upfront."
+  ],
+  [
+   "What does the parent repository record for each submodule?",
+   "A specific commit hash of the submodule repository",
+   [
+    "A full copy of the submodule's history",
+    "The submodule branch name, followed to its newest commit",
+    "A compressed snapshot of the submodule's files"
+   ],
+   "The parent stores a gitlink entry pointing to one exact commit, plus the URL in .gitmodules. Updating the submodule means committing a new pointer."
+  ]
+ ],
+ "github-actions": [
+  [
+   "Where must workflow files be stored for GitHub Actions to detect them?",
+   ".github/workflows/",
+   [
+    ".github/actions/",
+    ".actions/workflows/",
+    "workflows/ at the repository root"
+   ],
+   "GitHub only loads workflow YAML files from the .github/workflows directory of the repository."
+  ],
+  [
+   "A workflow defines three jobs with no needs keys. How do they run?",
+   "In parallel, each on its own runner",
+   [
+    "One after another in file order",
+    "One after another in alphabetical order",
+    "In parallel, all on the same runner machine"
+   ],
+   "Jobs are independent and run concurrently by default. Use needs to create dependencies between them."
+  ],
+  [
+   "Job deploy must start only after jobs build and test succeed. Which key do you add to deploy?",
+   "needs: [build, test]",
+   [
+    "depends_on: [build, test]",
+    "after: [build, test]",
+    "requires: [build, test]"
+   ],
+   "needs declares job dependencies; deploy waits for both and is skipped if either fails (unless you change it with an if condition)."
+  ],
+  [
+   "In one job, step 1 writes out.txt into the workspace. Can step 2 of the same job read it?",
+   "Yes, steps of a job share the runner's filesystem",
+   [
+    "No, each step starts in a fresh container",
+    "Only if out.txt is uploaded as an artifact",
+    "Only if step 2 declares needs on step 1"
+   ],
+   "All steps of a job run sequentially on the same runner, so files persist between them. Artifacts are needed only to pass files between jobs."
+  ],
+  [
+   "Job build produces a dist/ folder that job publish needs. What is the standard way to pass it?",
+   "Upload it with actions/upload-artifact, then download it with actions/download-artifact",
+   [
+    "Read it from ../build/dist inside the publish job",
+    "Do nothing, since all jobs share one workspace",
+    "Add needs: build, which copies the workspace over"
+   ],
+   "Each job runs on a separate runner, so files must be shared through artifacts. needs only orders jobs; it does not copy files."
+  ],
+  [
+   "Which step key runs shell commands such as npm test on the runner?",
+   "run",
+   [
+    "uses",
+    "with",
+    "exec"
+   ],
+   "run executes commands in a shell. uses calls an action, and with passes inputs to that action."
+  ],
+  [
+   "What is the recommended way for a step to set an output named version?",
+   "echo \"version=1.2.3\" >> \"$GITHUB_OUTPUT\"",
+   [
+    "echo \"::set-output name=version::1.2.3\"",
+    "echo \"version=1.2.3\" >> \"$GITHUB_ENV\"",
+    "export version=1.2.3"
+   ],
+   "Writing to the GITHUB_OUTPUT file sets a step output. The ::set-output command is deprecated, and GITHUB_ENV sets an environment variable instead."
+  ],
+  [
+   "Which is a key characteristic of a GitHub-hosted runner?",
+   "Each job gets a fresh virtual machine that is discarded afterwards",
+   [
+    "It keeps files from previous jobs between workflow runs",
+    "It runs on hardware inside your own data center",
+    "It must be registered manually with a registration token"
+   ],
+   "GitHub-hosted runners are ephemeral VMs managed by GitHub. Persistent state and manual registration describe self-hosted runners."
+  ],
+  [
+   "Why does GitHub advise against self-hosted runners on public repositories?",
+   "A pull request from a fork could run untrusted code on your machine",
+   [
+    "Self-hosted runners cannot be attached to public repositories",
+    "Self-hosted runners do not support Docker containers",
+    "Self-hosted runners cannot read repository secrets"
+   ],
+   "Anyone can open a pull request on a public repo, and workflow code from it could execute on your persistent machine and compromise it."
+  ],
+  [
+   "Which runs-on value targets a self-hosted runner that has the custom label gpu?",
+   "runs-on: [self-hosted, gpu]",
+   [
+    "runs-on: self-hosted:gpu",
+    "runs-on: gpu-hosted",
+    "runs-on: ubuntu-latest-gpu"
+   ],
+   "runs-on accepts a list of labels, and the job goes to a runner that has all of them. self-hosted is the default label of every self-hosted runner."
+  ],
+  [
+   "Which trigger runs a workflow only for pushes to the main branch?",
+   "on: { push: { branches: [main] } }",
+   [
+    "on: { push: { tags: [main] } }",
+    "on: { pull_request: { branches: [main] } }",
+    "on: { push: { paths: [main] } }"
+   ],
+   "The branches filter limits push events to matching branch names. pull_request with branches: [main] runs for pull requests targeting main, not pushes."
+  ],
+  [
+   "A workflow is triggered by pull_request from a fork. Which is true about secrets?",
+   "Repository secrets are not passed, and GITHUB_TOKEN is read-only",
+   [
+    "All repository secrets are available as usual",
+    "Secrets are available only in the first job",
+    "Secrets are passed but their values are encrypted"
+   ],
+   "To protect secrets from untrusted code, fork pull requests get no repository secrets (except GITHUB_TOKEN) and the token has read-only permissions."
+  ],
+  [
+   "Which event lets you start a workflow manually with a Run workflow button in the Actions tab?",
+   "workflow_dispatch",
+   [
+    "workflow_run",
+    "repository_dispatch",
+    "workflow_call"
+   ],
+   "workflow_dispatch adds a manual trigger in the UI (and the API). repository_dispatch is API-only, workflow_run follows another workflow and workflow_call is for reusable workflows."
+  ],
+  [
+   "A workflow has on: { push: { paths: ['docs/**'] } }. When does it run?",
+   "Only when a push changes at least one file under docs/",
+   [
+    "On every push, but it checks out only the docs/ folder",
+    "On every push except those that change docs/",
+    "Only on pushes to branches whose names start with docs"
+   ],
+   "The paths filter runs the workflow when any changed file matches the pattern. paths-ignore is the opposite filter."
+  ],
+  [
+   "How do you reference a repository secret named API_KEY in a workflow file?",
+   "${{ secrets.API_KEY }}",
+   [
+    "${{ env.API_KEY }}",
+    "${{ vars.API_KEY }}",
+    "${{ github.API_KEY }}"
+   ],
+   "Secrets are accessed through the secrets context. vars is the context for non-secret configuration variables."
+  ],
+  [
+   "A step accidentally prints the exact value of a registered secret to the log. What appears in the log?",
+   "The value is replaced with ***",
+   [
+    "The value in plain text",
+    "Nothing, the job fails at once",
+    "A hash of the secret value"
+   ],
+   "GitHub masks registered secret values in logs. Masking can miss transformed values (for example base64), so avoid printing secrets at all."
+  ],
+  [
+   "MODE is set to a under the workflow-level env and to b under a step's env. Which value does that step see?",
+   "b",
+   [
+    "a",
+    "An empty string",
+    "The job fails due to the conflict"
+   ],
+   "More specific scopes win: step env overrides job env, which overrides workflow env."
+  ],
+  [
+   "What is GITHUB_TOKEN in a workflow run?",
+   "A token GitHub creates automatically for the run, scoped to the repository",
+   [
+    "A personal access token you must create and store first",
+    "A permanent token shared by all repositories you own",
+    "The repository's SSH deploy key, exposed as a variable"
+   ],
+   "GitHub generates GITHUB_TOKEN for each job, limited to the repository and to the permissions you grant, and it expires when the job ends."
+  ],
+  [
+   "Which three kinds of custom actions can you create for GitHub Actions?",
+   "JavaScript, Docker container and composite",
+   [
+    "JavaScript, Python and Bash",
+    "Docker, Kubernetes and Helm",
+    "Composite, matrix and reusable"
+   ],
+   "Custom actions are JavaScript actions, Docker container actions or composite actions. Reusable workflows and matrices are workflow features, not action types."
+  ],
+  [
+   "Which file defines a custom action's inputs, outputs and how it runs?",
+   "action.yml",
+   [
+    "workflow.yml",
+    "package.json",
+    "Dockerfile"
+   ],
+   "Every action has a metadata file named action.yml (or action.yaml) with name, inputs, outputs and the runs section."
+  ]
+ ],
+ "gitlab-ci": [
+  [
+   "By default, where does GitLab look for a project's pipeline configuration?",
+   ".gitlab-ci.yml in the repository root",
+   [
+    ".gitlab/ci.yml in the repository root",
+    "gitlab-ci.yaml inside a .ci folder",
+    "pipeline.yml inside a .gitlab folder"
+   ],
+   "GitLab reads .gitlab-ci.yml from the root by default. The path can be changed in the project's CI/CD settings, but that is the default."
+  ],
+  [
+   "If .gitlab-ci.yml has no stages keyword, which stages are available?",
+   ".pre, build, test, deploy and .post",
+   [
+    "build, test and deploy only",
+    "test only",
+    "prepare, build, release and cleanup"
+   ],
+   "Without a stages list GitLab uses build, test and deploy, plus the special .pre and .post stages that run first and last."
+  ],
+  [
+   "A job has no stage keyword. Which stage does it run in?",
+   "test",
+   [
+    "build",
+    ".pre",
+    "the first stage in the stages list"
+   ],
+   "Jobs without an explicit stage are assigned to the test stage."
+  ],
+  [
+   "Without needs, how do jobs in the same stage and the next stage run?",
+   "Same-stage jobs run in parallel; the next stage starts after all succeed",
+   [
+    "Same-stage jobs run one by one in file order",
+    "Same-stage jobs run in parallel; the next starts once any succeeds",
+    "Each stage may contain only one job, run in order"
+   ],
+   "Stages run in sequence, and jobs within a stage run concurrently (given free runners). A failed job stops later stages unless it has allow_failure."
+  ],
+  [
+   "Which keyword lets a job start as soon as specific jobs finish, without waiting for the whole previous stage?",
+   "needs",
+   [
+    "dependencies",
+    "depends_on",
+    "after_script"
+   ],
+   "needs builds a directed acyclic graph so jobs can skip stage ordering. dependencies only controls which artifacts are downloaded."
+  ],
+  [
+   "Which keyword must every regular (non-trigger) GitLab CI job define?",
+   "script",
+   [
+    "image",
+    "stage",
+    "tags"
+   ],
+   "script holds the commands the runner executes and is required. image, stage and tags are optional and have defaults."
+  ],
+  [
+   "What does it mean when a job name starts with a dot, such as .node-template?",
+   "It is a hidden job that does not run and can be reused with extends",
+   [
+    "It runs in the .pre stage before every other job",
+    "It runs only for pipelines on the default branch",
+    "It runs only after a user starts it manually"
+   ],
+   "Jobs whose names start with a dot are ignored by the pipeline. They are commonly used as templates through extends or YAML anchors."
+  ],
+  [
+   "Which rule makes a job run only in merge request pipelines?",
+   "- if: $CI_PIPELINE_SOURCE == \"merge_request_event\"",
+   [
+    "- if: $CI_MERGE_REQUEST == \"true\"",
+    "- if: $CI_COMMIT_BRANCH == \"merge_request\"",
+    "- if: $CI_JOB_SOURCE == \"merge_request\""
+   ],
+   "CI_PIPELINE_SOURCE is merge_request_event for merge request pipelines. The other variables shown do not exist with those values."
+  ],
+  [
+   "What does when: manual do on a job?",
+   "The job waits until a user starts it from the UI or API",
+   [
+    "The job runs only when a previous job has failed",
+    "The job runs only on scheduled pipelines",
+    "The job is skipped and cannot be started later"
+   ],
+   "Manual jobs appear with a play button and run only when someone triggers them, a common pattern for production deploys."
+  ],
+  [
+   "What does artifacts: paths: [dist/] on a build job do?",
+   "Uploads dist/ after the job so later jobs and users can download it",
+   [
+    "Caches dist/ between pipelines to speed up installs",
+    "Commits dist/ back to the repository after the job",
+    "Keeps dist/ only for the steps of the same job"
+   ],
+   "Artifacts are job outputs stored by GitLab. Jobs in later stages download them by default, and users can download them from the UI."
+  ],
+  [
+   "A deploy-stage job sets dependencies: [build-web]. What effect does this have?",
+   "It downloads artifacts only from build-web, not from other earlier jobs",
+   [
+    "It waits for build-web even when both are in the same stage",
+    "It reruns build-web right before the deploy job starts",
+    "It lets the deploy job pass even if build-web fails"
+   ],
+   "dependencies limits which earlier jobs' artifacts are fetched. An empty list, dependencies: [], downloads none."
+  ],
+  [
+   "A test job writes reports you need especially when tests fail. Which setting uploads its artifacts even on failure?",
+   "artifacts: when: always",
+   [
+    "artifacts: on: failure",
+    "artifacts: allow_failure: true",
+    "artifacts: expire_in: never"
+   ],
+   "artifacts:when accepts on_success (default), on_failure and always. allow_failure is a job keyword and expire_in only sets retention."
+  ],
+  [
+   "Which statement correctly contrasts cache and artifacts in GitLab CI?",
+   "Cache reuses dependencies to speed up jobs; artifacts pass outputs to later stages",
+   [
+    "Artifacts reuse dependencies to speed jobs; cache passes outputs to later stages",
+    "Cache is guaranteed to exist; artifacts are best-effort and may be missing",
+    "Both behave the same way; only the keyword name differs"
+   ],
+   "Cache is a best-effort speedup (for example node_modules) and may be missing. Artifacts are reliable job outputs for later jobs and downloads."
+  ],
+  [
+   "What does cache: key: files: [package-lock.json] achieve?",
+   "A new cache key is used whenever package-lock.json changes",
+   [
+    "Only package-lock.json is stored in the cache",
+    "The job is skipped if package-lock.json did not change",
+    "package-lock.json is uploaded as a job artifact"
+   ],
+   "The key is computed from the listed files' content, so dependencies are reinstalled and recached only when the lock file changes."
+  ],
+  [
+   "A test job should only read the shared node_modules cache and never upload it. Which cache setting fits?",
+   "policy: pull",
+   [
+    "policy: push",
+    "policy: pull-push",
+    "policy: readonly"
+   ],
+   "pull downloads the cache but skips uploading it at the end, saving time. pull-push is the default, and push only uploads."
+  ],
+  [
+   "Which job keyword selects runners that have a specific label, such as docker-arm?",
+   "tags",
+   [
+    "runner",
+    "labels",
+    "runs-on"
+   ],
+   "tags matches jobs to runners registered with the same tags. runs-on is the GitHub Actions equivalent."
+  ],
+  [
+   "Which kind of GitLab runner is available to every project in a GitLab instance?",
+   "Instance runner",
+   [
+    "Group runner",
+    "Project runner",
+    "Protected runner"
+   ],
+   "Instance runners (formerly called shared runners) serve all projects. Group runners serve one group's projects, project runners a single project."
+  ],
+  [
+   "Which GitLab Runner executor runs each job in a fresh container created from the job's image?",
+   "docker",
+   [
+    "shell",
+    "ssh",
+    "parallels"
+   ],
+   "The docker executor starts a container from the image keyword for each job. The shell executor runs commands directly on the runner host."
+  ],
+  [
+   "Which predefined variable holds the short commit SHA in a GitLab CI job?",
+   "$CI_COMMIT_SHORT_SHA",
+   [
+    "$CI_SHORT_SHA",
+    "$GITLAB_COMMIT_SHA",
+    "$CI_SHA_SHORT"
+   ],
+   "CI_COMMIT_SHORT_SHA is the first eight characters of CI_COMMIT_SHA, often used for image tags."
+  ],
+  [
+   "What does marking a CI/CD variable as Protected do?",
+   "It is exposed only to pipelines on protected branches or tags",
+   [
+    "It is hidden from job logs by replacing it with stars",
+    "It cannot be overridden by values in .gitlab-ci.yml",
+    "It is readable only by users with the Owner role"
+   ],
+   "Protected limits where a variable is available. Hiding the value in logs is a separate setting called Masked."
+  ]
+ ],
+ "jenkins": [
+  [
+   "What is a Jenkinsfile?",
+   "A text file in source control that defines a Jenkins Pipeline",
+   [
+    "An XML job configuration stored in JENKINS_HOME",
+    "A manifest listing the plugins Jenkins should install",
+    "A Groovy script that runs once when Jenkins starts"
+   ],
+   "Storing the pipeline as a Jenkinsfile in the repository makes it versioned and reviewable along with the code (Pipeline as Code)."
+  ],
+  [
+   "Which top-level block must a declarative pipeline start with?",
+   "pipeline { }",
+   [
+    "node { }",
+    "stage { }",
+    "jenkins { }"
+   ],
+   "Declarative pipelines are wrapped in pipeline { }. node { } is the main block of a scripted pipeline."
+  ],
+  [
+   "Which block is the core building block of a scripted pipeline, allocating an executor and workspace?",
+   "node",
+   [
+    "pipeline",
+    "stages",
+    "agent"
+   ],
+   "Scripted pipelines are Groovy code where node { } allocates an agent executor. pipeline, stages and agent belong to declarative syntax."
+  ],
+  [
+   "In a declarative pipeline, which directive specifies where the pipeline or a stage executes?",
+   "agent",
+   [
+    "node",
+    "executor",
+    "runner"
+   ],
+   "agent is required at the top level (or per stage) and can be any, none, a label, or a Docker image."
+  ],
+  [
+   "What does agent none at the top level of a declarative pipeline mean?",
+   "No global agent; each stage must declare its own agent",
+   [
+    "The pipeline runs on the built-in controller node",
+    "The pipeline is disabled until an agent is assigned",
+    "Every stage runs in a default Docker container"
+   ],
+   "agent none skips global allocation so stages can pick different agents, for example Linux for build and Windows for tests."
+  ],
+  [
+   "Which post condition in a declarative pipeline runs regardless of the build result?",
+   "always",
+   [
+    "success",
+    "unstable",
+    "changed"
+   ],
+   "post { always { } } runs on any outcome, so it is used for cleanup and publishing reports. changed runs only when the status differs from the last run."
+  ],
+  [
+   "What is a key difference between declarative and scripted pipelines?",
+   "Declarative uses a fixed, validated structure; scripted is free-form Groovy",
+   [
+    "Scripted pipelines cannot be stored in a Jenkinsfile",
+    "Declarative pipelines cannot use any plugin steps",
+    "Scripted pipelines run only on Windows agents"
+   ],
+   "Both live in a Jenkinsfile and both use plugin steps. Declarative adds a stricter syntax with validation; scripted gives full Groovy flexibility."
+  ],
+  [
+   "How do you run arbitrary Groovy logic, such as a loop, inside a declarative pipeline stage?",
+   "Wrap it in a script { } block inside steps",
+   [
+    "Wrap it in a groovy { } block inside steps",
+    "Place it in the environment { } section",
+    "Put it in options { } at the top level"
+   ],
+   "The script step lets declarative pipelines run scripted Groovy. Long logic is better moved into a shared library."
+  ],
+  [
+   "Why do the Jenkins docs discourage running builds on the built-in (controller) node?",
+   "Builds there can access the controller's files and configuration",
+   [
+    "The built-in node cannot run shell steps",
+    "The built-in node supports only Java projects",
+    "Builds on it disable plugins temporarily"
+   ],
+   "A build on the controller runs with access to JENKINS_HOME, including credentials and configuration. Use separate agents and set the built-in node's executors to 0."
+  ],
+  [
+   "What does the number of executors configured on a Jenkins agent control?",
+   "How many builds can run on that agent at the same time",
+   [
+    "How many stages a single pipeline may contain",
+    "How many times a failed build is retried",
+    "How many plugins the agent can load"
+   ],
+   "Each executor is a slot for one build or pipeline node block, so 4 executors allow 4 concurrent builds on that agent."
+  ],
+  [
+   "What does agent { label 'linux && docker' } do?",
+   "Runs on any agent that has both the linux and docker labels",
+   [
+    "Runs on the agent named exactly 'linux && docker'",
+    "Runs on any agent that has either label",
+    "Runs in a Docker container from a linux image"
+   ],
+   "Label expressions support && and ||. The build goes to an agent matching the whole expression."
+  ],
+  [
+   "Which plugin provides agent { docker { image 'node:20' } } in declarative pipelines?",
+   "Docker Pipeline",
+   [
+    "Git",
+    "Credentials Binding",
+    "Blue Ocean"
+   ],
+   "The Docker Pipeline plugin adds Docker agents and docker.image() steps. Credentials Binding provides withCredentials."
+  ],
+  [
+   "You install a Jenkins plugin that depends on two other plugins. What does the plugin manager do?",
+   "Installs the required dependency plugins automatically",
+   [
+    "Refuses to install until you add them one by one",
+    "Installs it without them and disables its features",
+    "Asks you to build the dependencies from source"
+   ],
+   "Jenkins resolves plugin dependencies and installs them together. Keeping plugins few and updated reduces security and compatibility issues."
+  ],
+  [
+   "What does a Multibranch Pipeline job do?",
+   "Creates a pipeline for each branch that contains a Jenkinsfile",
+   [
+    "Runs one pipeline for the default branch only",
+    "Merges all branches together before building",
+    "Requires a separate job created by hand per branch"
+   ],
+   "Multibranch scans the repository and creates or removes branch jobs automatically. With supported SCM plugins it also builds pull requests."
+  ],
+  [
+   "In a multibranch pipeline, which environment variable contains the name of the branch being built?",
+   "BRANCH_NAME",
+   [
+    "GIT_BRANCH_NAME",
+    "JOB_BRANCH",
+    "CURRENT_BRANCH"
+   ],
+   "Multibranch sets BRANCH_NAME for each branch job; for pull requests it is a value like PR-42."
+  ],
+  [
+   "Which declarative directive runs a stage only when building the main branch?",
+   "when { branch 'main' }",
+   [
+    "if { branch 'main' }",
+    "only { branch 'main' }",
+    "filter { branch 'main' }"
+   ],
+   "when holds conditions for a stage. The branch condition works in multibranch pipelines, where the branch name is known."
+  ],
+  [
+   "How do you load a credential with id db-creds into an environment variable in a declarative pipeline?",
+   "environment { DB = credentials('db-creds') }",
+   [
+    "environment { DB = secret('db-creds') }",
+    "environment { DB = password('db-creds') }",
+    "environment { DB = vault('db-creds') }"
+   ],
+   "The credentials() helper in environment binds a stored credential and masks it in the console log."
+  ],
+  [
+   "environment { DB = credentials('db-creds') } loads a username and password credential. Which extra variables appear?",
+   "DB_USR and DB_PSW",
+   [
+    "DB_USER and DB_PASS",
+    "DB_USERNAME and DB_PASSWORD",
+    "DB_LOGIN and DB_SECRET"
+   ],
+   "For username and password credentials, DB holds user:password, and DB_USR and DB_PSW hold the parts."
+  ],
+  [
+   "Which pipeline step binds credentials to variables only for the steps inside its block?",
+   "withCredentials",
+   [
+    "withSecrets",
+    "useCredentials",
+    "credentialsBlock"
+   ],
+   "withCredentials (Credentials Binding plugin) exposes credentials inside a block and masks their values in the log."
+  ],
+  [
+   "Why is sh \"curl -u admin:${PASS} https://api.example.com\" with double quotes discouraged for secrets?",
+   "Groovy interpolates the secret into the command text, which can leak it",
+   [
+    "Double quotes stop the shell from expanding the variable",
+    "Jenkins rejects sh steps written with double quotes",
+    "The secret gets written into the Jenkinsfile in Git"
+   ],
+   "With double quotes Groovy inserts the value before the shell runs, so it can appear in process listings. Single quotes let the shell expand $PASS safely."
+  ]
+ ],
+ "cicd": [
+  [
+   "What is the core practice of continuous integration?",
+   "Merging small changes into main often, each verified by automated build and tests",
+   [
+    "Deploying every commit to production with no human involvement",
+    "Running a full manual QA cycle before allowing any merge",
+    "Keeping feature branches separate until the release date"
+   ],
+   "CI means integrating frequently into a shared mainline and checking each integration automatically. Automatic production deploys describe continuous deployment."
+  ],
+  [
+   "The CI build on main turns red. What does continuous integration practice recommend?",
+   "Fix it or revert the change right away, before new merges",
+   [
+    "Keep merging and fix it at the end of the sprint",
+    "Disable the failing tests so the build turns green",
+    "Create a new main branch from the last release"
+   ],
+   "A broken mainline blocks everyone and hides new failures, so restoring it is the top priority, often by reverting quickly."
+  ],
+  [
+   "What separates continuous deployment from continuous delivery?",
+   "Every passing change goes to production with no manual release step",
+   [
+    "Code is integrated into main several times a day",
+    "Builds run on dedicated CI servers instead of laptops",
+    "Releases ship on a fixed monthly schedule"
+   ],
+   "In continuous delivery every change is releasable but a person decides when to release. Continuous deployment automates that final step."
+  ],
+  [
+   "A bank's builds are always kept releasable, but a manager approves each production release. Which practice is this?",
+   "Continuous delivery",
+   [
+    "Continuous deployment",
+    "Trunk-based development",
+    "Waterfall release management"
+   ],
+   "Keeping software deployable at all times with a manual approval gate is continuous delivery. Continuous deployment would release without approval."
+  ],
+  [
+   "According to the test pyramid, which kind of test should be the most numerous?",
+   "Unit tests",
+   [
+    "End-to-end UI tests",
+    "Integration tests",
+    "Manual exploratory tests"
+   ],
+   "Unit tests are fast and cheap, so they form the wide base. Slower, more brittle end-to-end tests sit at the narrow top."
+  ],
+  [
+   "A test passes and fails randomly while the code stays the same. What is this called?",
+   "A flaky test",
+   [
+    "A regression test",
+    "A smoke test",
+    "A mutation test"
+   ],
+   "Flaky tests erode trust in CI because failures stop meaning anything. They should be fixed or quarantined quickly."
+  ],
+  [
+   "How should a CI pipeline order its checks to give developers the fastest useful feedback?",
+   "Lint and unit tests first, slower end-to-end tests later",
+   [
+    "End-to-end tests first, unit tests at the end",
+    "All tests only after deploying to production",
+    "Random order, since order does not affect speed"
+   ],
+   "Failing fast on cheap checks saves time and runner cost. Expensive suites run only after the quick ones pass."
+  ],
+  [
+   "What is a smoke test run right after a deployment?",
+   "A quick check that the most critical functions work",
+   [
+    "An exhaustive test of every feature in the system",
+    "A load test that simulates peak traffic for hours",
+    "A full penetration test of the new release"
+   ],
+   "Smoke tests are fast, shallow checks (for example login and health endpoints) that decide whether deeper testing or traffic should proceed."
+  ],
+  [
+   "What is a canary deployment?",
+   "Releasing a new version to a small share of traffic first, then expanding",
+   [
+    "Running two full environments and switching all traffic at once",
+    "Updating every server at the same moment",
+    "Deploying the new version only to a staging environment"
+   ],
+   "A canary exposes few users to the change while metrics are watched. Switching all traffic between two environments is blue-green."
+  ],
+  [
+   "During a canary at 5% traffic, the new version's error rate jumps well above the baseline. What should happen?",
+   "Route the traffic back to the stable version and halt the rollout",
+   [
+    "Raise the canary to 50% to collect more data",
+    "Restart the database to clear the errors",
+    "Release to all users and ship a hotfix later"
+   ],
+   "The purpose of a canary is to catch problems while few users are affected. Automated rollouts often abort based on such metrics."
+  ],
+  [
+   "What is the main benefit of a canary release over releasing to everyone at once?",
+   "A faulty release affects only a small group of users",
+   [
+    "It removes the need for automated tests",
+    "It needs no extra monitoring or metrics",
+    "It makes database migrations reversible"
+   ],
+   "Canaries limit the blast radius of a bad release, but they depend on good monitoring to detect problems."
+  ],
+  [
+   "How is a release performed in a blue-green deployment?",
+   "Deploy to the idle environment, then switch all traffic to it",
+   [
+    "Shift traffic gradually from 1% up to 100%",
+    "Update servers one by one in the live environment",
+    "Enable the new code with a feature flag per user"
+   ],
+   "Blue runs the current version while green gets the new one. After checks pass, the router or load balancer switches traffic to green."
+  ],
+  [
+   "After a blue-green switch to green, a serious bug appears. What is the fastest rollback?",
+   "Switch traffic back to the blue environment",
+   [
+    "Rebuild the old version from source code",
+    "Restore the database from last night's backup",
+    "Redeploy the old version to the green servers"
+   ],
+   "Blue still runs the previous version, so rolling back is just another traffic switch, as long as it was kept running."
+  ],
+  [
+   "Blue and green environments share one database. What does this require for schema changes?",
+   "The schema must work with both the old and new app versions",
+   [
+    "Each release must copy the full database first",
+    "Schema changes must be applied only to blue",
+    "The database must be locked during the switch"
+   ],
+   "Since either version may serve traffic, migrations must be backward compatible (for example add a column before removing the old one)."
+  ],
+  [
+   "Why do teams use expand-and-contract (backward-compatible) database migrations?",
+   "So the previous app version still works and can be rolled back to",
+   [
+    "So migrations finish faster on large tables",
+    "So database backups are no longer needed",
+    "So the pipeline can skip integration tests"
+   ],
+   "Expanding first (adding new structures) and contracting later (removing old ones) keeps both versions working during and after a deploy."
+  ],
+  [
+   "A new feature causes errors in production and is behind a feature flag. What is the quickest mitigation?",
+   "Turn the flag off without redeploying",
+   [
+    "Revert the commit and wait for a full rebuild",
+    "Scale up the servers to absorb the errors",
+    "Delete the flag from the configuration file"
+   ],
+   "Feature flags separate deployment from release, so a faulty feature can be disabled at runtime in seconds."
+  ],
+  [
+   "Why should the same build artifact be promoted from staging to production instead of being rebuilt?",
+   "It guarantees that production runs exactly what was tested",
+   [
+    "Rebuilding is not possible once tests have passed",
+    "Production servers cannot run newly built artifacts",
+    "Promoting removes the need for any rollback plan"
+   ],
+   "Rebuilding can pull different dependencies or settings. Build once, deploy the same artifact everywhere."
+  ],
+  [
+   "In incident response, what does rolling forward mean?",
+   "Fixing the problem by deploying a new version that contains a fix",
+   [
+    "Redeploying the previous version to undo the change",
+    "Moving traffic to a standby region during the outage",
+    "Restoring the database to a point before the release"
+   ],
+   "Rolling forward ships a fix instead of reverting. It suits small, well-understood fixes when the pipeline is fast."
+  ],
+  [
+   "What is a major benefit of defining the pipeline as code in the repository?",
+   "Pipeline changes are versioned and reviewed like application code",
+   [
+    "The pipeline no longer needs a CI server to run",
+    "Builds become faster because no YAML is parsed",
+    "Secrets can be stored safely in the same file"
+   ],
+   "Pipeline as code keeps history, enables pull request review and rollback of pipeline changes. Secrets still belong in a secret store."
+  ],
+  [
+   "Which of these is one of the DORA software delivery metrics?",
+   "Change failure rate",
+   [
+    "Lines of code per developer",
+    "Story points per sprint",
+    "Percentage of code covered by tests"
+   ],
+   "DORA metrics include deployment frequency, lead time for changes, change failure rate and failed deployment recovery time."
+  ]
+ ],
+ "kafka": [
+  [
+   "What is a topic in Apache Kafka?",
+   "A named stream of records, split into one or more partitions",
+   [
+    "A single queue where each message is deleted once read",
+    "A database table with a primary key per record",
+    "A configuration profile shared by consumers"
+   ],
+   "Producers write records to topics and consumers read from them. Each topic is divided into partitions that are spread across brokers."
+  ],
+  [
+   "Within which scope does Kafka guarantee the order of records?",
+   "A single partition",
+   [
+    "A whole topic",
+    "A whole broker",
+    "A whole cluster"
+   ],
+   "Records are ordered by offset inside a partition. Across partitions of the same topic there is no global order."
+  ],
+  [
+   "A producer using the default partitioner sends many records with the same non-null key, and the partition count does not change. Where do they go?",
+   "All to the same partition",
+   [
+    "Round-robin across all partitions",
+    "To a random partition each time",
+    "To partition 0 regardless of the key"
+   ],
+   "The default partitioner hashes the key, so equal keys map to the same partition, which keeps per-key ordering."
+  ],
+  [
+   "Can you reduce the number of partitions of an existing Kafka topic?",
+   "No, partitions can only be added, not removed",
+   [
+    "Yes, with kafka-topics.sh --alter --partitions",
+    "Yes, but only while the topic is empty",
+    "Yes, after a rolling restart of the brokers"
+   ],
+   "Kafka supports increasing the partition count only. To reduce it you create a new topic and migrate the data."
+  ],
+  [
+   "A topic has 6 partitions and a consumer group has 8 active consumers. What happens?",
+   "6 consumers get one partition each and 2 stay idle",
+   [
+    "Each consumer reads three quarters of a partition",
+    "All 8 consumers read every partition",
+    "The group fails to start until 2 consumers leave"
+   ],
+   "Each partition is assigned to at most one consumer in a group, so consumers beyond the partition count have nothing to read."
+  ],
+  [
+   "Two different consumer groups subscribe to the same topic. What does each group receive?",
+   "Every record of the topic, independently of the other group",
+   [
+    "Half of the records, split between the two groups",
+    "Only the records the other group skipped",
+    "Records only after the other group commits"
+   ],
+   "Consumer groups are independent subscribers with their own offsets. Load is shared only among consumers inside one group."
+  ],
+  [
+   "Which event triggers a consumer group rebalance?",
+   "A consumer joining or leaving the group",
+   [
+    "A producer sending a new record",
+    "A record reaching its retention limit",
+    "A broker rolling a new log segment"
+   ],
+   "Membership changes (including a consumer missing its heartbeat or poll deadline) and partition count changes cause partitions to be reassigned."
+  ],
+  [
+   "Where does a modern Kafka consumer group store its committed offsets?",
+   "In the internal __consumer_offsets topic",
+   [
+    "In ZooKeeper nodes under /consumers",
+    "In a file on the consumer's local disk",
+    "In the headers of the records it read"
+   ],
+   "Modern consumers commit offsets to the compacted __consumer_offsets topic. Storing them in ZooKeeper was the old approach."
+  ],
+  [
+   "A brand-new consumer group with no committed offsets sets auto.offset.reset=earliest. Where does it start reading?",
+   "At the oldest offset still available in each partition",
+   [
+    "At the newest offset, reading only new records",
+    "At the offsets committed by other groups",
+    "It throws an error because no offset exists"
+   ],
+   "earliest starts from the beginning of the retained log. The default, latest, would start at the end and read only new records."
+  ],
+  [
+   "To get at-least-once processing, when should a consumer commit offsets?",
+   "After the records have been processed",
+   [
+    "Before the records are processed",
+    "Only once when the consumer starts",
+    "Before each poll call, ahead of fetching"
+   ],
+   "Committing after processing means a crash causes reprocessing, not loss. Committing first gives at-most-once delivery."
+  ],
+  [
+   "What is a Kafka broker?",
+   "A server that stores partitions and serves producers and consumers",
+   [
+    "A client library that routes records between apps",
+    "A process that only manages consumer offsets",
+    "A proxy that converts Kafka records to HTTP"
+   ],
+   "A Kafka cluster consists of brokers. Each broker hosts partition replicas and handles read and write requests for them."
+  ],
+  [
+   "A topic has replication factor 3. What does that mean?",
+   "Each partition has 3 copies on different brokers",
+   [
+    "Each record is sent to 3 consumer groups",
+    "The topic is split into 3 partitions",
+    "Each record is stored 3 times on one broker"
+   ],
+   "Replication factor is the number of replicas per partition. One replica is the leader, the others are followers that copy it."
+  ],
+  [
+   "Which replica of a partition handles produce requests?",
+   "The leader replica",
+   [
+    "Any in-sync follower",
+    "The cluster controller",
+    "The replica with the lowest broker id"
+   ],
+   "Producers write to the partition leader, and followers replicate from it. If the leader fails, an in-sync follower is elected."
+  ],
+  [
+   "In Kafka 4.0, what manages cluster metadata now that ZooKeeper is no longer supported?",
+   "KRaft, Kafka's built-in Raft-based controller quorum",
+   [
+    "etcd, an external key-value store",
+    "Consul, through its service catalog",
+    "The first broker started in the cluster"
+   ],
+   "KRaft mode replaced ZooKeeper; Kafka 4.0 removed ZooKeeper support entirely. Controllers use the Raft protocol to store metadata in an internal log."
+  ],
+  [
+   "A producer uses acks=all. When does the leader acknowledge the write?",
+   "When all in-sync replicas have the record",
+   [
+    "As soon as the leader writes it to disk",
+    "Immediately, before writing it anywhere",
+    "When a consumer has read the record"
+   ],
+   "acks=all waits for the full in-sync replica set. Combined with min.insync.replicas, it is the most durable setting."
+  ],
+  [
+   "What does enable.idempotence=true on a Kafka producer prevent?",
+   "Duplicate records in a partition caused by producer retries",
+   [
+    "Consumers processing the same record twice",
+    "Records arriving out of order across partitions",
+    "Record loss when every broker is down"
+   ],
+   "The broker uses producer ids and sequence numbers to drop retried duplicates. End-to-end exactly-once also needs transactions or idempotent consumers."
+  ],
+  [
+   "How does Kafka store records inside a partition?",
+   "As an append-only log with sequential offsets",
+   [
+    "As rows that are updated in place by key",
+    "As a B-tree index sorted by timestamp",
+    "As messages removed once they are read"
+   ],
+   "Each partition is a commit log: records are appended, never modified, and identified by increasing offsets. Reading does not delete them."
+  ],
+  [
+   "A topic has cleanup.policy=delete and retention.ms=604800000. What happens to its data?",
+   "Log segments older than 7 days become eligible for deletion",
+   [
+    "Records are deleted once every group has read them",
+    "The whole topic is deleted after 7 days",
+    "Only the latest record per key is kept"
+   ],
+   "604800000 ms is 7 days. Deletion works on closed segments, so some records may live slightly longer than the limit."
+  ],
+  [
+   "A topic uses cleanup.policy=compact. What does Kafka guarantee to keep?",
+   "At least the latest record for each key",
+   [
+    "Only the newest 1000 records",
+    "Only the first record for each key",
+    "Only records that have a null key"
+   ],
+   "Compaction removes older records with the same key, keeping the newest value. It suits changelogs and state such as user profiles."
+  ],
+  [
+   "A consumer must process records of one customer in order while scaling to many consumers. What should the producer do?",
+   "Use the customer id as the record key",
+   [
+    "Send every record without a key",
+    "Create one topic per consumer instance",
+    "Set the partition count to 1"
+   ],
+   "Keyed records for one customer land in one partition, which one consumer reads in order, while other customers spread across partitions."
+  ]
+ ],
+ "rabbitmq": [
+  [
+   "How does a direct exchange route a message?",
+   "To queues whose binding key exactly matches the routing key",
+   [
+    "To every queue bound to the exchange, ignoring the key",
+    "To queues whose binding pattern matches with wildcards",
+    "To queues whose binding headers match the message headers"
+   ],
+   "Direct exchanges use exact matching. Copying to all bound queues is fanout, wildcards are topic exchanges, headers matching is a headers exchange."
+  ],
+  [
+   "Which exchange type ignores the routing key and copies each message to all bound queues?",
+   "fanout",
+   [
+    "direct",
+    "topic",
+    "headers"
+   ],
+   "A fanout exchange broadcasts every message to all queues bound to it, which fits pub/sub notifications."
+  ],
+  [
+   "A queue is bound to a topic exchange with binding key logs.*. Which routing key reaches it?",
+   "logs.error",
+   [
+    "logs.error.db",
+    "logs",
+    "error.logs"
+   ],
+   "In topic bindings * matches exactly one dot-separated word, so logs.error matches but logs and logs.error.db do not."
+  ],
+  [
+   "A queue is bound to a topic exchange with binding key #.error. Which routing key reaches it?",
+   "app.db.error",
+   [
+    "app.error.db",
+    "app.db.errors",
+    "errors"
+   ],
+   "# matches zero or more words, so any key whose last word is error matches. errors is a different word."
+  ],
+  [
+   "How does a headers exchange decide where to route a message?",
+   "It matches message header values against binding arguments",
+   [
+    "It matches the routing key against a regular expression",
+    "It sends the message to the queue named in a header",
+    "It hashes the headers to pick one queue"
+   ],
+   "Headers exchanges ignore the routing key. The x-match argument (all or any) sets whether every or just one header must match."
+  ],
+  [
+   "A message is published to the default exchange (empty name) with routing key tasks. Where does it go?",
+   "To the queue named tasks",
+   [
+    "To every queue on the virtual host",
+    "To a new queue created automatically",
+    "Nowhere, the default exchange drops it"
+   ],
+   "Every queue is automatically bound to the default exchange with its own name as the binding key."
+  ],
+  [
+   "What is needed for messages to survive a RabbitMQ broker restart?",
+   "A durable queue and messages published as persistent",
+   [
+    "A durable exchange, with transient messages",
+    "An exclusive queue and persistent messages",
+    "An auto-delete queue and persistent messages"
+   ],
+   "A non-durable queue disappears on restart, and transient messages are not kept even in a durable queue. Both are needed."
+  ],
+  [
+   "What characterizes an exclusive queue in RabbitMQ?",
+   "Used by one connection only, deleted when it closes",
+   [
+    "It accepts messages from one exchange only",
+    "It delivers each message to one consumer only",
+    "It survives restarts but cannot be shared"
+   ],
+   "Exclusive queues are tied to one connection, which suits temporary reply queues. Delivering each message to one consumer is normal queue behavior."
+  ],
+  [
+   "In RabbitMQ 3.8 and later, which queue type is recommended for replicated, highly available data?",
+   "Quorum queues",
+   [
+    "Classic mirrored queues",
+    "Exclusive queues",
+    "Auto-delete queues"
+   ],
+   "Quorum queues replicate data with the Raft protocol. Classic queue mirroring was deprecated and removed in RabbitMQ 4.0."
+  ],
+  [
+   "What is a binding in RabbitMQ?",
+   "A rule linking an exchange to a queue, optionally by key",
+   [
+    "A TCP connection between a client and the broker",
+    "An acknowledgment sent by a consumer",
+    "A setting that limits the length of a queue"
+   ],
+   "Bindings tell an exchange which queues should receive which messages. Without a matching binding, the exchange has nowhere to route."
+  ],
+  [
+   "A message is published to a direct exchange with a routing key that matches no binding, and mandatory is false. What happens?",
+   "The message is silently discarded",
+   [
+    "It waits in the exchange until a binding appears",
+    "It is returned to the publisher with an error",
+    "It is sent to the default queue of the vhost"
+   ],
+   "Exchanges do not store messages. With mandatory set, an unroutable message is returned to the publisher instead (unless an alternate exchange is configured)."
+  ],
+  [
+   "A consumer using manual acknowledgments crashes before acking a message. What happens to that message?",
+   "It is requeued and delivered again",
+   [
+    "It is lost because it was already delivered",
+    "It goes straight to the dead-letter exchange",
+    "It stays locked to that consumer forever"
+   ],
+   "When the channel or connection closes, unacknowledged messages return to the queue and are redelivered with the redelivered flag set."
+  ],
+  [
+   "A consumer rejects a message with basic.nack and requeue=false. The queue has a dead-letter exchange configured. What happens?",
+   "The message is republished to the dead-letter exchange",
+   [
+    "The message goes back to the head of the queue",
+    "The message is dropped and the DLX is ignored",
+    "The publisher receives the message back"
+   ],
+   "Rejections without requeue are one of the dead-letter triggers, along with TTL expiry and queue length limits."
+  ],
+  [
+   "What does basic.qos with prefetch_count=10 do for a consumer?",
+   "Caps unacked messages in flight on that channel at 10",
+   [
+    "Delivers messages in batches of exactly 10",
+    "Limits the queue to 10 stored messages",
+    "Retries each failed message up to 10 times"
+   ],
+   "Prefetch caps in-flight unacked messages so work is spread fairly among consumers and a slow consumer is not flooded."
+  ],
+  [
+   "What is the main risk of consuming with automatic acknowledgment (autoAck) enabled?",
+   "A crash during processing loses the message",
+   [
+    "Each message is delivered to every consumer",
+    "Messages are redelivered in an endless loop",
+    "Messages pile up because acks do not arrive"
+   ],
+   "With autoAck the broker considers a message done as soon as it is sent, so a crash mid-processing loses it."
+  ],
+  [
+   "RabbitMQ's model of exchanges, queues and bindings comes from which protocol?",
+   "AMQP 0-9-1",
+   [
+    "MQTT 3.1.1",
+    "STOMP 1.2",
+    "HTTP/2"
+   ],
+   "AMQP 0-9-1 defines exchanges, queues and bindings and is RabbitMQ's core protocol. MQTT and STOMP are supported through plugins."
+  ],
+  [
+   "In AMQP 0-9-1, what is a channel?",
+   "A virtual connection multiplexed over one TCP connection",
+   [
+    "A separate TCP connection opened per message",
+    "A named queue shared by several consumers",
+    "A routing rule stored on an exchange"
+   ],
+   "Applications open one connection and many channels over it, avoiding the cost of many TCP connections."
+  ],
+  [
+   "Which port does RabbitMQ use by default for AMQP 0-9-1 connections without TLS?",
+   "5672",
+   [
+    "15672",
+    "1883",
+    "4222"
+   ],
+   "5672 is the AMQP port. 15672 is the management UI, 1883 is MQTT and 4222 is NATS."
+  ],
+  [
+   "Which of these causes a message to be dead-lettered?",
+   "Its TTL expires while it waits in the queue",
+   [
+    "A consumer acknowledges it successfully",
+    "It is published to a fanout exchange",
+    "The consumer reaches its prefetch limit"
+   ],
+   "Messages are dead-lettered when rejected without requeue, when their TTL expires, or when a queue length limit drops them."
+  ],
+  [
+   "How do you attach a dead-letter exchange to a queue?",
+   "Set the x-dead-letter-exchange argument or a policy",
+   [
+    "Bind the queue to an exchange named dlx",
+    "Publish messages with delivery_mode set to 3",
+    "Enable a dead-letter flag on each consumer"
+   ],
+   "The DLX is configured per queue, ideally with a policy so it can be changed without redeclaring the queue."
+  ]
+ ],
+ "nats": [
+  [
+   "What delivery guarantee does core NATS (without JetStream) provide?",
+   "At-most-once",
+   [
+    "At-least-once",
+    "Exactly-once",
+    "Persistent ordered delivery"
+   ],
+   "Core NATS is fire-and-forget: messages are kept only in memory and delivered to currently connected subscribers. JetStream adds persistence."
+  ],
+  [
+   "In core NATS, a message is published to a subject that has no subscribers. What happens?",
+   "The message is discarded",
+   [
+    "The server stores it until a subscriber arrives",
+    "The publisher receives an error for every publish",
+    "It is sent to a default dead-letter subject"
+   ],
+   "Core NATS has no storage, so messages with no interested subscribers are dropped. Use JetStream if messages must be kept."
+  ],
+  [
+   "Three subscribers join the same queue group on subject orders. One message is published. Who receives it?",
+   "One member of the queue group",
+   [
+    "All three subscribers",
+    "The first subscriber that joined",
+    "None, queue groups need JetStream"
+   ],
+   "Queue groups load-balance: each message goes to one randomly chosen member, which lets services scale horizontally."
+  ],
+  [
+   "Two subscribers on subject alerts use no queue group. One message is published. Who receives it?",
+   "Both subscribers",
+   [
+    "Only one, chosen at random",
+    "Only the oldest subscription",
+    "Neither, until one acks it"
+   ],
+   "Plain subscriptions are fan-out: every matching subscriber gets a copy."
+  ],
+  [
+   "Which subject matches the subscription orders.*?",
+   "orders.new",
+   [
+    "orders.new.eu",
+    "orders",
+    "new.orders"
+   ],
+   "* matches exactly one token. orders.new.eu has two tokens after orders, and orders has none."
+  ],
+  [
+   "Which subject matches the subscription orders.>?",
+   "orders.eu.new",
+   [
+    "orders",
+    "order.eu",
+    "eu.orders.new"
+   ],
+   "> matches one or more trailing tokens, so it needs at least one token after orders."
+  ],
+  [
+   "Which character separates tokens in a NATS subject such as orders.eu.new?",
+   "A dot",
+   [
+    "A slash",
+    "A colon",
+    "A hyphen"
+   ],
+   "Subjects are dot-separated token hierarchies, and wildcards match whole tokens."
+  ],
+  [
+   "Where can the > wildcard appear in a NATS subscription subject?",
+   "Only as the last token",
+   [
+    "Only as the first token",
+    "At any position, any number of times",
+    "Only in subjects used for publishing"
+   ],
+   "> is the full wildcard and must be the final token, for example events.>. Publishers cannot use wildcards."
+  ],
+  [
+   "How does the request-reply pattern work in NATS?",
+   "The request carries a unique inbox subject, and the responder publishes the reply to it",
+   [
+    "The server opens a direct TCP connection between both clients",
+    "The responder writes the reply into a JetStream stream",
+    "The requester polls the responder's subject until a reply"
+   ],
+   "Request-reply is built on pub/sub: the client subscribes to a unique inbox, sends the request with that reply subject, and waits."
+  ],
+  [
+   "On NATS server 2.2 or later, a client sends a request to a subject that has no subscribers. What does it get?",
+   "An immediate no responders error",
+   [
+    "A reply with an empty body",
+    "Nothing until its timeout expires",
+    "A reply from the server's system account"
+   ],
+   "Since 2.2, servers send a no responders status to clients that support headers, so the requester fails fast instead of waiting."
+  ],
+  [
+   "In a NATS cluster, a client on server A publishes, and a matching subscriber is connected to server B. What happens?",
+   "Server A forwards the message to B through their route connection",
+   [
+    "Nothing, clients must connect to the same server",
+    "The subscriber must also connect to server A",
+    "The message is copied to every server's disk first"
+   ],
+   "Cluster servers share subscription interest over routes, so messages reach subscribers on any server."
+  ],
+  [
+   "What is a stream in NATS JetStream?",
+   "Storage that captures messages published to a set of subjects",
+   [
+    "A single consumer's position in a subject",
+    "A TCP connection between two clusters",
+    "A temporary inbox for request replies"
+   ],
+   "Streams persist messages from their configured subjects, with limits on age, size or count. Consumers read from streams."
+  ],
+  [
+   "What is a JetStream consumer?",
+   "A stateful view on a stream that tracks delivered and acked messages",
+   [
+    "A client subscription to a core NATS subject",
+    "A copy of a stream kept in another cluster",
+    "A process that deletes expired stream messages"
+   ],
+   "Consumers keep delivery state on the server, enabling acknowledgments, redelivery and resuming from where a client left off."
+  ],
+  [
+   "According to the NATS docs, which JetStream consumer type is recommended for new projects, especially for scaling workers?",
+   "Pull consumers",
+   [
+    "Push consumers",
+    "Ordered push consumers",
+    "Ephemeral push consumers"
+   ],
+   "Pull consumers let each client fetch batches at its own pace, which scales horizontally and gives natural flow control."
+  ],
+  [
+   "A JetStream stream uses the WorkQueue retention policy. What happens after a message is acknowledged?",
+   "It is removed from the stream",
+   [
+    "It stays until the stream's age limit",
+    "It is copied to every other consumer",
+    "It is moved to a dead-letter stream"
+   ],
+   "WorkQueue retention deletes a message once it is consumed and acked, so each message is processed once."
+  ],
+  [
+   "What is the difference between a durable and an ephemeral JetStream consumer?",
+   "A durable consumer keeps its state after clients disconnect",
+   [
+    "A durable consumer stores messages on disk, not in memory",
+    "An ephemeral consumer can only read the last message",
+    "An ephemeral consumer acknowledges messages automatically"
+   ],
+   "Durable consumers have a name and persist their progress. Ephemeral consumers are cleaned up after a period of inactivity."
+  ],
+  [
+   "A JetStream consumer uses explicit acks. A message is not acked within the AckWait time. What happens?",
+   "The message is redelivered",
+   [
+    "The message is deleted from the stream",
+    "The consumer is removed by the server",
+    "The stream stops accepting new messages"
+   ],
+   "Unacked messages are redelivered after AckWait, up to MaxDeliver attempts, giving at-least-once delivery."
+  ],
+  [
+   "What is the Nats-Msg-Id header used for when publishing to JetStream?",
+   "Dropping duplicate publishes within the stream's duplicate window",
+   [
+    "Choosing which consumer receives the message",
+    "Setting the order of messages in the stream",
+    "Routing the message to a specific server"
+   ],
+   "If the same Nats-Msg-Id arrives again within the duplicate window, JetStream ignores it, which makes publisher retries safe."
+  ],
+  [
+   "How do NATS servers form a cluster?",
+   "They connect to each other with route connections in a full mesh",
+   [
+    "They register in a central ZooKeeper ensemble",
+    "They share state through one common database",
+    "They elect one server that relays all messages"
+   ],
+   "Each server connects to every other server via routes, and the cluster gossips topology to clients so they can fail over."
+  ],
+  [
+   "Why is a replica count of 3 common for JetStream streams in a cluster?",
+   "Raft needs a majority, so 3 replicas tolerate one failed server",
+   [
+    "JetStream accepts only odd stream names",
+    "3 replicas triple the publish throughput",
+    "Clients can connect to at most 3 servers"
+   ],
+   "Replicated streams use Raft. With 3 replicas, 2 still form a majority when one server is down; 2 replicas would tolerate none."
+  ]
+ ],
+ "airflow": [
+  [
+   "An Airflow DAG sets dependencies a >> b >> c >> a. What happens?",
+   "Airflow rejects the DAG because it contains a cycle",
+   [
+    "The tasks loop forever in that order",
+    "Airflow runs each task exactly twice",
+    "Airflow ignores the last dependency"
+   ],
+   "DAG means directed acyclic graph. A cycle makes the DAG invalid, and it fails to import with an error."
+  ],
+  [
+   "What does extract >> transform mean in an Airflow DAG?",
+   "transform runs after extract (it is downstream)",
+   [
+    "extract runs after transform",
+    "Both tasks run at the same time",
+    "transform gets extract's code"
+   ],
+   ">> sets the right side as downstream. It is equivalent to extract.set_downstream(transform)."
+  ],
+  [
+   "A DAG has [a, b] >> c and default settings. When does c run?",
+   "After both a and b succeed",
+   [
+    "After either a or b succeeds",
+    "At the same time as a and b",
+    "Before a and b"
+   ],
+   "The default trigger rule is all_success, so c waits for every upstream task to succeed."
+  ],
+  [
+   "A cleanup task must run after its upstream tasks finish, whether they succeeded or failed. Which trigger_rule fits?",
+   "all_done",
+   [
+    "all_success",
+    "one_success",
+    "none_failed"
+   ],
+   "all_done runs once all upstream tasks are finished in any state. none_failed would skip it if an upstream task failed."
+  ],
+  [
+   "What is the relationship between an operator and a task in Airflow?",
+   "A task is an instance of an operator inside a DAG",
+   [
+    "An operator is a group of tasks that run together",
+    "A task is a Python package that contains operators",
+    "Operators and tasks are unrelated concepts"
+   ],
+   "Operators are templates such as BashOperator. Instantiating one with a task_id in a DAG creates a task."
+  ],
+  [
+   "What is a sensor in Airflow?",
+   "An operator that waits for a condition, such as a file appearing",
+   [
+    "A plugin that monitors the scheduler's memory usage",
+    "A task that sends alerts when other tasks fail",
+    "A metric exporter for the Airflow web UI"
+   ],
+   "Sensors poke a condition repeatedly and succeed once it is true, letting downstream tasks start."
+  ],
+  [
+   "Why set mode='reschedule' on a sensor that may wait for hours?",
+   "It frees the worker slot between checks instead of sleeping",
+   [
+    "It checks the condition more often than poke mode",
+    "It retries the upstream task that failed",
+    "It makes the sensor run on the scheduler"
+   ],
+   "In poke mode the sensor holds a worker slot the whole time. Reschedule mode releases it and is rescheduled for the next check."
+  ],
+  [
+   "A deferrable operator defers while waiting for an external job. Which Airflow component does the waiting?",
+   "The triggerer, using asynchronous triggers",
+   [
+    "The scheduler, in its main loop",
+    "The webserver, through a background thread",
+    "The same worker, sleeping in a loop"
+   ],
+   "Deferred tasks release their worker. The triggerer runs many async triggers efficiently and resumes the task when one fires."
+  ],
+  [
+   "In the TaskFlow API, a @task function returns a small dictionary. What happens to it?",
+   "It is pushed to XCom automatically",
+   [
+    "It is discarded after the task ends",
+    "It is written to an Airflow Variable",
+    "It is printed but cannot be used"
+   ],
+   "TaskFlow stores return values as XCom (key return_value) and passes them to downstream tasks that take them as arguments."
+  ],
+  [
+   "Why should you avoid passing a large DataFrame through XCom with the default backend?",
+   "XComs live in the metadata database and suit small data",
+   [
+    "XComs are deleted before the next task starts",
+    "XComs can only hold integer values",
+    "XComs are visible only to the scheduler"
+   ],
+   "Large objects bloat the metadata DB and slow Airflow. Store data in object storage and pass a path, or use a custom XCom backend."
+  ],
+  [
+   "What does ti.xcom_pull(task_ids='extract') return inside a later task?",
+   "The value task extract returned (key return_value)",
+   [
+    "The log output written by task extract",
+    "The final state recorded for task extract",
+    "The rendered template of task extract"
+   ],
+   "Without a key argument, xcom_pull reads the return_value XCom of the given task."
+  ],
+  [
+   "A daily DAG has a start_date 30 days ago and catchup=True. What happens when it is first unpaused?",
+   "The scheduler creates runs for each missed interval",
+   [
+    "Only one run for the current day is created",
+    "Nothing until the next scheduled time",
+    "All missed runs merge into one big run"
+   ],
+   "With catchup enabled, Airflow backfills every interval between start_date and now. Set catchup=False to run only the latest one."
+  ],
+  [
+   "What does the cron expression 0 6 * * 1 mean as an Airflow schedule?",
+   "06:00 every Monday",
+   [
+    "06:00 on the 1st of each month",
+    "Every 6 hours on Mondays",
+    "01:00 on every 6th day"
+   ],
+   "Fields are minute, hour, day of month, month, day of week. Day of week 1 is Monday."
+  ],
+  [
+   "In Airflow 2.x, a @daily DAG run has the data interval Jan 1 00:00 to Jan 2 00:00. When does it start?",
+   "Shortly after Jan 2 00:00, when the interval ends",
+   [
+    "At Jan 1 00:00, when the interval begins",
+    "At noon on Jan 1, midway through it",
+    "At Jan 3 00:00, one day after it ends"
+   ],
+   "With the default timetable in Airflow 2.x, a run processes a finished interval, so it starts after the interval closes."
+  ],
+  [
+   "Which executor runs tasks in parallel as processes on the scheduler's machine, fitting a single-node setup?",
+   "LocalExecutor",
+   [
+    "CeleryExecutor",
+    "KubernetesExecutor",
+    "SequentialExecutor"
+   ],
+   "LocalExecutor spawns local processes. Celery and Kubernetes executors distribute work across machines, and SequentialExecutor runs one task at a time."
+  ],
+  [
+   "Which Airflow executor launches a new pod for each task?",
+   "KubernetesExecutor",
+   [
+    "CeleryExecutor",
+    "LocalExecutor",
+    "DebugExecutor"
+   ],
+   "KubernetesExecutor creates a pod per task instance, giving isolation and per-task resources."
+  ],
+  [
+   "Which extra component does the CeleryExecutor need?",
+   "A message broker such as Redis or RabbitMQ",
+   [
+    "A Kubernetes cluster for task pods",
+    "A Spark cluster to run operators",
+    "A second metadata database replica"
+   ],
+   "The scheduler sends tasks through the broker to Celery workers, which may run on many machines."
+  ],
+  [
+   "Where should a task get its database credentials from in Airflow?",
+   "An Airflow Connection referenced by its conn_id",
+   [
+    "Constants hard-coded in the DAG file",
+    "An XCom pushed by an earlier task",
+    "A comment at the top of the DAG file"
+   ],
+   "Connections store hosts and credentials centrally (optionally in a secrets backend), and hooks or operators look them up by conn_id."
+  ],
+  [
+   "Why should you avoid calling Variable.get() at the top level of a DAG file?",
+   "Each frequent DAG file parse would query the database",
+   [
+    "Variables cannot be read outside an operator",
+    "Top-level calls run only once a year",
+    "It makes the Variable read-only afterwards"
+   ],
+   "Top-level code runs on every parse. Read Variables inside tasks or through Jinja templates such as {{ var.value.name }}."
+  ],
+  [
+   "Which environment variable defines an Airflow connection with conn_id my_db?",
+   "AIRFLOW_CONN_MY_DB",
+   [
+    "AIRFLOW_CONNECTION_MY_DB",
+    "AIRFLOW__CONN__MY_DB",
+    "CONN_MY_DB"
+   ],
+   "Variables named AIRFLOW_CONN_<CONN_ID> in upper case define connections, as a URI or JSON. Double underscores are for config options."
+  ]
+ ],
+ "dbt": [
+  [
+   "What is a dbt model?",
+   "A SQL SELECT in a .sql file, built as a table or view",
+   [
+    "A YAML file that lists the columns of a source table",
+    "A Python class that maps tables to objects",
+    "A stored procedure that dbt calls on a schedule"
+   ],
+   "Models are SQL SELECT queries; dbt wraps them in the DDL needed to create the relation in the warehouse."
+  ],
+  [
+   "Which materialization does dbt use for a model when none is configured?",
+   "view",
+   [
+    "table",
+    "incremental",
+    "ephemeral"
+   ],
+   "The default materialization is view. You can change it per model or per folder in dbt_project.yml."
+  ],
+  [
+   "A model starts with {{ config(materialized='table') }}. What does dbt run do with it?",
+   "Rebuilds it as a physical table on each run",
+   [
+    "Creates a view that refreshes automatically",
+    "Appends only new rows to the existing table",
+    "Inlines it as a CTE into dependent models"
+   ],
+   "Table materialization recreates the table from the query each run. Appending new rows is incremental, and inlining is ephemeral."
+  ],
+  [
+   "What happens to a model with materialized='ephemeral'?",
+   "Not built in the warehouse; inlined as a CTE where used",
+   [
+    "It is created as a temporary table that lasts one day",
+    "It is built only when you run dbt run --ephemeral",
+    "It is created as a view and dropped after tests pass"
+   ],
+   "Ephemeral models exist only as reusable SQL. Models that ref them get the code inserted as a common table expression."
+  ],
+  [
+   "Why write {{ ref('stg_orders') }} instead of hard-coding analytics.stg_orders?",
+   "dbt resolves the right relation per environment and records the dependency",
+   [
+    "It runs stg_orders again before every query that uses it",
+    "It copies the data of stg_orders into the new model",
+    "It makes the query faster by caching stg_orders"
+   ],
+   "ref picks the schema for the current target (dev or prod) and builds the DAG so models run in dependency order."
+  ],
+  [
+   "What does dbt run --select stg_orders+ build?",
+   "stg_orders and every model downstream of it",
+   [
+    "stg_orders and every model upstream of it",
+    "Only models whose names start with stg_orders",
+    "stg_orders and its tests, but no other models"
+   ],
+   "A + after the name adds descendants; a + before it (+stg_orders) adds ancestors."
+  ],
+  [
+   "A source named shop with a table orders is declared in YAML. How do you select from it in a model?",
+   "{{ source('shop', 'orders') }}",
+   [
+    "{{ ref('shop.orders') }}",
+    "{{ source('orders') }}",
+    "{{ raw('shop', 'orders') }}"
+   ],
+   "source() takes the source name and table name, resolves the database and schema from YAML, and adds the source to the lineage graph."
+  ],
+  [
+   "What does dbt source freshness check?",
+   "How recently source data loaded, against warn and error limits",
+   [
+    "Whether each source table has a primary key column",
+    "Whether the source schema matches the YAML columns",
+    "How long each model took to build last time"
+   ],
+   "It reads the max loaded_at_field value and warns or errors if the data is older than the configured thresholds."
+  ],
+  [
+   "Which are dbt's four built-in generic data tests?",
+   "unique, not_null, accepted_values and relationships",
+   [
+    "unique, not_null, primary_key and foreign_key",
+    "not_null, positive, in_range and is_date",
+    "unique, required, enum and lookup"
+   ],
+   "These four ship with dbt. Packages such as dbt_utils add more, and you can write your own generic tests."
+  ],
+  [
+   "You write a singular test as a SQL file in the tests/ folder. When does it fail?",
+   "When the query returns one or more rows",
+   [
+    "When the query returns zero rows",
+    "When the query takes over a minute",
+    "When the query uses a ref() call"
+   ],
+   "dbt tests select the failing records, so any returned row counts as a failure."
+  ],
+  [
+   "A relationships test is defined on orders.customer_id pointing to customers.id. What does it check?",
+   "Every customer_id in orders exists in customers.id",
+   [
+    "Every customers.id has at least one order",
+    "customer_id values in orders are unique",
+    "orders and customers have the same row count"
+   ],
+   "It enforces referential integrity from child to parent. Null customer_id values are not counted as failures."
+  ],
+  [
+   "Which command generates dbt's documentation site files?",
+   "dbt docs generate",
+   [
+    "dbt docs build",
+    "dbt generate docs",
+    "dbt build --docs"
+   ],
+   "dbt docs generate compiles the project and writes catalog and manifest files. dbt docs serve then hosts the site locally."
+  ],
+  [
+   "Where do you write a column description so that it appears in dbt docs?",
+   "Under the model's columns in a YAML properties file",
+   [
+    "In a comment on the first line of the model SQL",
+    "In the dbt_project.yml vars block",
+    "In a README.md inside the models folder"
+   ],
+   "Descriptions go in the description field of a model or column in YAML, and can use doc blocks for longer text."
+  ],
+  [
+   "In an incremental model, when does the SQL inside {% if is_incremental() %} apply?",
+   "When the table exists and it is not a full refresh",
+   [
+    "Only on the very first run of the model",
+    "Only when run with the --full-refresh flag",
+    "On every run, whatever the table state"
+   ],
+   "is_incremental() is true for incremental models whose table already exists, unless --full-refresh is used. It typically filters to new rows."
+  ],
+  [
+   "Inside an incremental model, what does {{ this }} refer to?",
+   "The model's own existing table in the warehouse",
+   [
+    "The model that runs right before it",
+    "The source declared first in YAML",
+    "The temporary table of new rows"
+   ],
+   "{{ this }} lets you query the current target, for example where updated_at > (select max(updated_at) from {{ this }})."
+  ],
+  [
+   "What does setting unique_key on an incremental model do?",
+   "Updates rows matching the key instead of only appending",
+   [
+    "Adds a unique constraint to the warehouse table",
+    "Removes duplicate rows from the source data",
+    "Makes dbt run the model only once per key"
+   ],
+   "With unique_key, strategies such as merge or delete+insert replace matching rows; without it, new rows are only appended."
+  ],
+  [
+   "What does dbt run --full-refresh do to an incremental model?",
+   "Rebuilds the whole table from scratch",
+   [
+    "Processes only rows added since the last run",
+    "Refreshes the view on top of the table",
+    "Deletes the model without rebuilding it"
+   ],
+   "--full-refresh drops and recreates the incremental table, needed after logic or schema changes."
+  ],
+  [
+   "What problem do dbt snapshots solve?",
+   "Recording how mutable source rows change over time (SCD Type 2)",
+   [
+    "Backing up the whole warehouse before each run",
+    "Caching query results to speed up dashboards",
+    "Freezing a model so it stops being rebuilt"
+   ],
+   "Snapshots keep historical versions of rows that are overwritten in the source, so you can see past states."
+  ],
+  [
+   "Which columns does dbt add to a snapshot table to mark when each row version was valid?",
+   "dbt_valid_from and dbt_valid_to",
+   [
+    "valid_start and valid_end",
+    "dbt_created_at and dbt_deleted_at",
+    "snapshot_from and snapshot_to"
+   ],
+   "A current row has a null dbt_valid_to (by default). When a change is detected, the old row is closed and a new one inserted."
+  ],
+  [
+   "A source table has no reliable updated_at column. Which snapshot strategy should you use?",
+   "check, comparing the listed check_cols",
+   [
+    "timestamp, using the load date",
+    "incremental, with a unique_key",
+    "append, keeping every new row"
+   ],
+   "The timestamp strategy needs a trustworthy updated_at. The check strategy compares column values to detect changes."
+  ]
+ ],
+ "prometheus": [
+  [
+   "Which Prometheus metric type fits the total number of HTTP requests served?",
+   "Counter",
+   [
+    "Gauge",
+    "Histogram",
+    "Summary"
+   ],
+   "A counter only increases (resetting on restart), which suits cumulative totals. You then use rate() to get requests per second."
+  ],
+  [
+   "Which metric type fits current memory usage, which goes up and down?",
+   "Gauge",
+   [
+    "Counter",
+    "Histogram",
+    "Summary"
+   ],
+   "Gauges represent values that can increase and decrease, such as memory, temperature or queue length."
+  ],
+  [
+   "What is the main advantage of a Histogram over a Summary in Prometheus?",
+   "Its buckets can be aggregated across instances to compute quantiles",
+   [
+    "It computes exact quantiles inside the client",
+    "It uses fewer time series per metric",
+    "It needs no bucket configuration at all"
+   ],
+   "Summary quantiles are computed per instance and cannot be meaningfully averaged. Histogram buckets can be summed, then passed to histogram_quantile."
+  ],
+  [
+   "A classic histogram http_request_duration_seconds is exposed. Which series does it produce?",
+   "_bucket, _sum and _count",
+   [
+    "_min, _max and _avg",
+    "_p50, _p90 and _p99",
+    "_total, _rate and _last"
+   ],
+   "Each bucket series carries an le label with its upper bound, plus a total sum and a count of observations."
+  ],
+  [
+   "What does rate(http_requests_total[5m]) return?",
+   "The per-second average increase over the last 5 minutes",
+   [
+    "The total number of requests in the last 5 minutes",
+    "The highest value seen in the last 5 minutes",
+    "The number of samples scraped in 5 minutes"
+   ],
+   "rate() calculates the per-second rate of a counter over the range and handles counter resets. increase() gives the total increase instead."
+  ],
+  [
+   "You want to see how much a gauge temperature_celsius changed over the last hour. Which function fits?",
+   "delta(temperature_celsius[1h])",
+   [
+    "rate(temperature_celsius[1h])",
+    "increase(temperature_celsius[1h])",
+    "irate(temperature_celsius[1h])"
+   ],
+   "delta() is meant for gauges. rate, increase and irate assume counters and treat any drop as a counter reset."
+  ],
+  [
+   "What does sum by (status) (rate(http_requests_total[5m])) show?",
+   "The request rate per status code, summed over all instances",
+   [
+    "The request rate per instance, ignoring status codes",
+    "The total requests ever served per status code",
+    "One number for all requests and all statuses"
+   ],
+   "by (status) keeps only the status label and sums away the others, such as instance and job."
+  ],
+  [
+   "Why must le stay in the by clause of histogram_quantile(0.95, sum by (le) (rate(x_bucket[5m])))?",
+   "histogram_quantile needs the bucket boundaries stored in le",
+   [
+    "le holds the instance name used for grouping",
+    "le sets the 5 minute window of the query",
+    "Without le the query returns the average"
+   ],
+   "Dropping le would merge all buckets into one series, leaving histogram_quantile nothing to interpolate between."
+  ],
+  [
+   "What does the selector up[5m] return?",
+   "A range vector with each series' samples from the last 5 minutes",
+   [
+    "An instant vector with the latest value of each series",
+    "A single number averaged over 5 minutes",
+    "The series that were up for all 5 minutes"
+   ],
+   "Adding [5m] turns a selector into a range vector, which functions such as rate() and avg_over_time() take as input."
+  ],
+  [
+   "What does up == 0 for a target indicate?",
+   "The last scrape of that target failed",
+   [
+    "The target reported zero requests",
+    "The target was just added to config",
+    "The target exposes no metrics yet"
+   ],
+   "Prometheus writes the synthetic up metric for each scrape: 1 when it succeeded, 0 when it failed."
+  ],
+  [
+   "How does Prometheus normally collect metrics from applications?",
+   "It pulls them by scraping HTTP endpoints such as /metrics",
+   [
+    "Applications push them to Prometheus over gRPC",
+    "It reads them from the application's log files",
+    "It queries a SQL table that applications write to"
+   ],
+   "Prometheus uses a pull model with configured or discovered targets. Pushing is limited to special cases through the Pushgateway."
+  ],
+  [
+   "A short-lived batch job finishes before Prometheus can scrape it. What is the usual solution?",
+   "Push its metrics to a Pushgateway that Prometheus scrapes",
+   [
+    "Increase scrape_interval to 1 second",
+    "Write the metrics to a log file",
+    "Add the job as a recording rule"
+   ],
+   "The Pushgateway holds metrics from service-level batch jobs so Prometheus can scrape them later."
+  ],
+  [
+   "Which prometheus.yml setting controls how often targets are scraped?",
+   "scrape_interval",
+   [
+    "evaluation_interval",
+    "scrape_timeout",
+    "poll_interval"
+   ],
+   "scrape_interval sets scrape frequency, globally or per job. evaluation_interval controls how often rules are evaluated."
+  ],
+  [
+   "In Kubernetes, how does Prometheus find pods to scrape without static IP addresses?",
+   "With kubernetes_sd_configs service discovery",
+   [
+    "With static_configs listing every pod IP",
+    "By scanning the cluster network for open ports",
+    "By reading pod logs for a metrics address"
+   ],
+   "Kubernetes service discovery watches the API server for pods, services and endpoints, and relabeling selects which ones to scrape."
+  ],
+  [
+   "Which configuration drops or rewrites targets based on discovered labels before they are scraped?",
+   "relabel_configs",
+   [
+    "metric_relabel_configs",
+    "alert_relabel_configs",
+    "write_relabel_configs"
+   ],
+   "relabel_configs works on targets before the scrape. metric_relabel_configs works on scraped samples, after the scrape."
+  ],
+  [
+   "Prometheus evaluates alerting rules. What does Alertmanager do with the resulting alerts?",
+   "Groups, deduplicates and routes them to receivers such as email or Slack",
+   [
+    "Evaluates PromQL expressions to decide which alerts fire",
+    "Scrapes targets again to confirm each alert",
+    "Stores the alerts as new time series for graphs"
+   ],
+   "Alertmanager handles notification: grouping, deduplication, routing, silences and inhibition. Rule evaluation stays in Prometheus."
+  ],
+  [
+   "An alerting rule has for: 10m. What does that do?",
+   "The condition must stay true for 10 minutes before the alert fires",
+   [
+    "The alert repeats its notification every 10 minutes",
+    "The alert resolves on its own after 10 minutes",
+    "The rule is evaluated once every 10 minutes"
+   ],
+   "Until the duration passes, the alert is in the pending state. This avoids alerts for brief spikes."
+  ],
+  [
+   "You plan one hour of maintenance on a database and want to mute its alerts. What do you create in Alertmanager?",
+   "A silence matching the database's alerts",
+   [
+    "A new alerting rule with for: 1h",
+    "A receiver with no integrations",
+    "A recording rule that hides the alerts"
+   ],
+   "Silences mute matching alerts for a set time window and expire on their own, without changing any configuration."
+  ],
+  [
+   "Why use Prometheus recording rules?",
+   "To precompute expensive queries into new series for faster dashboards and alerts",
+   [
+    "To record raw scrape responses for later debugging",
+    "To send alerts to receivers through Alertmanager",
+    "To store metrics in a remote long-term database"
+   ],
+   "Recording rules evaluate an expression periodically and save the result as a new time series, so queries read it cheaply."
+  ],
+  [
+   "Which name follows the Prometheus naming convention for a recording rule?",
+   "job:http_requests:rate5m",
+   [
+    "rate5m_http_requests_by_job",
+    "http.requests.rate.5m",
+    "record_http_requests_job_5m"
+   ],
+   "The recommended form is level:metric:operations, where level shows the aggregation labels kept, here job."
+  ]
+ ],
+ "grafana": [
+  [
+   "Grafana shows a dashboard of metrics collected by Prometheus. Where is the metric data stored?",
+   "In Prometheus; Grafana queries it when the dashboard loads",
+   [
+    "In Grafana's own built-in time series store",
+    "In the browser's local storage after import",
+    "In the JSON model of the dashboard"
+   ],
+   "Grafana is a visualization layer that queries data sources on demand. Its own database stores dashboards, users and settings."
+  ],
+  [
+   "Which query language do you write in a panel that uses a Prometheus data source?",
+   "PromQL",
+   [
+    "LogQL",
+    "SQL",
+    "TraceQL"
+   ],
+   "Each data source has its own query editor and language. LogQL is for Loki and TraceQL for Tempo."
+  ],
+  [
+   "Which Grafana project is a log aggregation system that you add as a data source?",
+   "Loki",
+   [
+    "Tempo",
+    "Mimir",
+    "Pyroscope"
+   ],
+   "Loki stores logs, Tempo stores traces, Mimir stores metrics and Pyroscope stores continuous profiles."
+  ],
+  [
+   "How is a Grafana dashboard represented for export, import and version control?",
+   "As a JSON model",
+   [
+    "As a YAML Helm chart",
+    "As a SQL dump",
+    "As a PNG with metadata"
+   ],
+   "Every dashboard has a JSON model that you can view in settings, export and keep in Git."
+  ],
+  [
+   "How can Grafana load data sources and dashboards from files automatically at startup?",
+   "With provisioning YAML files in the provisioning directory",
+   [
+    "By placing JSON files in the browser's downloads",
+    "By running the grafana-cli import-all command",
+    "By adding them to the panel's query options"
+   ],
+   "Provisioning lets you manage data sources, dashboards and alerting as code, which suits automated deployments."
+  ],
+  [
+   "What is a row used for in a Grafana dashboard?",
+   "Grouping related panels into a section that can collapse",
+   [
+    "Adding one more query to a table panel",
+    "Filtering every panel to one time range",
+    "Linking two dashboards together"
+   ],
+   "Rows organize large dashboards. Collapsed rows also skip loading their panels until they are expanded."
+  ],
+  [
+   "A panel shows raw byte counts like 1500000. How do you make Grafana display readable sizes such as MB?",
+   "Set the panel's Unit standard option to a bytes unit",
+   [
+    "Divide the value by 1000000 in a value mapping",
+    "Change the data source type to a storage source",
+    "Switch the panel from Time series to Table"
+   ],
+   "Units in Standard options format values automatically, scaling bytes to KB, MB and GB."
+  ],
+  [
+   "What do thresholds in a Grafana panel do?",
+   "Change colors when a value crosses defined levels",
+   [
+    "Drop data points above a defined level",
+    "Send an alert when a value crosses a level",
+    "Limit how many series the panel displays"
+   ],
+   "Thresholds color values, backgrounds or lines (for example green, orange, red). Alerting is configured separately in alert rules."
+  ],
+  [
+   "You want to join the results of two queries into one table before display. Which panel feature does that?",
+   "Transformations",
+   [
+    "Overrides",
+    "Thresholds",
+    "Value mappings"
+   ],
+   "Transformations reshape query results, for example joining by field, filtering or calculating new fields, before visualization."
+  ],
+  [
+   "In a time series panel, how do you give only one specific series a different color and axis?",
+   "Add a field override that matches that series",
+   [
+    "Edit the data source to rename the series",
+    "Create a new threshold for that series",
+    "Add a dashboard variable for that series"
+   ],
+   "Overrides apply settings to selected fields or series, while standard options apply to all of them."
+  ],
+  [
+   "A panel shows 1 or 0 for service health. How do you display UP and DOWN instead?",
+   "Add value mappings from 1 to UP and from 0 to DOWN",
+   [
+    "Add transformations that rename the field",
+    "Add thresholds at 0 and 1 with labels",
+    "Set the panel unit to a boolean type"
+   ],
+   "Value mappings translate raw values or ranges into text and colors, useful for status panels."
+  ],
+  [
+   "A dashboard variable named instance uses the query label_values(up, instance). What does it do?",
+   "Fills a dropdown with the instance label values from Prometheus",
+   [
+    "Creates one dashboard per instance automatically",
+    "Filters every panel to instances that are up",
+    "Counts how many instances are currently up"
+   ],
+   "Query variables load their options from the data source; label_values returns the values of a label on the given metric."
+  ],
+  [
+   "The variable instance has Multi-value enabled. Which PromQL filter works when several values are selected?",
+   "up{instance=~\"$instance\"}",
+   [
+    "up{instance=\"$instance\"}",
+    "up{instance==\"$instance\"}",
+    "up{instance~\"$instance\"}"
+   ],
+   "Grafana expands multiple values into a regex like (a|b), so the regex matcher =~ is needed."
+  ],
+  [
+   "Which built-in variable does Grafana recommend as the range in rate() queries against Prometheus?",
+   "$__rate_interval",
+   [
+    "$__interval_ms",
+    "$__range",
+    "$__from"
+   ],
+   "$__rate_interval is at least four scrape intervals and adapts to the zoom level, avoiding empty or misleading rate() results."
+  ],
+  [
+   "What does the Repeat option on a panel do?",
+   "Creates one copy of the panel for each selected variable value",
+   [
+    "Re-runs the panel's query every few seconds",
+    "Duplicates the panel into another dashboard",
+    "Repeats the same series twice for comparison"
+   ],
+   "Repeating by a variable, for example one panel per server, keeps dashboards dynamic without manual copies."
+  ],
+  [
+   "Which visualization fits CPU usage of several servers over the last 24 hours?",
+   "Time series",
+   [
+    "Pie chart",
+    "Stat",
+    "Text"
+   ],
+   "Time series panels draw values over time as lines or bars. Stat shows a single current value."
+  ],
+  [
+   "Which visualization shows one big current value, such as active users, with an optional sparkline?",
+   "Stat",
+   [
+    "Table",
+    "Heatmap",
+    "Node graph"
+   ],
+   "Stat panels highlight a single value with color by threshold and an optional background graph."
+  ],
+  [
+   "In Grafana Alerting, what is a contact point?",
+   "A set of destinations, such as email or Slack, that receive notifications",
+   [
+    "The query and condition that decide when an alert fires",
+    "The person who acknowledged an alert first",
+    "The data source the alert rule reads from"
+   ],
+   "Contact points define where notifications go. The query and condition belong to the alert rule itself."
+  ],
+  [
+   "In Grafana Alerting, what decides which contact point receives a firing alert, based on its labels?",
+   "Notification policies",
+   [
+    "Silences",
+    "Mute timings",
+    "Data source permissions"
+   ],
+   "Notification policies form a routing tree that matches alert labels to contact points and sets grouping and timing."
+  ],
+  [
+   "A Grafana alert rule has a pending period of 5 minutes. What does that mean?",
+   "The condition must stay true for 5 minutes before the alert fires",
+   [
+    "Notifications are sent again every 5 minutes",
+    "The rule is evaluated once every 5 minutes",
+    "The alert resolves itself after 5 minutes"
+   ],
+   "During the pending period the alert is Pending. Only if the condition still holds afterwards does it switch to Firing."
+  ]
+ ],
+ "opentelemetry": [
+  [
+   "Which are OpenTelemetry's three core, stable telemetry signals?",
+   "Traces, metrics and logs",
+   [
+    "Traces, alerts and dashboards",
+    "Metrics, events and SLAs",
+    "Logs, incidents and uptime"
+   ],
+   "Traces, metrics and logs are the main signals. Profiling is a newer, separate signal."
+  ],
+  [
+   "What is a span in OpenTelemetry?",
+   "One timed operation in a trace, with attributes and a parent",
+   [
+    "A full request across all services from start to end",
+    "A metric that counts errors over a time window",
+    "A log file written by a single service"
+   ],
+   "A trace is a tree of spans. Each span records start and end time, attributes, events, status and its parent span id."
+  ],
+  [
+   "What do all spans belonging to one trace share?",
+   "The same trace ID",
+   [
+    "The same span ID",
+    "The same service name",
+    "The same start time"
+   ],
+   "Every span has its own span ID, but all spans of a trace carry the same trace ID, which ties them together across services."
+  ],
+  [
+   "A service sets OTEL_TRACES_SAMPLER=parentbased_traceidratio and OTEL_TRACES_SAMPLER_ARG=0.1. What happens?",
+   "About 10% of new traces sampled; children follow the parent",
+   [
+    "Exactly every tenth span is exported, ignoring parents",
+    "10% of spans are dropped and the rest are exported",
+    "Each span is kept for 0.1 seconds before export"
+   ],
+   "The root sampler keeps a ratio of traces based on trace ID, and parent-based sampling keeps decisions consistent across a trace."
+  ],
+  [
+   "By default, which HTTP header do OpenTelemetry SDKs use to propagate trace context?",
+   "traceparent (W3C Trace Context)",
+   [
+    "X-B3-TraceId (Zipkin B3)",
+    "uber-trace-id (Jaeger)",
+    "X-Request-ID"
+   ],
+   "The default propagators are W3C Trace Context and W3C Baggage. B3 and Jaeger formats are available as extra propagators."
+  ],
+  [
+   "Service A makes an outgoing HTTP call to service B. Which span kind should A's span for the call have?",
+   "CLIENT",
+   [
+    "SERVER",
+    "PRODUCER",
+    "INTERNAL"
+   ],
+   "The caller records a CLIENT span and the receiving service records a SERVER span. PRODUCER is for asynchronous messaging."
+  ],
+  [
+   "An operation failed and you want its span marked as failed. What do you set?",
+   "The span status to Error",
+   [
+    "The span kind to INTERNAL",
+    "A new trace ID for the span",
+    "The span name to error"
+   ],
+   "Span status can be Unset, Ok or Error. Setting Error, often with a recorded exception event, marks the failure for backends."
+  ],
+  [
+   "What is Baggage in OpenTelemetry?",
+   "Key-value pairs propagated across services along with the context",
+   [
+    "Spans held in memory before the exporter sends them",
+    "Attributes attached only to the root span",
+    "Logs that are dropped when the buffer is full"
+   ],
+   "Baggage carries values such as a tenant id across process boundaries. It is not added to spans automatically."
+  ],
+  [
+   "Which metric instrument fits the number of requests currently in progress, which goes up and down?",
+   "UpDownCounter",
+   [
+    "Counter",
+    "Histogram",
+    "ObservableCounter"
+   ],
+   "UpDownCounter allows increments and decrements. Counter and ObservableCounter are monotonic, and Histogram records distributions."
+  ],
+  [
+   "Which metric instrument should record request durations so that you can compute percentiles later?",
+   "Histogram",
+   [
+    "Counter",
+    "UpDownCounter",
+    "Gauge"
+   ],
+   "Histograms aggregate measurements into buckets, from which backends estimate percentiles such as p95."
+  ],
+  [
+   "How does OpenTelemetry correlate a log record with a trace?",
+   "The log record carries the active span's trace and span IDs",
+   [
+    "The log message text includes the service name",
+    "Logs are written into span names when they occur",
+    "The Collector matches logs to traces by timestamp"
+   ],
+   "When logs are emitted within an active span, SDKs and log bridges attach its trace and span IDs, so backends can jump between them."
+  ],
+  [
+   "Which three component types make up a pipeline in the OpenTelemetry Collector?",
+   "Receivers, processors and exporters",
+   [
+    "Agents, brokers and dashboards",
+    "Inputs, filters and alerts",
+    "Scrapers, indexers and viewers"
+   ],
+   "Receivers ingest data, processors transform it and exporters send it to backends. Connectors can link pipelines."
+  ],
+  [
+   "What is the main purpose of the batch processor in the Collector?",
+   "Grouping telemetry before export to cut request count",
+   [
+    "Sampling traces so that only errors are kept",
+    "Converting metrics into log records",
+    "Retrying data that failed to export"
+   ],
+   "Batching cuts the number of outgoing connections and improves throughput."
+  ],
+  [
+   "What does the memory_limiter processor do in the Collector?",
+   "Refuses data when memory is too high, to avoid crashes",
+   [
+    "Compresses data in memory before sending it",
+    "Limits how many spans each trace can contain",
+    "Moves old data from memory to the disk"
+   ],
+   "memory_limiter applies backpressure when limits are reached. It is recommended as the first processor in each pipeline."
+  ],
+  [
+   "What does running the Collector in agent mode mean?",
+   "It runs next to the app, for example as a sidecar or DaemonSet",
+   [
+    "It runs inside the application process as a library",
+    "It runs as the central gateway for the whole company",
+    "It runs only during tests, not in production"
+   ],
+   "Agents run on the same host or pod as the app. Gateways are separate central Collector deployments that agents can forward to."
+  ],
+  [
+   "A receiver is configured in the receivers section but not listed in any pipeline under service. What happens?",
+   "It is not enabled",
+   [
+    "It is added to every pipeline",
+    "The Collector fails to start",
+    "It runs but drops all data"
+   ],
+   "Components only become active when referenced in service.pipelines. Defining them alone does nothing."
+  ],
+  [
+   "How do you add zero-code (automatic) instrumentation to a Java application?",
+   "Attach the OpenTelemetry Java agent with the -javaagent flag",
+   [
+    "Add an @OpenTelemetry annotation to each class",
+    "Recompile the JVM with tracing support",
+    "Run the Collector with the java receiver"
+   ],
+   "The Java agent instruments popular libraries at runtime through bytecode manipulation, without code changes."
+  ],
+  [
+   "What does an instrumentation library, such as the one for Express or Flask, provide?",
+   "Telemetry for that library's operations, without writing spans by hand",
+   [
+    "A backend that stores and displays traces",
+    "A replacement for the framework with tracing built in",
+    "Load balancing between instrumented services"
+   ],
+   "Instrumentation libraries hook into frameworks and clients to create spans and metrics for requests, queries and calls."
+  ],
+  [
+   "Which are the default OTLP ports?",
+   "4317 for gRPC and 4318 for HTTP",
+   [
+    "4318 for gRPC and 4317 for HTTP",
+    "9090 for gRPC and 9091 for HTTP",
+    "14250 for gRPC and 14268 for HTTP"
+   ],
+   "OTLP uses 4317 for gRPC and 4318 for HTTP/protobuf. 14250 and 14268 are legacy Jaeger ports."
+  ],
+  [
+   "Which environment variable sets the OTLP endpoint used by SDK exporters?",
+   "OTEL_EXPORTER_OTLP_ENDPOINT",
+   [
+    "OTEL_COLLECTOR_URL",
+    "OTLP_EXPORTER_HOST",
+    "OTEL_ENDPOINT_URL"
+   ],
+   "OTEL_EXPORTER_OTLP_ENDPOINT applies to all signals; per-signal variants such as OTEL_EXPORTER_OTLP_TRACES_ENDPOINT override it."
+  ]
+ ]
+}

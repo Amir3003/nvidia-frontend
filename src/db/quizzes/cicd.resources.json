@@ -1,0 +1,54 @@
+{
+ "git": [
+  "Pro Git book (git-scm.com)",
+  "https://git-scm.com/book/en/v2"
+ ],
+ "github-actions": [
+  "GitHub Actions documentation",
+  "https://docs.github.com/en/actions"
+ ],
+ "gitlab-ci": [
+  "GitLab CI/CD documentation",
+  "https://docs.gitlab.com/ci/"
+ ],
+ "jenkins": [
+  "Jenkins User Handbook: Pipeline",
+  "https://www.jenkins.io/doc/book/pipeline/"
+ ],
+ "cicd": [
+  "Martin Fowler: Continuous Integration",
+  "https://martinfowler.com/articles/continuousIntegration.html"
+ ],
+ "kafka": [
+  "Apache Kafka documentation",
+  "https://kafka.apache.org/documentation/"
+ ],
+ "rabbitmq": [
+  "RabbitMQ: AMQP 0-9-1 Model Explained",
+  "https://www.rabbitmq.com/tutorials/amqp-concepts"
+ ],
+ "nats": [
+  "NATS documentation",
+  "https://docs.nats.io/"
+ ],
+ "airflow": [
+  "Apache Airflow documentation",
+  "https://airflow.apache.org/docs/apache-airflow/stable/index.html"
+ ],
+ "dbt": [
+  "dbt documentation: What is dbt?",
+  "https://docs.getdbt.com/docs/introduction"
+ ],
+ "prometheus": [
+  "Prometheus documentation",
+  "https://prometheus.io/docs/introduction/overview/"
+ ],
+ "grafana": [
+  "Grafana documentation",
+  "https://grafana.com/docs/grafana/latest/"
+ ],
+ "opentelemetry": [
+  "OpenTelemetry documentation",
+  "https://opentelemetry.io/docs/"
+ ]
+}

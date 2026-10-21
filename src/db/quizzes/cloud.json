@@ -1,0 +1,2224 @@
+{
+ "kubernetes": [
+  [
+   "What is the smallest deployable unit that Kubernetes creates and manages?",
+   "A Pod",
+   [
+    "A container",
+    "A Node",
+    "A ReplicaSet"
+   ],
+   "Kubernetes schedules Pods, which wrap one or more containers. Containers are never scheduled on their own."
+  ],
+  [
+   "Two containers run in the same Pod. How can the app container reach a sidecar listening on port 9000?",
+   "Through localhost:9000",
+   [
+    "Through the sidecar's Service name",
+    "Through the node's public IP",
+    "Through a hostPath socket only"
+   ],
+   "Containers in one Pod share a network namespace, so they share an IP address and can talk over localhost."
+  ],
+  [
+   "A Pod's container keeps exiting right after start, and kubectl get pods shows a growing restart count. Which status do you usually see?",
+   "CrashLoopBackOff",
+   [
+    "ImagePullBackOff",
+    "Pending",
+    "Evicted"
+   ],
+   "CrashLoopBackOff means the container starts, crashes and is restarted with an increasing back-off delay. ImagePullBackOff is about failing to pull the image."
+  ],
+  [
+   "Which object does a Deployment create directly to keep the desired number of Pods running?",
+   "A ReplicaSet",
+   [
+    "A StatefulSet",
+    "A DaemonSet",
+    "A Job"
+   ],
+   "A Deployment owns ReplicaSets, and each ReplicaSet owns Pods. A rollout creates a new ReplicaSet and scales the old one down."
+  ],
+  [
+   "A new image version of Deployment web is broken. Which command returns it to the previous revision?",
+   "kubectl rollout undo deployment/web",
+   [
+    "kubectl rollback deployment/web",
+    "kubectl delete rs --latest",
+    "kubectl apply --previous"
+   ],
+   "kubectl rollout undo switches the Deployment back to the prior ReplicaSet template. The other commands do not exist or do something else."
+  ],
+  [
+   "What update strategy does a Deployment use when spec.strategy is not set?",
+   "RollingUpdate",
+   [
+    "Recreate",
+    "BlueGreen",
+    "Canary"
+   ],
+   "RollingUpdate is the default, replacing Pods gradually. Recreate kills all old Pods first; blue-green and canary are patterns, not built-in strategy types."
+  ],
+  [
+   "A Deployment has replicas: 4 with maxSurge: 1 and maxUnavailable: 0. What is the most Pods that can exist during a rollout?",
+   "5",
+   [
+    "4",
+    "6",
+    "8"
+   ],
+   "maxSurge: 1 allows one Pod above the desired 4, and maxUnavailable: 0 keeps all 4 available, so at most 5 Pods run at once."
+  ],
+  [
+   "Which Service type is created when you omit spec.type?",
+   "ClusterIP",
+   [
+    "NodePort",
+    "LoadBalancer",
+    "ExternalName"
+   ],
+   "ClusterIP is the default and gives a virtual IP reachable only from inside the cluster."
+  ],
+  [
+   "You need a Service reachable on every node's IP at a fixed port, without a cloud load balancer. Which type fits?",
+   "NodePort",
+   [
+    "ClusterIP",
+    "ExternalName",
+    "Headless (clusterIP: None)"
+   ],
+   "NodePort opens the same port (by default from 30000 to 32767) on every node and forwards it to the Service. LoadBalancer builds on this with a cloud LB."
+  ],
+  [
+   "A Service has selector app: api, but the Pods are labeled app: backend. What happens?",
+   "The Service gets no endpoints, so requests fail",
+   [
+    "The Service routes to all Pods in the namespace",
+    "The API server rejects the Service",
+    "kube-proxy relabels the Pods"
+   ],
+   "Services find Pods only through their label selector. With no matching labels the endpoint list is empty and traffic has nowhere to go."
+  ],
+  [
+   "What is the full in-cluster DNS name of Service api in namespace shop, with the default cluster domain?",
+   "api.shop.svc.cluster.local",
+   [
+    "shop.api.svc.cluster.local",
+    "api.svc.shop.cluster.local",
+    "api.shop.pod.cluster.local"
+   ],
+   "Service DNS names follow service.namespace.svc.cluster-domain, and the default cluster domain is cluster.local."
+  ],
+  [
+   "You applied an Ingress resource, but nothing routes traffic to your Services. What is the most likely cause?",
+   "No Ingress controller is running in the cluster",
+   [
+    "The Services are of type ClusterIP",
+    "Ingress only works in the default namespace",
+    "The Pods lack a liveness probe"
+   ],
+   "An Ingress is only a set of rules. A controller such as ingress-nginx must run to implement them. Ingress normally points at ClusterIP Services."
+  ],
+  [
+   "At which level does a standard Kubernetes Ingress route traffic?",
+   "HTTP host and path (Layer 7)",
+   [
+    "TCP port only (Layer 4)",
+    "Node IP address (Layer 3)",
+    "Pod labels (scheduler level)"
+   ],
+   "Ingress rules match HTTP(S) hostnames and URL paths and forward to backend Services."
+  ],
+  [
+   "How are values under the data field of a Kubernetes Secret stored in its YAML by default?",
+   "Base64-encoded, which is not encryption",
+   [
+    "AES-encrypted with the cluster key",
+    "Hashed with SHA-256",
+    "Stored as plain text in the data field"
+   ],
+   "Secret data is only base64-encoded. Real protection needs RBAC and encryption at rest configured on the API server."
+  ],
+  [
+   "A ConfigMap is consumed as environment variables in a running Pod. You edit the ConfigMap. What happens to the variables?",
+   "They keep the old values until the Pod restarts",
+   [
+    "They update within a minute",
+    "The Pod is restarted automatically",
+    "The edit is rejected while Pods use it"
+   ],
+   "Environment variables are set when the container starts. Files from a mounted ConfigMap volume are refreshed, but env vars are not."
+  ],
+  [
+   "Which of these Kubernetes resources is cluster-scoped rather than namespaced?",
+   "Node",
+   [
+    "Pod",
+    "Service",
+    "ConfigMap"
+   ],
+   "Nodes, PersistentVolumes and Namespaces themselves are cluster-scoped. Pods, Services and ConfigMaps live inside a namespace."
+  ],
+  [
+   "Which command lists Pods in every namespace?",
+   "kubectl get pods -A",
+   [
+    "kubectl get pods -n *",
+    "kubectl get pods --global",
+    "kubectl get pods -n default"
+   ],
+   "-A is short for --all-namespaces. Without it kubectl uses the current context's namespace."
+  ],
+  [
+   "An HPA targets 60% average CPU. A Deployment runs 4 Pods averaging 90% CPU. How many replicas will the HPA request?",
+   "6",
+   [
+    "5",
+    "7",
+    "8"
+   ],
+   "The HPA computes ceil(currentReplicas * currentValue / target) = ceil(4 * 90 / 60) = 6."
+  ],
+  [
+   "An HPA on CPU utilization shows the target as unknown. Besides a missing metrics-server, what is a common cause?",
+   "The containers have no CPU requests set",
+   [
+    "The Deployment has only one replica",
+    "The Pods use a ClusterIP Service",
+    "The HPA is in a different node pool"
+   ],
+   "CPU utilization is measured as a percentage of the CPU request. Without requests the HPA cannot compute it."
+  ],
+  [
+   "A PersistentVolume uses reclaimPolicy: Retain. Its PVC is deleted. What happens to the volume?",
+   "It stays with its data, in the Released phase",
+   [
+    "It is deleted with its data",
+    "It is wiped and becomes Available",
+    "It is bound to the next PVC automatically"
+   ],
+   "Retain keeps the PV and its data for manual cleanup. It does not become Available for a new claim until an admin handles it. Delete would remove the storage."
+  ]
+ ],
+ "helm": [
+  [
+   "Which file must every Helm chart contain to describe its name and version?",
+   "Chart.yaml",
+   [
+    "values.yaml",
+    "Chartfile",
+    "templates/NOTES.txt"
+   ],
+   "Chart.yaml holds the chart metadata such as apiVersion, name and version. values.yaml is optional defaults."
+  ],
+  [
+   "In a Helm chart, where do the Kubernetes manifest templates go?",
+   "The templates/ directory",
+   [
+    "The charts/ directory",
+    "The manifests/ directory",
+    "The crds/ directory only"
+   ],
+   "Files in templates/ are rendered with values and sent to the cluster. charts/ holds dependency charts."
+  ],
+  [
+   "Charts written for Helm 3 use which apiVersion in Chart.yaml?",
+   "v2",
+   [
+    "v1",
+    "v3",
+    "helm.sh/v3"
+   ],
+   "apiVersion v2 is the Helm 3 chart format and declares dependencies in Chart.yaml. v1 is the older Helm 2 format."
+  ],
+  [
+   "Which flag overrides a single value during install, for example the image tag?",
+   "--set image.tag=1.2.0",
+   [
+    "--value image.tag=1.2.0",
+    "--override image.tag=1.2.0",
+    "--env image.tag=1.2.0"
+   ],
+   "--set takes dotted key paths. For many values, -f with a YAML file is cleaner."
+  ],
+  [
+   "You run helm install with -f prod.yaml and --set replicas=5, while prod.yaml sets replicas: 3. Which value is used?",
+   "5, because --set wins over -f files",
+   [
+    "3, because files win over --set",
+    "The chart default from values.yaml",
+    "Helm fails with a conflict error"
+   ],
+   "Precedence goes from the chart's values.yaml, then -f files in order, then --set flags, which have the highest priority."
+  ],
+  [
+   "How does a template read the replicaCount key from values.yaml?",
+   "{{ .Values.replicaCount }}",
+   [
+    "{{ values.replicaCount }}",
+    "{{ .Chart.replicaCount }}",
+    "{{ $replicaCount }}"
+   ],
+   "Values are exposed under the .Values object. .Chart holds Chart.yaml metadata instead."
+  ],
+  [
+   "Which built-in object gives the name chosen for the release in helm install myapp ./chart?",
+   "{{ .Release.Name }}",
+   [
+    "{{ .Chart.Name }}",
+    "{{ .Values.name }}",
+    "{{ .Template.Name }}"
+   ],
+   ".Release.Name is myapp here. .Chart.Name is the chart's name from Chart.yaml, which can differ."
+  ],
+  [
+   "Which template language does Helm use for chart templates?",
+   "Go templates with Sprig functions",
+   [
+    "Jinja2 templates with filters",
+    "Mustache logic-less templates",
+    "Jsonnet data templating"
+   ],
+   "Helm renders charts with Go's text/template plus the Sprig function library and some Helm extras like include and required."
+  ],
+  [
+   "What does {{ .Values.port | default 8080 }} render when port is not set in any values?",
+   "8080",
+   [
+    "An empty string",
+    "0",
+    "A render error"
+   ],
+   "The default function returns its argument when the piped value is empty or unset."
+  ],
+  [
+   "Why is include preferred over template when inserting a named template inside YAML?",
+   "include returns a string you can pipe to nindent",
+   [
+    "include runs faster at render time",
+    "template cannot accept a context argument",
+    "template is removed in Helm 3"
+   ],
+   "template writes output directly, so it cannot be piped. include returns a string, so you can fix indentation with nindent or indent."
+  ],
+  [
+   "What does the dash in {{- .Values.name }} do?",
+   "Trims whitespace to its left",
+   [
+    "Comments out the whole expression",
+    "Negates a boolean value",
+    "Escapes special YAML characters"
+   ],
+   "A dash after {{ trims preceding whitespace, and a dash before }} trims following whitespace."
+  ],
+  [
+   "Why are files like templates/_helpers.tpl not turned into Kubernetes objects?",
+   "Helm skips underscore files when rendering manifests",
+   [
+    "kubectl ignores every file with a .tpl extension",
+    "Helm only renders files named with .yaml.tmpl",
+    "They are excluded by .helmignore by default"
+   ],
+   "Helm treats underscore-prefixed files as partials that hold named templates (define blocks) for other templates to include."
+  ],
+  [
+   "Which command renders a chart to YAML locally without installing anything?",
+   "helm template ./chart",
+   [
+    "helm show ./chart",
+    "helm get manifest ./chart",
+    "helm package ./chart"
+   ],
+   "helm template renders manifests to stdout. helm get manifest reads an already installed release."
+  ],
+  [
+   "In a CI pipeline you want one command that installs a release if missing and upgrades it if present. Which fits?",
+   "helm upgrade --install myapp ./chart",
+   [
+    "helm install --upgrade myapp ./chart",
+    "helm apply myapp ./chart",
+    "helm sync myapp ./chart"
+   ],
+   "helm upgrade --install (or -i) is idempotent for both first deploys and later updates."
+  ],
+  [
+   "Release myapp is at revision 5 and broken. Which command returns it to the state of revision 3?",
+   "helm rollback myapp 3",
+   [
+    "helm undo myapp 3",
+    "helm upgrade myapp --revision 3",
+    "helm revert myapp 3"
+   ],
+   "helm rollback takes the release name and a revision number. helm history myapp lists the available revisions."
+  ],
+  [
+   "By default, where does Helm 3 store release records?",
+   "In Secrets in the release's namespace",
+   [
+    "In ConfigMaps in the kube-system namespace",
+    "In Tiller's own local database",
+    "In the ~/.helm folder on the client"
+   ],
+   "Helm 3 removed Tiller and stores each revision as a Secret in the release namespace. Helm 2 used ConfigMaps in kube-system."
+  ],
+  [
+   "In a Helm 3 chart (apiVersion v2), where are chart dependencies declared?",
+   "In the dependencies list of Chart.yaml",
+   [
+    "In requirements.yaml at the chart root",
+    "In values.yaml under a deps key",
+    "In a templates/deps.yaml manifest"
+   ],
+   "Helm 3 charts list dependencies in Chart.yaml. requirements.yaml was the Helm 2 location. helm dependency update downloads them into charts/."
+  ],
+  [
+   "Your chart depends on a subchart named redis. How do you set the subchart's auth.enabled from the parent's values.yaml?",
+   "redis: {auth: {enabled: false}}",
+   [
+    "subcharts: {redis: {auth: {enabled: false}}}",
+    "charts: {redis: {auth: {enabled: false}}}",
+    "dependencies: {redis: {auth: {enabled: false}}}"
+   ],
+   "Values under a top-level key that matches the subchart name are passed to that subchart. global values are shared with all subcharts."
+  ],
+  [
+   "Which annotation makes a Job run as a Helm hook before an upgrade, for example to run database migrations?",
+   "helm.sh/hook: pre-upgrade",
+   [
+    "helm.sh/hook: before-upgrade",
+    "helm.sh/phase: upgrade",
+    "helm.sh/hook-weight: pre-upgrade"
+   ],
+   "Hook types include pre-install, post-install, pre-upgrade and post-upgrade. hook-weight only orders hooks of the same type."
+  ],
+  [
+   "A hook Job fails on the second upgrade because a Job with that name already exists. Which setting fixes this?",
+   "helm.sh/hook-delete-policy: before-hook-creation",
+   [
+    "helm.sh/hook-weight: \"-1\" on the Job",
+    "helm.sh/resource-policy: keep on the Job",
+    "helm.sh/hook: post-delete on the Job"
+   ],
+   "before-hook-creation deletes the previous hook resource before creating the new one. resource-policy: keep does the opposite and preserves resources."
+  ]
+ ],
+ "terraform": [
+  [
+   "In HCL, which block type declares an infrastructure object that Terraform creates and manages?",
+   "resource",
+   [
+    "data",
+    "provider",
+    "locals"
+   ],
+   "resource blocks describe managed objects. data blocks only read existing information, and provider blocks configure the plugin."
+  ],
+  [
+   "How do you reference the id attribute of resource \"aws_instance\" \"web\" elsewhere in the configuration?",
+   "aws_instance.web.id",
+   [
+    "resource.aws_instance.web.id",
+    "${aws_instance}.web.id",
+    "var.aws_instance.web.id"
+   ],
+   "References use TYPE.NAME.ATTRIBUTE. Such references also create an implicit dependency between resources."
+  ],
+  [
+   "Which command must you run first in a fresh Terraform working directory, to download providers and set up the backend?",
+   "terraform init",
+   [
+    "terraform plan",
+    "terraform get",
+    "terraform validate"
+   ],
+   "terraform init installs providers and modules and configures the backend. plan and apply fail until init has run."
+  ],
+  [
+   "A provider has version = \"~> 5.0\". Which versions are allowed?",
+   ">= 5.0 and < 6.0",
+   [
+    ">= 5.0.0 and < 5.1.0",
+    "Exactly 5.0.0",
+    "Any version >= 5.0"
+   ],
+   "The pessimistic operator allows only the rightmost given component to grow. With ~> 5.0 that is the minor version, so 6.0 is excluded."
+  ],
+  [
+   "You need to look up an existing VPC that Terraform does not manage, to use its ID. Which block fits?",
+   "A data block",
+   [
+    "A resource block with import = true",
+    "A locals block",
+    "An output block"
+   ],
+   "Data sources read existing infrastructure without managing its lifecycle."
+  ],
+  [
+   "A resource uses count over a list of three names. You delete the first name. What does the plan typically show?",
+   "Remaining items change because their indexes shift",
+   [
+    "Only the first instance is destroyed, nothing else",
+    "No changes appear until you run terraform refresh",
+    "An error, because count lists cannot shrink"
+   ],
+   "count tracks instances by index, so removing an early element shifts the others. for_each with a set or map keys instances by name and avoids this."
+  ],
+  [
+   "What is the default name of the local state file Terraform writes?",
+   "terraform.tfstate",
+   [
+    "state.tf",
+    ".terraform/state.json",
+    "terraform.tfvars"
+   ],
+   "Without a remote backend, state is written to terraform.tfstate in the working directory. terraform.tfvars holds variable values."
+  ],
+  [
+   "Why do teams move Terraform state to a remote backend such as S3 or Terraform Cloud?",
+   "Shared state with locking against concurrent runs",
+   [
+    "Remote state makes plan and apply run faster",
+    "Remote backends strip secrets out of the state",
+    "Providers only work when state is stored remotely"
+   ],
+   "Remote backends give everyone the same state and, when supported, lock it during operations. State can still contain secrets, so access must be restricted."
+  ],
+  [
+   "An apply crashed and left the state locked. After confirming no one else is running Terraform, which command clears the lock?",
+   "terraform force-unlock LOCK_ID",
+   [
+    "terraform state rm lock",
+    "terraform init -reconfigure",
+    "terraform refresh -unlock"
+   ],
+   "force-unlock removes a stuck lock by its ID. Use it only when you are sure no other operation is in progress."
+  ],
+  [
+   "A database was created by hand and you now wrote a matching resource block. How do you bring it under Terraform management without recreating it?",
+   "Import it into state (CLI or import block)",
+   [
+    "Run terraform apply with -refresh-only",
+    "Run terraform taint on the resource",
+    "Copy its ID into the terraform.tfvars file"
+   ],
+   "Import links the existing object to the resource address in state. Afterwards plan should show no changes if the config matches."
+  ],
+  [
+   "You rename resource aws_s3_bucket.logs to aws_s3_bucket.audit_logs in the code. How do you avoid destroying and recreating the bucket?",
+   "Add a moved block or run terraform state mv",
+   [
+    "Run terraform apply -replace on the old name",
+    "Change the bucket's tags to the new name",
+    "Delete terraform.tfstate and re-import all"
+   ],
+   "moved blocks (Terraform 1.1 and later) or terraform state mv change the address in state, so Terraform sees a rename instead of a new resource."
+  ],
+  [
+   "Variable region has a default of us-east-1, terraform.tfvars sets eu-west-1, and you run terraform apply -var=\"region=ap-south-1\". Which value is used?",
+   "ap-south-1",
+   [
+    "eu-west-1",
+    "us-east-1",
+    "Terraform errors on conflicting values"
+   ],
+   "Command-line -var and -var-file options have the highest precedence, above tfvars files, TF_VAR_ environment variables and defaults."
+  ],
+  [
+   "Both TF_VAR_region in the environment and region in terraform.tfvars are set, with no -var flag. Which wins?",
+   "The value in terraform.tfvars",
+   [
+    "The TF_VAR_region environment value",
+    "The variable's default",
+    "Whichever was changed most recently"
+   ],
+   "Environment variables have lower precedence than terraform.tfvars, which is loaded automatically."
+  ],
+  [
+   "An output is marked sensitive = true. What does that change?",
+   "Hidden in CLI output, but still in state",
+   [
+    "It is encrypted inside the state file",
+    "It is removed from the state file entirely",
+    "It can no longer be used by other modules"
+   ],
+   "sensitive only redacts the value in plan and apply output. The plain value is still in state, which must be protected."
+  ],
+  [
+   "A module call is named network and the module defines output vpc_id. How does the root module read it?",
+   "module.network.vpc_id",
+   [
+    "output.network.vpc_id",
+    "network.outputs.vpc_id",
+    "var.network.vpc_id"
+   ],
+   "Child module outputs are exposed as module.NAME.OUTPUT. Only declared outputs are visible to the caller."
+  ],
+  [
+   "You add a new module block with source = \"./modules/vpc\" and run terraform plan. It errors that the module is not installed. What fixes it?",
+   "Run terraform init again",
+   [
+    "Run terraform get -update=false",
+    "Add the module to required_providers",
+    "Run terraform fmt -recursive"
+   ],
+   "terraform init installs modules referenced by the configuration, including local ones, whenever module blocks are added or their sources change."
+  ],
+  [
+   "Which workflow guarantees that apply executes exactly the changes you reviewed?",
+   "terraform plan -out=tfplan, then terraform apply tfplan",
+   [
+    "terraform plan, then terraform apply -auto-approve",
+    "terraform apply -refresh=false",
+    "terraform validate, then terraform apply"
+   ],
+   "A saved plan file is applied as-is without a new plan. A plain apply recalculates and could differ if anything changed meanwhile."
+  ],
+  [
+   "In terraform plan output, what does the -/+ symbol next to a resource mean?",
+   "It will be destroyed and then recreated",
+   [
+    "It will be updated in place",
+    "It will be read as a data source",
+    "It will be removed from state only"
+   ],
+   "-/+ means replacement, often because an argument that forces a new resource changed. ~ means update in place."
+  ],
+  [
+   "Replacing a resource causes downtime because Terraform deletes the old one first. Which setting makes it create the new one first?",
+   "lifecycle { create_before_destroy = true }",
+   [
+    "lifecycle { prevent_destroy = true }",
+    "depends_on = [self]",
+    "lifecycle { ignore_changes = all }"
+   ],
+   "create_before_destroy reverses the order for replacements. prevent_destroy blocks destruction entirely and makes the plan fail."
+  ],
+  [
+   "In Terraform 1.x, which command forces a single healthy resource to be recreated on the next apply?",
+   "terraform apply -replace=\"aws_instance.web\"",
+   [
+    "terraform apply -recreate=aws_instance.web",
+    "terraform state rm aws_instance.web",
+    "terraform refresh -target=aws_instance.web"
+   ],
+   "-replace (available since 0.15.2) is the recommended replacement for terraform taint. state rm only forgets the resource and leaves it running."
+  ]
+ ],
+ "ansible": [
+  [
+   "In which format are Ansible playbooks written?",
+   "YAML",
+   [
+    "JSON only",
+    "HCL",
+    "TOML"
+   ],
+   "Playbooks are YAML documents containing a list of plays."
+  ],
+  [
+   "Inside a play, which key selects the machines the tasks run on?",
+   "hosts",
+   [
+    "targets",
+    "nodes",
+    "inventory"
+   ],
+   "hosts takes a pattern such as a group name, a host name or all, matched against the inventory."
+  ],
+  [
+   "Your tasks install packages and need root. What do you add to the play?",
+   "become: true",
+   [
+    "remote_root: true",
+    "privileged: true",
+    "run_as: admin"
+   ],
+   "become enables privilege escalation, which uses sudo by default. become_user changes the target user."
+  ],
+  [
+   "What does ansible all -m ping actually test?",
+   "SSH login and a usable Python on each host",
+   [
+    "ICMP reachability of each host",
+    "Open port 22 only, without logging in",
+    "DNS resolution of host names"
+   ],
+   "The ping module is not ICMP. It logs in, runs a small module and returns pong, proving connectivity and Python work."
+  ],
+  [
+   "A task must run grep ERROR /var/log/app.log | wc -l. Which module supports the pipe?",
+   "ansible.builtin.shell",
+   [
+    "ansible.builtin.command",
+    "ansible.builtin.raw_cmd",
+    "ansible.builtin.exec"
+   ],
+   "command does not go through a shell, so pipes, redirects and variables like $HOME do not work. shell runs the line through /bin/sh."
+  ],
+  [
+   "You want a config file where Jinja2 variables are filled in per host. Which module fits?",
+   "ansible.builtin.template",
+   [
+    "ansible.builtin.copy",
+    "ansible.builtin.lineinfile",
+    "ansible.builtin.fetch"
+   ],
+   "template renders a .j2 file with Jinja2 on the controller and copies the result. copy transfers files as they are."
+  ],
+  [
+   "Which module installs nginx on an Ubuntu host in an idempotent way?",
+   "ansible.builtin.apt with state: present",
+   [
+    "ansible.builtin.command: apt install nginx",
+    "ansible.builtin.shell: apt-get -y install nginx",
+    "ansible.builtin.raw: apt install nginx"
+   ],
+   "The apt module checks whether the package is already installed and reports ok instead of changed. Raw commands run every time."
+  ],
+  [
+   "In an INI inventory, which line defines a group named web?",
+   "[web]",
+   [
+    "group: web",
+    "<web>",
+    "web:"
+   ],
+   "INI inventories use [groupname] headers followed by host lines. In YAML inventories, groups sit under the children key of all."
+  ],
+  [
+   "Which built-in group contains every host in the inventory?",
+   "all",
+   [
+    "every",
+    "hosts",
+    "default"
+   ],
+   "all always includes all hosts. ungrouped holds hosts that belong to no other group."
+  ],
+  [
+   "A host is listed as db1 but its real IP is 10.0.0.5. Which inventory variable tells Ansible where to connect?",
+   "ansible_host=10.0.0.5",
+   [
+    "ansible_ip=10.0.0.5",
+    "host_address=10.0.0.5",
+    "ansible_target=10.0.0.5"
+   ],
+   "ansible_host sets the actual address to connect to, while db1 remains the inventory name. ansible_user sets the SSH user."
+  ],
+  [
+   "Where do you put variables that should apply to every host in group web?",
+   "group_vars/web.yml",
+   [
+    "host_vars/web.yml",
+    "vars/web.yml in the playbook root",
+    "inventory/web.vars"
+   ],
+   "Files in group_vars named after a group are loaded for its hosts. host_vars files are named after individual hosts."
+  ],
+  [
+   "Which file does Ansible run as the main task list of a role named nginx?",
+   "roles/nginx/tasks/main.yml",
+   [
+    "roles/nginx/main.yml",
+    "roles/nginx/playbook.yml",
+    "roles/nginx/tasks/nginx.yml"
+   ],
+   "Each role directory such as tasks, handlers or defaults uses main.yml as its entry point."
+  ],
+  [
+   "A role should let users easily override its port. Where should the default value go?",
+   "roles/x/defaults/main.yml",
+   [
+    "roles/x/vars/main.yml",
+    "roles/x/tasks/main.yml",
+    "roles/x/meta/main.yml"
+   ],
+   "Role defaults have the lowest variable precedence, so inventory or play vars override them. Role vars rank much higher and are hard to override."
+  ],
+  [
+   "When does a notified handler run by default?",
+   "Once, after all tasks in the play finish",
+   [
+    "Immediately after the notifying task",
+    "Once per task that notifies it",
+    "Only on the next playbook run"
+   ],
+   "Handlers are queued and run once at the end of the play, no matter how many tasks notified them."
+  ],
+  [
+   "A template task has notify: restart nginx, but the rendered file is identical to the one on the server. What happens?",
+   "The handler does not run because the task reported ok",
+   [
+    "The handler runs because notify is always triggered",
+    "The handler runs only in check mode",
+    "Ansible fails because the file did not change"
+   ],
+   "Handlers run only when the notifying task reports changed. This keeps restarts to cases where something actually changed."
+  ],
+  [
+   "You need a notified handler to run in the middle of a play, before later tasks. What do you add?",
+   "A task with meta: flush_handlers",
+   [
+    "A task with handlers: now",
+    "listen: immediate on the handler",
+    "force_handlers: true on the task"
+   ],
+   "meta: flush_handlers runs all pending handlers at that point. force_handlers makes handlers run even when a later task fails."
+  ],
+  [
+   "What does {{ port | default(80) }} render in a Jinja2 template when port is undefined?",
+   "80",
+   [
+    "An empty string",
+    "None",
+    "An undefined variable error"
+   ],
+   "The default filter supplies a fallback for undefined variables."
+  ],
+  [
+   "Why must you quote a YAML value that starts with a Jinja2 expression, as in msg: \"{{ greeting }} world\"?",
+   "YAML would read an unquoted { as a mapping",
+   [
+    "Jinja2 ignores expressions that are unquoted",
+    "Quotes mark the value as a vaulted secret",
+    "Ansible needs quotes to turn templating on"
+   ],
+   "A value beginning with { looks like an inline YAML dictionary, so the parser fails. Quoting the whole value avoids that."
+  ],
+  [
+   "You run the same playbook twice on a host with no outside changes. In a well-written playbook, what should the second run report?",
+   "changed=0",
+   [
+    "changed equal to the task count",
+    "failed=1 for repeated tasks",
+    "skipped for every task"
+   ],
+   "Idempotent tasks check current state and change only what differs, so a second run finds nothing to do."
+  ],
+  [
+   "A command task runs an installer that should run only once. Which argument keeps it idempotent?",
+   "creates: /opt/app/installed.flag",
+   [
+    "once: true on the command task",
+    "idempotent: yes on the command task",
+    "run_once: true on the command task"
+   ],
+   "With creates, the command is skipped if the given path exists. changed_when only changes how the result is reported."
+  ]
+ ],
+ "nginx": [
+  [
+   "Which directive inside a location block forwards requests to an app on 127.0.0.1:3000?",
+   "proxy_pass http://127.0.0.1:3000;",
+   [
+    "upstream http://127.0.0.1:3000;",
+    "forward_to 127.0.0.1:3000;",
+    "proxy_host 127.0.0.1:3000;"
+   ],
+   "proxy_pass sends the request to the given address or upstream group. upstream is a separate block that defines a group of servers."
+  ],
+  [
+   "Config: location /api/ { proxy_pass http://app:8080/; }. A client requests /api/users. Which path does the backend receive?",
+   "/users",
+   [
+    "/api/users",
+    "/api//users",
+    "/8080/api/users"
+   ],
+   "When proxy_pass includes a URI (here the trailing slash), the matched location prefix /api/ is replaced by it. Without a URI the full /api/users is passed."
+  ],
+  [
+   "Behind Nginx, your app sees every request's Host as the upstream name instead of the public domain. Which line fixes it?",
+   "proxy_set_header Host $host;",
+   [
+    "proxy_pass_header Host;",
+    "add_header Host $host;",
+    "proxy_redirect Host $host;"
+   ],
+   "By default Nginx sends the proxy_pass host as Host. proxy_set_header Host $host passes the client's original host. add_header only affects responses."
+  ],
+  [
+   "Which line passes the client IP chain to the backend in the standard header?",
+   "proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;",
+   [
+    "proxy_set_header X-Forwarded-For $server_addr;",
+    "add_header X-Forwarded-For $remote_addr;",
+    "proxy_set_header X-Forwarded-For $host;"
+   ],
+   "$proxy_add_x_forwarded_for appends $remote_addr to any incoming X-Forwarded-For value."
+  ],
+  [
+   "WebSocket connections through your Nginx proxy fail. Which settings are needed besides proxy_pass?",
+   "HTTP/1.1 plus Upgrade and Connection headers",
+   [
+    "proxy_buffering off plus gzip compression on",
+    "keepalive_timeout 0 plus HTTP/2 on the listener",
+    "ssl_protocols TLSv1.3 plus http2 on the server"
+   ],
+   "WebSockets need an HTTP/1.1 Upgrade handshake. Nginx must forward the Upgrade and Connection headers explicitly because they are hop-by-hop."
+  ],
+  [
+   "Which load balancing method does an upstream block use when you specify none?",
+   "Round robin",
+   [
+    "Least connections",
+    "IP hash",
+    "Random with two choices"
+   ],
+   "Nginx defaults to weighted round robin. least_conn, ip_hash, hash and random must be set explicitly."
+  ],
+  [
+   "Requests have very uneven processing times, and some backends pile up slow requests. Which upstream directive helps most?",
+   "least_conn;",
+   [
+    "ip_hash;",
+    "keepalive 32;",
+    "zone backend 64k;"
+   ],
+   "least_conn sends each request to the server with the fewest active connections, which suits uneven request durations."
+  ],
+  [
+   "An app stores sessions in memory, so a user must keep hitting the same backend. Which built-in upstream method fits without extra modules?",
+   "ip_hash;",
+   [
+    "least_conn;",
+    "round_robin;",
+    "random;"
+   ],
+   "ip_hash maps a client IP to the same server. round_robin is not a directive; round robin is simply the default."
+  ],
+  [
+   "Upstream: server a weight=3; server b;. Out of 8 requests under the default method, about how many go to a?",
+   "6",
+   [
+    "3",
+    "4",
+    "5"
+   ],
+   "Weights 3 and 1 give a three-to-one split, so a gets 6 of 8 requests and b gets 2."
+  ],
+  [
+   "Which pair of directives does a server block need to serve HTTPS with your certificate?",
+   "ssl_certificate and ssl_certificate_key",
+   [
+    "ssl_cert and ssl_key",
+    "tls_certificate and tls_private_key",
+    "ssl_trusted_certificate and ssl_dhparam"
+   ],
+   "With listen 443 ssl, ssl_certificate points to the certificate (chain) and ssl_certificate_key to its private key."
+  ],
+  [
+   "Some mobile clients reject your site's certificate, while desktop browsers accept it. What is a common Nginx-side cause?",
+   "The certificate file lacks the intermediates",
+   [
+    "ssl_session_cache is turned off in the server",
+    "The server block does not enable http2",
+    "The private key file has 0600 permissions"
+   ],
+   "ssl_certificate should contain the server certificate followed by intermediates (the full chain). Desktop browsers may fill gaps; many clients do not."
+  ],
+  [
+   "Which line in a port 80 server block redirects all traffic to HTTPS while keeping the host and path?",
+   "return 301 https://$host$request_uri;",
+   [
+    "rewrite ^ https://$host permanent;",
+    "return 301 https://$server_addr$uri;",
+    "proxy_pass https://$host$request_uri;"
+   ],
+   "return 301 with $host and $request_uri keeps the requested domain, path and query string. The rewrite shown drops the path."
+  ],
+  [
+   "A request's Host header matches no server_name. Which server block handles it?",
+   "The default_server for that port, or the first",
+   [
+    "The server block with the longest server_name",
+    "None; Nginx returns 404 immediately",
+    "The block whose root contains an index.html"
+   ],
+   "Nginx falls back to the server marked default_server on the listen directive, or the first server block for that address and port."
+  ],
+  [
+   "Config has location /images/ { } and location ~* \\.(png|jpg)$ { }. Which block handles /images/cat.png?",
+   "The regex location",
+   [
+    "The /images/ prefix location",
+    "Both, merged in order",
+    "Neither; Nginx returns 404"
+   ],
+   "Nginx remembers the longest prefix match, then checks regex locations in order and uses the first that matches. Adding ^~ to the prefix would stop the regex check."
+  ],
+  [
+   "What does location = / { } match?",
+   "Only the exact URI /",
+   [
+    "Every URI that starts with /",
+    "Only URIs ending in a slash",
+    "The root directory and its files"
+   ],
+   "The = modifier is an exact match and is checked first, so it is a fast way to handle the home page."
+  ],
+  [
+   "A React single-page app served by Nginx returns 404 when you refresh /dashboard. Which directive fixes it?",
+   "try_files $uri $uri/ /index.html;",
+   [
+    "index index.html index.htm;",
+    "error_page 404 /404.html;",
+    "autoindex on; in the location"
+   ],
+   "try_files serves the file if it exists, and otherwise falls back to index.html so the client-side router handles the path."
+  ],
+  [
+   "Config: location /static/ { root /var/www; }. Which file is served for /static/app.css?",
+   "/var/www/static/app.css",
+   [
+    "/var/www/app.css",
+    "/static/var/www/app.css",
+    "/var/www/static/static/app.css"
+   ],
+   "root appends the full URI to the path. alias /var/www/; would replace the /static/ prefix and serve /var/www/app.css."
+  ],
+  [
+   "You set up proxy_cache_path and proxy_cache. How can you see whether a response was served from cache?",
+   "Add a header with $upstream_cache_status",
+   [
+    "Check $request_time in the response",
+    "Read the X-Cache header Nginx adds by default",
+    "Enable proxy_buffering and check the logs"
+   ],
+   "add_header X-Cache-Status $upstream_cache_status; exposes values like HIT, MISS or EXPIRED. Nginx does not add such a header by itself."
+  ],
+  [
+   "Config: limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s; then limit_req zone=api burst=20;. What happens to a burst of 25 requests at once from one IP?",
+   "About 20 wait in a queue and the rest get rejected",
+   [
+    "All 25 are served at the same moment",
+    "All 25 are rejected as a single burst",
+    "10 are served and the other 15 wait in a queue"
+   ],
+   "burst allows up to 20 excess requests to queue and be released at 10 per second. Requests beyond the burst are rejected. nodelay would serve queued ones immediately."
+  ],
+  [
+   "When limit_req rejects a request and limit_req_status is not set, which status code does Nginx return?",
+   "503",
+   [
+    "429",
+    "403",
+    "502"
+   ],
+   "The default is 503 Service Unavailable. Many setups use limit_req_status 429; to return Too Many Requests instead."
+  ]
+ ],
+ "aws": [
+  [
+   "A user has an IAM policy that allows s3:DeleteObject and another that explicitly denies it. What is the result?",
+   "Denied, because an explicit deny overrides any allow",
+   [
+    "Allowed, because allows are evaluated first",
+    "Allowed only if the bucket policy agrees",
+    "It depends on which policy was attached last"
+   ],
+   "In IAM evaluation, an explicit Deny in any applicable policy always wins over Allow statements."
+  ],
+  [
+   "A new IAM role has no policies attached. What can it do?",
+   "Nothing; everything is implicitly denied",
+   [
+    "Read-only access to all AWS services",
+    "Full access within its own account",
+    "Only actions inside the IAM service"
+   ],
+   "AWS denies by default. Permissions exist only where a policy explicitly allows them."
+  ],
+  [
+   "An app on EC2 needs to read from S3. What is the recommended way to give it credentials?",
+   "Attach an IAM role through an instance profile",
+   [
+    "Store an access key in the app's config file",
+    "Put the root user's keys in env variables",
+    "Make the bucket public for the instance"
+   ],
+   "An instance role provides temporary, auto-rotated credentials through the metadata service, so no long-lived keys sit on the server."
+  ],
+  [
+   "What does the trust policy of an IAM role control?",
+   "Which principals may assume the role",
+   [
+    "Which actions the role may perform",
+    "Which regions the role is valid in",
+    "How long the role's password lasts"
+   ],
+   "The trust policy lists who can call sts:AssumeRole. Permission policies attached to the role decide what it can do."
+  ],
+  [
+   "Security group rule allows inbound TCP 443. Do you need an outbound rule for the responses?",
+   "No, security groups are stateful",
+   [
+    "Yes, ephemeral ports must be opened",
+    "Yes, unless the VPC has a NAT gateway",
+    "No, because outbound is always blocked"
+   ],
+   "Security groups track connections, so return traffic is allowed automatically. Network ACLs are stateless and need rules in both directions."
+  ],
+  [
+   "You need to block one specific IP address from reaching a subnet. Which feature supports an explicit deny rule?",
+   "A network ACL",
+   [
+    "A security group",
+    "An IAM policy",
+    "A route table"
+   ],
+   "Security groups support only allow rules. Network ACLs support both allow and deny and apply at the subnet level."
+  ],
+  [
+   "An EC2 instance is stopped and started again. What happens to data on an instance store volume?",
+   "It is lost",
+   [
+    "It is kept like on EBS",
+    "It is moved to an EBS snapshot",
+    "It is kept only if termination protection is on"
+   ],
+   "Instance store is physically attached temporary storage and does not survive stop or termination. EBS volumes persist independently."
+  ],
+  [
+   "By default, when does an EC2 user data shell script run?",
+   "Once, at the first boot of the instance",
+   [
+    "At every boot",
+    "Every time you SSH in",
+    "Only when the instance is stopped"
+   ],
+   "cloud-init runs user data scripts on first launch by default. Running it every boot needs extra configuration."
+  ],
+  [
+   "A bucket policy grants public s3:GetObject with Resource \"arn:aws:s3:::my-bucket\", but downloads still fail. What is wrong in the policy?",
+   "The resource needs the /* object suffix",
+   [
+    "The action must be s3:ListBucket instead",
+    "The principal must be the root user",
+    "The effect must be AllowPublic instead"
+   ],
+   "Object actions apply to object ARNs, which need the /* suffix. The bare bucket ARN covers bucket-level actions like ListBucket."
+  ],
+  [
+   "A bucket policy allows public read, yet anonymous requests get 403. Which setting most likely overrides the policy?",
+   "S3 Block Public Access",
+   [
+    "Bucket versioning",
+    "Default encryption with SSE-S3",
+    "Transfer Acceleration"
+   ],
+   "Block Public Access settings at the bucket or account level override policies and ACLs that grant public access."
+  ],
+  [
+   "What makes a VPC subnet public?",
+   "A default route to an internet gateway",
+   [
+    "A tag with the word public in its name",
+    "A NAT gateway placed inside the subnet",
+    "A CIDR block of exactly /24 in size"
+   ],
+   "A public subnet is defined by routing: a default route to an internet gateway. Instances also need a public IP to be reachable."
+  ],
+  [
+   "Instances in a private subnet must download updates from the internet but stay unreachable from it. What do you add?",
+   "A NAT gateway in a public subnet, plus a route to it",
+   [
+    "An internet gateway attached to the private subnet",
+    "A security group allowing 0.0.0.0/0 inbound",
+    "VPC peering with the default VPC"
+   ],
+   "A NAT gateway allows outbound connections initiated from private instances while blocking unsolicited inbound traffic."
+  ],
+  [
+   "How many IP addresses can you assign to resources in a /24 subnet in an AWS VPC?",
+   "251",
+   [
+    "256",
+    "254",
+    "250"
+   ],
+   "A /24 has 256 addresses and AWS reserves 5 in every subnet (network, router, DNS, future use and broadcast), leaving 251."
+  ],
+  [
+   "What is the maximum configurable timeout of a single AWS Lambda invocation?",
+   "15 minutes",
+   [
+    "5 minutes",
+    "1 hour",
+    "30 seconds"
+   ],
+   "Lambda functions can run up to 900 seconds. Longer jobs fit better in ECS, Batch or Step Functions."
+  ],
+  [
+   "A Lambda function gets AccessDenied when writing to DynamoDB. Where should you add the permission?",
+   "To the function's execution role",
+   [
+    "To the function's environment variables",
+    "To the caller's resource policy only",
+    "To the DynamoDB table's security group"
+   ],
+   "Lambda code runs with the credentials of its execution role, so that role needs dynamodb:PutItem on the table."
+  ],
+  [
+   "A Lambda handler caches a database connection in a global variable. What happens on later invocations?",
+   "Warm invocations in the same environment reuse it",
+   [
+    "It is rebuilt on every invocation",
+    "The function fails, as globals are forbidden",
+    "All instances share it across machines"
+   ],
+   "Code outside the handler runs once per execution environment and is reused while that environment stays warm. It is not shared between environments."
+  ],
+  [
+   "In Amazon ECS, which role does the agent use to pull images from ECR and send logs to CloudWatch?",
+   "The task execution role",
+   [
+    "The task role",
+    "The service-linked role for EC2",
+    "The container instance's SSH key"
+   ],
+   "The execution role is used by ECS itself to pull images and write logs. The task role is the identity your application code uses."
+  ],
+  [
+   "A team wants to run containers without managing any EC2 servers. Which launch option fits ECS or EKS?",
+   "AWS Fargate",
+   [
+    "EC2 Auto Scaling groups",
+    "Elastic Beanstalk worker tier",
+    "EC2 Dedicated Hosts"
+   ],
+   "Fargate is serverless compute for containers: you define CPU and memory per task or Pod and AWS manages the hosts."
+  ],
+  [
+   "What is the main purpose of enabling Multi-AZ on an Amazon RDS instance?",
+   "Automatic failover to a standby in another AZ",
+   [
+    "Spreading read queries across replicas",
+    "Lower cost through shared storage",
+    "Running two engines on one instance"
+   ],
+   "Multi-AZ keeps a synchronous standby for high availability. In the classic setup the standby serves no reads; read replicas handle read scaling."
+  ],
+  [
+   "You want a CloudWatch alarm on an EC2 instance's memory usage, but no memory metric exists. Why?",
+   "Memory needs the CloudWatch agent on the instance",
+   [
+    "Memory metrics require a Dedicated Host",
+    "Memory is shown only under ECS metrics",
+    "Detailed monitoring must be disabled first"
+   ],
+   "EC2 reports hypervisor-visible metrics like CPU and network. Memory and disk usage come from inside the OS, so the CloudWatch agent must publish them."
+  ]
+ ],
+ "gcp": [
+  [
+   "In Google Cloud, what is a service account?",
+   "An identity used by workloads and apps, not people",
+   [
+    "A billing account shared by a team",
+    "A Google Workspace user with admin rights",
+    "A project-level API quota bucket"
+   ],
+   "Service accounts let VMs, functions and other code authenticate to Google APIs and receive IAM roles."
+  ],
+  [
+   "You grant a role on a project. Which resources does the grant apply to?",
+   "All resources in the project, via inheritance",
+   [
+    "Only resources created after the grant itself",
+    "Only the billing settings of the project",
+    "Only resources located in the default region"
+   ],
+   "IAM policies are inherited down the hierarchy: organization, folders, projects, then resources. A project grant covers everything below it."
+  ],
+  [
+   "Why does Google recommend predefined roles such as roles/storage.objectViewer over the basic Editor role?",
+   "Basic roles grant broad access across many services",
+   [
+    "Basic roles cannot be granted to service accounts",
+    "Predefined roles bill less per request",
+    "Editor is limited to one region"
+   ],
+   "Owner, Editor and Viewer span almost all services. Predefined and custom roles follow least privilege."
+  ],
+  [
+   "A GitHub Actions pipeline must deploy to GCP. What is the recommended way to authenticate without storing long-lived keys?",
+   "Workload Identity Federation",
+   [
+    "A service account JSON key in a repo secret",
+    "A personal user's OAuth refresh token",
+    "An API key with project-wide scope"
+   ],
+   "Workload Identity Federation exchanges the CI provider's OIDC token for short-lived Google credentials, so no key file needs to be stored."
+  ],
+  [
+   "Code on a Compute Engine VM calls Google APIs with the client library and no key file. Which identity does it use?",
+   "The service account attached to the VM",
+   [
+    "The user account that created the VM",
+    "The project owner's personal account",
+    "An anonymous unauthenticated identity"
+   ],
+   "Client libraries use Application Default Credentials, which on a VM come from the metadata server for the attached service account."
+  ],
+  [
+   "A batch job is fault-tolerant and should run as cheaply as possible on Compute Engine. Which VM option fits?",
+   "Spot VMs",
+   [
+    "Sole-tenant nodes",
+    "Committed use VMs on demand",
+    "Shielded VMs"
+   ],
+   "Spot (and older preemptible) VMs are heavily discounted but can be stopped by Google at any time, which suits restartable batch work."
+  ],
+  [
+   "A managed instance group creates identical VMs and autoscales them. What does it use as the blueprint for new VMs?",
+   "An instance template",
+   [
+    "A machine image of the first VM",
+    "A snapshot schedule",
+    "A Deployment Manager config"
+   ],
+   "Managed instance groups create VMs from an instance template that defines machine type, image, disks and metadata."
+  ],
+  [
+   "Which metadata key runs a script on a Linux Compute Engine VM each time it boots?",
+   "startup-script",
+   [
+    "user-data",
+    "boot-command",
+    "init-script"
+   ],
+   "The startup-script metadata key (or startup-script-url) runs on every boot. user-data is the AWS EC2 naming."
+  ],
+  [
+   "You created a GKE cluster. Which command configures kubectl to talk to it?",
+   "gcloud container clusters get-credentials NAME",
+   [
+    "gcloud gke connect NAME --zone ZONE",
+    "kubectl config import NAME --gcp",
+    "gcloud compute ssh NAME --kubeconfig"
+   ],
+   "get-credentials writes the cluster endpoint and auth settings into your kubeconfig."
+  ],
+  [
+   "What is the key difference between GKE Autopilot and GKE Standard?",
+   "In Autopilot, Google manages the nodes for you",
+   [
+    "Autopilot has no Kubernetes API access",
+    "Standard clusters cannot use autoscaling",
+    "Autopilot runs only on Spot VMs"
+   ],
+   "Autopilot manages node provisioning and scaling and bills by Pod resource requests. In Standard you manage node pools yourself."
+  ],
+  [
+   "Pods in GKE need to call Cloud Storage as a specific IAM identity, without key files. Which feature fits?",
+   "Workload Identity Federation for GKE",
+   [
+    "Node access scopes set to full",
+    "A Kubernetes Secret with a JSON key",
+    "Binary Authorization"
+   ],
+   "Workload Identity maps Kubernetes service accounts to IAM, so each workload gets its own short-lived credentials instead of sharing the node's identity."
+  ],
+  [
+   "You must keep backup files rarely accessed, about once a year, at the lowest storage cost. Which Cloud Storage class fits?",
+   "Archive",
+   [
+    "Standard",
+    "Nearline",
+    "Regional SSD"
+   ],
+   "Archive is designed for data accessed less than once a year (with a 365-day minimum storage duration). Nearline targets roughly monthly access."
+  ],
+  [
+   "What does enabling uniform bucket-level access on a Cloud Storage bucket do?",
+   "Disables object ACLs so only IAM controls access",
+   [
+    "Makes all objects publicly readable",
+    "Replicates the bucket to every region",
+    "Encrypts objects with a customer key"
+   ],
+   "With uniform access, per-object ACLs are turned off and permissions come only from bucket-level IAM policies."
+  ],
+  [
+   "A user without a Google account must download one private object for the next hour. Which feature fits?",
+   "A signed URL with a one-hour expiry",
+   [
+    "Making the bucket public for an hour",
+    "Adding allUsers as Viewer to the project",
+    "A Cloud CDN cache key"
+   ],
+   "Signed URLs grant time-limited access to a specific object to anyone who has the link."
+  ],
+  [
+   "Logs in a bucket should move to Coldline after 30 days and be deleted after 365 days. What do you configure?",
+   "Object Lifecycle Management rules",
+   [
+    "A Cloud Scheduler job per object",
+    "Retention policy with bucket lock",
+    "Object versioning"
+   ],
+   "Lifecycle rules apply actions such as SetStorageClass and Delete based on conditions like object age."
+  ],
+  [
+   "A Cloud Function should run whenever a file is uploaded to a bucket. What kind of trigger is this?",
+   "An event-driven trigger on Cloud Storage",
+   [
+    "An HTTP trigger called by the bucket",
+    "A Cloud Scheduler cron trigger",
+    "A Pub/Sub pull subscription you poll"
+   ],
+   "Cloud Functions support HTTP triggers and event triggers. A Cloud Storage object finalize event fires the function on upload."
+  ],
+  [
+   "Cloud Functions 2nd gen (now Cloud Run functions) is built on which Google Cloud products?",
+   "Cloud Run and Eventarc",
+   [
+    "App Engine and Pub/Sub",
+    "GKE Autopilot and Cloud Tasks",
+    "Compute Engine and Cloud Build"
+   ],
+   "2nd gen functions run on Cloud Run infrastructure and use Eventarc for event delivery, which enables features like concurrency per instance."
+  ],
+  [
+   "In BigQuery with on-demand pricing, does adding LIMIT 10 to SELECT * FROM a large unclustered table reduce the bytes billed?",
+   "No, the chosen columns are still fully scanned",
+   [
+    "Yes, only the first 10 rows are read",
+    "Yes, billing drops by about 90 percent",
+    "No, because SELECT * queries are free"
+   ],
+   "On-demand billing depends on bytes scanned in the referenced columns. LIMIT does not reduce the scan; selecting fewer columns or partition filters do."
+  ],
+  [
+   "How do Google Cloud VPC networks and subnets relate to regions?",
+   "The VPC is global, and each subnet is regional",
+   [
+    "The VPC is regional, and subnets are zonal",
+    "Both the VPC and subnets are zonal",
+    "Both are global"
+   ],
+   "A single GCP VPC can span all regions, with subnets defined per region. This differs from AWS, where a VPC is regional."
+  ],
+  [
+   "VMs without external IP addresses must reach Cloud Storage APIs. Which subnet setting enables this?",
+   "Private Google Access",
+   [
+    "Cloud Armor policy",
+    "Auto mode subnet creation",
+    "VPC Network Peering"
+   ],
+   "Private Google Access lets internal-only VMs reach Google APIs. Cloud NAT is for reaching the general internet."
+  ]
+ ],
+ "azure": [
+  [
+   "You delete an Azure resource group that contains a VM, a disk and a storage account. What happens to those resources?",
+   "They are all deleted with the group",
+   [
+    "They move to the default resource group",
+    "They stay but become unmanaged",
+    "Only the VM is deleted"
+   ],
+   "A resource group is a lifecycle container, so deleting it deletes everything inside. Resource locks can prevent accidental deletion."
+  ],
+  [
+   "A resource group is created in West Europe. Can a VM inside it live in East US?",
+   "Yes, the group's location only stores its metadata",
+   [
+    "No, all resources must share the group's region",
+    "Only if the VM uses a managed disk",
+    "Only after moving the group's subscription"
+   ],
+   "Resources in a group can be in different regions. The group location decides where its metadata is stored."
+  ],
+  [
+   "Which is the correct Azure management hierarchy, from top to bottom?",
+   "Management groups, subscriptions, resource groups, resources",
+   [
+    "Subscriptions, management groups, resources, resource groups",
+    "Tenants, resource groups, subscriptions, resources",
+    "Resource groups, subscriptions, regions, resources"
+   ],
+   "Management groups organize subscriptions, subscriptions contain resource groups, and resource groups contain resources. Policies and RBAC inherit downward."
+  ],
+  [
+   "You want to prevent anyone from deleting a production database while still allowing changes to it. What do you apply?",
+   "A CanNotDelete resource lock",
+   [
+    "A ReadOnly resource lock",
+    "An Owner role assignment",
+    "A Deny NSG rule"
+   ],
+   "CanNotDelete allows reads and updates but blocks deletion. ReadOnly also blocks updates, which would break normal changes."
+  ],
+  [
+   "In Azure App Service, what does an App Service plan define?",
+   "The compute and pricing tier the apps run on",
+   [
+    "The source code repository for each app",
+    "The custom domain names of each app",
+    "The database connection strings of apps"
+   ],
+   "Several web apps can share one plan and its VMs. Scaling the plan scales all apps in it."
+  ],
+  [
+   "How do you deploy a new version to App Service with near-zero downtime and an easy way back?",
+   "Deploy to a staging slot, then swap it with production",
+   [
+    "Stop the app, deploy, then start it",
+    "Create a new App Service plan each release",
+    "Edit files over FTP on the live app"
+   ],
+   "Deployment slots let you warm up a release in staging and swap it into production. Swapping again restores the previous version."
+  ],
+  [
+   "In App Service, how do application settings reach a running app?",
+   "As environment variables",
+   [
+    "As a file named appsettings.azure",
+    "As command-line arguments",
+    "Only through Azure Key Vault calls"
+   ],
+   "App settings are injected as environment variables. They can also reference Key Vault secrets."
+  ],
+  [
+   "Which command merges an AKS cluster's credentials into your local kubeconfig?",
+   "az aks get-credentials --resource-group RG --name NAME",
+   [
+    "az aks connect --resource-group RG --name NAME",
+    "kubectl login --aks NAME",
+    "az login --kubernetes NAME"
+   ],
+   "az aks get-credentials writes the cluster context into ~/.kube/config so kubectl can use it."
+  ],
+  [
+   "AKS nodes fail to pull images from your Azure Container Registry with an authorization error. Which fix is simplest?",
+   "Attach the registry with az aks update --attach-acr",
+   [
+    "Make every Pod run as privileged",
+    "Open port 443 in the AKS NSG to ACR only",
+    "Rebuild the images with a public base"
+   ],
+   "--attach-acr grants the cluster's kubelet identity the AcrPull role on the registry, so nodes can pull images."
+  ],
+  [
+   "In AKS, what is the purpose of a system node pool?",
+   "Hosting critical system Pods like CoreDNS",
+   [
+    "Running only GPU workloads",
+    "Storing etcd data for the cluster",
+    "Holding Windows nodes only"
+   ],
+   "System pools run critical add-ons, and user pools run application workloads. The control plane is managed by Azure, not hosted in your pools."
+  ],
+  [
+   "An app appends log lines to a single file in Azure Storage. Which blob type fits this pattern?",
+   "Append blob",
+   [
+    "Block blob",
+    "Page blob",
+    "Archive blob"
+   ],
+   "Append blobs are optimized for append-only writes like logs. Page blobs back random-access disks; Archive is a tier, not a blob type."
+  ],
+  [
+   "A blob in the Archive access tier must be read. What has to happen first?",
+   "It must be rehydrated to an online tier",
+   [
+    "It can be read directly but slowly",
+    "It must be copied to another account",
+    "It must be snapshotted first"
+   ],
+   "Archive blobs are offline. You rehydrate them to an online tier such as Hot or Cool, which can take hours, before reading."
+  ],
+  [
+   "A partner needs to upload files into one container for 24 hours without an Azure account. What do you give them?",
+   "A SAS token scoped to the container",
+   [
+    "The storage account key",
+    "An Owner role on the subscription",
+    "A public anonymous container"
+   ],
+   "A shared access signature grants limited, time-bound permissions. The account key gives full access to everything in the account."
+  ],
+  [
+   "How many IP addresses does Azure reserve in each virtual network subnet?",
+   "5",
+   [
+    "2",
+    "3",
+    "4"
+   ],
+   "Azure reserves the network address, the broadcast address and three addresses for gateway and DNS, so a /24 offers 251 usable addresses."
+  ],
+  [
+   "VNet A is peered with B, and B is peered with C. Can VMs in A reach VMs in C through these peerings alone?",
+   "No, VNet peering is not transitive",
+   [
+    "Yes, peering is transitive by default",
+    "Yes, if all three are in one region",
+    "Only if C uses a public IP prefix"
+   ],
+   "Peering connects exactly two VNets. To connect A and C, peer them directly or route through a hub with a gateway or firewall."
+  ],
+  [
+   "Two NSG rules match the same traffic: priority 100 denies it and priority 200 allows it. What happens?",
+   "It is denied, because lower numbers are processed first",
+   [
+    "It is allowed, because allow wins over deny",
+    "It is allowed, because higher numbers win",
+    "Both rules are merged and logged"
+   ],
+   "NSG rules are evaluated in priority order from the lowest number, and processing stops at the first match."
+  ],
+  [
+   "An Azure Functions timer trigger uses the schedule 0 */5 * * * *. How often does it run?",
+   "Every 5 minutes",
+   [
+    "Every 5 seconds",
+    "Every 5 hours",
+    "At 5 past each hour"
+   ],
+   "Function timers use NCRONTAB with six fields, starting with seconds. Second 0 of every fifth minute means every 5 minutes."
+  ],
+  [
+   "You need a long-running, stateful workflow that chains several Azure Functions and waits for a human approval. Which extension fits?",
+   "Durable Functions",
+   [
+    "Function proxies",
+    "Application Insights",
+    "Azure Functions Core Tools"
+   ],
+   "Durable Functions provides orchestrator functions that keep state across steps and can wait for external events."
+  ],
+  [
+   "What was Microsoft Entra ID called before its 2023 rename?",
+   "Azure Active Directory",
+   [
+    "Azure Identity Services",
+    "Windows Live ID",
+    "Active Directory Federation Services"
+   ],
+   "Microsoft renamed Azure AD to Microsoft Entra ID in 2023. AD FS is a separate on-premises federation product."
+  ],
+  [
+   "An App Service must read secrets from Key Vault without storing any credentials. Which Entra ID feature fits?",
+   "A managed identity for the app",
+   [
+    "An app password in app settings",
+    "A guest user invitation",
+    "A Conditional Access policy"
+   ],
+   "A managed identity gives the app an Entra ID identity whose tokens Azure handles, so you grant it Key Vault access without secrets in config."
+  ]
+ ],
+ "nebius-cloud": [
+  [
+   "In a managed Kubernetes service such as Nebius Managed Kubernetes, what does the provider operate for you?",
+   "The control plane, including the API server and etcd",
+   [
+    "Your application Deployments and Services",
+    "Your container images and registries",
+    "Your Helm releases and their values"
+   ],
+   "Managed Kubernetes means the provider runs and updates the control plane. You still define node groups and all workloads."
+  ],
+  [
+   "A training Pod on a managed Kubernetes GPU node group must get one GPU. What does its container spec need?",
+   "resources.limits with nvidia.com/gpu: 1",
+   [
+    "a nodeName of the GPU node",
+    "an env var GPU=1",
+    "privileged: true and hostNetwork"
+   ],
+   "GPUs are exposed by the NVIDIA device plugin as the extended resource nvidia.com/gpu, which the scheduler counts like CPU or memory."
+  ],
+  [
+   "On a Kubernetes cluster with GPU nodes, which component typically installs drivers, the device plugin and GPU monitoring for you?",
+   "The NVIDIA GPU Operator",
+   [
+    "The Cluster Autoscaler",
+    "The CoreDNS add-on",
+    "The Ingress controller"
+   ],
+   "The GPU Operator manages the NVIDIA software stack on nodes, including drivers, the container toolkit, the device plugin and DCGM metrics."
+  ],
+  [
+   "GPU nodes are tainted so regular Pods do not land on them. What must a GPU workload add to be scheduled there?",
+   "A matching toleration",
+   [
+    "A higher PriorityClass only",
+    "A hostPort mapping",
+    "A PodDisruptionBudget"
+   ],
+   "Taints repel Pods that lack a matching toleration. Teams often add a nodeSelector or affinity as well so GPU Pods go only to GPU nodes."
+  ],
+  [
+   "A managed Kubernetes cluster should add GPU nodes only when training jobs are pending. What do you enable on the GPU node group?",
+   "Node autoscaling with a minimum of zero",
+   [
+    "A Horizontal Pod Autoscaler on CPU",
+    "A fixed node count of eight",
+    "A DaemonSet for each GPU job"
+   ],
+   "The cluster autoscaler adds nodes when Pods cannot be scheduled and removes idle ones. A minimum of zero avoids paying for idle GPUs."
+  ],
+  [
+   "Why are multi-node GPU clusters for large model training connected with InfiniBand instead of only regular Ethernet?",
+   "It gives high bandwidth and low latency for collectives",
+   [
+    "It is required to install CUDA drivers on each node",
+    "It removes the need for large GPU memory per card",
+    "It encrypts all of the traffic between nodes"
+   ],
+   "Distributed training syncs gradients across GPUs with collective operations. InfiniBand with RDMA keeps that communication from becoming the bottleneck."
+  ],
+  [
+   "Which NVIDIA library do PyTorch and similar frameworks use for fast all-reduce between GPUs across nodes?",
+   "NCCL",
+   [
+    "cuDNN",
+    "TensorRT",
+    "cuBLAS"
+   ],
+   "NCCL implements collective communication over NVLink, PCIe and InfiniBand. cuDNN and cuBLAS are compute libraries, and TensorRT is for inference."
+  ],
+  [
+   "After creating a GPU virtual machine, which command quickly confirms that the driver sees the GPUs?",
+   "nvidia-smi",
+   [
+    "lspci --cuda",
+    "nvcc --gpus",
+    "docker info --gpu"
+   ],
+   "nvidia-smi lists GPUs, driver and CUDA version, memory use and running processes. nvcc is the CUDA compiler and does not query devices."
+  ],
+  [
+   "Inside Docker on a GPU VM, a container cannot see the GPUs. With the NVIDIA Container Toolkit installed, which flag fixes it?",
+   "--gpus all",
+   [
+    "--privileged-gpu",
+    "--device-gpu=1",
+    "--runtime=cuda"
+   ],
+   "docker run --gpus all exposes the host GPUs through the NVIDIA Container Toolkit."
+  ],
+  [
+   "Nebius Object Storage is compatible with which API, which lets you use tools like the AWS CLI with a custom endpoint?",
+   "The Amazon S3 API",
+   [
+    "The Azure Blob REST API",
+    "The NFS v4 protocol",
+    "The HDFS API"
+   ],
+   "Because it is S3-compatible, S3 SDKs and tools work after you set the provider's endpoint URL and credentials."
+  ],
+  [
+   "You use the AWS CLI against an S3-compatible bucket at another cloud provider. Which option points it at that provider?",
+   "--endpoint-url set to the provider's URL",
+   [
+    "--region set to the value global",
+    "--provider set to the cloud's name",
+    "--profile set to s3-compatible"
+   ],
+   "The AWS CLI talks to AWS by default. --endpoint-url (or endpoint_url in the config) redirects requests to another S3-compatible service."
+  ],
+  [
+   "A training job saves large checkpoints that must survive node failures and be reused by later jobs. Where should they go?",
+   "Object storage or a shared network filesystem",
+   [
+    "The local boot disk of the training VM",
+    "A ConfigMap inside the Kubernetes cluster",
+    "GPU memory, kept warm between runs"
+   ],
+   "Local disks disappear with the node, and ConfigMaps are limited to about 1 MiB. Durable shared storage keeps checkpoints available."
+  ],
+  [
+   "An object storage bucket holds a private dataset. What is the safest way to let one training service read it?",
+   "A service account with read-only access to that bucket",
+   [
+    "Making the bucket public for the training period",
+    "Sharing your personal access keys",
+    "Giving the service admin rights on the project"
+   ],
+   "Least privilege means a dedicated identity with only the read permission it needs, which can be revoked without affecting people."
+  ],
+  [
+   "Training code in CI must call the cloud API automatically. Which identity fits best?",
+   "A service account with only the roles it needs",
+   [
+    "The team lead's personal account",
+    "A shared admin user for all pipelines",
+    "An anonymous public endpoint"
+   ],
+   "Service accounts are meant for automation, and scoping their roles limits damage if credentials leak."
+  ],
+  [
+   "A GPU VM runs a Jupyter server. What is the safest way to reach it from your laptop?",
+   "An SSH tunnel, with the Jupyter port closed",
+   [
+    "Opening port 8888 to 0.0.0.0/0 for access",
+    "Disabling the Jupyter token for faster login",
+    "Giving the VM a second public IP for Jupyter"
+   ],
+   "Port forwarding over SSH keeps the notebook off the public internet. Exposing an open Jupyter port lets anyone run code on your GPU machine."
+  ],
+  [
+   "A team wants to stop people from storing cloud access keys in a Git repository. Which practice helps most?",
+   "Store keys in a secrets manager, inject at runtime",
+   [
+    "Commit the keys, but only to a private repository",
+    "Encode the keys in base64 inside the source code",
+    "Rotate the keys once a year and keep them in Git"
+   ],
+   "Secrets managers or CI secret stores keep keys out of history. Base64 is not encryption, and private repos still leak."
+  ],
+  [
+   "When you create a Linux compute instance on a cloud like Nebius, how do you usually get SSH access to it?",
+   "Pass your public SSH key at creation, via cloud-init",
+   [
+    "Upload your private SSH key to the new VM",
+    "Use the default root password from the docs",
+    "Open port 22 and log in with a password"
+   ],
+   "The cloud injects your public key into the instance. The private key never leaves your machine."
+  ],
+  [
+   "Your PyTorch training script will run on a fresh GPU VM. What saves the most setup time?",
+   "A boot image with GPU drivers and CUDA preinstalled",
+   [
+    "A generic minimal OS image",
+    "Installing drivers inside every container",
+    "Compiling the kernel on first boot"
+   ],
+   "GPU cloud providers offer images with drivers and CUDA ready, so the VM can run GPU workloads right after boot."
+  ],
+  [
+   "A VM's boot disk is deleted when the VM is deleted, but you need a dataset to outlive it. What do you attach?",
+   "A separate data disk kept on VM deletion",
+   [
+    "More vCPUs added to the same instance",
+    "A larger swap file on the boot disk",
+    "A second network interface on the VM"
+   ],
+   "A separate data disk has its own lifecycle and can be detached and attached to a new VM later."
+  ],
+  [
+   "An 8-GPU instance sits idle overnight between experiments. What is the simplest way to cut its cost without losing its disk?",
+   "Stop it, and start it again when needed",
+   [
+    "Lower its vCPU count while it keeps running",
+    "Delete its boot disk but keep the VM",
+    "Move it into a different project overnight"
+   ],
+   "On most clouds a stopped VM is not billed for compute, while its disks are kept (and billed as storage)."
+  ]
+ ],
+ "cloudflare": [
+  [
+   "A DNS record in Cloudflare shows the orange cloud (Proxied). What does that mean?",
+   "Traffic passes through Cloudflare, hiding the origin IP",
+   [
+    "Cloudflare only answers DNS queries for the record",
+    "The record stays disabled until it is verified",
+    "Email sent to the domain is filtered for spam"
+   ],
+   "Proxied records resolve to Cloudflare IPs, so Cloudflare can cache, protect and terminate TLS. DNS only (grey cloud) returns the origin IP."
+  ],
+  [
+   "Which DNS record type cannot be proxied through Cloudflare?",
+   "MX",
+   [
+    "A",
+    "AAAA",
+    "CNAME"
+   ],
+   "Only A, AAAA and CNAME records that serve HTTP traffic can be proxied. MX and TXT records are always DNS only."
+  ],
+  [
+   "You want the root domain example.com to point at a hostname such as myapp.example.net. Which Cloudflare feature makes this possible?",
+   "CNAME flattening",
+   [
+    "DNSSEC",
+    "Argo Smart Routing",
+    "Load Balancing pools"
+   ],
+   "A CNAME at the apex conflicts with standard DNS rules. Cloudflare flattens it by answering with the target's IP addresses instead."
+  ],
+  [
+   "Which record type would you add to prove domain ownership to a third-party service or to publish SPF?",
+   "TXT",
+   [
+    "MX",
+    "SRV",
+    "PTR"
+   ],
+   "TXT records hold arbitrary text such as verification tokens and SPF policies."
+  ],
+  [
+   "With default settings, which response does Cloudflare's CDN cache?",
+   "Static files like .css, .js and images",
+   [
+    "Every HTML page on the whole site",
+    "All JSON responses from your API",
+    "Responses to POST form submissions"
+   ],
+   "By default Cloudflare caches based on file extension for static assets. HTML is not cached unless a rule tells it to."
+  ],
+  [
+   "A response header shows cf-cache-status: DYNAMIC. What does it mean?",
+   "The asset was not eligible for caching",
+   [
+    "The asset was served from the cache",
+    "The cache entry for it had expired",
+    "The origin server was down at the time"
+   ],
+   "DYNAMIC means Cloudflare did not consider the asset cacheable, for example HTML under default settings. HIT means served from cache."
+  ],
+  [
+   "You deployed new CSS, but visitors still get the old file from Cloudflare. What fixes it right away?",
+   "Purge the cached file or the whole cache",
+   [
+    "Switch the record to DNS only for a day",
+    "Enable DNSSEC on the zone",
+    "Lower the DNS TTL to 60 seconds"
+   ],
+   "Purging removes cached copies so the next request fetches the new file. Versioned file names avoid this in the future."
+  ],
+  [
+   "Your origin sends Cache-Control: private for a user dashboard. What does Cloudflare do with it?",
+   "It does not cache the response",
+   [
+    "It caches it for one hour",
+    "It caches it per visitor IP",
+    "It caches it but hides it from search"
+   ],
+   "private tells shared caches like CDNs not to store the response. Only the user's browser may cache it."
+  ],
+  [
+   "Where does Cloudflare Workers code run?",
+   "On Cloudflare's edge network in V8 isolates",
+   [
+    "In a container on your origin server",
+    "In the visitor's browser tab",
+    "On one central VM per account"
+   ],
+   "Workers run close to users across Cloudflare's data centers. V8 isolates start much faster than containers."
+  ],
+  [
+   "Which module Worker skeleton handles incoming HTTP requests?",
+   "export default { async fetch(request, env, ctx) { } }",
+   [
+    "export default { async handle(req, res) { } }",
+    "module.exports = (req, res) => { }",
+    "export function main(event, context) { }"
+   ],
+   "Module Workers export an object with a fetch handler that returns a Response. env holds bindings, and ctx exposes waitUntil."
+  ],
+  [
+   "Which command-line tool is used to develop and deploy Cloudflare Workers?",
+   "wrangler",
+   [
+    "cfctl",
+    "workerd-cli",
+    "flarectl deploy"
+   ],
+   "wrangler runs local dev with wrangler dev and publishes with wrangler deploy."
+  ],
+  [
+   "A Worker returns a response but must also send analytics to another API without delaying the user. Which call fits?",
+   "ctx.waitUntil(sendAnalytics())",
+   [
+    "await sendAnalytics() before returning",
+    "setTimeout(sendAnalytics, 0)",
+    "process.nextTick(sendAnalytics)"
+   ],
+   "waitUntil keeps the Worker alive for background work after the response is sent. Awaiting first delays the response."
+  ],
+  [
+   "Your Worker needs a counter that is strongly consistent across all users worldwide. Which product fits better than Workers KV?",
+   "Durable Objects",
+   [
+    "Workers Sites",
+    "Cache API",
+    "Workers KV with a shorter TTL"
+   ],
+   "KV is eventually consistent and optimized for reads. Durable Objects give a single, strongly consistent place for state."
+  ],
+  [
+   "Attackers hit your site through Cloudflare, then switch to attacking the origin IP directly. What is the best fix on the origin?",
+   "Accept web traffic only from Cloudflare IPs",
+   [
+    "Enable Under Attack Mode on the zone",
+    "Lower the DNS TTL of the origin A record",
+    "Add more Page Rules for the domain"
+   ],
+   "Cloudflare only protects traffic that passes through it. Locking the origin firewall to Cloudflare's ranges (or using Cloudflare Tunnel) blocks direct attacks."
+  ],
+  [
+   "What does Cloudflare's I'm Under Attack mode do for visitors?",
+   "Shows a browser check page before the site",
+   [
+    "Blocks every visitor outside your country",
+    "Turns off caching for the entire zone",
+    "Redirects all traffic to a status page"
+   ],
+   "It adds a JavaScript challenge to filter out bots during a layer 7 attack, at the cost of a short delay for real visitors."
+  ],
+  [
+   "SSL/TLS mode is Flexible, and the origin redirects HTTP to HTTPS. What do visitors see?",
+   "A redirect loop (too many redirects)",
+   [
+    "A valid page over HTTPS",
+    "A certificate name mismatch error",
+    "A 521 origin down error"
+   ],
+   "Flexible connects to the origin over plain HTTP. The origin redirects to HTTPS, Cloudflare requests HTTP again, and the loop repeats. Full or Full (strict) fixes it."
+  ],
+  [
+   "What is the difference between Full and Full (strict) SSL/TLS modes?",
+   "Strict also validates the origin certificate",
+   [
+    "Strict uses HTTP/3 to the origin",
+    "Full encrypts only the visitor side",
+    "Strict disables TLS 1.2 for visitors"
+   ],
+   "Both encrypt Cloudflare-to-origin traffic. Full accepts any certificate, including self-signed; Full (strict) requires a valid, trusted one such as a Cloudflare Origin CA cert."
+  ],
+  [
+   "Two Page Rules match the same URL. How does Cloudflare apply them?",
+   "Only the highest-priority match is applied",
+   [
+    "All of the matching rules are merged",
+    "The most recently created rule wins",
+    "The rule with the most settings wins"
+   ],
+   "Page Rules are evaluated in priority order and only the first match takes effect. Newer Rules products such as Cache Rules and Redirect Rules are replacing them."
+  ],
+  [
+   "A Page Rule forwards example.com/blog/* to https://blog.example.com/$1. Where does example.com/blog/post-1 go?",
+   "https://blog.example.com/post-1",
+   [
+    "https://blog.example.com/blog/post-1",
+    "https://blog.example.com/$1",
+    "https://blog.example.com/"
+   ],
+   "$1 is replaced with the text matched by the first * wildcard, which here is post-1."
+  ],
+  [
+   "Bots hammer your /login endpoint. Which Cloudflare WAF feature directly limits requests per IP to that path?",
+   "A rate limiting rule matching the /login path",
+   [
+    "A managed OWASP ruleset in log mode",
+    "A DNS-only record for the domain",
+    "Browser Cache TTL set to one year"
+   ],
+   "Rate limiting rules count requests matching an expression, such as http.request.uri.path eq \"/login\", and block or challenge clients above the threshold."
+  ]
+ ],
+ "vercel": [
+  [
+   "In a Vercel project without a framework, where do you put files so each becomes a serverless function?",
+   "In the api/ directory at the root",
+   [
+    "In a functions/ directory at the root",
+    "In public/api/ next to static files",
+    "In a vercel/functions/ directory"
+   ],
+   "Files such as api/hello.js become endpoints like /api/hello. Frameworks like Next.js use their own conventions."
+  ],
+  [
+   "A Vercel serverless function writes uploaded files to a local folder and expects them on the next request. What goes wrong?",
+   "The local filesystem does not persist between calls",
+   [
+    "Vercel blocks every write to the disk at runtime",
+    "Files are copied to all regions instantly",
+    "The function is converted into an edge function"
+   ],
+   "Functions are stateless, and only temporary scratch space like /tmp is writable. Persistent data belongs in a database or object storage."
+  ],
+  [
+   "Which signature is the classic Node.js handler for api/hello.js on Vercel?",
+   "export default function handler(req, res) { }",
+   [
+    "exports.main = (event, context) => { }",
+    "export async function onRequest(context) { }",
+    "addEventListener('fetch', handler)"
+   ],
+   "The Node.js runtime passes request and response objects similar to Express. The other forms belong to AWS Lambda, Cloudflare Pages and service workers."
+  ],
+  [
+   "In a Next.js 15 project on Vercel, where does Middleware live?",
+   "In a middleware file at the project root or in src",
+   [
+    "In pages/_middleware.js inside each folder",
+    "In vercel.json under middleware",
+    "In api/middleware.js"
+   ],
+   "Next.js expects middleware.ts (or .js) at the root or in src, and its matcher config limits which paths it runs on. Next.js 16 renamed this file to proxy."
+  ],
+  [
+   "When does Vercel Middleware run relative to the cache?",
+   "Before the cache, on each matched request",
+   [
+    "After the response has been cached",
+    "Only when the cache has a miss",
+    "Only once, during the build step"
+   ],
+   "Middleware runs before routing and caching, so it suits redirects, auth checks and rewrites, but slow code delays every request."
+  ],
+  [
+   "Middleware should show /maintenance content while the browser URL stays the same. Which call fits?",
+   "NextResponse.rewrite(new URL('/maintenance', req.url))",
+   [
+    "NextResponse.redirect(new URL('/maintenance', req.url))",
+    "NextResponse.next({ path: '/maintenance' })",
+    "Response.json({ path: '/maintenance' })"
+   ],
+   "rewrite serves another path's content under the original URL. redirect sends the browser to the new URL, changing the address bar."
+  ],
+  [
+   "Code using fs.readFileSync fails when moved to the Edge runtime. Why?",
+   "The Edge runtime lacks Node.js APIs like fs",
+   [
+    "The Edge runtime only supports Python code",
+    "Using fs requires a paid Vercel plan",
+    "The file must be base64-encoded first"
+   ],
+   "The Edge runtime is built on Web APIs like fetch and Request. Node-only modules such as fs are not available."
+  ],
+  [
+   "You push a commit to branch feature/login in a repository connected to Vercel. What happens by default?",
+   "A preview deployment with its own URL",
+   [
+    "Production is updated immediately",
+    "Nothing until you run vercel --prod",
+    "The branch is merged into main for you"
+   ],
+   "Every push to a non-production branch gets a preview deployment, and pull requests show its link."
+  ],
+  [
+   "Which pushes trigger a production deployment in a default Git-connected Vercel project?",
+   "Pushes to the production branch, usually main",
+   [
+    "Pushes to any branch with a tag",
+    "Only manual deploys from the dashboard",
+    "Pushes to a branch named production only"
+   ],
+   "The production branch is set in project settings and defaults to the repository's main branch."
+  ],
+  [
+   "An API key should be available in preview deployments but differ from the production key. How do you set it up?",
+   "Add it twice, scoped to Preview and Production",
+   [
+    "Commit two separate .env files to the repo",
+    "Use one variable and check the URL in code",
+    "Store both values in vercel.json under env"
+   ],
+   "Vercel environment variables are scoped to Production, Preview and Development, and can even target specific preview branches."
+  ],
+  [
+   "You changed an environment variable in the Vercel dashboard, but the live site still uses the old value. Why?",
+   "Variable changes apply only to new deployments",
+   [
+    "The variable needs a VERCEL_ prefix",
+    "Variables update only at midnight UTC",
+    "The browser cached the variable"
+   ],
+   "Values are captured at build and deploy time. Redeploy to pick up the change."
+  ],
+  [
+   "A Vite app on Vercel reads import.meta.env.API_URL in the browser, but it is undefined. What fixes it?",
+   "Rename the variable to VITE_API_URL",
+   [
+    "Mark the variable as sensitive",
+    "Move it to the Development scope",
+    "Read it with process.env.API_URL"
+   ],
+   "Vite only exposes variables prefixed with VITE_ to client code. Never put secrets in such variables, since they ship to the browser."
+  ],
+  [
+   "Which Vercel CLI command downloads the Development environment variables into a local file?",
+   "vercel env pull .env.local",
+   [
+    "vercel env export .env.local",
+    "vercel secrets get --all",
+    "vercel dev --sync-env"
+   ],
+   "vercel env pull writes the project's variables for the chosen environment, Development by default, to a local env file."
+  ],
+  [
+   "A build fails because of a corrupted dependency cache. Which CLI option deploys while skipping the build cache?",
+   "vercel --force",
+   [
+    "vercel --clean",
+    "vercel --no-cache-ever",
+    "vercel --fresh-install"
+   ],
+   "vercel --force creates a new deployment without the build cache. The dashboard offers the same option when you redeploy."
+  ],
+  [
+   "Why do repeat builds on Vercel usually finish faster than the first one?",
+   "Dependencies and framework caches are reused",
+   [
+    "Later builds always use larger machines",
+    "Later builds run on the client's machine",
+    "The second build reuses the old output as-is"
+   ],
+   "Vercel restores cached installs and framework build caches, such as Next.js's .next/cache, between deployments."
+  ],
+  [
+   "In a Turborepo monorepo on Vercel, what lets unchanged packages skip rebuilding across deployments?",
+   "Remote Caching of task outputs",
+   [
+    "Preview deployment protection",
+    "Edge Config storage",
+    "A larger function memory size"
+   ],
+   "Turborepo hashes task inputs and reuses cached outputs from Vercel Remote Cache when nothing changed."
+  ],
+  [
+   "You add www.example.com to a Vercel project but keep your current DNS provider. Which record do you usually create?",
+   "A CNAME record to the target Vercel shows",
+   [
+    "An MX record pointing to Vercel servers",
+    "A TXT record containing your project name",
+    "An NS record delegating the www label"
+   ],
+   "Subdomains are usually connected with a CNAME to the value in the Vercel domain settings. Apex domains use an A record or Vercel nameservers."
+  ],
+  [
+   "After you add and verify a domain in Vercel, how is the HTTPS certificate handled?",
+   "Vercel issues and renews it automatically",
+   [
+    "You must upload a certificate yearly",
+    "HTTPS needs a separate CDN in front",
+    "It works only on vercel.app subdomains"
+   ],
+   "Vercel provisions and renews TLS certificates for verified domains automatically."
+  ],
+  [
+   "Your single-page app on Vercel returns 404 when users refresh a client-side route like /profile. Which vercel.json setting fixes it?",
+   "A rewrite from /(.*) to /index.html",
+   [
+    "A redirect from /(.*) to /",
+    "A header rule adding Cache-Control",
+    "A cleanUrls setting set to false"
+   ],
+   "The rewrite serves index.html for unknown paths while keeping the URL, so the client router can render the route. A redirect would lose the path."
+  ],
+  [
+   "A bad release is live in production. What is the fastest way on Vercel to restore the previous version without rebuilding?",
+   "Instant Rollback to an earlier production build",
+   [
+    "Revert the commit and wait for a new build",
+    "Delete the project and deploy it again",
+    "Rename the production branch in settings"
+   ],
+   "Instant Rollback points production domains back to an earlier deployment that is already built, so it takes effect quickly."
+  ]
+ ]
+}

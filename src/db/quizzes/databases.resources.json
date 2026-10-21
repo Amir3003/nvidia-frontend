@@ -1,0 +1,54 @@
+{
+ "postgresql": [
+  "PostgreSQL Documentation",
+  "https://www.postgresql.org/docs/current/"
+ ],
+ "mysql": [
+  "MySQL Reference Manual",
+  "https://dev.mysql.com/doc/refman/8.0/en/"
+ ],
+ "sqlite": [
+  "SQLite Documentation",
+  "https://www.sqlite.org/docs.html"
+ ],
+ "mongodb": [
+  "MongoDB Manual",
+  "https://www.mongodb.com/docs/manual/"
+ ],
+ "redis": [
+  "Redis Documentation",
+  "https://redis.io/docs/latest/"
+ ],
+ "cassandra": [
+  "Apache Cassandra Documentation",
+  "https://cassandra.apache.org/doc/latest/"
+ ],
+ "clickhouse": [
+  "ClickHouse Docs",
+  "https://clickhouse.com/docs"
+ ],
+ "duckdb": [
+  "DuckDB Documentation",
+  "https://duckdb.org/docs/"
+ ],
+ "snowflake": [
+  "Snowflake Documentation",
+  "https://docs.snowflake.com/"
+ ],
+ "bigquery": [
+  "BigQuery Documentation",
+  "https://cloud.google.com/bigquery/docs"
+ ],
+ "elasticsearch": [
+  "Elasticsearch Reference",
+  "https://www.elastic.co/docs/reference/elasticsearch"
+ ],
+ "supabase": [
+  "Supabase Docs",
+  "https://supabase.com/docs"
+ ],
+ "firebase": [
+  "Firebase Documentation",
+  "https://firebase.google.com/docs"
+ ]
+}

@@ -1,0 +1,34 @@
+{
+ "ros": [
+  "ROS Wiki: ROS Tutorials",
+  "https://wiki.ros.org/ROS/Tutorials"
+ ],
+ "isaac-sim": [
+  "NVIDIA Isaac Sim Documentation",
+  "https://docs.isaacsim.omniverse.nvidia.com/latest/index.html"
+ ],
+ "gazebo": [
+  "Gazebo Documentation",
+  "https://gazebosim.org/docs"
+ ],
+ "mujoco": [
+  "MuJoCo Documentation",
+  "https://mujoco.readthedocs.io/en/stable/"
+ ],
+ "pybullet": [
+  "PyBullet Quickstart Guide",
+  "https://docs.google.com/document/d/10sXEhzFRSnvFcl3XxNGhnD4N2SedqwdAvK3dsihxVUA"
+ ],
+ "omniverse": [
+  "NVIDIA Omniverse Documentation",
+  "https://docs.omniverse.nvidia.com/"
+ ],
+ "slam": [
+  "MathWorks: What Is SLAM?",
+  "https://www.mathworks.com/discovery/slam.html"
+ ],
+ "motion-planning": [
+  "Planning Algorithms by Steven M. LaValle (free book)",
+  "https://lavalle.pl/planning/"
+ ]
+}

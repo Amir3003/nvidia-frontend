@@ -1,0 +1,1820 @@
+{
+ "nodejs": [
+  [
+   "In a Node.js CommonJS script, what is printed by: setTimeout(() => console.log('A'), 0); Promise.resolve().then(() => console.log('B')); console.log('C');",
+   "C, B, A",
+   [
+    "A, B, C",
+    "C, A, B",
+    "B, C, A"
+   ],
+   "Synchronous code runs first, then the microtask queue (the promise callback), and only then the timers phase of the event loop runs the setTimeout callback."
+  ],
+  [
+   "In a Node.js CommonJS script, what is printed by: Promise.resolve().then(() => console.log('promise')); process.nextTick(() => console.log('tick'));",
+   "tick, then promise",
+   [
+    "promise, then tick",
+    "Only tick is printed",
+    "The order is random on each run"
+   ],
+   "Node.js drains the process.nextTick queue before the promise microtask queue, so tick is printed first even though it was scheduled second."
+  ],
+  [
+   "Inside an fs.readFile callback you call setTimeout(cb1, 0) and setImmediate(cb2). Which runs first in Node.js?",
+   "cb2, because the check phase follows the poll phase",
+   [
+    "cb1, because timers always run before anything else",
+    "The order is unpredictable inside I/O callbacks",
+    "Both run at the same time on different threads"
+   ],
+   "I/O callbacks run in the poll phase; the next phase is check (setImmediate), and timers only run on the following loop iteration, so cb2 is guaranteed to run first."
+  ],
+  [
+   "Which phase of the Node.js event loop executes setImmediate() callbacks?",
+   "The check phase",
+   [
+    "The timers phase",
+    "The close callbacks phase",
+    "The pending callbacks phase"
+   ],
+   "setImmediate callbacks are queued for the check phase, which runs right after the poll phase."
+  ],
+  [
+   "What does it mean that Node.js uses non-blocking I/O?",
+   "The main thread starts an I/O operation and keeps running other code until a callback reports the result",
+   [
+    "Each incoming request is handled by its own dedicated operating system thread",
+    "I/O calls run on the main thread but are given a higher priority",
+    "JavaScript code is paused while the disk or network is busy"
+   ],
+   "Node.js delegates I/O to the OS or libuv and continues executing; results come back later as events processed by the event loop."
+  ],
+  [
+   "Which of these Node.js operations is executed on the libuv thread pool?",
+   "crypto.pbkdf2()",
+   [
+    "setTimeout()",
+    "process.nextTick()",
+    "Promise.resolve()"
+   ],
+   "File system operations, dns.lookup, some crypto functions such as pbkdf2, and zlib use the libuv thread pool. Timers and microtasks are handled on the main thread."
+  ],
+  [
+   "Which environment variable changes the size of the libuv thread pool used by Node.js (default 4)?",
+   "UV_THREADPOOL_SIZE",
+   [
+    "NODE_THREADPOOL_SIZE",
+    "LIBUV_MAX_THREADS",
+    "NODE_WORKER_COUNT"
+   ],
+   "libuv reads UV_THREADPOOL_SIZE when the pool is first used; it must be set before the pool starts, usually in the environment."
+  ],
+  [
+   "An Express route on Node.js runs a CPU-heavy synchronous loop for 5 seconds. What happens to other incoming requests during those 5 seconds?",
+   "They wait, because the event loop is blocked",
+   [
+    "They are served by another thread automatically",
+    "They are rejected with HTTP 503 by Node.js",
+    "They run in parallel thanks to non-blocking I/O"
+   ],
+   "JavaScript runs on a single main thread. Synchronous CPU work blocks the event loop, so no other callbacks or requests are processed until it finishes."
+  ],
+  [
+   "In Node.js, what does Buffer.from('café').length return?",
+   "5",
+   [
+    "4",
+    "8",
+    "6"
+   ],
+   "Buffer.from uses UTF-8 by default. The letters c, a and f take one byte each, and é takes two bytes, so the buffer is 5 bytes long while the string has 4 characters."
+  ],
+  [
+   "What is the key difference between Buffer.alloc(10) and Buffer.allocUnsafe(10) in Node.js?",
+   "allocUnsafe does not zero-fill memory, so it may contain old data",
+   [
+    "allocUnsafe creates a buffer that cannot be resized later",
+    "alloc returns a Promise while allocUnsafe is synchronous",
+    "allocUnsafe skips bounds checking when writing bytes"
+   ],
+   "Buffer.alloc fills the memory with zeros. allocUnsafe is faster but returns uninitialized memory, so it must be fully overwritten before being exposed."
+  ],
+  [
+   "Which Node.js stream type should you implement to compress data as it flows through, like zlib.createGzip() does?",
+   "Transform",
+   [
+    "Readable",
+    "Writable",
+    "PassThrough"
+   ],
+   "A Transform stream is a Duplex stream whose output is computed from its input. PassThrough is a Transform that does not change the data at all."
+  ],
+  [
+   "In Node.js, writable.write(chunk) returns false. What should well-behaved code do?",
+   "Stop writing until the stream emits 'drain'",
+   [
+    "Retry the same chunk immediately in a loop",
+    "Call writable.end() because the stream failed",
+    "Ignore it, the return value is informational only"
+   ],
+   "A false return means the internal buffer is above highWaterMark. Waiting for 'drain' is how backpressure is respected and memory use stays bounded."
+  ],
+  [
+   "Why is stream.pipeline() preferred over chaining a.pipe(b).pipe(c) in Node.js?",
+   "It forwards errors and destroys all streams on failure",
+   [
+    "It is the only way to connect more than two streams",
+    "It converts all streams to object mode",
+    "It runs each stream on a separate worker thread"
+   ],
+   ".pipe() does not propagate errors between streams, which can leak file descriptors. pipeline() handles errors and cleanup and accepts a final callback or returns a promise."
+  ],
+  [
+   "What happens when a Node.js EventEmitter emits an 'error' event and no 'error' listener is registered?",
+   "The error is thrown, which crashes the process if uncaught",
+   [
+    "The event is silently ignored",
+    "The error is logged and execution continues",
+    "The emitter retries the event once"
+   ],
+   "'error' is special: without a listener, emit('error') throws the error. Always attach an 'error' listener to emitters such as streams and sockets."
+  ],
+  [
+   "In Node.js, what is printed by: const e = new EventEmitter(); e.once('x', () => console.log('hi')); e.emit('x'); e.emit('x');",
+   "hi once",
+   [
+    "hi twice",
+    "Nothing",
+    "An error on the second emit"
+   ],
+   "A listener added with once() is removed right before it is invoked the first time, so the second emit has no listeners."
+  ],
+  [
+   "In Node.js, what is printed by: e.on('a', () => console.log(1)); e.emit('a'); console.log(2); where e is an EventEmitter?",
+   "1, then 2",
+   [
+    "2, then 1",
+    "Only 2",
+    "1 and 2 in random order"
+   ],
+   "EventEmitter.emit() calls listeners synchronously in the order they were registered, so the listener runs before the next line."
+  ],
+  [
+   "Your Node.js service must resize images (CPU-heavy) without blocking request handling. Which built-in module fits best?",
+   "worker_threads",
+   [
+    "cluster with one process",
+    "events",
+    "async_hooks"
+   ],
+   "worker_threads runs JavaScript in parallel threads, keeping the main event loop free. async_hooks only tracks async resources and does not add parallelism."
+  ],
+  [
+   "Two Node.js worker threads need to read and write the same memory without copying it. What should they use?",
+   "A SharedArrayBuffer passed via postMessage",
+   [
+    "A regular object passed via postMessage",
+    "A global variable defined in the main thread",
+    "A JSON string sent with process.send()"
+   ],
+   "postMessage normally clones data, so each side gets its own copy. A SharedArrayBuffer is shared, and Atomics can coordinate access to it."
+  ],
+  [
+   "Inside a Node.js ES module (.mjs file), which identifier is NOT defined by default?",
+   "__dirname",
+   [
+    "import.meta",
+    "globalThis",
+    "process"
+   ],
+   "CommonJS wrapper variables such as __dirname, __filename and require do not exist in ESM. Use import.meta.url, or import.meta.dirname in recent Node.js versions."
+  ],
+  [
+   "A Node.js ES module runs: import pkg from './legacy.cjs'; where legacy.cjs sets module.exports = { a: 1 }. What is pkg?",
+   "The object { a: 1 }",
+   [
+    "undefined",
+    "A Promise resolving to { a: 1 }",
+    "An object { default: { a: 1 } } nested twice"
+   ],
+   "When ESM imports CommonJS, the default export is the value of module.exports, so pkg is { a: 1 }."
+  ]
+ ],
+ "express": [
+  [
+   "How does Express recognize a middleware function as error-handling middleware?",
+   "It has four parameters: (err, req, res, next)",
+   [
+    "It is registered with app.error() instead of app.use()",
+    "Its name starts with the word error",
+    "It returns a rejected Promise"
+   ],
+   "Express checks the function's arity. Only functions with exactly four parameters are treated as error handlers, so keep next even if unused."
+  ],
+  [
+   "An Express middleware neither sends a response nor calls next(). What does the client experience?",
+   "The request hangs until it times out",
+   [
+    "Express sends 404 automatically",
+    "Express sends an empty 200 response",
+    "The next middleware runs anyway"
+   ],
+   "Express only moves forward when next() is called. If the response is never ended, the connection stays open until a client or server timeout."
+  ],
+  [
+   "An Express POST route reads req.body.name, but req.body is undefined even though the client sends JSON with Content-Type application/json. What is the most likely fix?",
+   "Register app.use(express.json()) before the route",
+   [
+    "Read the body from req.params instead",
+    "Add res.json() at the start of the handler",
+    "Change the route from app.post to app.all"
+   ],
+   "Express does not parse bodies by default. express.json() populates req.body, and it must be registered before the routes that need it."
+  ],
+  [
+   "In Express, a route is defined as app.get('/users/:id', handler) and the request is GET /users/42. What is req.params.id?",
+   "The string '42'",
+   [
+    "The number 42",
+    "undefined",
+    "An array ['42']"
+   ],
+   "Route parameters are always strings; convert them yourself, for example with Number(req.params.id)."
+  ],
+  [
+   "In Express, how do you read the value of q from the request GET /search?q=node?",
+   "req.query.q",
+   [
+    "req.params.q",
+    "req.body.q",
+    "req.search.q"
+   ],
+   "Query string values are parsed into req.query. req.params holds named route segments like :id."
+  ],
+  [
+   "In Express, const router = express.Router(); router.get('/users', h); app.use('/api', router); Which path reaches h?",
+   "GET /api/users",
+   [
+    "GET /users",
+    "GET /api",
+    "GET /users/api"
+   ],
+   "A router mounted with app.use('/api', router) prefixes all of its routes with /api."
+  ],
+  [
+   "With app.use(express.static('public')) in Express, at which URL is the file public/css/app.css served?",
+   "/css/app.css",
+   [
+    "/public/css/app.css",
+    "/static/css/app.css",
+    "/app.css"
+   ],
+   "express.static serves files relative to the given folder, and the folder name itself is not part of the URL unless you mount it under a path."
+  ],
+  [
+   "In Express, which line serves the folder public under URLs that start with /assets?",
+   "app.use('/assets', express.static('public'))",
+   [
+    "app.static('/assets', 'public')",
+    "app.get('/assets', express.static('public'))",
+    "express.static('public', '/assets')"
+   ],
+   "Passing a mount path to app.use makes the static middleware handle /assets/* and map the remainder to files inside public."
+  ],
+  [
+   "An Express handler calls res.send('ok') and then res.json({ a: 1 }). What happens?",
+   "An error: headers cannot be set after they are sent",
+   [
+    "The client receives both bodies, one after the other",
+    "The JSON replaces the text response",
+    "The second call is silently ignored"
+   ],
+   "Each request gets exactly one response. After res.send() ends it, the second call throws ERR_HTTP_HEADERS_SENT."
+  ],
+  [
+   "A classic HTML form posts data as application/x-www-form-urlencoded to an Express app. Which middleware fills req.body?",
+   "express.urlencoded({ extended: true })",
+   [
+    "express.json({ strict: false })",
+    "express.text()",
+    "express.raw()"
+   ],
+   "express.urlencoded parses URL-encoded form bodies. express.json only parses bodies whose content type is JSON."
+  ],
+  [
+   "An Express app must accept file uploads sent as multipart/form-data. What is the usual approach?",
+   "Use a multipart parser such as multer",
+   [
+    "Use express.json() with a larger limit",
+    "Use express.urlencoded({ extended: true })",
+    "Read the file from req.query"
+   ],
+   "Express's built-in parsers do not handle multipart bodies. Libraries such as multer or busboy parse them and expose the files."
+  ],
+  [
+   "A frontend on http://localhost:5173 calls an Express API on http://localhost:3000 and the browser reports a CORS error. Where must this be fixed?",
+   "On the API, by sending Access-Control-Allow-Origin",
+   [
+    "In the frontend, by adding mode: 'no-cors' to fetch",
+    "In the browser settings of each user",
+    "On the API, by returning status 200 for errors"
+   ],
+   "CORS is enforced by the browser based on the server's response headers. mode: 'no-cors' only gives an opaque response that the code cannot read."
+  ],
+  [
+   "Which browser request triggers a CORS preflight OPTIONS request to an Express API on another origin?",
+   "fetch POST with Content-Type: application/json",
+   [
+    "fetch GET with no custom headers",
+    "Form POST with application/x-www-form-urlencoded",
+    "HEAD request with no custom headers"
+   ],
+   "application/json is not a CORS-safelisted content type, so the browser sends a preflight. Simple GET, HEAD and form posts skip it."
+  ],
+  [
+   "An Express API uses the cors package with origin: '*' and the frontend sends cookies with credentials: 'include'. Why does the browser block it?",
+   "Wildcard origins are not allowed with credentials",
+   [
+    "Cookies are never sent to other origins",
+    "The cors package does not support cookies",
+    "Express rejects cookies sent from other origins"
+   ],
+   "For credentialed requests the server must echo the specific origin and send Access-Control-Allow-Credentials: true; '*' is rejected by the browser."
+  ],
+  [
+   "In Express 4, an async route handler throws an error after an await. What happens if you do not catch it?",
+   "It becomes an unhandled rejection; error middleware never sees it",
+   [
+    "Express catches it and passes it to error-handling middleware",
+    "Express retries the handler once",
+    "Express responds with 400 Bad Request and logs it"
+   ],
+   "Express 4 does not inspect promises returned by handlers. You must catch and call next(err), use a wrapper, or upgrade to Express 5, which forwards rejections."
+  ],
+  [
+   "Where should error-handling middleware be registered in an Express app?",
+   "After all routes and other middleware",
+   [
+    "Before any routes, right after app is created",
+    "Inside every route handler",
+    "In a separate Express app"
+   ],
+   "Errors passed to next(err) travel forward through the stack, so error handlers must come after the routes that may produce errors."
+  ],
+  [
+   "An Express handler runs res.status(404); and nothing else. What does the client receive?",
+   "Nothing yet; the request hangs",
+   [
+    "A 404 response with an empty body",
+    "A 404 page generated by Express",
+    "A 200 response"
+   ],
+   "res.status() only sets the status code and returns res for chaining. A method like res.send(), res.json() or res.end() must actually send the response."
+  ],
+  [
+   "In Express, an authentication middleware loads the current user. Which object is designed for passing it to later handlers in the same request?",
+   "res.locals",
+   [
+    "app.locals",
+    "req.params",
+    "process.env"
+   ],
+   "res.locals is scoped to a single request. app.locals is shared by the entire application, so per-user data there would leak between requests."
+  ],
+  [
+   "A client posts a 2 MB JSON body to an Express route using express.json() with default options. What happens?",
+   "The request is rejected with 413 Payload Too Large",
+   [
+    "The body is silently truncated to the first 100 kB",
+    "The body is parsed normally",
+    "req.body is set to an empty object"
+   ],
+   "express.json() has a default limit of 100kb. Larger bodies produce a 413 error unless you raise the limit option."
+  ],
+  [
+   "A logging middleware is registered with app.use() after all routes in Express. Why does it never log successful requests?",
+   "Routes that send a response do not call next()",
+   [
+    "Middleware registered after routes is ignored",
+    "app.use() only runs for errors",
+    "Logging requires app.all() instead"
+   ],
+   "Express runs the stack in registration order. Once a route ends the response without calling next(), later middleware is never reached."
+  ]
+ ],
+ "nestjs": [
+  [
+   "In NestJS, a class decorated with @Controller('cats') has a method decorated with @Get(':id'). Which request does it handle?",
+   "GET /cats/:id",
+   [
+    "GET /:id/cats",
+    "GET /cats?id=",
+    "Any method on /cats/:id"
+   ],
+   "The controller prefix and the method path are combined, and @Get restricts the handler to GET requests."
+  ],
+  [
+   "In a NestJS controller, how do you read the id route parameter of GET /users/:id?",
+   "@Param('id') id: string",
+   [
+    "@Query('id') id: string",
+    "@Body('id') id: string",
+    "@Req('id') id: string"
+   ],
+   "@Param extracts route parameters. @Query reads the query string, and @Body reads the request body."
+  ],
+  [
+   "In a NestJS controller, which decorator gives a handler access to the parsed request body?",
+   "@Body()",
+   [
+    "@Payload()",
+    "@Data()",
+    "@Request.body()"
+   ],
+   "@Body() injects the request body, optionally a single property like @Body('name'), and is commonly typed with a DTO class."
+  ],
+  [
+   "What HTTP status code does a NestJS @Post() handler return by default on success?",
+   "201",
+   [
+    "200",
+    "202",
+    "204"
+   ],
+   "Nest returns 201 for POST and 200 for other methods by default. Use @HttpCode() to change it."
+  ],
+  [
+   "What does the @Injectable() decorator do for a NestJS class?",
+   "Marks it as a provider that the DI container can manage",
+   [
+    "Registers it as an HTTP route handler",
+    "Makes it a global module automatically",
+    "Turns it into a request-scoped singleton"
+   ],
+   "@Injectable() attaches metadata so Nest can instantiate the class and inject it where needed, after it is listed in a module's providers."
+  ],
+  [
+   "What is the default scope of a NestJS provider?",
+   "Singleton, shared across the whole application",
+   [
+    "A new instance per request",
+    "A new instance per injection",
+    "A new instance per module import"
+   ],
+   "By default providers are singletons. Scope.REQUEST or Scope.TRANSIENT can be set explicitly when needed."
+  ],
+  [
+   "NestJS throws: Nest can't resolve dependencies of the OrdersService (?). UsersService lives in UsersModule. What is the usual fix?",
+   "Export UsersService from UsersModule and import UsersModule in OrdersModule",
+   [
+    "Add @Injectable() to OrdersModule",
+    "Make UsersService a static class",
+    "Call new UsersService() inside the constructor"
+   ],
+   "A provider is private to its module unless exported. The consuming module must import the module that exports it."
+  ],
+  [
+   "In NestJS, a module has providers: [{ provide: 'CONFIG', useValue: { port: 3000 } }]. How do you inject it into a service constructor?",
+   "@Inject('CONFIG') private config: any",
+   [
+    "@Param('CONFIG') private config: any",
+    "@Body('CONFIG') private config: any",
+    "@Provide('CONFIG') private config: any"
+   ],
+   "String or symbol tokens cannot be resolved from the type alone, so @Inject(token) tells Nest which provider to use."
+  ],
+  [
+   "Which NestJS provider definition creates a value by running a function that receives other providers?",
+   "useFactory with an inject array",
+   [
+    "useClass with an imports array",
+    "useValue with a deps array",
+    "useExisting with a factory key"
+   ],
+   "useFactory lets you build a provider dynamically, and the inject array lists the tokens Nest passes as arguments to the factory."
+  ],
+  [
+   "Two NestJS services inject each other and Nest reports a circular dependency. Which built-in helper resolves it?",
+   "forwardRef(() => OtherService)",
+   [
+    "lazyInject(OtherService)",
+    "@Optional() on both services",
+    "Scope.TRANSIENT on both services"
+   ],
+   "forwardRef defers resolution of the referenced class. It should be used on both sides, and it is often better to refactor the shared logic out."
+  ],
+  [
+   "A NestJS handler uses @Param('id', ParseIntPipe) id: number. What happens for the request GET /items/abc?",
+   "Nest responds with 400 Bad Request",
+   [
+    "id becomes NaN and the handler runs",
+    "id becomes 0 and the handler runs",
+    "Nest responds with 404 Not Found"
+   ],
+   "ParseIntPipe throws a BadRequestException when the value is not a numeric string, so the handler never runs."
+  ],
+  [
+   "In a NestJS app, ValidationPipe is configured with whitelist: true. What happens to body properties that have no class-validator decorator in the DTO?",
+   "They are stripped from the validated object",
+   [
+    "They cause a 400 error",
+    "They are kept unchanged",
+    "They are converted to strings"
+   ],
+   "whitelist: true removes non-decorated properties. Adding forbidNonWhitelisted: true makes them produce an error instead."
+  ],
+  [
+   "What does transform: true do in NestJS's ValidationPipe?",
+   "Converts payloads into DTO class instances and primitive types",
+   [
+    "Converts the response body to JSON",
+    "Renames properties to camelCase",
+    "Transforms validation errors into 500 errors"
+   ],
+   "With transform enabled, the plain body becomes an instance of the DTO class, and params declared as number can be converted from strings."
+  ],
+  [
+   "In a NestJS DTO using class-validator, which decorators ensure age is an integer of at least 18?",
+   "@IsInt() and @Min(18)",
+   [
+    "@IsNumber() and @Length(18)",
+    "@IsInt() and @MinLength(18)",
+    "@IsPositive() and @Max(18)"
+   ],
+   "@Min checks a numeric minimum. @MinLength and @Length validate string length, not numeric value."
+  ],
+  [
+   "Why does NestJS recommend defining DTOs as classes rather than TypeScript interfaces?",
+   "Interfaces are erased at runtime, so pipes cannot use them",
+   [
+    "Interfaces cannot have optional properties",
+    "Classes compile to smaller JavaScript",
+    "Interfaces cannot be exported from modules"
+   ],
+   "ValidationPipe relies on runtime metadata from classes and their decorators. Interfaces disappear after compilation."
+  ],
+  [
+   "Which method must a NestJS interceptor implement, and what does it call to run the route handler?",
+   "intercept(context, next), calling next.handle()",
+   [
+    "use(req, res, next), calling next()",
+    "canActivate(context), calling handler()",
+    "transform(value), calling next.run()"
+   ],
+   "next.handle() returns an RxJS Observable of the handler's result, so interceptors can map, time or cache the response."
+  ],
+  [
+   "For one incoming request in NestJS, in which order do these run before the route handler?",
+   "Guards, then interceptors, then pipes",
+   [
+    "Pipes, then guards, then interceptors",
+    "Interceptors, then pipes, then guards",
+    "Guards, then pipes, then interceptors"
+   ],
+   "The request lifecycle is middleware, guards, interceptors (before), pipes, then the handler, followed by interceptors (after) and exception filters."
+  ],
+  [
+   "A NestJS guard's canActivate() returns false. What does the client receive by default?",
+   "403 Forbidden",
+   [
+    "401 Unauthorized",
+    "404 Not Found",
+    "500 Internal Server Error"
+   ],
+   "Nest throws a ForbiddenException when a guard denies access. Throw UnauthorizedException yourself if you want 401."
+  ],
+  [
+   "In NestJS, a custom @Roles('admin') decorator sets metadata on a handler. What does a RolesGuard typically use to read it?",
+   "The Reflector service",
+   [
+    "The ModuleRef service",
+    "The ConfigService",
+    "The HttpAdapterHost"
+   ],
+   "Reflector reads metadata attached with SetMetadata or Reflector.createDecorator, using the handler and class from the ExecutionContext."
+  ],
+  [
+   "How is a JWT strategy from @nestjs/passport usually applied to a NestJS route?",
+   "@UseGuards(AuthGuard('jwt'))",
+   [
+    "@UsePipes(AuthPipe('jwt'))",
+    "@UseInterceptors(JwtInterceptor)",
+    "@UseFilters(AuthFilter('jwt'))"
+   ],
+   "Authentication in Nest is implemented with guards. AuthGuard('jwt') runs the registered Passport JWT strategy before the handler."
+  ]
+ ],
+ "deno": [
+  [
+   "A script started with deno run main.ts (no permission flags) calls fetch('https://example.com'). What happens?",
+   "Network access is denied unless the user grants it",
+   [
+    "The request succeeds, since fetch is a web standard",
+    "Deno downgrades the request to plain HTTP",
+    "The request succeeds but its body is empty"
+   ],
+   "Deno is secure by default: network, file, env and subprocess access require permission, granted by a flag or, in an interactive terminal, by answering a prompt."
+  ],
+  [
+   "Which deno run flag lets a script make network requests only to api.example.com?",
+   "--allow-net=api.example.com",
+   [
+    "--allow-host=api.example.com",
+    "--net-only=api.example.com",
+    "--allow-fetch=api.example.com"
+   ],
+   "Most Deno permission flags accept an allow-list, so --allow-net=api.example.com grants access to that host and nothing else."
+  ],
+  [
+   "A Deno script should read files only inside the ./data folder. Which flag fits best?",
+   "--allow-read=./data",
+   [
+    "--allow-read",
+    "--allow-fs=./data",
+    "--allow-all=./data"
+   ],
+   "--allow-read with a path limits read access to that path. Plain --allow-read grants read access to the whole file system."
+  ],
+  [
+   "In Deno, what does the -A flag of deno run do?",
+   "Grants all permissions",
+   [
+    "Enables all unstable APIs",
+    "Allows only network access",
+    "Runs the script asynchronously"
+   ],
+   "-A is short for --allow-all. It is convenient locally but removes Deno's sandbox, so prefer specific flags in production."
+  ],
+  [
+   "A Deno script runs Deno.env.get('API_KEY'). Which permission does it need?",
+   "--allow-env",
+   [
+    "--allow-read",
+    "--allow-sys",
+    "--allow-config"
+   ],
+   "Reading environment variables is guarded by the env permission, which can also be scoped, for example --allow-env=API_KEY."
+  ],
+  [
+   "A Deno script uses new Deno.Command('git', { args: ['status'] }) to start a subprocess. Which permission does it need?",
+   "--allow-run",
+   [
+    "--allow-exec",
+    "--allow-sys",
+    "--allow-proc"
+   ],
+   "Spawning subprocesses requires the run permission, which can be limited to specific programs, such as --allow-run=git."
+  ],
+  [
+   "How can Deno code check at runtime whether it has network permission?",
+   "await Deno.permissions.query({ name: 'net' })",
+   [
+    "Deno.hasPermission('net')",
+    "Deno.env.get('DENO_NET')",
+    "await Deno.permissions.check('net')"
+   ],
+   "Deno.permissions.query returns a PermissionStatus whose state is 'granted', 'prompt' or 'denied'. Deno.permissions.request can ask for it."
+  ],
+  [
+   "How do you run a TypeScript file main.ts with Deno?",
+   "deno run main.ts",
+   [
+    "Compile with tsc, then run deno run main.js",
+    "deno run --typescript main.ts",
+    "deno compile main.ts, then run the .js output"
+   ],
+   "Deno executes TypeScript directly without a separate build step or extra configuration."
+  ],
+  [
+   "In Deno 2, does deno run main.ts type-check the code by default?",
+   "No; it skips type checking unless you use deno check or --check",
+   [
+    "Yes, and it refuses to run on any type error",
+    "Yes, but it only reports warnings",
+    "No; Deno strips TypeScript and has no type checker"
+   ],
+   "Since Deno 1.23, deno run only transpiles. Use deno check main.ts or deno run --check to get full type checking."
+  ],
+  [
+   "What is the name of Deno's project configuration file, where tasks, imports and compiler options are set?",
+   "deno.json",
+   [
+    "denoconfig.yaml",
+    "deno.config.js",
+    "tsconfig.deno.json"
+   ],
+   "deno.json (or deno.jsonc) holds tasks, the import map, compilerOptions, lint and fmt settings."
+  ],
+  [
+   "In Deno, Deno.serve((req) => handler(req)) is used to build an HTTP server. What should the handler return?",
+   "A Response object, or a Promise of one",
+   [
+    "A plain string with the body",
+    "An object with status and body fields",
+    "Nothing; it writes to req.respond()"
+   ],
+   "Deno.serve is built on web standards: the handler receives a Request and returns a Response, just like a fetch event in a browser service worker."
+  ],
+  [
+   "Without a port option, on which port does Deno.serve(handler) listen?",
+   "8000",
+   [
+    "3000",
+    "8080",
+    "80"
+   ],
+   "Deno.serve defaults to port 8000 on all interfaces; pass { port } to change it."
+  ],
+  [
+   "Which global API is available in Deno for hashing data without importing any module?",
+   "crypto.subtle.digest()",
+   [
+    "require('crypto').createHash()",
+    "Deno.hash.sha256()",
+    "window.digest()"
+   ],
+   "Deno implements the Web Crypto API as a global. require is not available in native Deno modules."
+  ],
+  [
+   "As of Deno 2, where is the official Deno standard library (such as @std/path) published?",
+   "On the JSR registry under the @std scope",
+   [
+    "On npm under the @deno scope",
+    "Only inside the Deno binary",
+    "On GitHub releases as zip files"
+   ],
+   "The standard library moved to JSR, so you import it like jsr:@std/path or add it with deno add jsr:@std/path."
+  ],
+  [
+   "Which import is the usual way to write assertions for Deno.test with the standard library?",
+   "import { assertEquals } from 'jsr:@std/assert'",
+   [
+    "import { expect } from 'deno:test'",
+    "import assert from 'node:test/assert'",
+    "import { assertEquals } from 'std:assert'"
+   ],
+   "@std/assert provides assertEquals, assertThrows and more. Tests are declared with Deno.test and run with deno test."
+  ],
+  [
+   "How does a Deno 2 project import the Express package?",
+   "import express from 'npm:express'",
+   [
+    "import express from 'deno:express'",
+    "import express from 'https://npm.express'",
+    "It cannot, since Deno has no npm support"
+   ],
+   "The npm: specifier lets Deno use npm packages directly, and Deno 2 also understands package.json and node_modules."
+  ],
+  [
+   "Which Deno command produces a standalone executable that runs without Deno installed?",
+   "deno compile main.ts",
+   [
+    "deno bundle --exe main.ts",
+    "deno build --binary main.ts",
+    "deno install --static main.ts"
+   ],
+   "deno compile embeds the runtime and your code into a single binary, keeping the permission flags you pass at compile time."
+  ],
+  [
+   "Which Deno API loads a native shared library (.so, .dylib or .dll) through the foreign function interface?",
+   "Deno.dlopen()",
+   [
+    "Deno.loadLibrary()",
+    "Deno.ffi.open()",
+    "Deno.native()"
+   ],
+   "Deno.dlopen takes the library path and a map of symbol definitions, and returns an object whose symbols can be called from JavaScript."
+  ],
+  [
+   "Which permission flag does a Deno program need to call Deno.dlopen()?",
+   "--allow-ffi",
+   [
+    "--allow-native",
+    "--allow-run",
+    "--allow-sys"
+   ],
+   "Loading native code bypasses the sandbox, so FFI has its own permission. Treat --allow-ffi as nearly equivalent to full access."
+  ],
+  [
+   "In Deno, const lib = Deno.dlopen('./libmath.so', { add: { parameters: ['i32', 'i32'], result: 'i32' } }); How do you call add?",
+   "lib.symbols.add(2, 3)",
+   [
+    "lib.add(2, 3)",
+    "lib.call('add', 2, 3)",
+    "Deno.ffi.add(lib, 2, 3)"
+   ],
+   "Functions declared in the symbol map are exposed on lib.symbols. Call lib.close() when the library is no longer needed."
+  ]
+ ],
+ "bun": [
+  [
+   "Which JavaScript engine does Bun use?",
+   "JavaScriptCore",
+   [
+    "V8",
+    "SpiderMonkey",
+    "Hermes"
+   ],
+   "Bun is built on JavaScriptCore, the engine from WebKit. Node.js and Deno use V8."
+  ],
+  [
+   "Bun's JavaScript engine is the same engine used by which browser?",
+   "Safari",
+   [
+    "Chrome",
+    "Firefox",
+    "Edge"
+   ],
+   "JavaScriptCore is developed as part of WebKit, which powers Safari."
+  ],
+  [
+   "In which programming language is most of Bun's runtime written?",
+   "Zig",
+   [
+    "Rust",
+    "Go",
+    "C#"
+   ],
+   "Bun is written mainly in Zig, plus C++ for the JavaScriptCore bindings. Deno, by comparison, is written in Rust."
+  ],
+  [
+   "When Bun runs a .ts file directly with bun index.ts, what happens to type errors?",
+   "They are not reported; Bun transpiles without type checking",
+   [
+    "Bun refuses to run the file",
+    "Bun prints them as warnings and continues",
+    "Bun fixes them automatically"
+   ],
+   "Bun strips types and executes the code. Run tsc --noEmit separately, for example in CI, to catch type errors."
+  ],
+  [
+   "Which import gives you test and expect in Bun's built-in test runner?",
+   "import { test, expect } from 'bun:test'",
+   [
+    "import { test, expect } from 'bun/testing'",
+    "import { test, expect } from 'node:bun'",
+    "import { test, expect } from '@bun/jest'"
+   ],
+   "bun:test is Bun's Jest-compatible test module, and bun test runs the matching test files."
+  ],
+  [
+   "Which file does bun test pick up automatically?",
+   "src/math.test.ts",
+   [
+    "src/math.ts",
+    "src/test-utils.ts",
+    "src/math.tests.json"
+   ],
+   "bun test looks for files whose names contain .test or .spec (or _test, _spec) with a JavaScript or TypeScript extension."
+  ],
+  [
+   "Which command bundles ./src/index.ts with Bun's native bundler into the ./dist folder?",
+   "bun build ./src/index.ts --outdir ./dist",
+   [
+    "bun bundle ./src/index.ts --out ./dist",
+    "bun pack ./src/index.ts ./dist",
+    "bun run build:native ./src/index.ts"
+   ],
+   "bun build is the CLI for the bundler. The same bundler is available from code through Bun.build({ entrypoints, outdir })."
+  ],
+  [
+   "Which bun build flag produces a single standalone executable from your app?",
+   "--compile",
+   [
+    "--binary",
+    "--standalone",
+    "--exe"
+   ],
+   "bun build --compile embeds the Bun runtime and your bundled code into one executable file."
+  ],
+  [
+   "Starting with Bun 1.2, what lockfile does bun install create by default?",
+   "bun.lock, a text-based file",
+   [
+    "bun.lockb, a binary file",
+    "package-lock.json",
+    "yarn.lock"
+   ],
+   "Bun 1.2 switched the default to the text bun.lock, which is easier to review in diffs. Older versions used the binary bun.lockb."
+  ],
+  [
+   "Which technique is a main reason bun install is fast?",
+   "A global cache linked into node_modules",
+   [
+    "Skipping dependency version resolution",
+    "Downloading only the package README",
+    "Installing packages lazily at runtime"
+   ],
+   "Bun keeps packages in a global cache and links or clones them into node_modules (hardlinks on Linux, clonefile on macOS), avoiding repeated downloads and copies."
+  ],
+  [
+   "Which Bun command adds vitest to devDependencies?",
+   "bun add -d vitest",
+   [
+    "bun install --save vitest",
+    "bun dev add vitest",
+    "bun add --global vitest"
+   ],
+   "bun add -d (or --dev) records the package under devDependencies. --global installs a package globally instead."
+  ],
+  [
+   "A dependency in a Bun project has a postinstall script, and bun install does not run it. Why?",
+   "Bun only runs lifecycle scripts of packages in trustedDependencies",
+   [
+    "Bun does not support lifecycle scripts at all",
+    "postinstall scripts only run on Windows",
+    "The script runs later, on first import"
+   ],
+   "For security, Bun skips dependency lifecycle scripts unless the package is listed in trustedDependencies in package.json (a set of popular packages is trusted by default)."
+  ],
+  [
+   "What is the Bun equivalent of npx for running a package's binary without installing it?",
+   "bunx",
+   [
+    "bun npx",
+    "bun exec",
+    "bun get"
+   ],
+   "bunx (an alias of bun x) runs a package's executable, fetching it into the cache if needed."
+  ],
+  [
+   "An existing Express app on Node.js uses node:fs and node:path. What usually happens when you start it with bun index.js?",
+   "It runs, since Bun implements most Node.js APIs",
+   [
+    "It fails, since Bun has no node: modules",
+    "It runs only after converting to Bun.serve",
+    "It runs only if the code is rewritten in TypeScript"
+   ],
+   "Bun aims to be a drop-in replacement for Node.js and implements most built-in modules and globals such as process and Buffer; some APIs are still incomplete."
+  ],
+  [
+   "A Bun project has a .env file with API_KEY=123 and no dotenv package. What is process.env.API_KEY when you run bun index.ts?",
+   "'123'",
+   [
+    "undefined",
+    "An error about a missing dotenv package",
+    "'API_KEY=123'"
+   ],
+   "Bun loads .env files automatically (along with variants like .env.local), so dotenv is not needed. Values are also available on Bun.env."
+  ],
+  [
+   "In Bun, what does const f = Bun.file('data.txt'); do before you await f.text()?",
+   "Creates a lazy reference; nothing is read yet",
+   [
+    "Reads the whole file into memory",
+    "Opens the file for writing",
+    "Throws if the file is larger than 1 MB"
+   ],
+   "Bun.file returns a BunFile that reads lazily. Data is loaded only when you call methods such as text(), json() or arrayBuffer()."
+  ],
+  [
+   "Which import gives you Bun's built-in SQLite driver?",
+   "import { Database } from 'bun:sqlite'",
+   [
+    "import sqlite3 from 'sqlite3'",
+    "import { SQLite } from 'bun'",
+    "import { Database } from 'node:sqlite3'"
+   ],
+   "bun:sqlite is a native, synchronous SQLite driver that ships with Bun; no npm package is needed."
+  ],
+  [
+   "With bun:sqlite, how do you create a temporary database that lives only in memory?",
+   "new Database(':memory:')",
+   [
+    "new Database()",
+    "Database.memory()",
+    "new Database('temp', { ram: true })"
+   ],
+   "':memory:' is the standard SQLite name for an in-memory database, which disappears when the connection closes."
+  ],
+  [
+   "With bun:sqlite, which code safely looks up a user by an id that came from user input?",
+   "db.query('SELECT * FROM users WHERE id = ?').get(id)",
+   [
+    "db.query('SELECT * FROM users WHERE id = ' + id).get()",
+    "db.query('SELECT * FROM users WHERE id = ' + String(id)).get()",
+    "db.run('SELECT * FROM users WHERE id = ' + id)"
+   ],
+   "Bound parameters (?) are sent separately from the SQL text, which prevents SQL injection. String concatenation lets user input change the query."
+  ],
+  [
+   "With bun:sqlite, what does db.query('SELECT name FROM users').all() return?",
+   "An array of row objects",
+   [
+    "An iterator of raw strings",
+    "A Promise of an array",
+    "The number of rows"
+   ],
+   "bun:sqlite is synchronous. all() returns every row as a plain object, get() returns the first row, and run() executes without returning rows."
+  ]
+ ],
+ "graphql": [
+  [
+   "In GraphQL SDL, what does the ! in name: String! mean?",
+   "The field can never be null",
+   [
+    "The field is required as an argument",
+    "The field is deprecated",
+    "The field is a list"
+   ],
+   "! marks a type as non-null. A resolver returning null for it is an error."
+  ],
+  [
+   "A GraphQL field is declared as tags: [String!]. Which value is NOT valid for it?",
+   "[\"a\", null]",
+   [
+    "null",
+    "[]",
+    "[\"a\", \"b\"]"
+   ],
+   "The list itself is nullable, so null and [] are fine, but each item is String!, so a null element is invalid."
+  ],
+  [
+   "Which three root operation types can a GraphQL schema define?",
+   "Query, Mutation, Subscription",
+   [
+    "Get, Post, Delete",
+    "Read, Write, Stream",
+    "Query, Command, Event"
+   ],
+   "Query is required. Mutation and Subscription are optional root types for writes and real-time events."
+  ],
+  [
+   "What problem does GraphQL address by letting the client choose exactly which fields to fetch?",
+   "Over-fetching and under-fetching data",
+   [
+    "Slow database indexes",
+    "Lack of HTTPS support",
+    "Missing database transactions in the API layer"
+   ],
+   "Clients ask only for the fields they need, often in one request, instead of calling several fixed REST endpoints."
+  ],
+  [
+   "Which GraphQL operation correctly declares and uses a variable for a user id?",
+   "query GetUser($id: ID!) { user(id: $id) { name } }",
+   [
+    "query GetUser { user(id: $id: ID!) { name } }",
+    "query GetUser(id: ID!) { user(id) { name } }",
+    "query GetUser($id) { user(id: ID!) { name } }"
+   ],
+   "Variables are declared with $name and a type after the operation name, then referenced as $name in arguments."
+  ],
+  [
+   "In a single GraphQL query you need user(id: 1) and user(id: 2). Which feature avoids a field name conflict?",
+   "Aliases, like a: user(id: 1) and b: user(id: 2)",
+   [
+    "Fragments, like ...UserFields on both fields",
+    "Directives, like @include",
+    "Variables, like $id1 and $id2 for each field"
+   ],
+   "Two selections of the same field with different arguments conflict. Aliases give each result its own key in the response."
+  ],
+  [
+   "What is a GraphQL fragment used for?",
+   "Reusing a set of fields across several queries",
+   [
+    "Splitting a large response into pages",
+    "Running part of a query on the server ahead of time",
+    "Caching a query result in the client"
+   ],
+   "A fragment such as fragment UserFields on User { id name } can be spread with ...UserFields wherever that selection is needed."
+  ],
+  [
+   "A GraphQL mutation contains two top-level fields: createUser and addRole. How does the server execute them?",
+   "Serially, in the order they appear",
+   [
+    "In parallel, in any order",
+    "Only the first field is executed",
+    "In alphabetical order of field names"
+   ],
+   "The GraphQL spec requires top-level mutation fields to run one after another, while query fields may be resolved in parallel."
+  ],
+  [
+   "In GraphQL SDL, which keyword defines a type that can be used as an argument, such as createUser(data: NewUser!)?",
+   "input",
+   [
+    "type",
+    "argument",
+    "interface"
+   ],
+   "Arguments accept scalars, enums and input object types. Regular object types defined with type cannot be used as input."
+  ],
+  [
+   "How are GraphQL subscriptions most commonly delivered to clients?",
+   "Over a long-lived connection such as a WebSocket",
+   [
+    "Through repeated GET requests every second",
+    "Through email notifications",
+    "Inside the response headers of a mutation"
+   ],
+   "Subscriptions push events as they happen, usually over WebSockets (for example the graphql-ws protocol) or server-sent events."
+  ],
+  [
+   "In GraphQL.js-style servers (such as Apollo Server), what are the four arguments of a resolver function?",
+   "(parent, args, context, info)",
+   [
+    "(req, res, next, err)",
+    "(query, variables, schema, root)",
+    "(args, parent, info, context)"
+   ],
+   "parent is the result of the parent field, args are the field arguments, context is shared per request, and info holds execution details."
+  ],
+  [
+   "In a GraphQL server, where should you put the authenticated user and database connection so every resolver can use them?",
+   "The context object",
+   [
+    "The info argument",
+    "The root type definition",
+    "A global variable in the schema file"
+   ],
+   "The context is created once per request and passed to every resolver, which makes it the right place for per-request data like the current user."
+  ],
+  [
+   "A resolver for a non-null field (email: String!) returns null. What happens in the GraphQL response?",
+   "The field errors and null bubbles up to the nearest nullable parent",
+   [
+    "The field is returned as an empty string with a warning",
+    "The whole HTTP request fails with status 500 and no data at all",
+    "The field is silently left out"
+   ],
+   "A null in a non-null position is a field error; the null propagates upward until it reaches a field that is allowed to be null."
+  ],
+  [
+   "In GraphQL.js, a field has no resolver defined. What does the default resolver do?",
+   "Returns parent[fieldName] from the parent object",
+   [
+    "Returns null for every value",
+    "Throws an error at startup",
+    "Queries the database table that has the same name as the field"
+   ],
+   "The default resolver reads parent[fieldName], calling it if it is a function. That is why simple fields often need no resolver."
+  ],
+  [
+   "A GraphQL query fetches 50 posts, and each post's author resolver runs its own SQL query. How many queries hit the database?",
+   "51",
+   [
+    "1",
+    "2",
+    "50"
+   ],
+   "One query loads the posts and 50 more load authors one by one. This is the N+1 problem, typically fixed with batching."
+  ],
+  [
+   "How does DataLoader solve the N+1 problem in GraphQL?",
+   "It batches loads from one tick into a single request",
+   [
+    "It caches every query result in the browser",
+    "It rewrites nested resolvers into SQL joins automatically",
+    "It runs each resolver on its own thread"
+   ],
+   "Calls to loader.load(id) made during the same tick are collected and passed together to one batch function, which can run a single WHERE id IN (...) query."
+  ],
+  [
+   "Why should a GraphQL server create a new DataLoader instance for every request?",
+   "Its cache could otherwise leak data between users",
+   [
+    "DataLoader instances can only be used once and then expire",
+    "Batching only works on the first request",
+    "A shared instance blocks the event loop"
+   ],
+   "DataLoader memoizes results. A per-request instance prevents one user from seeing another's cached, permission-checked data."
+  ],
+  [
+   "A DataLoader batch function receives the keys [3, 1, 2]. What must it return?",
+   "Values for 3, 1 and 2 in that exact order",
+   [
+    "Values sorted by key: 1, 2, 3",
+    "Only the values that were found",
+    "A map from each key to its value, in any order"
+   ],
+   "The returned array must have the same length and order as the keys (or a Promise of one), using null or an Error for missing items."
+  ],
+  [
+   "In GraphQL, Pet is an interface implemented by Dog, and only Dog has barkVolume. How do you request barkVolume in a pets query?",
+   "pets { name ... on Dog { barkVolume } }",
+   [
+    "pets { name barkVolume }",
+    "pets(type: Dog) { barkVolume }",
+    "pets { name Dog.barkVolume }"
+   ],
+   "Fields not declared on the interface must be selected with an inline fragment on the concrete type."
+  ],
+  [
+   "What is the key difference between a GraphQL union and an interface?",
+   "Union members do not need to share any fields",
+   [
+    "Unions can only contain scalar types",
+    "Interfaces cannot be returned directly from query fields",
+    "Unions can be used as input arguments"
+   ],
+   "An interface defines fields that each implementing type must have. A union just lists object types, so you need fragments for every field except __typename."
+  ]
+ ],
+ "rest-apis": [
+  [
+   "Which HTTP method is defined as safe, meaning it should not change server state?",
+   "GET",
+   [
+    "PUT",
+    "DELETE",
+    "PATCH"
+   ],
+   "Safe methods (GET, HEAD, OPTIONS) are read-only by contract. PUT and DELETE are idempotent but not safe."
+  ],
+  [
+   "Which of these HTTP methods is NOT idempotent by definition?",
+   "POST",
+   [
+    "PUT",
+    "DELETE",
+    "GET"
+   ],
+   "Repeating a POST may create a new resource each time. Repeating PUT or DELETE leaves the server in the same state as doing it once."
+  ],
+  [
+   "A client wants to change only the email of user 7, sending { \"email\": \"a@b.kz\" }. Which method fits a REST API best?",
+   "PATCH /users/7",
+   [
+    "PUT /users/7",
+    "POST /users/7/email/update",
+    "GET /users/7?email=a@b.kz"
+   ],
+   "PATCH applies a partial update. PUT replaces the whole resource, so fields missing from the body would be lost or reset."
+  ],
+  [
+   "A client sends DELETE /orders/5 twice. The first returns 204, the second returns 404. Is DELETE still idempotent here?",
+   "Yes, because the server state is the same after both",
+   [
+    "No, because the responses differ",
+    "No, DELETE is never idempotent",
+    "Only if the server returns 204 for both of the requests"
+   ],
+   "Idempotency is about the effect on server state, not identical responses. After either request the order does not exist."
+  ],
+  [
+   "A POST /articles request successfully creates a new article. What is the most appropriate response?",
+   "201 Created with a Location header",
+   [
+    "200 OK with no body",
+    "202 Accepted with a Retry-After header",
+    "204 No Content with a Location header"
+   ],
+   "201 signals that a new resource was created, and the Location header points to its URI. 202 means processing has not finished yet."
+  ],
+  [
+   "A DELETE request succeeds and the server has nothing to return in the body. Which status code fits?",
+   "204 No Content",
+   [
+    "200 OK with a null body",
+    "205 Reset Content",
+    "304 Not Modified"
+   ],
+   "204 means success with an intentionally empty body. 304 is for conditional GET requests answered from cache."
+  ],
+  [
+   "A user is logged in but requests an admin-only endpoint. Which status code should a REST API return?",
+   "403 Forbidden",
+   [
+    "401 Unauthorized",
+    "404 Not Found",
+    "400 Bad Request"
+   ],
+   "401 means credentials are missing or invalid. 403 means the server knows who the user is but refuses access."
+  ],
+  [
+   "A client sends too many requests and hits the API's rate limit. Which status code fits?",
+   "429 Too Many Requests",
+   [
+    "403 Forbidden",
+    "503 Service Unavailable",
+    "409 Conflict"
+   ],
+   "429 is defined for rate limiting and is often sent with a Retry-After header telling the client when to try again."
+  ],
+  [
+   "A client sends DELETE /products, but the API only supports GET and POST on that URI. Which status code fits?",
+   "405 Method Not Allowed",
+   [
+    "404 Not Found",
+    "400 Bad Request",
+    "501 Not Implemented"
+   ],
+   "405 means the resource exists but does not support this method; the response must include an Allow header listing supported methods."
+  ],
+  [
+   "Which URI best follows resource-oriented REST design for listing the orders of user 42?",
+   "GET /users/42/orders",
+   [
+    "GET /getUserOrders?id=42",
+    "POST /users/42/getOrders",
+    "GET /user-orders-list/42"
+   ],
+   "REST URIs name resources with plural nouns and use the HTTP method as the verb. Verbs like get in the path duplicate the method."
+  ],
+  [
+   "In a REST API, how should a client request only the products in the books category?",
+   "GET /products?category=books",
+   [
+    "GET /products/filter/books/category",
+    "POST /products/search-books",
+    "GET /getProductsByCategory/books"
+   ],
+   "Filtering, sorting and pagination are conventionally expressed as query parameters on the collection URI."
+  ],
+  [
+   "A payment POST may be retried after a network timeout. Which technique prevents charging the customer twice?",
+   "Send an idempotency key with each logical request",
+   [
+    "Switch the endpoint from POST to GET so it is cached",
+    "Return 500 for every duplicate attempt",
+    "Retry the request with a new random URI"
+   ],
+   "The server stores the result per idempotency key (often an Idempotency-Key header) and returns the same result for a retry instead of processing it again."
+  ],
+  [
+   "What does HATEOAS add to a REST API response?",
+   "Links to related resources and possible next actions",
+   [
+    "A schema describing every database table",
+    "A digital signature attached to each response body",
+    "Compressed binary encoding of the body"
+   ],
+   "With HATEOAS the client discovers what it can do next (for example cancel or pay links) from hypermedia in the response instead of hard-coding URIs."
+  ],
+  [
+   "Why must you not put a user's password inside a standard signed JWT (JWS) payload?",
+   "The payload is only base64url-encoded, so it is readable",
+   [
+    "The signature becomes invalid whenever the password changes",
+    "JWT payloads cannot store string values",
+    "The payload is deleted after the first request"
+   ],
+   "A signed JWT protects integrity, not confidentiality. Anyone holding the token can decode the payload, so it must contain no secrets."
+  ],
+  [
+   "A REST API verifies JWTs. Which check is essential to prevent forged tokens?",
+   "Verify the signature with a fixed algorithm and reject 'none'",
+   [
+    "Check that the token has three dot-separated parts",
+    "Decode the payload and check that it is valid, well-formed JSON",
+    "Check that the token is shorter than 8 KB"
+   ],
+   "Only signature verification with a fixed, expected algorithm proves the token was issued by you; accepting alg 'none' lets attackers craft unsigned tokens."
+  ],
+  [
+   "Which OAuth 2.0 flow is recommended for a single-page app or mobile app that cannot keep a client secret?",
+   "Authorization Code flow with PKCE",
+   [
+    "Implicit flow",
+    "Resource Owner Password Credentials flow",
+    "Client Credentials flow"
+   ],
+   "Current OAuth security guidance recommends the Authorization Code flow with PKCE for public clients. The implicit flow is deprecated."
+  ],
+  [
+   "Why do APIs commonly issue a short-lived access token together with a longer-lived refresh token?",
+   "To limit damage if an access token leaks, without frequent logins",
+   [
+    "Because access tokens cannot contain user IDs",
+    "So the server can skip verifying access tokens on every request",
+    "Because refresh tokens are sent with every request"
+   ],
+   "A leaked access token expires quickly. The refresh token, stored more carefully and sent only to the token endpoint, gets new access tokens."
+  ],
+  [
+   "How is an OAuth 2.0 access token usually sent to a REST API?",
+   "Authorization: Bearer <token>",
+   [
+    "X-Token: <token> in the body",
+    "As a ?password= query parameter",
+    "Cookie: bearer=<token> only"
+   ],
+   "The Bearer scheme in the Authorization header is the standard defined by RFC 6750. Tokens in URLs leak into logs and browser history."
+  ],
+  [
+   "Which standard defines a JSON format (media type application/problem+json) for HTTP API error responses?",
+   "Problem Details for HTTP APIs (RFC 9457)",
+   [
+    "JSON:API Errors (RFC 7231)",
+    "OpenAPI Error Objects (RFC 6749)",
+    "JSON Schema Faults (RFC 8259)"
+   ],
+   "RFC 9457, which obsoletes RFC 7807, defines fields like type, title, status, detail and instance for machine-readable errors."
+  ],
+  [
+   "A REST API hits an unexpected database exception. What should the error response contain?",
+   "A 500 status and a generic, consistent error body",
+   [
+    "A 200 status with error: true and the exception message in the body",
+    "A 400 status with the full stack trace",
+    "A 404 status with the SQL query"
+   ],
+   "Server faults are 5xx. Clients get a stable error format, while stack traces and SQL stay in server logs to avoid leaking internals."
+  ]
+ ],
+ "grpc": [
+  [
+   "What must the first non-comment line of a proto3 file be?",
+   "syntax = \"proto3\";",
+   [
+    "version = 3;",
+    "#proto3",
+    "package proto3;"
+   ],
+   "Without the syntax declaration, protoc assumes proto2. The line must come before any other statements."
+  ],
+  [
+   "In proto3, a client never sets the int32 field count. What value does the receiver read?",
+   "0",
+   [
+    "null",
+    "-1",
+    "An exception is thrown"
+   ],
+   "proto3 scalar fields have default values: 0 for numbers, empty string for strings, false for bools. Unset and zero look the same on the wire."
+  ],
+  [
+   "In proto3, you need to distinguish an unset int32 field from one explicitly set to 0. What can you use?",
+   "Mark it optional, or use a wrapper type",
+   [
+    "Use the required keyword",
+    "Give it field number 0",
+    "Declare it as repeated int32"
+   ],
+   "proto3 optional fields (and wrappers like google.protobuf.Int32Value) track presence. required does not exist in proto3."
+  ],
+  [
+   "You delete field 4 (old_email) from a proto3 message. What should you do to keep future versions safe?",
+   "Add reserved 4; so the number is never reused",
+   [
+    "Renumber the remaining fields to close the gap",
+    "Reuse number 4 for the next new field",
+    "Nothing, numbers are only comments"
+   ],
+   "Field numbers identify fields on the wire. Reusing one could make old data decode into the wrong field, so reserve removed numbers (and names)."
+  ],
+  [
+   "In a proto3 message, why are field numbers 1 to 15 usually given to frequently used fields?",
+   "They encode in one byte on the wire",
+   [
+    "They are the only numbers allowed for strings",
+    "They are sent compressed with gzip",
+    "They are validated faster by protoc"
+   ],
+   "The field number and wire type share a varint tag; numbers 1 to 15 fit in one byte, while 16 to 2047 need two."
+  ],
+  [
+   "What rule applies to the first value of an enum in proto3?",
+   "It must have the number 0",
+   [
+    "It must be named UNKNOWN",
+    "It must be the largest number",
+    "It cannot be used in messages"
+   ],
+   "The zero value is the default for unset enum fields, so proto3 requires it. Naming it something like STATUS_UNSPECIFIED is a common convention."
+  ],
+  [
+   "Which proto3 declaration defines a simple unary RPC?",
+   "rpc GetUser (GetUserRequest) returns (User);",
+   [
+    "rpc GetUser returns User;",
+    "service GetUser (GetUserRequest) -> User;",
+    "rpc GetUser (stream GetUserRequest);"
+   ],
+   "RPC methods are declared inside a service block with one request message type and one response message type."
+  ],
+  [
+   "Which proto3 signature describes server streaming: one request, many responses?",
+   "rpc List (Filter) returns (stream Item);",
+   [
+    "rpc List (stream Filter) returns (Item);",
+    "rpc List (stream Filter) returns (stream Item);",
+    "rpc List (Filter) returns (repeated Item);"
+   ],
+   "The stream keyword on the response side means the server sends a sequence of messages. repeated is for message fields, not RPC signatures."
+  ],
+  [
+   "A client uploads a large file to a gRPC service in chunks and receives one summary at the end. Which RPC type fits?",
+   "Client streaming",
+   [
+    "Unary",
+    "Server streaming",
+    "Bidirectional streaming"
+   ],
+   "In client streaming the client sends a stream of messages and the server replies once after reading them."
+  ],
+  [
+   "A gRPC chat service lets both sides send messages at any time over one call. Which RPC type fits?",
+   "Bidirectional streaming",
+   [
+    "Client streaming",
+    "Server streaming",
+    "Unary with polling"
+   ],
+   "With bidirectional streaming both client and server write independent message streams over the same call."
+  ],
+  [
+   "Which HTTP/2 feature lets many concurrent gRPC calls share a single TCP connection?",
+   "Multiplexing of streams",
+   [
+    "Chunked transfer encoding",
+    "Keep-alive pipelining",
+    "Server push of resources"
+   ],
+   "HTTP/2 multiplexes independent streams over one connection, so calls do not wait for each other like HTTP/1.1 requests."
+  ],
+  [
+   "Why can a browser not call a standard gRPC server directly with fetch?",
+   "Browsers do not expose the HTTP/2 control gRPC needs, like trailers",
+   [
+    "Browsers cannot send binary data",
+    "gRPC only works over UDP",
+    "Browsers block all HTTP/2 traffic"
+   ],
+   "gRPC relies on HTTP/2 trailers and framing that browser APIs do not expose. gRPC-Web with a proxy such as Envoy fills the gap."
+  ],
+  [
+   "Where does a gRPC server send the final status code (grpc-status) of a call?",
+   "In HTTP/2 trailers after the messages",
+   [
+    "In the HTTP status line only",
+    "Inside the first response message",
+    "In a separate UDP packet"
+   ],
+   "The HTTP status is usually 200; the gRPC outcome travels as grpc-status and grpc-message in trailers, which is why trailers are required."
+  ],
+  [
+   "A gRPC client sets a 2 second deadline, but the server needs 5 seconds. Which status does the client get?",
+   "DEADLINE_EXCEEDED",
+   [
+    "UNAVAILABLE",
+    "CANCELLED",
+    "RESOURCE_EXHAUSTED"
+   ],
+   "When the deadline passes, the call is terminated on the client with DEADLINE_EXCEEDED, and the server can see that the call was cancelled."
+  ],
+  [
+   "How does a gRPC client usually send an auth token with each call?",
+   "As call metadata, like an authorization key",
+   [
+    "As an extra field in every proto message",
+    "As a query string on the service URL",
+    "Inside the .proto file as an option"
+   ],
+   "Metadata is a key-value map carried as HTTP/2 headers, which keeps cross-cutting data like tokens out of the message schema."
+  ],
+  [
+   "You add a new field to a proto3 message, and an old client that does not know it receives the message. What happens?",
+   "The old client ignores the unknown field",
+   [
+    "The old client fails to decode the message",
+    "The server refuses to send the message",
+    "The new field replaces field number 1"
+   ],
+   "Adding fields with new numbers is backward compatible; parsers skip or keep unknown fields, which is why protobuf schemas can evolve."
+  ],
+  [
+   "Which tool compiles .proto files into language-specific code such as Go or Java classes?",
+   "protoc",
+   [
+    "grpcurl",
+    "buf curl",
+    "protolint"
+   ],
+   "protoc is the Protocol Buffers compiler; plugins (such as protoc-gen-go-grpc) add gRPC client and server code. grpcurl only calls services."
+  ],
+  [
+   "In gRPC terminology, what is the generated client-side object that exposes service methods called?",
+   "A stub",
+   [
+    "A skeleton",
+    "A proxy table",
+    "A servlet"
+   ],
+   "Generated stubs have one method per RPC; calling one serializes the request and sends it to the server."
+  ],
+  [
+   "Which Node.js package loads .proto files at runtime so you can use gRPC without a code generation step?",
+   "@grpc/proto-loader",
+   [
+    "@grpc/protoc-gen",
+    "grpc-tools-runtime",
+    "@protobuf/loader-cli"
+   ],
+   "@grpc/proto-loader parses .proto files dynamically, and @grpc/grpc-js uses the result to build clients and servers."
+  ],
+  [
+   "Why are gRPC messages usually smaller than equivalent JSON payloads?",
+   "Protobuf is binary and uses field numbers, not names",
+   [
+    "gRPC always gzips every message",
+    "Protobuf drops fields that are not strings",
+    "HTTP/2 removes duplicate values from bodies"
+   ],
+   "Protobuf encodes compact varints and field tags instead of repeating text keys, which shrinks payloads and speeds up parsing."
+  ]
+ ],
+ "websockets": [
+  [
+   "What does it mean that a WebSocket connection is full-duplex?",
+   "Both sides can send messages independently at the same time",
+   [
+    "Only the server can send after the handshake",
+    "The client must wait for a reply before sending again",
+    "Each message opens a new TCP connection to the server"
+   ],
+   "After the handshake, client and server share one TCP connection and either side can send frames at any moment."
+  ],
+  [
+   "How does a browser open a WebSocket connection to a server?",
+   "An HTTP GET with Upgrade: websocket headers",
+   [
+    "A POST with Content-Type: websocket",
+    "A raw UDP packet to port 80",
+    "A DNS lookup with a WS record"
+   ],
+   "The client sends an HTTP/1.1 GET with Upgrade: websocket and Connection: Upgrade, plus a Sec-WebSocket-Key header."
+  ],
+  [
+   "What status code does a server return to accept a WebSocket upgrade request?",
+   "101 Switching Protocols",
+   [
+    "200 OK",
+    "201 Created",
+    "426 Upgrade Required"
+   ],
+   "101 confirms the protocol switch, after which the connection speaks WebSocket framing instead of HTTP."
+  ],
+  [
+   "What is the purpose of the Sec-WebSocket-Key and Sec-WebSocket-Accept headers in the handshake?",
+   "To prove the server understood the handshake",
+   [
+    "To encrypt every message that follows the handshake",
+    "To authenticate the user",
+    "To choose a compression algorithm"
+   ],
+   "The server hashes the key with a fixed GUID (SHA-1, then base64). It is not a security mechanism; TLS (wss://) provides encryption."
+  ],
+  [
+   "Which URL should a page served over HTTPS use for its WebSocket connection?",
+   "wss://example.com/socket",
+   [
+    "ws://example.com/socket",
+    "https://example.com/socket?ws",
+    "socket://example.com"
+   ],
+   "wss:// runs WebSocket over TLS. Browsers block insecure ws:// connections from HTTPS pages as mixed content."
+  ],
+  [
+   "In the browser, const ws = new WebSocket(url); ws.send('hi'); runs immediately. What happens?",
+   "send() throws, as the socket is still connecting",
+   [
+    "The message is queued until the socket opens",
+    "The message is sent over HTTP instead",
+    "The browser silently drops the message"
+   ],
+   "While readyState is CONNECTING, send() throws an InvalidStateError. Send inside the open event handler or after checking readyState."
+  ],
+  [
+   "What does readyState === 1 mean on a browser WebSocket object?",
+   "OPEN",
+   [
+    "CONNECTING",
+    "CLOSING",
+    "CLOSED"
+   ],
+   "The values are 0 CONNECTING, 1 OPEN, 2 CLOSING and 3 CLOSED. Messages can be sent only when it is OPEN."
+  ],
+  [
+   "Which WebSocket frame opcode carries a ping control frame?",
+   "0x9",
+   [
+    "0x1",
+    "0x2",
+    "0x8"
+   ],
+   "0x1 is text, 0x2 is binary, 0x8 is close, 0x9 is ping and 0xA is pong."
+  ],
+  [
+   "In the WebSocket protocol, which frames must be masked?",
+   "Frames sent from client to server",
+   [
+    "Frames sent from server to client",
+    "Only control frames",
+    "Only binary frames"
+   ],
+   "Clients must mask every frame, and servers must not. Masking prevents cache poisoning attacks on intermediaries that misread the traffic."
+  ],
+  [
+   "How does the WebSocket protocol mark the last frame of a fragmented message?",
+   "The FIN bit is set to 1",
+   [
+    "The opcode is set to 0x0",
+    "The payload ends with a null byte",
+    "The mask key is set to zero"
+   ],
+   "Fragments after the first use the continuation opcode 0x0, and the FIN bit is set only on the final fragment."
+  ],
+  [
+   "What limits apply to WebSocket control frames such as ping and close?",
+   "Payload of 125 bytes at most, never fragmented",
+   [
+    "Payload of 64 KB at most, may be fragmented",
+    "No payload is allowed at all in control frames",
+    "They must be sent only by the server"
+   ],
+   "RFC 6455 limits control frame payloads to 125 bytes and forbids fragmenting them, so they can be injected between fragments of a data message."
+  ],
+  [
+   "Browser JavaScript needs to detect that its WebSocket connection silently died. Why do apps send their own heartbeat messages?",
+   "The browser API cannot send protocol ping frames",
+   [
+    "Ping frames are not part of the protocol",
+    "Browsers close idle sockets after 1 second",
+    "Heartbeats encrypt the connection"
+   ],
+   "Browsers answer server pings automatically but expose no ping() method, so client-side liveness checks use small application messages."
+  ],
+  [
+   "What is a main reason servers send periodic WebSocket pings to clients?",
+   "To detect dead connections and keep proxies open",
+   [
+    "To measure the client's CPU speed and network latency",
+    "To renew the TLS certificate before it expires",
+    "To reset the message counter"
+   ],
+   "A connection can be half-open with no error. Missing pongs reveal it, and regular traffic stops load balancers from closing idle connections."
+  ],
+  [
+   "Thousands of clients lose their WebSocket connection when a server restarts. Which reconnect strategy is best?",
+   "Exponential backoff with random jitter",
+   [
+    "Reconnect immediately in a tight loop",
+    "Reconnect at the same fixed interval",
+    "Never reconnect; ask users to reload"
+   ],
+   "Backoff with jitter spreads reconnects over time and avoids a thundering herd that could overload the server as it comes back."
+  ],
+  [
+   "A browser WebSocket fires the close event with code 1006. What does that mean?",
+   "It closed abnormally, without a close frame",
+   [
+    "The server closed it normally",
+    "The client sent invalid UTF-8",
+    "The message was too big for the server to process"
+   ],
+   "1006 is reserved for when the connection drops without a closing handshake; it is never sent in a frame. 1000 is normal closure, 1009 is message too big."
+  ],
+  [
+   "In Socket.IO, which code sends a message to every client in the room game1, including the sender?",
+   "io.to('game1').emit('move', data)",
+   [
+    "socket.to('game1').emit('move', data)",
+    "socket.broadcast.emit('move', data)",
+    "socket.emit('game1', 'move', data)"
+   ],
+   "io.to(room) targets all sockets in the room. socket.to(room) and socket.broadcast exclude the sending socket."
+  ],
+  [
+   "In Socket.IO, what does socket.broadcast.emit('joined', name) do?",
+   "Sends to all connected clients except the sender",
+   [
+    "Sends only to the sender, as a confirmation",
+    "Sends to all clients including the sender",
+    "Sends to clients in the sender's rooms only"
+   ],
+   "broadcast excludes the current socket. Combine with to(room) to limit it to a room."
+  ],
+  [
+   "A Socket.IO app runs on three server instances, and room broadcasts only reach clients on the same instance. What fixes it?",
+   "An adapter such as the Redis adapter",
+   [
+    "Increasing the ping interval on every instance",
+    "Switching to long-polling only",
+    "Using one room per server"
+   ],
+   "Each instance only knows its own sockets. An adapter (Redis, Postgres and others) relays broadcasts between instances via pub/sub."
+  ],
+  [
+   "Can a plain browser WebSocket client connect directly to a Socket.IO server and exchange events?",
+   "No, Socket.IO adds its own protocol on top",
+   [
+    "Yes, Socket.IO is plain WebSocket under another name",
+    "Yes, but only for text messages",
+    "Only if the server uses wss://"
+   ],
+   "Socket.IO has its own packet format, handshake and fallbacks, so it needs a Socket.IO client library on the other side."
+  ],
+  [
+   "The browser WebSocket API cannot set custom headers such as Authorization. How is a WebSocket usually authenticated?",
+   "With a cookie, a short-lived URL token, or a first auth message",
+   [
+    "By passing an Authorization header in the WebSocket constructor",
+    "By sending the password in every frame",
+    "They cannot, so WebSocket endpoints must stay public"
+   ],
+   "Common options are session cookies (with an Origin check), a short-lived ticket in the query string, or an auth message right after connecting."
+  ]
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "control-theory": [
+  "Control Tutorials for MATLAB and Simulink (University of Michigan)",
+  "https://ctms.engin.umich.edu/CTMS/index.php?aux=Home"
+ ],
+ "sensor-fusion": [
+  "Kalman and Bayesian Filters in Python (Roger Labbe)",
+  "https://github.com/rlabbe/Kalman-and-Bayesian-Filters-in-Python"
+ ],
+ "embedded-c": [
+  "Embedded Systems: Shape the World (UT Austin)",
+  "https://users.ece.utexas.edu/~valvano/Volume1/E-Book/"
+ ],
+ "arduino": [
+  "Arduino Language Reference",
+  "https://docs.arduino.cc/language-reference/"
+ ],
+ "raspberry-pi": [
+  "Raspberry Pi Documentation",
+  "https://www.raspberrypi.com/documentation/"
+ ],
+ "jetson": [
+  "NVIDIA Jetson Developer Guide",
+  "https://docs.nvidia.com/jetson/"
+ ],
+ "fpga": [
+  "Nandland FPGA Tutorials",
+  "https://nandland.com/"
+ ]
+}

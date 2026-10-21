@@ -1,3 +1,5 @@
+import { QUIZ_CATALOG } from './quizCatalog.data';
+
 export interface NotificationSettings {
   telegram: boolean;
   telegramHandle: string;
@@ -76,6 +78,8 @@ export const POPULAR_TECH_STACK = [
 export const SKILLS_DATABASE: string[] = Array.from(
   new Set([
     ...POPULAR_TECH_STACK,
+    // Every skill that has a verification quiz
+    ...QUIZ_CATALOG.map((t) => t.name),
     // Languages
     'JavaScript', 'Java', 'Kotlin', 'Swift', 'C', 'C#', 'Scala', 'Ruby', 'PHP', 'Dart',
     'Julia', 'R', 'MATLAB', 'Haskell', 'Elixir', 'Lua', 'Zig', 'Solidity', 'Bash', 'PowerShell',

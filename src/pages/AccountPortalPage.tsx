@@ -360,7 +360,7 @@ export const AccountPortalPage: React.FC = () => {
     },
     {
       q: 'How does skill verification work?',
-      a: 'In CV & Skill Lab, every skill card has a quiz of 15 questions with a time limit. Score 70% or more and the skill gets a Verified badge, which counts toward your ATS score and match percentage. If you fail, review the linked learning track and try again; questions are shuffled each attempt.',
+      a: 'In CV & Skill Lab, every skill card has a quiz of 10 questions drawn at random from a larger pool, with a time limit. Score 70% or more and the skill gets a Verified badge, which counts toward your ATS score and match percentage. If you fail, review the linked learning track and try again; each attempt draws a new set of questions.',
     },
     {
       q: 'What is Agent Memory and what should I write there?',

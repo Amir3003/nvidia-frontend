@@ -1,10 +1,11 @@
 import React from 'react';
 import type { SkillItem } from '../data';
 import { QUIZ_LENGTH, SECONDS_PER_QUESTION } from '../db/quizBank';
+import { getCatalogTopic, getSkillCategory, shortTopic } from '../db/quizCatalog';
 import { CheckIcon, ExternalLinkIcon, FlaskIcon, TechIcon } from './Icons';
 
 // Cover art and the topics each verification quiz covers.
-const SKILL_META: Record<string, { cover: string; topics: string[] }> = {
+export const SKILL_META: Record<string, { cover: string; topics: string[] }> = {
   docker: {
     cover: 'from-sky-400/30 via-blue-300/20 to-cyan-200/30',
     topics: ['Multi-stage builds', 'Volumes', 'Compose', 'GPU containers'],
@@ -51,6 +52,30 @@ const SKILL_META: Record<string, { cover: string; topics: string[] }> = {
   },
 };
 
+// Catalog topics get a cover by category and their first four subtopics as chips.
+const CATEGORY_COVER: Record<string, string> = {
+  'Programming Languages': 'from-blue-400/30 via-sky-300/20 to-indigo-200/30',
+  'Databases & Data Storage': 'from-violet-400/30 via-indigo-300/20 to-sky-200/30',
+  'Machine Learning & AI': 'from-emerald-400/30 via-teal-300/20 to-cyan-200/30',
+  'Robotics & Hardware': 'from-indigo-400/30 via-blue-300/20 to-slate-200/30',
+  'Web & Mobile Development': 'from-cyan-400/30 via-sky-300/20 to-teal-200/30',
+  'Infrastructure & DevOps': 'from-sky-400/30 via-blue-300/20 to-cyan-200/30',
+  Architecture: 'from-slate-400/30 via-indigo-200/25 to-sky-200/30',
+  'Security & Blockchain': 'from-rose-300/30 via-violet-200/20 to-indigo-200/30',
+  'CS Fundamentals & Math': 'from-amber-300/30 via-yellow-200/20 to-teal-200/30',
+  'Professional, Design & Analytics': 'from-rose-300/30 via-pink-200/20 to-violet-200/30',
+  'Languages & Language Exams': 'from-teal-300/30 via-emerald-200/20 to-amber-200/30',
+};
+
+export function getSkillMeta(skillId: string): { cover: string; topics: string[] } {
+  if (SKILL_META[skillId]) return SKILL_META[skillId];
+  const topic = getCatalogTopic(skillId);
+  return {
+    cover: CATEGORY_COVER[getSkillCategory(skillId)] || 'from-teal-300/30 via-sky-200/20 to-indigo-200/30',
+    topics: topic ? topic.topics.slice(0, 4).map(shortTopic) : [],
+  };
+}
+
 interface SkillCardProps {
   skill: SkillItem;
   isGap: boolean;
@@ -60,7 +85,8 @@ interface SkillCardProps {
 }
 
 export const SkillCard: React.FC<SkillCardProps> = ({ skill, isGap, isMatch, gapReason, onStartQuiz }) => {
-  const meta = SKILL_META[skill.id] || { cover: 'from-teal-300/30 via-sky-200/20 to-indigo-200/30', topics: [] };
+  const meta = getSkillMeta(skill.id);
+  const category = getSkillCategory(skill.id);
   const isVerified = skill.status === 'VERIFIED';
   const minutes = Math.round((QUIZ_LENGTH * SECONDS_PER_QUESTION) / 60);
 
@@ -117,7 +143,8 @@ export const SkillCard: React.FC<SkillCardProps> = ({ skill, isGap, isMatch, gap
       {/* Body */}
       <div className="p-4 flex-1 flex flex-col gap-3">
         <div>
-          <h4 className="text-[16px] font-bold text-indigo-950 break-words">{skill.name}</h4>
+          <div className="text-[10px] font-mono uppercase tracking-wider text-teal-800">{category}</div>
+          <h4 className="text-[16px] font-bold text-indigo-950 break-words mt-0.5">{skill.name}</h4>
           <p className="text-[12px] text-teal-950 leading-relaxed mt-1 line-clamp-3">{isGap && gapReason ? gapReason : skill.reason}</p>
         </div>
 

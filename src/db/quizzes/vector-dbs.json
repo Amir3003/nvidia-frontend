@@ -1,0 +1,1416 @@
+{
+ "pinecone": [
+  [
+   "Which Pinecone index type needs no choice of pod type or pod count and scales automatically with usage?",
+   "A serverless index",
+   [
+    "A pod-based index on p1 pods",
+    "A pod-based index on s1 pods",
+    "A pod-based index on p2 pods"
+   ],
+   "Serverless indexes manage capacity for you. Pod-based indexes require you to choose pod type, size, pods and replicas."
+  ],
+  [
+   "In Pinecone, what is a namespace?",
+   "A partition inside one index that upserts and queries target",
+   [
+    "A separate project with its own API key and billing",
+    "A metadata field that every record must include",
+    "A replica group that serves queries in one region"
+   ],
+   "Namespaces split the records of one index into isolated partitions. A query searches a single namespace."
+  ],
+  [
+   "Which three similarity metrics can you choose when creating a Pinecone dense index?",
+   "cosine, euclidean, dotproduct",
+   [
+    "cosine, manhattan, hamming",
+    "jaccard, euclidean, dotproduct",
+    "cosine, chebyshev, euclidean"
+   ],
+   "Pinecone dense indexes support cosine, euclidean and dotproduct, chosen when the index is created."
+  ],
+  [
+   "In Pinecone, what happens when you upsert a record whose id already exists in the same namespace?",
+   "The existing record is replaced by the new one",
+   [
+    "The request fails with a duplicate id error",
+    "A second record with the same id is stored",
+    "Only the metadata changes and the vector is ignored"
+   ],
+   "Upsert means insert or overwrite: a matching id in the namespace is replaced with the new vector and metadata."
+  ],
+  [
+   "What does the top_k parameter control in a Pinecone query?",
+   "How many of the most similar records are returned",
+   [
+    "How many namespaces are searched in parallel",
+    "The minimum score a match must reach",
+    "How many replicas answer the query"
+   ],
+   "top_k sets the number of nearest matches returned. It is not a score threshold."
+  ],
+  [
+   "A Pinecone index was created with dimension 1536. What happens if you upsert 768-dimensional vectors into it?",
+   "The upsert is rejected because the dimension does not match",
+   [
+    "Pinecone pads the vectors with zeros up to 1536",
+    "Pinecone shrinks the index dimension to 768",
+    "The vectors are stored but skipped by queries"
+   ],
+   "Every vector must match the dimension fixed at index creation, so mismatched vectors are rejected."
+  ],
+  [
+   "Which Pinecone metadata filter matches records whose genre is either comedy or drama?",
+   "{\"genre\": {\"$in\": [\"comedy\", \"drama\"]}}",
+   [
+    "{\"genre\": {\"$or\": [\"comedy\", \"drama\"]}}",
+    "{\"$and\": [{\"genre\": \"comedy\"}, {\"genre\": \"drama\"}]}",
+    "{\"genre\": {\"$nin\": [\"comedy\", \"drama\"]}}"
+   ],
+   "$in matches any listed value. $or combines whole conditions rather than values, $and would require both at once, and $nin excludes them."
+  ],
+  [
+   "Which Pinecone metadata filter keeps only records with year 2020 or later?",
+   "{\"year\": {\"$gte\": 2020}}",
+   [
+    "{\"year\": {\"$gt\": 2020}}",
+    "{\"year\": {\">=\": 2020}}",
+    "{\"$gte\": {\"year\": 2020}}"
+   ],
+   "$gte means greater than or equal and is placed under the field name. $gt would exclude 2020 itself."
+  ],
+  [
+   "A SaaS app stores every customer's vectors in one Pinecone serverless index and must isolate customers and delete one customer's data easily. What fits best?",
+   "One namespace per customer",
+   [
+    "One similarity metric per customer",
+    "All customers in the default namespace",
+    "One index dimension per customer"
+   ],
+   "Namespaces isolate tenants within an index, queries only see one namespace, and a whole namespace can be deleted at once."
+  ],
+  [
+   "What does include_metadata=True add to a Pinecone query response?",
+   "Each match's stored metadata next to its id and score",
+   [
+    "A filter that keeps only records that have metadata",
+    "The index configuration, such as metric and dimension",
+    "Metadata from every namespace in the index"
+   ],
+   "By default matches carry ids and scores. include_metadata (and include_values) add the stored metadata (and vectors)."
+  ],
+  [
+   "You need to load 5 million vectors into Pinecone through the upsert API. Which approach is recommended?",
+   "Batch records per request and send batches in parallel",
+   [
+    "Send exactly one record per request, sequentially",
+    "Put all 5 million records into one single request",
+    "Recreate the index after every uploaded batch"
+   ],
+   "Batching reduces per-request overhead and parallel requests raise throughput. Requests have a size limit, so one giant request fails."
+  ],
+  [
+   "Right after a Pinecone upsert returns success, a query does not show the new record yet. What is the usual reason?",
+   "Writes are eventually consistent and may need a moment",
+   [
+    "Writes stay invisible until an explicit commit call",
+    "Queries read only from a nightly index snapshot",
+    "New records appear only after an index restart"
+   ],
+   "Pinecone is eventually consistent: freshly upserted records can take a short time before they are queryable."
+  ],
+  [
+   "Which Pinecone index operation returns the record count for each namespace?",
+   "describe_index_stats",
+   [
+    "describe_index",
+    "list_indexes",
+    "fetch"
+   ],
+   "describe_index_stats reports total and per-namespace record counts. describe_index returns configuration such as dimension, metric and host."
+  ],
+  [
+   "A pod-based Pinecone index has enough storage but cannot handle the query load. What raises queries per second?",
+   "Adding replicas",
+   [
+    "Changing the metric to dotproduct",
+    "Spreading records over more namespaces",
+    "Lowering the index dimension"
+   ],
+   "In pod-based indexes, replicas serve copies of the data and add query throughput, while pods and pod size add capacity."
+  ],
+  [
+   "In Pinecone pod-based indexes, how do s1 pods differ from p1 pods?",
+   "s1 holds more vectors per pod, p1 gives lower query latency",
+   [
+    "s1 runs on GPUs, p1 runs on CPUs only",
+    "s1 stores only sparse vectors, p1 only dense",
+    "s1 is serverless, p1 is a dedicated pod"
+   ],
+   "s1 pods are storage optimized with higher latency. p1 pods are performance optimized with less capacity per pod."
+  ],
+  [
+   "You want sparse-dense (hybrid) vectors in a single Pinecone index. Which metric must the index use?",
+   "dotproduct",
+   [
+    "cosine",
+    "euclidean",
+    "manhattan"
+   ],
+   "Pinecone supports querying sparse-dense vectors only on indexes that use the dotproduct metric."
+  ],
+  [
+   "Your embedding model outputs unit-length vectors. Which statement about Pinecone metric choice is true?",
+   "cosine and dotproduct rank the results identically",
+   [
+    "euclidean gives the reverse ranking of cosine",
+    "dotproduct needs vectors of differing lengths",
+    "cosine works only on sparse vectors"
+   ],
+   "For unit vectors the dot product equals cosine similarity, so both give the same ordering (euclidean also agrees)."
+  ],
+  [
+   "Which metadata value can a Pinecone record NOT store for filtering?",
+   "{\"author\": {\"name\": \"Ann\"}}",
+   [
+    "{\"genre\": \"drama\"}",
+    "{\"year\": 2021}",
+    "{\"tags\": [\"ai\", \"db\"]}"
+   ],
+   "Pinecone metadata supports strings, numbers, booleans and lists of strings. Nested objects are not supported."
+  ],
+  [
+   "Which statement about Pinecone serverless indexes is accurate?",
+   "Storage and compute are separated and billing follows usage",
+   [
+    "You must choose pod size x1 to x8 before creating it",
+    "All vectors live only in RAM on dedicated pods",
+    "It cannot be split into namespaces"
+   ],
+   "Serverless indexes decouple storage from compute and charge for reads, writes and storage instead of provisioned pods."
+  ],
+  [
+   "Which setting of an existing Pinecone index cannot be changed after creation?",
+   "The similarity metric",
+   [
+    "Deletion protection",
+    "The replica count (pod-based)",
+    "The index tags"
+   ],
+   "Metric and dimension are fixed at creation. Deletion protection, tags and pod-based replicas can be changed with configure_index."
+  ]
+ ],
+ "weaviate": [
+  [
+   "In Weaviate, what is a class (called a collection in the v4 client)?",
+   "A named set of objects with shared properties and vector config",
+   [
+    "A single JSON object together with its own vector",
+    "A user role that groups permissions on the server",
+    "A backup archive of the whole database"
+   ],
+   "A class or collection defines the properties, vectorizer and vector index settings shared by its objects."
+  ],
+  [
+   "A Weaviate class is configured with vectorizer set to none. What does that mean?",
+   "You supply the vectors yourself when importing objects",
+   [
+    "Weaviate falls back to text2vec-transformers",
+    "Only BM25 keyword queries work on the class",
+    "Weaviate picks a vectorizer for each query"
+   ],
+   "With no vectorizer, Weaviate does not create embeddings, so you bring your own. nearVector still works on those vectors."
+  ],
+  [
+   "What does a Weaviate hybrid search combine?",
+   "BM25 keyword search and vector search",
+   [
+    "Two vectorizers applied to one property",
+    "Results from the GraphQL and REST APIs",
+    "Results from an HNSW and a flat index"
+   ],
+   "Hybrid search fuses the ranked results of a BM25 keyword search and a vector similarity search."
+  ],
+  [
+   "In a Weaviate hybrid query, what does alpha: 0 mean?",
+   "Pure keyword (BM25) search",
+   [
+    "Pure vector search",
+    "Equal keyword and vector weight",
+    "The query is rejected as invalid"
+   ],
+   "alpha weights vector against keyword results: 1 is pure vector search and 0 is pure keyword search."
+  ],
+  [
+   "In a Weaviate hybrid query, what does alpha: 0.5 mean?",
+   "Keyword and vector results are weighted equally",
+   [
+    "Only half of the objects are searched",
+    "Results scoring under 0.5 are dropped",
+    "The vector search uses half the dimensions"
+   ],
+   "alpha is the vector weight and 1 minus alpha is the keyword weight, so 0.5 balances both."
+  ],
+  [
+   "What is the default distance metric of a Weaviate vector index?",
+   "cosine",
+   [
+    "dot",
+    "l2-squared",
+    "manhattan"
+   ],
+   "Weaviate uses cosine distance unless you set another metric in the vector index config."
+  ],
+  [
+   "Which Weaviate search operator requires a vectorizer module configured on the class?",
+   "nearText",
+   [
+    "nearVector",
+    "nearObject",
+    "bm25"
+   ],
+   "nearText turns query text into a vector, which needs a vectorizer. nearVector takes your vector and nearObject reuses a stored one."
+  ],
+  [
+   "Which Weaviate GraphQL query returns the total number of Article objects?",
+   "{ Aggregate { Article { meta { count } } } }",
+   [
+    "{ Get { Article { meta { count } } } }",
+    "{ Count { Article { total } } }",
+    "{ Explore { Article { total } } }"
+   ],
+   "Aggregate computes statistics such as meta { count }. Get returns objects, not aggregated counts."
+  ],
+  [
+   "In a Weaviate GraphQL Get query with nearText, where do you request each result's distance?",
+   "In the _additional { distance } field",
+   [
+    "As a top-level argument distance: true",
+    "Inside the where filter of the query",
+    "In a meta { distance } sub-field"
+   ],
+   "Search metadata such as distance, certainty, id and vector is returned through the _additional field."
+  ],
+  [
+   "Which Weaviate where-filter operator selects objects whose wordCount is more than 1000?",
+   "GreaterThan with valueInt: 1000",
+   [
+    "Above with valueInt: 1000",
+    "MoreThan with valueInt: 1000",
+    "Gt with valueInt: 1000"
+   ],
+   "Weaviate filter operators include Equal, NotEqual, GreaterThan, GreaterThanEqual, LessThan, LessThanEqual and Like."
+  ],
+  [
+   "How do you require two conditions to both match in a Weaviate where filter?",
+   "Use operator And with both conditions in operands",
+   [
+    "Put both property names into one path array",
+    "Pass two separate where arguments to Get",
+    "Use operator Both with a valueText list"
+   ],
+   "Conditions are combined with the And or Or operator, listing the individual conditions in operands."
+  ],
+  [
+   "How does Weaviate apply a where filter together with a vector search?",
+   "It builds an allow-list from the inverted index, then searches within it",
+   [
+    "It runs the vector search first, then drops results that fail",
+    "It ignores the filter whenever a query vector is given",
+    "It runs one query per filter value and merges the results"
+   ],
+   "Weaviate pre-filters: matching ids come from the inverted index first, so filtering does not shrink the result count like post-filtering."
+  ],
+  [
+   "In Weaviate multi-tenancy, what does each tenant get?",
+   "Its own shard, isolating its data from other tenants",
+   [
+    "Its own schema with different properties",
+    "Its own dedicated vectorizer module",
+    "Its own separate GraphQL endpoint"
+   ],
+   "Tenants share the class schema, but each tenant's data lives in a separate shard that can be managed and deleted independently."
+  ],
+  [
+   "A Weaviate class has multi-tenancy enabled. What happens if you insert an object without naming a tenant?",
+   "The request fails because a tenant is required",
+   [
+    "The object goes to a default tenant",
+    "The object is copied to every tenant",
+    "The object lands in a shared global shard"
+   ],
+   "On a multi-tenant class every read and write must specify the tenant."
+  ],
+  [
+   "In Weaviate, a tenant's activity status is set to INACTIVE (COLD in older versions). What happens?",
+   "Its data stays on disk but cannot be queried until reactivated",
+   [
+    "Its objects are deleted permanently after a day",
+    "It stays queryable but rejects all new writes",
+    "Its objects are merged into the other tenants"
+   ],
+   "Inactive tenants are not loaded into memory, saving resources, and become usable again once set back to ACTIVE."
+  ],
+  [
+   "With Weaviate's cosine metric, what does a result distance of 0 mean?",
+   "The vectors point in the same direction",
+   [
+    "The vectors point in opposite directions",
+    "The vectors are orthogonal to each other",
+    "The object has no vector stored"
+   ],
+   "Cosine distance is 1 minus cosine similarity, so 0 means identical direction and 2 means opposite."
+  ],
+  [
+   "In Weaviate, the certainty value is only available with which distance metric?",
+   "cosine",
+   [
+    "dot",
+    "l2-squared",
+    "hamming"
+   ],
+   "certainty is a normalized score derived from cosine distance. For other metrics, use distance instead."
+  ],
+  [
+   "With auto-schema enabled, what happens when you import an object with a property the Weaviate class does not define?",
+   "The property is added, with its type inferred from the value",
+   [
+    "The import fails with an unknown property error",
+    "The property is silently dropped from the object",
+    "The value is stored as an untyped binary blob"
+   ],
+   "Auto-schema extends the class on import and infers data types. Disabling it makes unknown properties an error."
+  ],
+  [
+   "Which Weaviate data type fits a property storing a price such as 19.99?",
+   "number",
+   [
+    "int",
+    "float",
+    "text"
+   ],
+   "Weaviate uses number for floating point values and int for integers. There is no data type called float."
+  ],
+  [
+   "Which kind of Weaviate module lets you run retrieval augmented generation on search results?",
+   "A generative module such as generative-openai",
+   [
+    "A vectorizer module such as text2vec-cohere",
+    "A backup module such as backup-s3",
+    "An image module such as img2vec-neural"
+   ],
+   "Generative modules send retrieved objects to an LLM with a prompt. Vectorizer modules only create embeddings."
+  ]
+ ],
+ "qdrant": [
+  [
+   "What is a point in Qdrant?",
+   "A record with an id, one or more vectors and an optional payload",
+   [
+    "A single shard replica placed on one cluster node",
+    "A named layer inside the HNSW graph structure",
+    "A payload index built on one field of a collection"
+   ],
+   "Collections hold points. Each point has an id, its vector or named vectors, and a JSON payload."
+  ],
+  [
+   "Which values can a Qdrant point id be?",
+   "An unsigned integer or a UUID",
+   [
+    "Any string up to 64 bytes long",
+    "Only integers assigned by Qdrant",
+    "A float or a timestamp"
+   ],
+   "Qdrant accepts 64-bit unsigned integers and UUIDs as point ids. Arbitrary strings are rejected."
+  ],
+  [
+   "By default, on which port does Qdrant serve its gRPC API?",
+   "6334",
+   [
+    "6333",
+    "50051",
+    "8080"
+   ],
+   "Qdrant listens on 6333 for REST (HTTP) and 6334 for gRPC by default."
+  ],
+  [
+   "Which QdrantClient argument makes the Python client use gRPC instead of REST where possible?",
+   "prefer_grpc=True",
+   [
+    "use_grpc=True",
+    "protocol=\"grpc\"",
+    "grpc_only=True"
+   ],
+   "QdrantClient(host=..., prefer_grpc=True) switches supported calls to gRPC, usually on port 6334."
+  ],
+  [
+   "Why might you choose Qdrant's gRPC API over REST for a large ingestion job?",
+   "Binary Protobuf messages are usually faster for bulk uploads",
+   [
+    "It is the only Qdrant API that supports filters",
+    "It is the only Qdrant API that creates snapshots",
+    "It skips authentication, which saves round trips"
+   ],
+   "REST and gRPC expose the same functionality, but gRPC's binary encoding has less overhead for large payloads."
+  ],
+  [
+   "When creating a Qdrant collection, which two vector parameters must you provide?",
+   "Vector size and distance metric",
+   [
+    "Shard count and replication factor",
+    "Payload schema and id format",
+    "HNSW m and ef_construct"
+   ],
+   "VectorParams(size=..., distance=...) is required. Shards, replicas and HNSW settings have defaults."
+  ],
+  [
+   "Which of these is NOT a built-in distance metric in Qdrant?",
+   "Jaccard",
+   [
+    "Cosine",
+    "Dot",
+    "Euclid"
+   ],
+   "Qdrant supports Cosine, Dot, Euclid and Manhattan distance."
+  ],
+  [
+   "How does Qdrant implement the Cosine distance for a collection?",
+   "It normalizes vectors on upload and then uses the dot product",
+   [
+    "It computes the arccos of each pair during search",
+    "It converts Cosine into Euclid at query time",
+    "It applies Cosine only to quantized vectors"
+   ],
+   "For unit vectors the dot product equals cosine similarity, so Qdrant normalizes once on insert to make search cheaper."
+  ],
+  [
+   "In a Qdrant filter, which clause means at least one of its conditions must match?",
+   "should",
+   [
+    "must",
+    "must_not",
+    "match_any"
+   ],
+   "must requires all conditions, must_not excludes them, and should requires at least one."
+  ],
+  [
+   "Which Qdrant condition matches points whose city payload is London or Berlin?",
+   "{\"key\": \"city\", \"match\": {\"any\": [\"London\", \"Berlin\"]}}",
+   [
+    "{\"key\": \"city\", \"match\": {\"value\": [\"London\", \"Berlin\"]}}",
+    "{\"key\": \"city\", \"match\": {\"except\": [\"London\", \"Berlin\"]}}",
+    "{\"key\": \"city\", \"range\": {\"any\": [\"London\", \"Berlin\"]}}"
+   ],
+   "match any is an IN condition. match value takes a single value, and except does the opposite."
+  ],
+  [
+   "Which Qdrant condition keeps points with price from 10 to 20, both ends included?",
+   "{\"key\": \"price\", \"range\": {\"gte\": 10, \"lte\": 20}}",
+   [
+    "{\"key\": \"price\", \"range\": {\"gt\": 10, \"lt\": 20}}",
+    "{\"key\": \"price\", \"range\": {\"from\": 10, \"to\": 20}}",
+    "{\"key\": \"price\", \"match\": {\"value\": [10, 20]}}"
+   ],
+   "gte and lte include the bounds. gt and lt would exclude 10 and 20."
+  ],
+  [
+   "Qdrant searches filtered by user_id are slow on a large collection. What is the first fix to try?",
+   "Create a payload index on user_id",
+   [
+    "Increase the vector size of the collection",
+    "Switch the distance metric to Dot",
+    "Set HNSW m to 0 on the collection"
+   ],
+   "A payload index (for example keyword type) speeds up filtering and lets the query planner choose an efficient strategy."
+  ],
+  [
+   "What is the effect of raising the HNSW m parameter in a Qdrant collection?",
+   "Higher recall, but more memory and slower index builds",
+   [
+    "Lower memory use, but noticeably lower recall",
+    "Fewer vectors can be stored in the collection",
+    "Quantization is switched off for the collection"
+   ],
+   "m is the number of edges per node. More edges make the graph denser and more accurate but heavier to build and store."
+  ],
+  [
+   "Which Qdrant search-time parameter raises HNSW accuracy at the cost of latency?",
+   "hnsw_ef",
+   [
+    "ef_construct",
+    "m",
+    "full_scan_threshold"
+   ],
+   "hnsw_ef sets the candidate list size during search. ef_construct and m apply when the index is built."
+  ],
+  [
+   "Qdrant docs suggest setting HNSW m to 0 during a large initial upload. What does that do?",
+   "It skips building the HNSW graph until you restore m",
+   [
+    "It hides the uploaded points until you restore m",
+    "It deletes the existing graph and all payloads",
+    "It switches the collection to product quantization"
+   ],
+   "With m = 0 no graph is built, so ingestion is faster. Setting m back afterwards builds the index once."
+  ],
+  [
+   "Roughly how much does Qdrant scalar quantization to int8 reduce vector memory compared to float32?",
+   "About 4 times",
+   [
+    "About 2 times",
+    "About 16 times",
+    "About 64 times"
+   ],
+   "Each 4-byte float becomes a 1-byte integer, so memory drops by about 4x with a small accuracy loss."
+  ],
+  [
+   "With quantization enabled in Qdrant, what do the rescore and oversampling search options do?",
+   "Fetch extra candidates with quantized vectors, then rerank with originals",
+   [
+    "Retrain the quantizer on each query to adapt codebooks to the query",
+    "Copy every point to more shards so the query can run in parallel",
+    "Re-quantize stored vectors to fewer bits after every query"
+   ],
+   "Oversampling retrieves more candidates using fast quantized vectors and rescoring reorders them with full-precision vectors to restore accuracy."
+  ],
+  [
+   "How does product quantization compare with scalar quantization in Qdrant?",
+   "It compresses more, but usually loses more accuracy",
+   [
+    "It is lossless, so search accuracy is unchanged",
+    "It compresses less but searches much faster",
+    "It works only on collections with GPU support"
+   ],
+   "Product quantization can reach far higher compression ratios than int8 scalar quantization, at a larger cost in recall."
+  ],
+  [
+   "Which Qdrant REST call creates a snapshot of only the collection named docs?",
+   "POST /collections/docs/snapshots",
+   [
+    "POST /snapshots",
+    "GET /collections/docs/backup",
+    "PUT /collections/docs/snapshots/recover"
+   ],
+   "POST /snapshots makes a full storage snapshot, and the recover endpoint restores from a snapshot instead of creating one."
+  ],
+  [
+   "In a distributed Qdrant cluster, what does a collection snapshot created on one node contain?",
+   "Only the shards of that collection stored on that node",
+   [
+    "Every shard of the collection from all the nodes",
+    "Only the collection config, without any points",
+    "The data of every collection in the cluster"
+   ],
+   "Snapshots are per node in distributed mode, so a full backup means creating a snapshot on each node."
+  ]
+ ],
+ "milvus": [
+  [
+   "What is the role of the proxy in Milvus 2.x?",
+   "A stateless entry point that validates, routes and merges requests",
+   [
+    "The component that stores vectors permanently on disk",
+    "The worker that builds indexes on sealed segments",
+    "The store that keeps schemas and other metadata"
+   ],
+   "Proxies form the access layer: they check requests, forward them to the right nodes and aggregate partial results."
+  ],
+  [
+   "What do query nodes do in Milvus 2.x?",
+   "Load segments into memory and run searches and queries",
+   [
+    "Assign global timestamps to every write request",
+    "Store collection schemas and partition metadata",
+    "Serve the web UI for browsing collections"
+   ],
+   "Query nodes hold loaded segments and execute vector and scalar searches; scaling them out raises search throughput."
+  ],
+  [
+   "In a standard Milvus 2.x deployment, which component stores metadata such as collection schemas?",
+   "etcd",
+   [
+    "MinIO",
+    "Pulsar",
+    "Redis"
+   ],
+   "etcd is the meta store. MinIO or S3 holds data files and Pulsar or Kafka served as the log broker."
+  ],
+  [
+   "Where does Milvus 2.x persist segment data such as binlogs and index files?",
+   "In object storage such as MinIO or S3",
+   [
+    "In etcd next to the collection schemas",
+    "Only in the memory of query nodes",
+    "In local files on the proxy nodes"
+   ],
+   "Milvus separates storage from compute: segment and index files live in object storage, so nodes can be replaced."
+  ],
+  [
+   "Milvus search throughput is too low while CPU on query nodes is saturated. What helps most?",
+   "Adding more query nodes",
+   [
+    "Adding more etcd members",
+    "Creating more partitions",
+    "Switching to Strong consistency"
+   ],
+   "Searches run on query nodes, so more query nodes (or replicas across them) spread the load."
+  ],
+  [
+   "In Milvus 2.x you created a collection, inserted data and built an index, but search fails because the collection is not loaded. What is the fix?",
+   "Load the collection into memory before searching",
+   [
+    "Call flush a second time and retry the search",
+    "Create a new partition and search that instead",
+    "Restart the proxy so it detects the new index"
+   ],
+   "Milvus searches only data loaded into query node memory, so call load_collection (or load) first. release frees that memory."
+  ],
+  [
+   "Which partition does every new Milvus collection start with?",
+   "_default",
+   [
+    "main",
+    "partition_0",
+    "root"
+   ],
+   "Milvus creates a partition named _default automatically; inserts go there unless you name another partition."
+  ],
+  [
+   "What does marking a scalar field as partition key do in Milvus?",
+   "Milvus hashes its values to route entities into partitions",
+   [
+    "It makes the field the primary key of the collection",
+    "It forces all values of the field to be unique",
+    "It builds a vector index on that scalar field"
+   ],
+   "With a partition key, Milvus manages partitions itself and can prune them when you filter on that field."
+  ],
+  [
+   "Tenant A's data lives in a Milvus partition named tenant_a. How do you search only that data?",
+   "Pass partition_names=[\"tenant_a\"] to the search",
+   [
+    "Set the collection consistency level to Strong",
+    "Filter with the expression partition == \"tenant_a\"",
+    "Copy the partition into a new collection first"
+   ],
+   "Search accepts a list of partition names, so only those partitions are scanned."
+  ],
+  [
+   "For an IVF_FLAT index in Milvus, which parameter is set at search time to choose how many clusters are scanned?",
+   "nprobe",
+   [
+    "nlist",
+    "M",
+    "efConstruction"
+   ],
+   "nlist sets the number of clusters when building the index; nprobe sets how many of them each search visits."
+  ],
+  [
+   "Why does Milvus reject a search on an HNSW index with limit=100 and ef=50?",
+   "ef must be at least as large as the limit (top-k)",
+   [
+    "ef must be a multiple of the M build parameter",
+    "ef is only valid for IVF index types",
+    "HNSW searches allow a limit of at most 50"
+   ],
+   "For HNSW the search parameter ef must be between top-k and its maximum, since the candidate list must hold the results."
+  ],
+  [
+   "Which Milvus index type returns exact results by brute-force comparison?",
+   "FLAT",
+   [
+    "IVF_FLAT",
+    "HNSW",
+    "IVF_PQ"
+   ],
+   "FLAT compares the query with every vector. IVF_FLAT only scans nprobe clusters, so it is approximate."
+  ],
+  [
+   "Which metric_type values does Milvus 2.4 support for float vector fields?",
+   "L2, IP and COSINE",
+   [
+    "L2, HAMMING and JACCARD",
+    "EUCLID, DOT and COSINE",
+    "L1, L2 and CHEBYSHEV"
+   ],
+   "Float vectors use L2, IP and COSINE (added in 2.3). HAMMING and JACCARD are for binary vectors."
+  ],
+  [
+   "What is Attu?",
+   "An open-source GUI for managing Milvus",
+   [
+    "The query language used by Milvus",
+    "The log broker inside Milvus clusters",
+    "The official Python SDK for Milvus"
+   ],
+   "Attu is a web admin tool for Milvus: browse collections, manage indexes, partitions and users, and run test searches without code."
+  ],
+  [
+   "In Milvus 2.x, what is the default consistency level of a new collection?",
+   "Bounded",
+   [
+    "Strong",
+    "Session",
+    "Eventually"
+   ],
+   "Bounded staleness is the default: reads may miss the latest writes within a small time window, in exchange for lower latency."
+  ],
+  [
+   "A Milvus job inserts data from one process, and a different client must see it in its very next search. Which consistency level guarantees this?",
+   "Strong",
+   [
+    "Session",
+    "Bounded",
+    "Eventually"
+   ],
+   "Strong waits until all data up to the search timestamp is visible. Session only guarantees a client sees its own writes."
+  ],
+  [
+   "Which Milvus consistency level guarantees a client sees its own writes, but not other clients' latest writes?",
+   "Session",
+   [
+    "Strong",
+    "Bounded",
+    "Eventually"
+   ],
+   "Session consistency gives read-your-writes for the same client session at lower cost than Strong."
+  ],
+  [
+   "What is a growing segment in Milvus?",
+   "A segment still receiving inserts, not yet sealed",
+   [
+    "A segment whose index is being rebuilt from scratch",
+    "A segment copied to every query node as a replica",
+    "A segment that compaction is currently merging"
+   ],
+   "New data goes into growing segments. Once sealed (by size, time or flush) they become immutable and get indexed."
+  ],
+  [
+   "What does compaction do in Milvus?",
+   "Merges small segments and purges deleted entities",
+   [
+    "Compresses vectors with product quantization",
+    "Moves segment metadata from etcd to MinIO",
+    "Splits large collections into partitions"
+   ],
+   "Deletes are first recorded as delete logs; compaction rewrites segments to remove them and reduces the segment count."
+  ],
+  [
+   "What does calling flush on a Milvus collection do?",
+   "Seals growing segments and persists them to object storage",
+   [
+    "Deletes all entities but keeps the collection schema",
+    "Drops the vector index so it can be rebuilt later",
+    "Releases the loaded collection from query node memory"
+   ],
+   "Flush forces in-progress data into sealed segments in object storage, which can then be indexed."
+  ]
+ ],
+ "chroma": [
+  [
+   "Which Chroma client keeps data only in memory, losing it when the process exits?",
+   "chromadb.EphemeralClient()",
+   [
+    "chromadb.PersistentClient(path=\"./db\")",
+    "chromadb.HttpClient(host=\"localhost\")",
+    "chromadb.CloudClient()"
+   ],
+   "EphemeralClient (also chromadb.Client()) runs in memory. PersistentClient writes to disk and HttpClient talks to a server."
+  ],
+  [
+   "Which code creates an embedded Chroma client that saves data to the ./chroma folder?",
+   "chromadb.PersistentClient(path=\"./chroma\")",
+   [
+    "chromadb.Client(persist=True)",
+    "chromadb.HttpClient(path=\"./chroma\")",
+    "chromadb.EphemeralClient(dir=\"./chroma\")"
+   ],
+   "PersistentClient(path=...) runs Chroma inside your process and stores data in that directory."
+  ],
+  [
+   "Which CLI command starts a Chroma server that stores its data in ./db?",
+   "chroma run --path ./db",
+   [
+    "chroma serve --dir ./db",
+    "chromadb start --data ./db",
+    "chroma server --store ./db"
+   ],
+   "chroma run launches the client-server mode. Applications then connect with chromadb.HttpClient."
+  ],
+  [
+   "By default, which port does a Chroma server started with chroma run listen on?",
+   "8000",
+   [
+    "6333",
+    "19530",
+    "5432"
+   ],
+   "Chroma serves on port 8000 by default. 6333 is Qdrant, 19530 is Milvus and 5432 is PostgreSQL."
+  ],
+  [
+   "When is Chroma's client-server mode a better fit than embedded mode?",
+   "Several services on different machines share one database",
+   [
+    "A single notebook prototype running on your laptop",
+    "A unit test that should leave nothing on disk",
+    "A one-off script that runs offline and exits"
+   ],
+   "Embedded mode lives inside one process. A server lets many clients and machines use the same data."
+  ],
+  [
+   "In Chroma, what does create_collection(\"docs\") do when a collection named docs already exists (default arguments)?",
+   "It raises an error",
+   [
+    "It returns the existing collection",
+    "It replaces the existing collection",
+    "It creates a collection named docs_1"
+   ],
+   "create_collection fails on a duplicate name unless get_or_create=True. Use get_or_create_collection to reuse it."
+  ],
+  [
+   "Which Chroma method returns a collection if it exists and creates it otherwise?",
+   "get_or_create_collection",
+   [
+    "create_collection(overwrite=True)",
+    "upsert_collection",
+    "ensure_collection"
+   ],
+   "get_or_create_collection is the idempotent way to open a collection at application startup."
+  ],
+  [
+   "What must every record passed to collection.add() in Chroma include?",
+   "A unique string id",
+   [
+    "A precomputed embedding",
+    "A metadata dictionary",
+    "A document text"
+   ],
+   "ids are required. Embeddings are optional when documents are given, and metadata is optional."
+  ],
+  [
+   "You add documents to Chroma without embeddings and without setting an embedding function. Which model embeds them by default?",
+   "all-MiniLM-L6-v2",
+   [
+    "text-embedding-3-small",
+    "bert-large-uncased",
+    "clip-vit-base-patch32"
+   ],
+   "Chroma's default embedding function runs the Sentence Transformers model all-MiniLM-L6-v2 locally through ONNX Runtime."
+  ],
+  [
+   "What is the dimension of vectors produced by Chroma's default model, all-MiniLM-L6-v2?",
+   "384",
+   [
+    "768",
+    "1536",
+    "512"
+   ],
+   "all-MiniLM-L6-v2 outputs 384-dimensional embeddings, smaller than BERT-base (768) or OpenAI ada-002 (1536)."
+  ],
+  [
+   "You call collection.add(ids=[...], embeddings=[...], documents=[...]) in Chroma. What happens to the documents?",
+   "They are stored as-is and are not embedded again",
+   [
+    "They are re-embedded and replace your embeddings",
+    "The call fails because both were passed",
+    "Their embeddings are averaged with yours"
+   ],
+   "When embeddings are provided, Chroma stores them and keeps documents only as text; the embedding function is skipped."
+  ],
+  [
+   "Which Chroma method fetches records by id or metadata filter without any similarity ranking?",
+   "collection.get()",
+   [
+    "collection.query()",
+    "collection.search()",
+    "collection.fetch_nearest()"
+   ],
+   "get() returns matching records directly. query() performs nearest neighbor search on embeddings or query texts."
+  ],
+  [
+   "Which metadata value does Chroma 0.5 reject for a record?",
+   "{\"tags\": {\"a\": 1}}",
+   [
+    "{\"page\": 3}",
+    "{\"draft\": True}",
+    "{\"source\": \"wiki\"}"
+   ],
+   "Chroma 0.5 metadata values must be strings, integers, floats or booleans. Nested dictionaries are not allowed."
+  ],
+  [
+   "Which Chroma query argument keeps only records whose metadata year is greater than 2020?",
+   "where={\"year\": {\"$gt\": 2020}}",
+   [
+    "where={\"year\": \">2020\"}",
+    "where_document={\"$gt\": 2020}",
+    "where={\"$gt\": {\"year\": 2020}}"
+   ],
+   "Metadata filters go in where, with the operator nested under the field name. where_document filters the document text."
+  ],
+  [
+   "Which Chroma filter keeps only records whose document text contains the word pgvector?",
+   "where_document={\"$contains\": \"pgvector\"}",
+   [
+    "where={\"$contains\": \"pgvector\"}",
+    "where={\"document\": \"pgvector\"}",
+    "where_document={\"$eq\": \"pgvector\"}"
+   ],
+   "where_document filters on the stored document text, and $contains performs a substring match."
+  ],
+  [
+   "In Chroma 0.5, how do you require category news AND lang en in a where filter?",
+   "{\"$and\": [{\"category\": \"news\"}, {\"lang\": \"en\"}]}",
+   [
+    "{\"$both\": [{\"category\": \"news\"}, {\"lang\": \"en\"}]}",
+    "{\"category\": [\"news\"], \"$and\": {\"lang\": \"en\"}}",
+    "{\"$all\": {\"category\": \"news\", \"lang\": \"en\"}}"
+   ],
+   "Chroma 0.5 expects one top-level key per where clause, so several conditions are combined with $and (or $or)."
+  ],
+  [
+   "What distance function does a new Chroma collection use when you do not configure one?",
+   "Squared L2 (Euclidean)",
+   [
+    "Cosine distance",
+    "Inner product",
+    "Manhattan distance"
+   ],
+   "The default space is l2. You can choose cosine or ip when creating the collection."
+  ],
+  [
+   "In Chroma 0.4 and 0.5, how do you make a collection use cosine distance?",
+   "create_collection(\"docs\", metadata={\"hnsw:space\": \"cosine\"})",
+   [
+    "collection.query(query_texts=q, distance=\"cosine\")",
+    "chromadb.PersistentClient(path=p, metric=\"cosine\")",
+    "create_collection(\"docs\", distance_fn=\"cosine\")"
+   ],
+   "The space is set with hnsw:space at creation and cannot be changed later; queries do not take a metric argument."
+  ],
+  [
+   "In Chroma query results, what does a smaller value in distances mean?",
+   "The record is more similar to the query",
+   [
+    "The record is less similar to the query",
+    "The record was added more recently",
+    "The record has fewer metadata fields"
+   ],
+   "Chroma returns distances, not similarity scores, so lower values mean closer matches."
+  ],
+  [
+   "What does collection.query(query_texts=[\"a\", \"b\"], n_results=3) return in ids?",
+   "A list of 2 lists, each with up to 3 ids",
+   [
+    "A flat list with up to 6 ids in total",
+    "A list of 3 lists, each with 2 ids",
+    "A single list with the 3 best ids"
+   ],
+   "Query results are grouped per query text, so each field is a list with one inner list per query."
+  ]
+ ],
+ "faiss": [
+  [
+   "What kind of search does faiss.IndexFlatL2 perform?",
+   "Exact brute-force search over all vectors",
+   [
+    "Approximate search within a few clusters",
+    "Graph-based search over linked neighbors",
+    "Search over compressed product codes"
+   ],
+   "Flat indexes compare the query with every stored vector, giving exact results with no training."
+  ],
+  [
+   "Which FAISS index must be trained before you can add vectors?",
+   "IndexIVFFlat",
+   [
+    "IndexFlatL2",
+    "IndexFlatIP",
+    "IndexIDMap over IndexFlatL2"
+   ],
+   "IVF indexes need centroids learned from data. Flat indexes report is_trained as True from the start."
+  ],
+  [
+   "What does calling train() on an IndexIVFFlat do?",
+   "Runs k-means to learn the nlist coarse centroids",
+   [
+    "Builds a navigable graph linking each vector",
+    "Normalizes the vectors to unit length",
+    "Sorts stored vectors by their L2 norm"
+   ],
+   "Training clusters sample vectors into nlist cells. Each added vector is then assigned to its nearest centroid's list."
+  ],
+  [
+   "What happens if you call add() on an IndexIVFFlat that has not been trained?",
+   "FAISS raises an error because the index is untrained",
+   [
+    "FAISS trains it automatically on the added batch",
+    "All vectors are stored in the first inverted list",
+    "The vectors are silently ignored by the index"
+   ],
+   "add() checks is_trained and fails if the coarse quantizer has no centroids yet."
+  ],
+  [
+   "For an IndexIVFFlat, what is the effect of increasing nprobe?",
+   "More lists are scanned: higher recall, slower search",
+   [
+    "More centroids are learned when the index trains",
+    "Each stored vector uses less memory afterwards",
+    "Results are returned with more decimal places"
+   ],
+   "nprobe sets how many inverted lists each query visits. nlist, the number of centroids, is fixed at construction."
+  ],
+  [
+   "What is the default nprobe of a newly created FAISS IndexIVFFlat?",
+   "1",
+   [
+    "8",
+    "10",
+    "Equal to nlist"
+   ],
+   "nprobe defaults to 1, so only the closest cell is scanned. Raising it is usually the first tuning step."
+  ],
+  [
+   "In FAISS, D, I = index.search(xq, 5) where xq has shape (10, d). What are D and I?",
+   "Two arrays of shape (10, 5): distances and ids",
+   [
+    "Two arrays of shape (5, 10): ids and distances",
+    "A flat array of 50 distances and one of 50 ids",
+    "One array of 10 ids and one of 10 distances"
+   ],
+   "search returns one row per query and k columns: D holds distances and I holds the matching ids."
+  ],
+  [
+   "What does an id of -1 in the I array returned by a FAISS search mean?",
+   "Fewer than k results were found for that query",
+   [
+    "The matching vector was deleted from the index",
+    "The match lies at infinite distance from the query",
+    "The query vector had the wrong dimension"
+   ],
+   "When a search finds fewer than k neighbors (for example, a low nprobe on an IVF index), missing slots are filled with -1."
+  ],
+  [
+   "What values does faiss.IndexFlatL2 return in the distance array D?",
+   "Squared L2 distances",
+   [
+    "Plain L2 distances",
+    "Cosine similarities",
+    "Negative inner products"
+   ],
+   "FAISS skips the square root for L2 since it does not change the ranking. Take np.sqrt(D) if you need real distances."
+  ],
+  [
+   "How do you run cosine similarity search with FAISS?",
+   "L2-normalize vectors with faiss.normalize_L2, then use IndexFlatIP",
+   [
+    "Create IndexFlatL2 with an extra metric=\"cosine\" argument",
+    "Use IndexIVFPQ with nbits set to 1 for every subvector",
+    "Use IndexFlatL2 directly on the unnormalized raw vectors"
+   ],
+   "For unit-length vectors the inner product equals cosine similarity, so normalize both data and queries."
+  ],
+  [
+   "index.add_with_ids fails on a plain IndexFlatL2. What is the usual fix?",
+   "Wrap it in faiss.IndexIDMap",
+   [
+    "Train the index before adding",
+    "Switch to faiss.IndexFlatIP",
+    "Set index.ntotal manually"
+   ],
+   "Flat indexes only assign sequential ids. IndexIDMap stores your custom 64-bit ids; IVF indexes support them natively."
+  ],
+  [
+   "Which attribute tells you how many vectors a FAISS index currently stores?",
+   "index.ntotal",
+   [
+    "index.d",
+    "index.nlist",
+    "index.is_trained"
+   ],
+   "ntotal is the vector count. d is the dimension and nlist is the number of IVF cells."
+  ],
+  [
+   "In faiss.IndexIVFPQ(quantizer, d, nlist, m, 8), what must be true of m?",
+   "d must be divisible by m",
+   [
+    "m must be larger than d",
+    "m must equal nlist",
+    "m must be at least 256"
+   ],
+   "PQ splits each vector into m equal subvectors, so d has to be a multiple of m."
+  ],
+  [
+   "With IndexIVFPQ, d = 128, m = 16 and nbits = 8, how many bytes does each vector's PQ code take?",
+   "16 bytes",
+   [
+    "128 bytes",
+    "512 bytes",
+    "64 bytes"
+   ],
+   "The code size is m times nbits divided by 8, so 16 bytes, versus 512 bytes for the raw float32 vector."
+  ],
+  [
+   "Compared with IndexIVFFlat, what is the main trade-off of IndexIVFPQ?",
+   "Far less memory, but lower accuracy from lossy codes",
+   [
+    "More memory, but results become fully exact",
+    "No training step, but slower search speed",
+    "GPU-only support, but no accuracy loss"
+   ],
+   "Product quantization stores compact codes instead of full vectors, so distances are approximations."
+  ],
+  [
+   "Roughly how much RAM do 1 million 768-dimensional float32 vectors need in an IndexFlatL2?",
+   "About 3 GB",
+   [
+    "About 768 MB",
+    "About 30 GB",
+    "About 300 MB"
+   ],
+   "1,000,000 x 768 x 4 bytes is about 3.07 GB. Flat indexes store the raw vectors with no compression."
+  ],
+  [
+   "With res = faiss.StandardGpuResources(), which call copies a CPU index to GPU 0?",
+   "faiss.index_cpu_to_gpu(res, 0, index)",
+   [
+    "faiss.index_to_device(index, \"cuda:0\")",
+    "index.to(\"cuda:0\", resources=res)",
+    "faiss.GpuIndex(index, device=0, res=res)"
+   ],
+   "index_cpu_to_gpu takes the GPU resources, the device number and the CPU index, and returns a GPU index."
+  ],
+  [
+   "What should you do before saving a FAISS GPU index with faiss.write_index?",
+   "Convert it with faiss.index_gpu_to_cpu",
+   [
+    "Train the index again on the GPU",
+    "Call index.reset() to free GPU memory",
+    "Normalize the stored vectors"
+   ],
+   "write_index serializes CPU indexes, so copy the GPU index back to the CPU first. reset() would erase its vectors."
+  ],
+  [
+   "Why does FAISS on GPU give the biggest speedups when queries are sent in large batches?",
+   "Batches let the GPU process many queries in parallel",
+   [
+    "GPU indexes reject batches with only one query",
+    "Batching lowers the memory used by each vector",
+    "Large batches turn approximate search exact"
+   ],
+   "GPUs are throughput devices; batching amortizes transfer and kernel launch overhead across many queries."
+  ],
+  [
+   "You train an IndexIVFFlat with nlist = 4096 on only 1,000 vectors. What happens?",
+   "Training fails, since k-means needs at least nlist points",
+   [
+    "FAISS lowers nlist to 1,000 automatically",
+    "Training succeeds and leaves lists empty",
+    "FAISS duplicates points until it has enough"
+   ],
+   "k-means cannot learn more centroids than it has points. In practice use many more, tens of points per centroid or more."
+  ]
+ ],
+ "pgvector": [
+  [
+   "Which SQL statement enables pgvector in a PostgreSQL database?",
+   "CREATE EXTENSION vector;",
+   [
+    "CREATE EXTENSION pgvector;",
+    "LOAD 'pgvector';",
+    "ALTER DATABASE ENABLE vector;"
+   ],
+   "The project is named pgvector, but the extension itself is called vector."
+  ],
+  [
+   "Which column definition stores 1536-dimensional embeddings with pgvector?",
+   "embedding vector(1536)",
+   [
+    "embedding vector[1536]",
+    "embedding pgvector(1536)",
+    "embedding embedding(1536)"
+   ],
+   "The type is vector with the dimension in parentheses. Square brackets would declare a PostgreSQL array."
+  ],
+  [
+   "Which literal inserts the vector 1, 2, 3 into a pgvector column?",
+   "'[1,2,3]'",
+   [
+    "'{1,2,3}'",
+    "'(1,2,3)'",
+    "'<1,2,3>'"
+   ],
+   "pgvector's text format uses square brackets. Curly braces are PostgreSQL array syntax."
+  ],
+  [
+   "What happens if you insert '[1,2,3]' into a column declared as vector(1536)?",
+   "The insert fails with a dimension mismatch error",
+   [
+    "pgvector pads the vector with zeros to 1536",
+    "The column dimension changes to 3",
+    "The row is stored but skipped by indexes"
+   ],
+   "A typed vector column enforces its dimension, so inserting a 3-dimensional vector raises an error."
+  ],
+  [
+   "Which pgvector operator returns cosine distance?",
+   "<=>",
+   [
+    "<->",
+    "<#>",
+    "<+>"
+   ],
+   "<-> is L2 distance, <#> is negative inner product, <+> is L1 distance (0.7.0+) and <=> is cosine distance."
+  ],
+  [
+   "What does SELECT '[0,0]'::vector <-> '[3,4]' return with pgvector?",
+   "5",
+   [
+    "25",
+    "7",
+    "-5"
+   ],
+   "<-> is Euclidean (L2) distance: the square root of 3 squared plus 4 squared is 5."
+  ],
+  [
+   "What does SELECT '[1,2]'::vector <#> '[3,4]' return with pgvector?",
+   "-11",
+   [
+    "11",
+    "2.83",
+    "0.98"
+   ],
+   "<#> returns the negative inner product (1x3 + 2x4 = 11, negated) so that ascending ORDER BY puts the largest products first."
+  ],
+  [
+   "With pgvector, how do you get cosine similarity, not distance, between embedding and a query vector q?",
+   "1 - (embedding <=> q)",
+   [
+    "embedding <=> q",
+    "-1 * (embedding <=> q)",
+    "1 - (embedding <-> q)"
+   ],
+   "<=> returns cosine distance, which is 1 minus cosine similarity, so subtract it from 1."
+  ],
+  [
+   "Which query returns the 5 rows nearest to '[3,1,2]' by L2 distance?",
+   "SELECT * FROM items ORDER BY embedding <-> '[3,1,2]' LIMIT 5;",
+   [
+    "SELECT * FROM items ORDER BY embedding <-> '[3,1,2]' DESC LIMIT 5;",
+    "SELECT * FROM items WHERE embedding <-> '[3,1,2]' < 5;",
+    "SELECT * FROM items ORDER BY embedding <#> '[3,1,2]' LIMIT 5;"
+   ],
+   "Nearest neighbors are the smallest distances, so order ascending with LIMIT; this form can also use a vector index."
+  ],
+  [
+   "A table has an HNSW index created with vector_l2_ops, but queries use ORDER BY embedding <=> q. What happens?",
+   "The index is not used, because cosine needs vector_cosine_ops",
+   [
+    "pgvector converts the index to cosine automatically",
+    "The query fails with an operator class error",
+    "The index is used, with a small loss of recall"
+   ],
+   "An index only serves the operator its operator class was built for, so the planner falls back to a sequential scan."
+  ],
+  [
+   "Compared with IVFFlat, what does pgvector's HNSW index typically offer?",
+   "Better speed-recall trade-off, but slower builds and more memory",
+   [
+    "Faster builds and less memory, but lower recall",
+    "Exact results, but it requires a training step",
+    "Lower latency, but it supports only L2 distance"
+   ],
+   "HNSW builds a multilayer graph: queries are faster at the same recall, at the cost of build time and memory."
+  ],
+  [
+   "Why should you create a pgvector IVFFlat index after loading the data rather than on an empty table?",
+   "It chooses its list centroids from the rows present at build time",
+   [
+    "PostgreSQL refuses to build indexes on empty tables",
+    "An IVFFlat index blocks all inserts into the table",
+    "Empty IVFFlat indexes turn into HNSW indexes"
+   ],
+   "IVFFlat clusters existing rows into lists. Built on no data, its lists are poor and recall suffers."
+  ],
+  [
+   "The pgvector README suggests what starting value for lists on an IVFFlat index over 500,000 rows?",
+   "500",
+   [
+    "50",
+    "5000",
+    "707"
+   ],
+   "For up to 1 million rows the guideline is rows / 1000; above that it is the square root of rows."
+  ],
+  [
+   "Which setting makes a pgvector IVFFlat index scan more lists per query?",
+   "SET ivfflat.probes = 10;",
+   [
+    "SET ivfflat.lists = 10;",
+    "SET hnsw.ef_search = 10;",
+    "SET ivfflat.nprobe = 10;"
+   ],
+   "ivfflat.probes (default 1) sets how many lists are searched. lists is an index build option, not a session setting."
+  ],
+  [
+   "In pgvector 0.7, with an HNSW index and the default hnsw.ef_search of 40, a query uses LIMIT 100. What happens?",
+   "It returns at most 40 rows unless ef_search is raised",
+   [
+    "It returns 100 rows with exactly the same recall",
+    "It fails because LIMIT is larger than ef_search",
+    "It switches to an exact sequential scan instead"
+   ],
+   "The HNSW scan yields at most ef_search candidates, so set hnsw.ef_search to at least the LIMIT."
+  ],
+  [
+   "In CREATE INDEX ON items USING hnsw (embedding vector_l2_ops) WITH (m = 16, ef_construction = 64), what does m control?",
+   "The max connections per node in each graph layer",
+   [
+    "The number of lists the vectors are split into",
+    "The number of probes used per query at search",
+    "The maximum number of dimensions per vector"
+   ],
+   "m (default 16) sets graph connectivity. ef_construction (default 64) sets the candidate list size while building."
+  ],
+  [
+   "In pgvector 0.7, a query with WHERE category_id = 7 ORDER BY embedding <-> q LIMIT 10 uses an HNSW index and returns only 3 rows, though many rows match. Why?",
+   "The filter runs after the index scan returns its candidates",
+   [
+    "HNSW indexes cannot be combined with WHERE clauses",
+    "category_id needs to be stored inside the vector",
+    "LIMIT is ignored whenever an HNSW index is used"
+   ],
+   "The approximate scan yields ef_search candidates and the WHERE clause then discards non-matching ones. Version 0.8.0 adds iterative scans."
+  ],
+  [
+   "What is a key advantage of pgvector over a standalone vector database?",
+   "Vectors sit next to relational data, with joins and transactions",
+   [
+    "It needs no indexes to search millions of vectors",
+    "It runs vector search on the GPU automatically",
+    "It stores vectors of unlimited dimensions"
+   ],
+   "Embeddings live in ordinary tables, so one SQL query can join, filter and update them under PostgreSQL transactions."
+  ],
+  [
+   "Vector queries usually filter on one of a few category_id values. Which pgvector indexing approach does the README suggest?",
+   "A partial HNSW index with WHERE (category_id = 7)",
+   [
+    "A B-tree index on the embedding column",
+    "A GIN index on the embedding column",
+    "Raising ivfflat.lists to the row count"
+   ],
+   "A partial index per frequent filter value only contains matching rows, so the approximate scan returns relevant candidates."
+  ],
+  [
+   "Up to how many dimensions can pgvector HNSW and IVFFlat indexes handle for the vector type?",
+   "2,000",
+   [
+    "1,024",
+    "16,000",
+    "4,096"
+   ],
+   "The vector type stores up to 16,000 dimensions, but indexes support up to 2,000; halfvec indexes allow up to 4,000."
+  ]
+ ]
+}

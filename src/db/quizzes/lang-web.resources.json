@@ -1,0 +1,42 @@
+{
+ "typescript": [
+  "TypeScript Handbook",
+  "https://www.typescriptlang.org/docs/handbook/intro.html"
+ ],
+ "javascript": [
+  "MDN JavaScript Guide",
+  "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide"
+ ],
+ "ruby": [
+  "Ruby Documentation (ruby-lang.org)",
+  "https://www.ruby-lang.org/en/documentation/"
+ ],
+ "php": [
+  "PHP Manual",
+  "https://www.php.net/manual/en/"
+ ],
+ "dart": [
+  "Dart Language Documentation",
+  "https://dart.dev/language"
+ ],
+ "lua": [
+  "Lua 5.4 Reference Manual",
+  "https://www.lua.org/manual/5.4/"
+ ],
+ "perl": [
+  "perlintro: a brief introduction to Perl",
+  "https://perldoc.perl.org/perlintro"
+ ],
+ "bash": [
+  "GNU Bash Reference Manual",
+  "https://www.gnu.org/software/bash/manual/bash.html"
+ ],
+ "powershell": [
+  "PowerShell Documentation (Microsoft Learn)",
+  "https://learn.microsoft.com/en-us/powershell/"
+ ],
+ "webassembly": [
+  "MDN WebAssembly Guide",
+  "https://developer.mozilla.org/en-US/docs/WebAssembly"
+ ]
+}

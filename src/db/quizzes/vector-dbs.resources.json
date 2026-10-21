@@ -1,0 +1,30 @@
+{
+ "pinecone": [
+  "Pinecone Documentation",
+  "https://docs.pinecone.io/"
+ ],
+ "weaviate": [
+  "Weaviate Documentation",
+  "https://docs.weaviate.io/weaviate"
+ ],
+ "qdrant": [
+  "Qdrant Documentation",
+  "https://qdrant.tech/documentation/"
+ ],
+ "milvus": [
+  "Milvus Documentation",
+  "https://milvus.io/docs"
+ ],
+ "chroma": [
+  "Chroma Documentation",
+  "https://docs.trychroma.com/"
+ ],
+ "faiss": [
+  "Faiss Wiki (official, GitHub)",
+  "https://github.com/facebookresearch/faiss/wiki"
+ ],
+ "pgvector": [
+  "pgvector README (official)",
+  "https://github.com/pgvector/pgvector"
+ ]
+}

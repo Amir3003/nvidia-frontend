@@ -1,0 +1,38 @@
+{
+ "tensorflow": [
+  "TensorFlow Guide",
+  "https://www.tensorflow.org/guide"
+ ],
+ "keras": [
+  "Keras Developer Guides",
+  "https://keras.io/guides/"
+ ],
+ "jax": [
+  "JAX Documentation",
+  "https://docs.jax.dev/en/latest/"
+ ],
+ "pytorch-lightning": [
+  "PyTorch Lightning Documentation",
+  "https://lightning.ai/docs/pytorch/stable/"
+ ],
+ "scikit-learn": [
+  "scikit-learn User Guide",
+  "https://scikit-learn.org/stable/user_guide.html"
+ ],
+ "xgboost": [
+  "XGBoost Documentation",
+  "https://xgboost.readthedocs.io/en/stable/"
+ ],
+ "lightgbm": [
+  "LightGBM Documentation",
+  "https://lightgbm.readthedocs.io/en/stable/"
+ ],
+ "catboost": [
+  "CatBoost Documentation",
+  "https://catboost.ai/docs/"
+ ],
+ "onnx": [
+  "ONNX Runtime Documentation",
+  "https://onnxruntime.ai/docs/"
+ ]
+}

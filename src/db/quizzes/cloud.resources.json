@@ -1,0 +1,46 @@
+{
+ "kubernetes": [
+  "Kubernetes Documentation: Concepts",
+  "https://kubernetes.io/docs/concepts/"
+ ],
+ "helm": [
+  "Helm Documentation",
+  "https://helm.sh/docs/"
+ ],
+ "terraform": [
+  "Terraform Language Documentation",
+  "https://developer.hashicorp.com/terraform/language"
+ ],
+ "ansible": [
+  "Ansible Playbook Guide",
+  "https://docs.ansible.com/ansible/latest/playbook_guide/index.html"
+ ],
+ "nginx": [
+  "NGINX Beginner's Guide",
+  "https://nginx.org/en/docs/beginners_guide.html"
+ ],
+ "aws": [
+  "AWS Documentation",
+  "https://docs.aws.amazon.com/"
+ ],
+ "gcp": [
+  "Google Cloud Documentation",
+  "https://cloud.google.com/docs"
+ ],
+ "azure": [
+  "Microsoft Learn: Azure Fundamentals",
+  "https://learn.microsoft.com/en-us/training/azure/"
+ ],
+ "nebius-cloud": [
+  "Nebius AI Cloud Documentation",
+  "https://docs.nebius.com/"
+ ],
+ "cloudflare": [
+  "Cloudflare Developer Docs",
+  "https://developers.cloudflare.com/"
+ ],
+ "vercel": [
+  "Vercel Documentation",
+  "https://vercel.com/docs"
+ ]
+}

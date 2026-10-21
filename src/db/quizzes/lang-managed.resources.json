@@ -1,0 +1,26 @@
+{
+ "csharp": [
+  "C# documentation (Microsoft Learn)",
+  "https://learn.microsoft.com/en-us/dotnet/csharp/"
+ ],
+ "java": [
+  "Learn Java (dev.java, Oracle)",
+  "https://dev.java/learn/"
+ ],
+ "kotlin": [
+  "Kotlin documentation",
+  "https://kotlinlang.org/docs/home.html"
+ ],
+ "swift": [
+  "The Swift Programming Language",
+  "https://docs.swift.org/swift-book/"
+ ],
+ "objective-c": [
+  "Programming with Objective-C (Apple)",
+  "https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ProgrammingWithObjectiveC/Introduction/Introduction.html"
+ ],
+ "scala": [
+  "Scala 3 Book",
+  "https://docs.scala-lang.org/scala3/book/introduction.html"
+ ]
+}

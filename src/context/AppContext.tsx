@@ -18,6 +18,7 @@ import {
   INITIAL_SKILLS,
   INITIAL_MEMORY,
 } from '../data';
+import { CATALOG_SKILLS } from '../db/quizCatalog';
 
 interface PrivacySettings {
   storeMemoryLocal: boolean;
@@ -144,7 +145,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
   const [skills, setSkills] = useState<SkillItem[]>(() => {
     const profile = loadUserProfile();
-    return INITIAL_SKILLS.map((item) => {
+    return [...INITIAL_SKILLS, ...CATALOG_SKILLS].map((item) => {
       if (profile.skills && profile.skills.some((ps) => ps.toLowerCase() === item.name.toLowerCase())) {
         return { ...item, status: 'UNVERIFIED' as const };
       }

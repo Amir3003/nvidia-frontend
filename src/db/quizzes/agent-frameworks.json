@@ -1,0 +1,2224 @@
+{
+ "langchain": [
+  [
+   "In LangChain Expression Language (LCEL), what does the | operator do in chain = prompt | model | parser?",
+   "Composes runnables so each output feeds the next input",
+   [
+    "Runs all three runnables in parallel on the same input",
+    "Tries each runnable in turn until one succeeds",
+    "Merges the outputs of all three into one dictionary"
+   ],
+   "The pipe operator builds a RunnableSequence: the prompt output goes to the model, and the model output goes to the parser."
+  ],
+  [
+   "Which method do you call to run a LangChain runnable once on a single input and get the final result?",
+   "invoke()",
+   [
+    "batch()",
+    "stream()",
+    "transform()"
+   ],
+   "invoke() runs the runnable on one input and returns the full output. batch() takes a list of inputs and stream() yields chunks."
+  ],
+  [
+   "In the LCEL chain {\"context\": retriever, \"question\": RunnablePassthrough()} | prompt, what does RunnablePassthrough() supply?",
+   "The original chain input, unchanged, as question",
+   [
+    "An empty string whenever the retriever finds nothing",
+    "The retriever output copied into the question key",
+    "The previous turn of the conversation from memory"
+   ],
+   "RunnablePassthrough returns its input as is, so the user question flows to the prompt next to the retrieved context."
+  ],
+  [
+   "When a plain dict such as {\"a\": chain1, \"b\": chain2} is used as a step in an LCEL chain, which runnable does LangChain turn it into?",
+   "RunnableParallel",
+   [
+    "RunnableSequence",
+    "RunnableBranch",
+    "RunnableLambda"
+   ],
+   "A dict of runnables is coerced into RunnableParallel, which runs each value on the same input and returns a dict of results."
+  ],
+  [
+   "Which class explicitly wraps an ordinary Python function so it becomes a LangChain runnable with invoke, batch and stream?",
+   "RunnableLambda",
+   [
+    "RunnablePassthrough",
+    "RunnableParallel",
+    "RunnableBinding"
+   ],
+   "RunnableLambda(func) turns any callable into a runnable. RunnablePassthrough forwards input and does not wrap custom logic."
+  ],
+  [
+   "What does PromptTemplate.from_template(\"Tell me a joke about {topic}\").invoke({\"topic\": \"cats\"}) return?",
+   "A prompt value whose text is the filled-in template",
+   [
+    "A model response that contains a joke about cats",
+    "The template string with {topic} left unchanged",
+    "A list with one HumanMessage per template variable"
+   ],
+   "A prompt template only formats text; invoking it returns a StringPromptValue. No model is called until you pipe it into one."
+  ],
+  [
+   "Which element lets a ChatPromptTemplate insert a variable-length list of earlier chat messages, for example chat history?",
+   "MessagesPlaceholder",
+   [
+    "FewShotPromptTemplate",
+    "SystemMessagePromptTemplate",
+    "StringPromptValue"
+   ],
+   "MessagesPlaceholder(\"history\") reserves a slot that is filled with a list of messages at invoke time."
+  ],
+  [
+   "A prompt is ChatPromptTemplate.from_messages([(\"system\", \"You are a {role}\"), (\"human\", \"{question}\")]). Which input keys must invoke receive?",
+   "role and question",
+   [
+    "Only question",
+    "system and human",
+    "messages and question"
+   ],
+   "Every {variable} in any message of the template is an input variable, including the one inside the system message."
+  ],
+  [
+   "What does StrOutputParser do when it receives an AIMessage from a chat model in an LCEL chain?",
+   "Returns the message content as a plain string",
+   [
+    "Splits the content into a list of separate lines",
+    "Parses the content as JSON and returns a dict",
+    "Wraps the content in a new HumanMessage object"
+   ],
+   "StrOutputParser extracts the text content, which is why prompt | model | StrOutputParser() returns a str."
+  ],
+  [
+   "With PydanticOutputParser, which method returns text you put in the prompt so the model knows the expected output format?",
+   "get_format_instructions()",
+   [
+    "get_output_schema_text()",
+    "format_prompt_hint()",
+    "to_prompt_instructions()"
+   ],
+   "get_format_instructions() describes the JSON schema derived from the Pydantic model; you usually inject it as a prompt variable."
+  ],
+  [
+   "For a chat model that supports tool calling or JSON output, what is the recommended LangChain way to get results as instances of a Pydantic class?",
+   "model.with_structured_output(MyModel)",
+   [
+    "model.bind_parser(MyModel)",
+    "model.as_pydantic(MyModel)",
+    "model.with_output_schema(MyModel)"
+   ],
+   "with_structured_output uses the provider's native structured output features and returns parsed objects of the given schema."
+  ],
+  [
+   "You call stream() on prompt | model | JsonOutputParser(). What does the stream yield?",
+   "Increasingly complete partial JSON objects",
+   [
+    "Nothing until the whole output is valid JSON",
+    "Single raw string tokens from the model",
+    "A JSON schema that describes the output"
+   ],
+   "JsonOutputParser supports streaming: it parses the partial text so far and yields progressively more complete objects."
+  ],
+  [
+   "What does calling load() on a typical LangChain document loader return?",
+   "A list of Document objects with page_content and metadata",
+   [
+    "One string that contains the text of every file",
+    "A vector store already filled with embeddings",
+    "A dict that maps each file name to its raw bytes"
+   ],
+   "Loaders return Document objects. Splitting, embedding and indexing are separate steps."
+  ],
+  [
+   "You must process millions of files with a LangChain loader without holding every Document in memory. Which loader method fits?",
+   "lazy_load()",
+   [
+    "load()",
+    "load_and_split()",
+    "aload()"
+   ],
+   "lazy_load() is a generator that yields Documents one at a time. load() and aload() return the full list at once."
+  ],
+  [
+   "Using PyPDFLoader from langchain_community with default settings on a 10-page PDF, what do you usually get from load()?",
+   "One Document per page, with the page number in metadata",
+   [
+    "One Document for the whole file with no page info",
+    "One Document per paragraph found in the text",
+    "One Document per 1,000 characters of text"
+   ],
+   "By default PyPDFLoader creates a Document for each page and records the page in metadata. Chunking is done later by a splitter."
+  ],
+  [
+   "In legacy LangChain memory, what does ConversationBufferWindowMemory(k=3) keep in the prompt?",
+   "Only the last 3 exchanges of the conversation",
+   [
+    "Only the first 3 exchanges of the conversation",
+    "A summary limited to 3 sentences of the chat",
+    "The 3 past messages most similar to the query"
+   ],
+   "The window buffer keeps a sliding window of the most recent k interactions, so older turns drop out."
+  ],
+  [
+   "In LCEL based LangChain, which wrapper adds per-session chat history to any runnable, using a session id from the config?",
+   "RunnableWithMessageHistory",
+   [
+    "RunnableWithMemoryBuffer",
+    "ConversationSessionRunnable",
+    "RunnableHistoryParallel"
+   ],
+   "RunnableWithMessageHistory loads and saves messages for the session_id passed in config, replacing the older memory classes."
+  ],
+  [
+   "LLMChain is deprecated in recent LangChain releases. What is the recommended replacement for a chain that formats a prompt and calls a model?",
+   "Composing prompt | model with LCEL",
+   [
+    "Subclassing LLMChain and overriding run()",
+    "Calling model.predict() with a template",
+    "Wrapping the prompt in a SequentialChain"
+   ],
+   "LangChain now recommends LCEL composition; prompt | model (often | parser) does what LLMChain did, with streaming and batching for free."
+  ],
+  [
+   "In current LangChain, which separate package do you install to use the ChatOpenAI integration?",
+   "langchain-openai",
+   [
+    "langchain-core",
+    "langchain-text-splitters",
+    "langchain-experimental"
+   ],
+   "Major providers ship as partner packages such as langchain-openai and langchain-anthropic. langchain-core holds base abstractions only."
+  ],
+  [
+   "What happens when you invoke chain = model_a.with_fallbacks([model_b])?",
+   "model_b is called only if model_a raises an error",
+   [
+    "Both models run and the faster answer is kept",
+    "model_b is called when model_a's answer is short",
+    "The two models alternate on successive calls"
+   ],
+   "with_fallbacks catches exceptions from the primary runnable (for example rate limits) and retries with the fallbacks in order."
+  ]
+ ],
+ "llamaindex": [
+  [
+   "In LlamaIndex, what does VectorStoreIndex.from_documents(documents) do by default?",
+   "Splits documents into nodes, embeds them and stores the vectors",
+   [
+    "Stores the raw documents and embeds them only at query time",
+    "Builds a keyword table from the documents without embeddings",
+    "Summarizes every document with the LLM and stores the summaries"
+   ],
+   "from_documents runs node parsing and embedding up front, so queries can do a fast top-k similarity search."
+  ],
+  [
+   "How does a SummaryIndex (formerly ListIndex) in LlamaIndex differ from a VectorStoreIndex at query time by default?",
+   "It sends all nodes to the LLM instead of top-k similar ones",
+   [
+    "It retrieves only the single most similar node",
+    "It ranks nodes with BM25 instead of embeddings",
+    "It answers from cached summaries without an LLM"
+   ],
+   "A SummaryIndex keeps nodes in a list and by default iterates over all of them, which suits whole-document summarization."
+  ],
+  [
+   "Which LlamaIndex index type is the best fit when you want to summarize an entire short document, not answer a narrow factual question?",
+   "SummaryIndex",
+   [
+    "VectorStoreIndex",
+    "KeywordTableIndex",
+    "PropertyGraphIndex"
+   ],
+   "Summarization needs every chunk, and SummaryIndex passes all nodes to the LLM. Vector search would return only a few chunks."
+  ],
+  [
+   "What is the simplest LlamaIndex call to turn an existing index into an object that answers natural-language questions?",
+   "index.as_query_engine()",
+   [
+    "index.as_vector_store()",
+    "index.to_retriever_pipeline()",
+    "index.build_answerer()"
+   ],
+   "as_query_engine() wraps a retriever and a response synthesizer; you then call query_engine.query(\"...\")."
+  ],
+  [
+   "In LlamaIndex, what is the main difference between a retriever and a query engine?",
+   "A retriever returns nodes; a query engine also synthesizes an answer",
+   [
+    "A retriever calls the LLM; a query engine only does vector search",
+    "A retriever works on files; a query engine works on databases",
+    "A retriever is async only; a query engine is sync only"
+   ],
+   "Retrievers fetch relevant nodes (NodeWithScore). A query engine combines retrieval with response synthesis by the LLM."
+  ],
+  [
+   "What does index.as_retriever(similarity_top_k=5).retrieve(\"What is RAG?\") return in LlamaIndex?",
+   "A list of up to 5 NodeWithScore objects",
+   [
+    "A single string answer written by the LLM",
+    "The 5 original Document objects, unscored",
+    "A Response object with source_nodes only"
+   ],
+   "Retrievers return scored nodes. Only a query engine or chat engine produces a generated Response."
+  ],
+  [
+   "A LlamaIndex query engine retrieves several chunks that do not all fit in one LLM call. Which response_mode makes one call per chunk, improving the answer step by step?",
+   "refine",
+   [
+    "compact",
+    "tree_summarize",
+    "no_text"
+   ],
+   "refine sends the first chunk, then asks the LLM to refine the answer with each next chunk. compact first packs chunks to reduce calls."
+  ],
+  [
+   "In LlamaIndex, which response_mode returns only the retrieved nodes, without asking the LLM to write an answer?",
+   "no_text",
+   [
+    "refine",
+    "accumulate",
+    "simple_summarize"
+   ],
+   "With no_text the query engine runs retrieval only; the nodes are available in response.source_nodes."
+  ],
+  [
+   "Your LlamaIndex RAG app returns weakly related chunks. Which node postprocessor drops retrieved nodes whose score is below a threshold?",
+   "SimilarityPostprocessor(similarity_cutoff=0.75)",
+   [
+    "SentenceSplitter(chunk_size=0.75)",
+    "MetadataReplacementPostProcessor(0.75)",
+    "TitleExtractor(threshold=0.75)"
+   ],
+   "SimilarityPostprocessor filters NodeWithScore results by similarity_cutoff before synthesis."
+  ],
+  [
+   "Which LlamaIndex node parser splits text into chunks while trying to keep sentences whole, using chunk_size and chunk_overlap?",
+   "SentenceSplitter",
+   [
+    "MarkdownNodeParser",
+    "HierarchicalNodeParser",
+    "SummaryExtractor"
+   ],
+   "SentenceSplitter is the default text splitter: it respects sentence boundaries within the configured token budget."
+  ],
+  [
+   "Which LlamaIndex node parser uses embedding similarity between neighboring sentences to choose chunk boundaries?",
+   "SemanticSplitterNodeParser",
+   [
+    "TokenTextSplitter",
+    "SentenceWindowNodeParser",
+    "CodeSplitter"
+   ],
+   "The semantic splitter places breakpoints where adjacent sentence embeddings differ most, instead of using a fixed size."
+  ],
+  [
+   "In LlamaIndex, what does SentenceWindowNodeParser store in each node's metadata to help answer quality?",
+   "The surrounding sentences around that sentence",
+   [
+    "The embedding vector of the whole document",
+    "A list of questions the sentence answers",
+    "The token count of the parent document"
+   ],
+   "Each node is one sentence, and the window of nearby sentences is kept in metadata so a postprocessor can swap it in before synthesis."
+  ],
+  [
+   "You want each LlamaIndex node to carry a list of questions it can answer, to improve retrieval. Which metadata extractor fits?",
+   "QuestionsAnsweredExtractor",
+   [
+    "TitleExtractor",
+    "KeywordExtractor",
+    "SummaryExtractor"
+   ],
+   "QuestionsAnsweredExtractor asks the LLM for questions each node answers and stores them in node metadata."
+  ],
+  [
+   "How are metadata extractors such as TitleExtractor and KeywordExtractor usually applied in LlamaIndex?",
+   "As transformations in an IngestionPipeline",
+   [
+    "As arguments to query_engine.query()",
+    "As response modes of the synthesizer",
+    "As retrievers inside a RouterQueryEngine"
+   ],
+   "Extractors are transformations: IngestionPipeline(transformations=[SentenceSplitter(), TitleExtractor(), ...]) runs them on nodes."
+  ],
+  [
+   "A LlamaIndex node has a file_path metadata key that should help the LLM but not affect embeddings. Which node setting controls this?",
+   "excluded_embed_metadata_keys",
+   [
+    "excluded_llm_metadata_keys",
+    "metadata_template",
+    "text_template"
+   ],
+   "Keys in excluded_embed_metadata_keys are hidden from the embedding model but still shown to the LLM, unless also excluded there."
+  ],
+  [
+   "How do you save a LlamaIndex index to disk so it can be reloaded later without re-embedding?",
+   "index.storage_context.persist(persist_dir=\"./storage\")",
+   [
+    "index.save_vectors(path=\"./storage\")",
+    "Settings.persist(index, dir=\"./storage\")",
+    "index.dump(persist_dir=\"./storage\")"
+   ],
+   "The StorageContext holds the docstore, index store and vector store; persist() writes them to persist_dir."
+  ],
+  [
+   "After persisting a LlamaIndex index to ./storage, which code reloads it?",
+   "load_index_from_storage(StorageContext.from_defaults(persist_dir=\"./storage\"))",
+   [
+    "VectorStoreIndex.from_documents(\"./storage\")",
+    "StorageContext.load_index(\"./storage\", rebuild=True)",
+    "Settings.load(persist_dir=\"./storage\")"
+   ],
+   "You rebuild the StorageContext from the persist directory and pass it to load_index_from_storage."
+  ],
+  [
+   "Which stores does a default LlamaIndex StorageContext group together?",
+   "Document store, index store and vector store",
+   [
+    "Prompt store, model store and cache store",
+    "Session store, user store and token store",
+    "File store, image store and audio store"
+   ],
+   "StorageContext bundles the docstore (nodes), the index store (index metadata) and the vector store, plus an optional graph store."
+  ],
+  [
+   "In LlamaIndex 0.10 and later, what replaces the deprecated ServiceContext for setting the global LLM and embedding model?",
+   "The Settings object, for example Settings.llm",
+   [
+    "A StorageContext passed to every index",
+    "Environment variables read by each node",
+    "A ServiceRegistry singleton per index"
+   ],
+   "Settings holds global defaults such as llm, embed_model and chunk_size; you can still pass components locally to override them."
+  ],
+  [
+   "You have separate LlamaIndex query engines for HR policies and for engineering docs. Which component chooses between them per question using LLM selection?",
+   "RouterQueryEngine",
+   [
+    "SubQuestionQueryEngine",
+    "RetrieverQueryEngine",
+    "TransformQueryEngine"
+   ],
+   "RouterQueryEngine uses a selector to pick the best query engine from their descriptions. SubQuestionQueryEngine splits one question into parts."
+  ]
+ ],
+ "langgraph": [
+  [
+   "In LangGraph, what must you call on a StateGraph before you can invoke it?",
+   "compile()",
+   [
+    "build()",
+    "start()",
+    "freeze()"
+   ],
+   "graph.compile() validates the graph and returns a runnable CompiledGraph that supports invoke and stream."
+  ],
+  [
+   "In a LangGraph StateGraph, what should a node function return?",
+   "A dict with updates to some state keys",
+   [
+    "The name of the next node as a string",
+    "A full copy of the graph definition",
+    "Nothing, it must mutate state in place"
+   ],
+   "Nodes return partial state updates; LangGraph merges them into the state using each key's reducer."
+  ],
+  [
+   "A LangGraph state is defined as class State(TypedDict): items: Annotated[list, operator.add]. Two nodes return {\"items\": [1]} and {\"items\": [2]}. What happens to items?",
+   "The lists are concatenated",
+   [
+    "The last update overwrites the list",
+    "An error is raised for a duplicate key",
+    "Only the first update is kept"
+   ],
+   "Annotated with operator.add sets a reducer, so updates are appended. Without a reducer, a new value overwrites the old one."
+  ],
+  [
+   "Which LangGraph reducer is used for a messages key so that new messages are appended and messages with an existing id are replaced?",
+   "add_messages",
+   [
+    "operator.add",
+    "merge_dicts",
+    "append_unique"
+   ],
+   "add_messages appends new messages and updates existing ones by id. MessagesState uses it for its messages key."
+  ],
+  [
+   "In LangGraph, what are START and END?",
+   "Special node names marking the graph entry and exit",
+   [
+    "Methods that run and stop a compiled graph",
+    "Reducers that reset the state at each run",
+    "Checkpointers for the first and last step"
+   ],
+   "graph.add_edge(START, \"first\") sets the entry point; routing to END finishes the run."
+  ],
+  [
+   "What does graph.add_edge(\"a\", \"b\") mean in a LangGraph StateGraph?",
+   "After node a finishes, node b always runs next",
+   [
+    "Node b runs only if node a raises an error",
+    "Nodes a and b share the same function",
+    "Node a may call node b as a tool"
+   ],
+   "A normal edge is unconditional. Use add_conditional_edges when the next step depends on the state."
+  ],
+  [
+   "In LangGraph, add_conditional_edges(\"agent\", route, {\"tools\": \"tools\", \"done\": END}). What must route return?",
+   "A key of the mapping, such as \"tools\" or \"done\"",
+   [
+    "A boolean that enables or disables the edge",
+    "The full updated state for the next node",
+    "A numeric index into the list of nodes"
+   ],
+   "The routing function inspects the state and returns a value; the path map translates it into the destination node."
+  ],
+  [
+   "In a typical LangGraph ReAct agent, what does the prebuilt tools_condition routing function do?",
+   "Routes to the tools node if the last message has tool calls",
+   [
+    "Routes to the tools node on every second iteration",
+    "Routes to END if any tool raised an exception",
+    "Routes to the tool with the highest confidence"
+   ],
+   "tools_condition checks the last AI message: tool calls send the flow to the ToolNode, otherwise the graph ends."
+  ],
+  [
+   "A LangGraph run fails with GraphRecursionError. What is the most likely cause?",
+   "A cycle ran more supersteps than the recursion limit",
+   [
+    "A node imported a module recursively",
+    "The state contained a nested dictionary",
+    "Two nodes were given the same reducer"
+   ],
+   "LangGraph stops runs that exceed recursion_limit steps. Fix the loop exit condition, or raise the limit in the config if the loop is intended."
+  ],
+  [
+   "To pause a LangGraph graph for human approval and resume it later, what must the graph be compiled with?",
+   "A checkpointer, such as InMemorySaver",
+   [
+    "A larger recursion_limit value",
+    "The debug=True compile flag",
+    "A reducer on every state key"
+   ],
+   "Interrupts save the state to a checkpoint so execution can resume; without a checkpointer there is nowhere to persist it."
+  ],
+  [
+   "Inside a LangGraph node you call value = interrupt({\"question\": \"Approve?\"}). How do you resume and supply the human answer?",
+   "Invoke again with Command(resume=answer) and the same thread_id",
+   [
+    "Call graph.resume(answer) with no config at all",
+    "Edit the node code and restart the run from START",
+    "Send the answer as a new user message in a new thread"
+   ],
+   "interrupt() pauses the run; invoking with Command(resume=...) on the same thread makes interrupt return that value."
+  ],
+  [
+   "Which LangGraph compile option pauses execution before a given node runs, for example to review a planned tool call?",
+   "interrupt_before=[\"tools\"]",
+   [
+    "checkpoint_before=[\"tools\"]",
+    "pause_on=[\"tools\"]",
+    "breakpoints=[\"tools\"]"
+   ],
+   "compile(checkpointer=..., interrupt_before=[...]) sets static breakpoints; interrupt_after works the same way after a node."
+  ],
+  [
+   "When a LangGraph graph has a checkpointer, which config value separates the saved state of different conversations?",
+   "configurable.thread_id",
+   [
+    "configurable.run_name",
+    "metadata.user_id",
+    "recursion_limit"
+   ],
+   "Checkpoints are stored per thread. Invoking with {\"configurable\": {\"thread_id\": \"42\"}} continues that thread's state."
+  ],
+  [
+   "Which checkpointer is suited to quick local experiments in LangGraph but loses all state when the process exits?",
+   "InMemorySaver (MemorySaver)",
+   [
+    "PostgresSaver",
+    "SqliteSaver",
+    "RedisSaver"
+   ],
+   "The in-memory saver keeps checkpoints in a Python dict; use a database-backed saver such as Postgres for production."
+  ],
+  [
+   "With a LangGraph checkpointer, which method lets you inspect earlier checkpoints of a thread to replay or fork from them (time travel)?",
+   "graph.get_state_history(config)",
+   [
+    "graph.list_threads(config)",
+    "graph.rollback(config)",
+    "graph.get_node_logs(config)"
+   ],
+   "get_state_history yields past StateSnapshots; invoking with a checkpoint's config resumes or forks from that point."
+  ],
+  [
+   "A human reviewer wants to correct a value in a paused LangGraph thread before it resumes. Which method writes that change?",
+   "graph.update_state(config, values)",
+   [
+    "graph.patch_node(config, values)",
+    "graph.set_checkpoint(values)",
+    "graph.reset(config, values)"
+   ],
+   "update_state applies an update to the thread's current state as if a node had produced it, using the same reducers."
+  ],
+  [
+   "In LangGraph, how can a node both update the state and decide which node runs next, for example to hand off to another agent?",
+   "Return Command(update={...}, goto=\"agent_b\")",
+   [
+    "Return the string \"agent_b\" from the node",
+    "Raise a HandoffException(\"agent_b\")",
+    "Call graph.add_edge inside the node"
+   ],
+   "Command combines a state update with dynamic routing, which is the usual way to implement agent handoffs."
+  ],
+  [
+   "A LangGraph workflow must run the same summarize node once per document, where the number of documents is known only at run time. Which feature fits?",
+   "Returning Send objects from a conditional edge",
+   [
+    "Adding one static edge per possible document",
+    "Raising recursion_limit to the document count",
+    "Giving the node an operator.add reducer only"
+   ],
+   "Send(\"summarize\", {\"doc\": d}) fans out dynamic parallel tasks (map-reduce); a reducer then collects the results."
+  ],
+  [
+   "In a LangGraph supervisor multi-agent design, what does the supervisor do?",
+   "Decides which worker agent acts next",
+   [
+    "Stores checkpoints for all the workers",
+    "Executes Python code that workers write",
+    "Merges state keys with custom reducers"
+   ],
+   "The supervisor is an LLM node that routes the task to specialized agents and decides when the work is finished."
+  ],
+  [
+   "How can a compiled LangGraph graph be reused inside another LangGraph graph?",
+   "Add the compiled graph as a node in the parent",
+   [
+    "Merge both graphs with the | operator",
+    "Copy its edges into the parent's reducer",
+    "Pass it to the parent as a checkpointer"
+   ],
+   "Subgraphs are added with add_node like any node; they share state keys with the parent or are wrapped in a function that maps state."
+  ]
+ ],
+ "dspy": [
+  [
+   "In DSPy, what does the signature string \"question -> answer\" declare?",
+   "One input field named question and one output field answer",
+   [
+    "A prompt template with the literal words question and answer",
+    "A function that maps answers back to their questions",
+    "A training example with a question and its gold answer"
+   ],
+   "A signature declares typed input and output fields. DSPy builds the actual prompt from it."
+  ],
+  [
+   "In a class-based DSPy signature, what is the docstring of the class used for?",
+   "As the task instructions for the language model",
+   [
+    "As a comment ignored at run time",
+    "As the name of the output field",
+    "As the metric to optimize against"
+   ],
+   "The docstring becomes the instruction; dspy.InputField and dspy.OutputField declare the fields."
+  ],
+  [
+   "Which DSPy signature declares two inputs and one output?",
+   "\"context, question -> answer\"",
+   [
+    "\"context -> question, answer\"",
+    "\"context | question => answer\"",
+    "\"answer <- context + question\""
+   ],
+   "Inputs are comma separated on the left of the arrow and outputs on the right."
+  ],
+  [
+   "What is the difference between dspy.Predict and dspy.ChainOfThought for the same signature?",
+   "ChainOfThought adds a reasoning output before the answer",
+   [
+    "ChainOfThought runs several models and votes",
+    "Predict adds a reasoning field, ChainOfThought does not",
+    "Predict is only for classification signatures"
+   ],
+   "ChainOfThought extends the signature with a reasoning field, so the model reasons step by step before the outputs."
+  ],
+  [
+   "After qa = dspy.ChainOfThought(\"question -> answer\") and pred = qa(question=\"...\"), how do you read the answer?",
+   "pred.answer",
+   [
+    "pred[\"output\"][0]",
+    "pred.completions.text",
+    "qa.answer"
+   ],
+   "Predictions expose output fields as attributes named after the signature, so pred.answer (and pred.reasoning here)."
+  ],
+  [
+   "Which DSPy module lets the model alternate reasoning steps with calls to tools you provide?",
+   "dspy.ReAct",
+   [
+    "dspy.Predict",
+    "dspy.Retrieve",
+    "dspy.Signature"
+   ],
+   "dspy.ReAct(signature, tools=[...]) implements the Reason plus Act loop over the given tools."
+  ],
+  [
+   "How do you set the default language model for DSPy modules in DSPy 2.5 and later?",
+   "dspy.configure(lm=dspy.LM(\"openai/gpt-4o-mini\"))",
+   [
+    "dspy.Predict.set_model(\"gpt-4o-mini\")",
+    "os.environ[\"DSPY_MODEL\"] = \"gpt-4o-mini\"",
+    "dspy.Signature(model=\"gpt-4o-mini\")"
+   ],
+   "dspy.configure sets global settings; dspy.LM uses provider/model strings (through LiteLLM)."
+  ],
+  [
+   "What is a DSPy optimizer (formerly called a teleprompter)?",
+   "An algorithm that tunes a program's prompts or weights for a metric",
+   [
+    "A module that rewrites user questions before retrieval",
+    "A tool that counts and reduces prompt tokens",
+    "A server that hosts compiled DSPy programs"
+   ],
+   "Optimizers such as BootstrapFewShot and MIPROv2 use a training set and a metric to improve demos, instructions or weights."
+  ],
+  [
+   "What does the DSPy optimizer BootstrapFewShot primarily produce?",
+   "Few-shot demos created by running the program on training data",
+   [
+    "Fine-tuned model weights from the training set",
+    "A rewritten signature with new field names",
+    "A new retrieval index built from the trainset"
+   ],
+   "It runs a teacher program on training examples, keeps traces that pass the metric, and inserts them as demonstrations."
+  ],
+  [
+   "Which DSPy optimizer jointly searches over instructions and few-shot examples, using Bayesian optimization?",
+   "MIPROv2",
+   [
+    "LabeledFewShot",
+    "BootstrapFewShot",
+    "KNNFewShot"
+   ],
+   "MIPROv2 proposes candidate instructions and demos, then searches combinations against the metric."
+  ],
+  [
+   "You have labeled examples but no time for bootstrapping. Which DSPy optimizer simply inserts k of your labeled examples as demos?",
+   "LabeledFewShot",
+   [
+    "MIPROv2",
+    "BootstrapFinetune",
+    "COPRO"
+   ],
+   "LabeledFewShot(k=...) samples labeled training examples directly as demonstrations without running the program."
+  ],
+  [
+   "How do you run a DSPy optimizer on a program?",
+   "optimizer.compile(program, trainset=trainset)",
+   [
+    "program.fit(optimizer, trainset)",
+    "dspy.optimize(program).run(trainset)",
+    "optimizer.train(program, epochs=3)"
+   ],
+   "compile returns a new, optimized copy of the program; the original program is unchanged."
+  ],
+  [
+   "In DSPy, what does \"compiling\" a program mean?",
+   "Optimizing its prompts or weights against a metric",
+   [
+    "Translating the Python code into C for speed",
+    "Checking that all signatures have valid types",
+    "Bundling the program into one prompt string"
+   ],
+   "Compiling uses an optimizer, training data and a metric to produce better demos, instructions or fine-tuned weights."
+  ],
+  [
+   "How do you save an optimized DSPy program and load it back later?",
+   "program.save(\"p.json\") then program.load(\"p.json\")",
+   [
+    "dspy.export(program) then dspy.import(\"p\")",
+    "pickle the LM, then rebuild the signatures",
+    "optimizer.save() then optimizer.restore()"
+   ],
+   "save writes the learned state (demos, instructions) to a file; load restores it into a program with the same structure."
+  ],
+  [
+   "In DSPy, how do you compose several modules into one program?",
+   "Subclass dspy.Module and call the modules in forward()",
+   [
+    "Chain them with the | operator into a Pipeline",
+    "List them in a YAML file passed to dspy.compile",
+    "Merge their signatures into a single string"
+   ],
+   "A dspy.Module declares submodules in __init__ and wires them together in forward(), like a PyTorch module."
+  ],
+  [
+   "Why should submodules of a DSPy program be assigned as attributes in __init__ (for example self.generate = dspy.ChainOfThought(...))?",
+   "So optimizers can find and tune their predictors",
+   [
+    "So they run in parallel threads automatically",
+    "So DSPy can cache their API keys",
+    "So they are excluded from compilation"
+   ],
+   "Optimizers discover predictors via named_predictors() on the module tree, which comes from these attributes."
+  ],
+  [
+   "What is the usual signature of a DSPy metric function?",
+   "metric(example, pred, trace=None)",
+   [
+    "metric(pred) -> str",
+    "metric(trainset, devset)",
+    "metric(lm, prompt, temperature)"
+   ],
+   "The metric compares the gold example with the prediction; trace is set during optimization so metrics can be stricter there."
+  ],
+  [
+   "A DSPy metric returns a float score during evaluation but a bool when trace is not None. Why is this pattern common?",
+   "Bootstrapping needs a pass or fail decision to keep demos",
+   [
+    "Evaluate cannot handle float metrics at all",
+    "trace is None only when the LM call failed",
+    "Booleans make the LM calls run faster"
+   ],
+   "During compilation the trace is present and the optimizer keeps only demos that pass, so a strict boolean works best."
+  ],
+  [
+   "How do you mark which fields of a dspy.Example are inputs, so the rest are treated as labels?",
+   "Example(question=q, answer=a).with_inputs(\"question\")",
+   [
+    "Example(inputs=[\"question\"], answer=a)",
+    "Example(question=q).labels(\"answer\")",
+    "Example(q, a).set_input_index(0)"
+   ],
+   "with_inputs names the input keys; other fields are labels that the metric can compare against."
+  ],
+  [
+   "Which DSPy utility scores a program on a dev set with a metric, optionally using several threads?",
+   "dspy.Evaluate(devset=devset, metric=metric)",
+   [
+    "dspy.Predict(devset, metric)",
+    "dspy.Signature.score(devset)",
+    "dspy.LM.benchmark(devset)"
+   ],
+   "Evaluate runs the program on every example and reports the aggregate metric; num_threads parallelizes calls."
+  ]
+ ],
+ "crewai": [
+  [
+   "Which three attributes give a CrewAI Agent its persona?",
+   "role, goal and backstory",
+   [
+    "name, task and prompt",
+    "title, mission and history",
+    "persona, objective and context"
+   ],
+   "Every CrewAI Agent is defined by role, goal and backstory; these shape the system prompt the agent works with."
+  ],
+  [
+   "What is the purpose of the backstory attribute of a CrewAI Agent?",
+   "It gives context that shapes the agent's style and choices",
+   [
+    "It stores the agent's past task results across runs",
+    "It lists the tools the agent is allowed to call",
+    "It sets the order in which agents take turns"
+   ],
+   "The backstory is persona text added to the prompt, for example years of experience or domain focus. Memory stores past results, not backstory."
+  ],
+  [
+   "Which two fields must you provide when creating a CrewAI Task?",
+   "description and expected_output",
+   [
+    "description and output_file",
+    "name and prompt",
+    "goal and tools"
+   ],
+   "A Task needs a description of the work and an expected_output that tells the agent what a finished result looks like."
+  ],
+  [
+   "In CrewAI, how do you make task_c explicitly receive the outputs of task_a and task_b?",
+   "Task(..., context=[task_a, task_b])",
+   [
+    "Task(..., inputs=[task_a, task_b])",
+    "Task(..., depends_on=[task_a, task_b])",
+    "Task(..., previous=[task_a, task_b])"
+   ],
+   "The context parameter lists tasks whose outputs are passed to this task as context."
+  ],
+  [
+   "A CrewAI task description contains {topic}. What fills it in?",
+   "crew.kickoff(inputs={\"topic\": \"AI\"})",
+   [
+    "Task.format(topic=\"AI\")",
+    "Agent(variables={\"topic\": \"AI\"})",
+    "Crew(template_vars={\"topic\": \"AI\"})"
+   ],
+   "kickoff interpolates the inputs dict into placeholders in agent and task fields before the crew runs."
+  ],
+  [
+   "What happens to tasks in a CrewAI crew that uses Process.sequential?",
+   "They run in list order, each seeing earlier outputs as context",
+   [
+    "They all run at once and the results are merged",
+    "A manager agent picks their order at run time",
+    "They run in random order to avoid bias"
+   ],
+   "In a sequential process tasks execute one after another, and the output of a task is available as context to the next."
+  ],
+  [
+   "What must you add when you set a CrewAI Crew to process=Process.hierarchical?",
+   "A manager_llm or a manager_agent",
+   [
+    "A context list on every task",
+    "A memory=True flag on the crew",
+    "An output_file on the last task"
+   ],
+   "The hierarchical process needs a manager that plans, delegates tasks to agents and validates results."
+  ],
+  [
+   "In a hierarchical CrewAI process, who decides which agent works on each task?",
+   "The manager, which delegates and reviews the work",
+   [
+    "The first agent in the agents list",
+    "The task with the shortest description",
+    "Each agent votes on the assignments"
+   ],
+   "The manager agent (or one created from manager_llm) coordinates the crew instead of a fixed order."
+  ],
+  [
+   "How do you turn a plain Python function into a CrewAI tool most simply?",
+   "Decorate it with @tool(\"Tool name\") from crewai.tools",
+   [
+    "Decorate it with @crew_tool from crewai.agents",
+    "Pass it to Agent(functions=[...]) unchanged",
+    "Register it with Crew.add_tool(func) at kickoff"
+   ],
+   "The @tool decorator builds a tool from the function, using its docstring as the description for the LLM."
+  ],
+  [
+   "When you subclass BaseTool to build a custom CrewAI tool, which method holds the tool's logic?",
+   "_run",
+   [
+    "execute",
+    "run_tool",
+    "__call__"
+   ],
+   "A BaseTool subclass sets name, description (and optionally an args_schema) and implements _run."
+  ],
+  [
+   "In CrewAI, an agent has tools=[search_tool] and its task has tools=[file_tool]. Which tools can the agent use for that task?",
+   "Only file_tool, since task tools override agent tools",
+   [
+    "Only search_tool, since agent tools take priority",
+    "Neither, because the two definitions conflict",
+    "Both, but search_tool only after file_tool fails"
+   ],
+   "Tools set on a Task replace the agent's default tools for that task."
+  ],
+  [
+   "Which tool from the crewai_tools package gives an agent web search results through the Serper API?",
+   "SerperDevTool",
+   [
+    "ScrapeWebsiteTool",
+    "FileReadTool",
+    "DirectoryReadTool"
+   ],
+   "SerperDevTool calls the Serper search API. ScrapeWebsiteTool reads a page you already know the URL of."
+  ],
+  [
+   "What does allow_delegation=True let a CrewAI agent do?",
+   "Hand subtasks or questions to other agents in the crew",
+   [
+    "Call any Python function without a tool wrapper",
+    "Skip the expected_output check on its tasks",
+    "Run its tasks at the same time as other agents"
+   ],
+   "Delegation gives the agent tools to delegate work to and ask questions of its coworkers."
+  ],
+  [
+   "What does setting max_iter on a CrewAI Agent control?",
+   "How many reasoning iterations it gets before giving its best answer",
+   [
+    "How many tasks it may accept in a single crew",
+    "How many tokens each of its responses may use",
+    "How many times the crew restarts after errors"
+   ],
+   "max_iter caps the agent's think and act loop for a task, preventing endless tool use."
+  ],
+  [
+   "In CrewAI's built-in memory system, which kinds of memory does memory=True on a Crew enable?",
+   "Short-term, long-term and entity memory",
+   [
+    "Only a buffer of the last ten messages",
+    "Only a vector store of uploaded files",
+    "Episodic, procedural and sensory memory"
+   ],
+   "memory=True turns on the built-in memory system: short-term (current run), long-term (across runs) and entity memory."
+  ],
+  [
+   "In CrewAI, what does long-term memory keep that short-term memory does not?",
+   "Lessons and results that persist across separate crew runs",
+   [
+    "The exact prompt text of the current task only",
+    "The list of tools assigned to each agent",
+    "The API keys used by each agent's model"
+   ],
+   "Short-term memory covers the current execution; long-term memory stores insights from past executions for later runs."
+  ],
+  [
+   "You need a CrewAI task result as a validated Pydantic object. Which Task parameter fits?",
+   "output_pydantic=MyModel",
+   [
+    "expected_output=MyModel",
+    "output_file=MyModel",
+    "response_format=MyModel"
+   ],
+   "output_pydantic parses the final task output into the model; expected_output stays a text description."
+  ],
+  [
+   "What does crew.kickoff() return in recent CrewAI versions?",
+   "A CrewOutput with raw text, task outputs and structured forms",
+   [
+    "A list of strings, one per agent in the crew",
+    "Nothing, the result is only written to output files",
+    "The final agent object with its updated memory"
+   ],
+   "CrewOutput exposes raw, pydantic, json_dict, tasks_output and token usage."
+  ],
+  [
+   "What does human_input=True on a CrewAI Task do?",
+   "The agent asks a person for feedback before finalizing the answer",
+   [
+    "The task description must be typed in at run time",
+    "The task is skipped unless a person approves it first",
+    "The task output is written to the terminal only"
+   ],
+   "With human_input the agent shows its result and takes human feedback before giving the final answer."
+  ],
+  [
+   "What does async_execution=True on a CrewAI Task allow?",
+   "The task runs in the background while later tasks proceed",
+   [
+    "The agent's tools are called through asyncio only",
+    "The crew retries the task when it times out",
+    "The task output is streamed to the user token by token"
+   ],
+   "Async tasks run without blocking; a later task can list them in context to wait for their results."
+  ]
+ ],
+ "autogen": [
+  [
+   "In AutoGen 0.2, what is ConversableAgent?",
+   "The base agent class that sends, receives and replies to messages",
+   [
+    "A wrapper that turns any API into a single tool",
+    "The manager that picks speakers in group chats",
+    "A sandbox that executes generated Python code"
+   ],
+   "AssistantAgent and UserProxyAgent are both subclasses of ConversableAgent with different default settings."
+  ],
+  [
+   "In AutoGen 0.2, how does user_proxy start a conversation with an assistant agent?",
+   "user_proxy.initiate_chat(assistant, message=\"...\")",
+   [
+    "assistant.start(user_proxy, prompt=\"...\")",
+    "autogen.run_chat(user_proxy, assistant, \"...\")",
+    "user_proxy.send_task(assistant, task=\"...\")"
+   ],
+   "initiate_chat sends the first message and runs the exchange until a termination condition is met."
+  ],
+  [
+   "In AutoGen 0.2, what does human_input_mode=\"NEVER\" mean for an agent?",
+   "It replies automatically and never prompts a person",
+   [
+    "It only accepts input typed by a person",
+    "It asks a person before each code run",
+    "It refuses to answer messages from humans"
+   ],
+   "With NEVER the agent auto-replies until a termination condition or max_consecutive_auto_reply stops the chat."
+  ],
+  [
+   "In AutoGen 0.2, when does an agent with human_input_mode=\"TERMINATE\" ask a person for input?",
+   "Only when a termination condition is met",
+   [
+    "Before every single reply it sends",
+    "Only when its code execution fails",
+    "Never, the mode disables human input"
+   ],
+   "TERMINATE lets the chat run automatically and asks the human only at termination, who can then end or continue it."
+  ],
+  [
+   "What is the default human_input_mode of UserProxyAgent in AutoGen 0.2?",
+   "\"ALWAYS\"",
+   [
+    "\"NEVER\"",
+    "\"TERMINATE\"",
+    "\"AUTO\""
+   ],
+   "UserProxyAgent defaults to ALWAYS, so it prompts the human on each turn. AssistantAgent defaults to NEVER."
+  ],
+  [
+   "In AutoGen 0.2, what does a UserProxyAgent do by default when it receives a message with a Python code block?",
+   "Executes the code and replies with the output",
+   [
+    "Sends the code to an LLM to review it",
+    "Saves the code without running it",
+    "Forwards the code to the group chat manager"
+   ],
+   "UserProxyAgent has code execution configured and no LLM by default, so it runs code blocks and returns results."
+  ],
+  [
+   "In AutoGen 0.2, what does code_execution_config={\"work_dir\": \"coding\", \"use_docker\": True} do?",
+   "Runs code in a Docker container, with files in coding",
+   [
+    "Saves generated code to coding without running it",
+    "Runs code on the host and logs to Docker",
+    "Installs Docker inside the coding directory"
+   ],
+   "use_docker isolates execution in a container; work_dir is where code files and outputs are written."
+  ],
+  [
+   "Why is running LLM-generated code in Docker recommended in AutoGen?",
+   "It isolates untrusted code from the host machine",
+   [
+    "It makes the LLM write shorter code blocks",
+    "It is needed for agents to read code output",
+    "It removes the need for termination conditions"
+   ],
+   "Generated code can delete files or install packages; a container limits the damage to the host."
+  ],
+  [
+   "How do you stop an AutoGen 0.2 agent from executing any code at all?",
+   "Set code_execution_config=False",
+   [
+    "Set human_input_mode=\"NEVER\"",
+    "Set llm_config=False",
+    "Set max_consecutive_auto_reply=0"
+   ],
+   "code_execution_config=False disables code execution. llm_config=False disables the LLM, not code running."
+  ],
+  [
+   "In AutoGen 0.4 and later, which executor runs code blocks inside a container instead of on the host?",
+   "DockerCommandLineCodeExecutor",
+   [
+    "LocalCommandLineCodeExecutor",
+    "JupyterCodeExecutor",
+    "PythonReplExecutor"
+   ],
+   "DockerCommandLineCodeExecutor runs each block in a Docker container; LocalCommandLineCodeExecutor runs on the host."
+  ],
+  [
+   "In AutoGen 0.2, what is the role of GroupChatManager in a group chat?",
+   "Picks the next speaker and relays messages to the agents",
+   [
+    "Executes all code that the agents write",
+    "Stores conversation history in a database",
+    "Merges every agent into one large prompt"
+   ],
+   "The manager wraps a GroupChat, selects who speaks next and broadcasts each message to the participants."
+  ],
+  [
+   "In AutoGen 0.2 GroupChat, what does speaker_selection_method=\"round_robin\" do?",
+   "Agents speak in a fixed rotating order",
+   [
+    "An LLM picks the most suitable next speaker",
+    "A random agent is chosen each round",
+    "A person picks the next speaker each turn"
+   ],
+   "round_robin cycles through agents. The default \"auto\" asks the manager's LLM to choose."
+  ],
+  [
+   "What does max_round limit in an AutoGen 0.2 GroupChat?",
+   "The maximum number of rounds before the chat stops",
+   [
+    "How many agents may join the group chat",
+    "How many code blocks each agent may run",
+    "How many tokens one agent message may use"
+   ],
+   "max_round is a safety stop for the group conversation."
+  ],
+  [
+   "In AutoGen 0.4 AgentChat, how does SelectorGroupChat differ from RoundRobinGroupChat?",
+   "It uses a model to choose the next speaker",
+   [
+    "It lets only one agent speak in each run",
+    "It runs every agent in parallel on one task",
+    "It requires a human to choose each speaker"
+   ],
+   "SelectorGroupChat prompts a model with the conversation and agent descriptions to choose the next speaker."
+  ],
+  [
+   "In AutoGen 0.2, an agent has is_termination_msg=lambda m: \"TERMINATE\" in (m.get(\"content\") or \"\"). When does the chat end?",
+   "When the agent receives a message containing TERMINATE",
+   [
+    "When the agent itself sends its first reply",
+    "After TERMINATE appears in any system prompt",
+    "When the message has no content field"
+   ],
+   "is_termination_msg is checked on received messages; returning True stops the agent from replying."
+  ],
+  [
+   "In AutoGen 0.2, what does max_consecutive_auto_reply=3 on an agent do?",
+   "Caps how many automatic replies it sends in a row",
+   [
+    "Retries a failed LLM call up to three times",
+    "Limits group chats to three participants",
+    "Keeps only the last three messages in history"
+   ],
+   "After three consecutive auto replies without human input, the agent stops replying automatically."
+  ],
+  [
+   "In AutoGen 0.4 AgentChat, what does termination=TextMentionTermination(\"TERMINATE\") | MaxMessageTermination(10) do?",
+   "Stops when either condition is met",
+   [
+    "Stops only when both conditions are met",
+    "Raises an error, conditions cannot combine",
+    "Applies the second condition after a restart"
+   ],
+   "The | operator combines conditions with OR; & combines them with AND."
+  ],
+  [
+   "In AutoGen 0.4 AgentChat, what does await team.run(task=\"...\") return?",
+   "A TaskResult with the messages and the stop reason",
+   [
+    "The final message string only",
+    "A new team object with updated memory",
+    "A list of code files written by agents"
+   ],
+   "TaskResult holds the message sequence and why the run stopped; run_stream yields messages as they arrive."
+  ],
+  [
+   "In AutoGen 0.2, what does register_function(f, caller=assistant, executor=user_proxy) set up?",
+   "The assistant can propose calls to f, the user proxy runs them",
+   [
+    "The user proxy proposes calls and the assistant runs them",
+    "Both agents run f in parallel on each message",
+    "f is called once to configure the two agents"
+   ],
+   "The caller gets the tool schema in its LLM config; the executor actually executes the function call."
+  ],
+  [
+   "In AutoGen 0.2, what does max_turns=2 in initiate_chat limit?",
+   "The number of turns in that conversation",
+   [
+    "The number of agents allowed to speak",
+    "The number of retries per LLM call",
+    "The number of tools each agent can use"
+   ],
+   "max_turns ends the chat after the given number of exchanges, even without a termination message."
+  ]
+ ],
+ "semantic-kernel": [
+  [
+   "What is a plugin in Semantic Kernel?",
+   "A named group of functions the kernel exposes to AI",
+   [
+    "A model provider such as OpenAI or Azure",
+    "A vector database used to store embeddings",
+    "A prompt template file for a single request"
+   ],
+   "Plugins group related functions (native code or prompts) that the kernel and the model can call."
+  ],
+  [
+   "In Semantic Kernel for Python, which decorator exposes a class method as a kernel function?",
+   "@kernel_function",
+   [
+    "@sk_plugin",
+    "@semantic_function",
+    "@native_tool"
+   ],
+   "@kernel_function (from semantic_kernel.functions) marks a method; an optional description helps the model choose it."
+  ],
+  [
+   "In Semantic Kernel for C#, which attribute marks a method as callable by the kernel?",
+   "[KernelFunction]",
+   [
+    "[SKPlugin]",
+    "[AIFunction]",
+    "[PromptFunction]"
+   ],
+   "[KernelFunction] exposes the method; [Description] adds text the model uses for function calling."
+  ],
+  [
+   "In Semantic Kernel, what is the main difference between a native function and a semantic (prompt) function?",
+   "Native functions are code; semantic ones are prompts sent to an LLM",
+   [
+    "Native functions call an LLM; semantic ones run locally",
+    "Native functions are C# only; semantic ones Python only",
+    "Native functions are sync; semantic ones are only async"
+   ],
+   "Native functions run your C#, Python or Java code. Semantic functions render a prompt template and call a model."
+  ],
+  [
+   "Which task fits a native function better than a semantic function in Semantic Kernel?",
+   "Getting the current date from the system clock",
+   [
+    "Summarizing a long customer email",
+    "Rewriting text in a friendlier tone",
+    "Translating a paragraph to Korean"
+   ],
+   "Deterministic work such as reading the clock, math or API calls belongs in code; language tasks suit prompts."
+  ],
+  [
+   "In Semantic Kernel's default prompt template syntax, how do you insert a variable named city?",
+   "{{$city}}",
+   [
+    "{city}",
+    "${city}",
+    "<<city>>"
+   ],
+   "The default template engine uses double braces with a dollar sign for variables, for example {{$input}}."
+  ],
+  [
+   "In the default Semantic Kernel template syntax, how does a prompt call the function GetForecast from the Weather plugin?",
+   "{{Weather.GetForecast $city}}",
+   [
+    "{{call Weather/GetForecast(city)}}",
+    "[[Weather.GetForecast city]]",
+    "{Weather::GetForecast $city}"
+   ],
+   "Templates can call functions inline with {{Plugin.Function $arg}}; the result is inserted into the prompt."
+  ],
+  [
+   "In older Semantic Kernel prompt plugins stored on disk, which two files define each prompt function?",
+   "skprompt.txt and config.json",
+   [
+    "prompt.yaml and schema.xml",
+    "function.md and settings.ini",
+    "template.txt and model.toml"
+   ],
+   "Each function folder held the prompt text in skprompt.txt and execution settings and parameters in config.json."
+  ],
+  [
+   "In Semantic Kernel for Python, how do you register an instance of a plugin class with the kernel?",
+   "kernel.add_plugin(MathPlugin(), plugin_name=\"math\")",
+   [
+    "kernel.register(MathPlugin, \"math\")",
+    "kernel.plugins.append(MathPlugin())",
+    "Kernel(plugins=\"math\").load()"
+   ],
+   "add_plugin collects the decorated kernel functions from the object under the given plugin name."
+  ],
+  [
+   "In Semantic Kernel, which class carries named input values when you invoke a function through the kernel?",
+   "KernelArguments",
+   [
+    "PromptVariables",
+    "FunctionContext",
+    "PluginInputs"
+   ],
+   "KernelArguments is a dictionary of values (and optional execution settings) passed to kernel functions."
+  ],
+  [
+   "What did planners such as the Sequential or Handlebars planner do in Semantic Kernel?",
+   "Asked an LLM to build a plan of function calls for a goal",
+   [
+    "Scheduled kernel functions to run at fixed times",
+    "Split long prompts into token-sized chunks",
+    "Picked the cheapest model for each request"
+   ],
+   "Planners turned a user goal into a multi-step plan that chained available plugin functions."
+  ],
+  [
+   "In Semantic Kernel 1.x, what replaces the older planners as the recommended way to let a model pick and call plugin functions?",
+   "Automatic function calling with FunctionChoiceBehavior.Auto()",
+   [
+    "A manual if or else chain over function names",
+    "Running the Handlebars template engine twice",
+    "Calling every plugin and letting the model choose"
+   ],
+   "Modern models support native tool calling, so SK passes function schemas and auto-invokes them; planners are deprecated."
+  ],
+  [
+   "In Semantic Kernel, what does FunctionChoiceBehavior.Required() tell the model?",
+   "It must call at least one of the provided functions",
+   [
+    "It must answer without calling any function",
+    "It may call functions only after the user asks",
+    "It must call every function exactly once"
+   ],
+   "Required forces a function call. Auto lets the model decide, and None advertises functions without calling them."
+  ],
+  [
+   "In a Semantic Kernel RAG app, what are text embeddings used for?",
+   "Finding stored records that are semantically similar",
+   [
+    "Counting tokens before a model call",
+    "Encrypting documents before storage",
+    "Choosing which chat model to call"
+   ],
+   "Embeddings map text to vectors so a vector store can return the nearest records for a query."
+  ],
+  [
+   "Semantic Kernel's older memory API (ISemanticTextMemory) is deprecated. What does SK recommend instead for storing and searching embeddings?",
+   "Vector Store connectors",
+   [
+    "The ChatHistory class",
+    "Prompt template variables",
+    "Kernel filters"
+   ],
+   "The vector store abstractions (connectors for Azure AI Search, Qdrant, Redis and others) replace the old memory stores."
+  ],
+  [
+   "Which languages have official Semantic Kernel SDKs?",
+   "C#, Python and Java",
+   [
+    "C#, Python and Go",
+    "C#, JavaScript and Rust",
+    "Python, Ruby and Java"
+   ],
+   "Semantic Kernel is published for .NET (C#), Python and Java; features usually land first in .NET and Python."
+  ],
+  [
+   "How do you build a Kernel with an OpenAI chat model in Semantic Kernel for C#?",
+   "Kernel.CreateBuilder().AddOpenAIChatCompletion(...).Build()",
+   [
+    "new Kernel(\"openai\").Connect(...)",
+    "KernelFactory.Open(model).Start()",
+    "Kernel.Load(\"config.json\").Run()"
+   ],
+   "The builder registers services (chat completion, plugins, logging) and Build() returns the Kernel."
+  ],
+  [
+   "A team uses Semantic Kernel in a C# backend and a Python data service. What can they share most directly between both?",
+   "Prompt templates and plugin designs, rebuilt per SDK",
+   [
+    "One compiled DLL loaded into Python at run time",
+    "The same kernel object over shared memory",
+    "Native function binaries copied between them"
+   ],
+   "Both SDKs use the same concepts and template syntax, so prompts carry over; native code is written per language."
+  ],
+  [
+   "In Semantic Kernel for C#, which filter type lets you run code before and after every kernel function call, for logging or approval?",
+   "IFunctionInvocationFilter",
+   [
+    "IPromptTemplateFactory",
+    "IChatHistoryReducer",
+    "IKernelBuilderPlugins"
+   ],
+   "Function invocation filters wrap each call, so they can log, change arguments or block execution."
+  ],
+  [
+   "Which Semantic Kernel feature lets you add an existing REST API as a plugin from its specification?",
+   "Importing an OpenAPI specification as a plugin",
+   [
+    "Writing one prompt function per endpoint",
+    "Loading the API as a vector store",
+    "Converting the API into a planner"
+   ],
+   "SK can create a plugin from an OpenAPI document, turning each operation into a callable function."
+  ]
+ ],
+ "haystack": [
+  [
+   "In Haystack 2.x, how do you add a component to a Pipeline?",
+   "pipeline.add_component(\"retriever\", retriever)",
+   [
+    "pipeline.add_node(retriever, inputs=[\"Query\"])",
+    "pipeline.append(retriever, name=\"retriever\")",
+    "pipeline.register(\"retriever\").use(retriever)"
+   ],
+   "Haystack 2.x names each component with add_component. add_node with inputs was the Haystack 1.x API."
+  ],
+  [
+   "In Haystack 2.x, what does pipeline.connect(\"retriever.documents\", \"prompt_builder.documents\") do?",
+   "Links the retriever's documents output to the builder's input",
+   [
+    "Copies the retriever's settings to the prompt builder",
+    "Merges both components into one new component",
+    "Runs the retriever and the builder in parallel"
+   ],
+   "connect wires an output socket to an input socket; Haystack checks that the types are compatible."
+  ],
+  [
+   "How do you pass inputs when running a Haystack 2.x pipeline?",
+   "A dict keyed by component name, with each component's inputs",
+   [
+    "One positional query string for the first component",
+    "Keyword arguments matching the pipeline's YAML file",
+    "A list of inputs in the same order as add_component"
+   ],
+   "For example pipeline.run({\"retriever\": {\"query\": q}, \"prompt_builder\": {\"question\": q}})."
+  ],
+  [
+   "In Haystack 2.x, what happens if you connect an output socket to an input socket of an incompatible type?",
+   "connect() raises an error when you build the pipeline",
+   [
+    "The value is silently converted to a string",
+    "The connection is ignored when the pipeline runs",
+    "The pipeline runs but the output is empty"
+   ],
+   "Haystack validates socket types at connect time, so wiring mistakes surface before running."
+  ],
+  [
+   "Haystack 2.x pipelines can contain loops, for example for self-correction. Which setting stops a component from running forever?",
+   "max_runs_per_component",
+   [
+    "recursion_limit",
+    "max_iterations_total",
+    "loop_timeout_seconds"
+   ],
+   "Pipeline(max_runs_per_component=...) limits how many times any component may run in one pipeline run."
+  ],
+  [
+   "How can you save a Haystack 2.x pipeline definition as YAML?",
+   "pipeline.dumps()",
+   [
+    "pipeline.to_yaml_file()",
+    "pipeline.export(\"yaml\")",
+    "yaml.dump(pipeline.graph)"
+   ],
+   "dumps() serializes to a YAML string (dump() writes to a file), and Pipeline.loads() restores it."
+  ],
+  [
+   "Which Haystack 2.x document store needs no external service and suits quick prototypes?",
+   "InMemoryDocumentStore",
+   [
+    "ElasticsearchDocumentStore",
+    "QdrantDocumentStore",
+    "PgvectorDocumentStore"
+   ],
+   "InMemoryDocumentStore ships with haystack-ai and keeps documents in RAM; the others need a running database."
+  ],
+  [
+   "In Haystack 2.x, what does DocumentWriter(document_store=store, policy=DuplicatePolicy.SKIP) do with a document whose id already exists?",
+   "Keeps the stored one and skips the new one",
+   [
+    "Replaces the stored one with the new one",
+    "Raises an error and stops the pipeline",
+    "Stores both copies under different ids"
+   ],
+   "SKIP ignores duplicates, OVERWRITE replaces them and FAIL raises an error."
+  ],
+  [
+   "In Haystack 2.x, why can't you use InMemoryBM25Retriever with a QdrantDocumentStore?",
+   "Retrievers are built for one specific document store",
+   [
+    "BM25 needs embeddings that Qdrant cannot store",
+    "Retrievers only work on text files, not stores",
+    "Qdrant can only be queried through generators"
+   ],
+   "Each retriever is tied to its store type, for example QdrantEmbeddingRetriever for Qdrant."
+  ],
+  [
+   "Where does a Haystack 2.x Document keep custom fields such as author or language?",
+   "In its meta dictionary",
+   [
+    "In its content string",
+    "In its embedding list",
+    "In its id field"
+   ],
+   "Document has content, meta, embedding and id among its fields; filters target meta fields."
+  ],
+  [
+   "Which filter syntax selects English documents in a Haystack 2.x retriever?",
+   "{\"field\": \"meta.lang\", \"operator\": \"==\", \"value\": \"en\"}",
+   [
+    "{\"meta\": {\"lang\": {\"$eq\": \"en\"}}}",
+    "\"meta.lang == 'en'\"",
+    "[\"lang\", \"en\", \"equals\"]"
+   ],
+   "Haystack 2.x filters are dicts with field, operator and value, nested under AND or OR for complex logic."
+  ],
+  [
+   "In a Haystack 2.x embedding retrieval pipeline, documents were embedded with SentenceTransformersDocumentEmbedder. What should embed the query?",
+   "SentenceTransformersTextEmbedder with the same model",
+   [
+    "SentenceTransformersDocumentEmbedder on the query",
+    "OpenAITextEmbedder with any embedding model",
+    "No embedder, the retriever embeds the query"
+   ],
+   "Text embedders handle strings and document embedders handle Documents; both must use the same model to share a vector space."
+  ],
+  [
+   "In Haystack 2.x, what template language does PromptBuilder use?",
+   "Jinja2",
+   [
+    "Handlebars",
+    "Mustache",
+    "Python f-strings"
+   ],
+   "PromptBuilder renders Jinja2 templates, so you can loop over documents with {% for doc in documents %}."
+  ],
+  [
+   "What is the difference between OpenAIGenerator and OpenAIChatGenerator in Haystack 2.x?",
+   "The chat version takes a list of ChatMessage objects",
+   [
+    "The chat version can only run on Azure endpoints",
+    "OpenAIGenerator streams, the chat version cannot",
+    "OpenAIGenerator calls tools, the chat version cannot"
+   ],
+   "OpenAIGenerator takes a prompt string; OpenAIChatGenerator takes messages, pairing with ChatPromptBuilder."
+  ],
+  [
+   "What does Haystack's ExtractiveReader return for a question and a set of documents?",
+   "Answer spans copied from the documents, with scores",
+   [
+    "New answer text written by a generative model",
+    "The documents reordered by their BM25 score",
+    "A summary of all documents in one paragraph"
+   ],
+   "Readers extract exact spans from text. Generators write new text instead."
+  ],
+  [
+   "How do you declare a custom Haystack 2.x component?",
+   "Decorate the class with @component and implement run()",
+   [
+    "Subclass Pipeline and override connect()",
+    "Register a function with Pipeline.add_hook()",
+    "Subclass Document and define a process() method"
+   ],
+   "The @component decorator plus a run method (and @component.output_types) defines the sockets."
+  ],
+  [
+   "A custom Haystack 2.x component has @component.output_types(words=list[str]). What must its run() method return?",
+   "A dict like {\"words\": [...]}",
+   [
+    "A plain list of strings",
+    "A Document object",
+    "A tuple of the output types"
+   ],
+   "Components return dicts whose keys match the declared output sockets."
+  ],
+  [
+   "Which Haystack 2.x evaluator checks whether a generated answer is supported by the retrieved contexts?",
+   "FaithfulnessEvaluator",
+   [
+    "DocumentRecallEvaluator",
+    "AnswerExactMatchEvaluator",
+    "DocumentMRREvaluator"
+   ],
+   "FaithfulnessEvaluator uses an LLM to judge whether answer statements follow from the contexts. The others measure retrieval or exact matches."
+  ],
+  [
+   "Which Haystack 2.x evaluator rewards a retriever for placing the first relevant document near the top of the results?",
+   "DocumentMRREvaluator",
+   [
+    "SASEvaluator",
+    "ContextRelevanceEvaluator",
+    "FaithfulnessEvaluator"
+   ],
+   "Mean Reciprocal Rank depends on the rank of the first relevant document; it needs ground-truth documents."
+  ],
+  [
+   "In Haystack 1.x, what were the EvalDocuments and EvalAnswers nodes used for?",
+   "Computing retriever and reader metrics inside a pipeline",
+   [
+    "Generating synthetic questions from documents",
+    "Writing evaluated documents to a store",
+    "Choosing which pipeline branch to run"
+   ],
+   "These evaluation nodes compared outputs to labels during a run; Haystack 2.x replaced them with evaluator components."
+  ]
+ ],
+ "openai-api": [
+  [
+   "In the OpenAI Chat Completions API, which message role sets the assistant's overall behavior for models such as gpt-4o?",
+   "system",
+   [
+    "user",
+    "assistant",
+    "tool"
+   ],
+   "System messages give high-level instructions. Newer reasoning models also accept the developer role for the same purpose."
+  ],
+  [
+   "Where is the generated text in a Chat Completions response?",
+   "choices[0].message.content",
+   [
+    "output[0].text",
+    "data[0].completion",
+    "result.message.text"
+   ],
+   "The response has a choices array; each choice contains a message with role and content."
+  ],
+  [
+   "A Chat Completions response has finish_reason \"length\". What does that mean?",
+   "Output stopped at the token limit before finishing",
+   [
+    "The model finished its answer naturally",
+    "The model asked to call a tool",
+    "The output was blocked by a content filter"
+   ],
+   "\"length\" means the max token limit was hit; \"stop\" is a natural end and \"tool_calls\" means tool calls were requested."
+  ],
+  [
+   "The Chat Completions API is stateless. How does the model know what was said earlier in a chat?",
+   "You resend the earlier messages in each request",
+   [
+    "The API stores history under your API key",
+    "You pass the previous response id in a header",
+    "The model remembers recent chats per user"
+   ],
+   "Each Chat Completions request must include the conversation so far in the messages array."
+  ],
+  [
+   "In Chat Completions function calling, where does the model put the arguments of a requested call?",
+   "In message.tool_calls[i].function.arguments, as a JSON string",
+   [
+    "In message.content as a Python dict literal",
+    "In choices[0].arguments as a parsed object",
+    "In the HTTP response headers of the call"
+   ],
+   "arguments is a string of JSON that you must parse; it can occasionally be invalid unless strict mode is used."
+  ],
+  [
+   "After running a function that the model requested in Chat Completions, how do you send the result back?",
+   "A message with role \"tool\" and the matching tool_call_id",
+   [
+    "A user message that repeats the function name",
+    "A system message with the result in metadata",
+    "A second request with the result in tool_choice"
+   ],
+   "The assistant message with tool_calls must stay in history, followed by one tool message per call id."
+  ],
+  [
+   "Which tool_choice value forces the model to call at least one tool in the Chat Completions API?",
+   "\"required\"",
+   [
+    "\"auto\"",
+    "\"none\"",
+    "\"always\""
+   ],
+   "\"auto\" lets the model decide, \"none\" prevents tool calls, and \"required\" forces at least one call."
+  ],
+  [
+   "In one Chat Completions response the model returns two tool calls. What should your code do?",
+   "Run both and send one tool message per tool_call_id",
+   [
+    "Run only the first call and ignore the second",
+    "Send both results in one user message",
+    "Retry the request with tool_choice set to none"
+   ],
+   "With parallel tool calls each call has its own id, and each needs its own tool result message."
+  ],
+  [
+   "When you set stream=True in a Chat Completions request, what do you receive?",
+   "Server-sent events with chunks that hold choices[0].delta",
+   [
+    "One final JSON body after a short delay",
+    "A WebSocket that accepts new user turns",
+    "A file id to download the result later"
+   ],
+   "Each chunk carries a delta with new content; you concatenate the deltas to rebuild the full message."
+  ],
+  [
+   "How does the raw Chat Completions event stream signal that it has finished?",
+   "A final data: [DONE] line",
+   [
+    "An HTTP 204 status code",
+    "An empty choices[0].delta object",
+    "A chunk with role set to end"
+   ],
+   "The SSE stream ends with data: [DONE]; the last content chunk also carries a finish_reason."
+  ],
+  [
+   "Streamed Chat Completions chunks do not include token usage by default. How do you get usage numbers?",
+   "Set stream_options={\"include_usage\": true}",
+   [
+    "Add a usage=true query parameter to the URL",
+    "Call the usage endpoint with the stream id",
+    "Sum the lengths of all received delta strings"
+   ],
+   "With include_usage the stream sends a final chunk containing the usage object."
+  ],
+  [
+   "What does JSON mode, response_format={\"type\": \"json_object\"}, guarantee in the Chat Completions API?",
+   "The output is valid JSON, not that it fits your schema",
+   [
+    "The output matches your JSON Schema exactly",
+    "The output is a JSON list of messages",
+    "The output keys are sorted alphabetically"
+   ],
+   "JSON mode only ensures parseable JSON. Structured Outputs with a json_schema enforces a specific schema."
+  ],
+  [
+   "Using JSON mode in the Chat Completions API, what must the messages also contain, or the API returns an error?",
+   "The word JSON somewhere in the context",
+   [
+    "A JSON Schema in the system message",
+    "A temperature of exactly zero",
+    "An example JSON object from the user"
+   ],
+   "OpenAI requires that you instruct the model to produce JSON, checked by the presence of the word JSON."
+  ],
+  [
+   "Which response_format enables Structured Outputs with a schema in the Chat Completions API?",
+   "{\"type\": \"json_schema\", \"json_schema\": {...}} with strict true",
+   [
+    "{\"type\": \"json_object\", \"schema\": {...}}",
+    "{\"type\": \"text\", \"format\": \"schema\"}",
+    "{\"type\": \"pydantic\", \"model\": {...}}"
+   ],
+   "Structured Outputs constrains generation to the supplied JSON Schema when strict is true."
+  ],
+  [
+   "With Structured Outputs in strict mode, which schema rule must every object follow?",
+   "All properties listed as required and additionalProperties false",
+   [
+    "At least one property must be optional",
+    "Every property must be a string type",
+    "Objects may be nested at most two levels"
+   ],
+   "Strict mode needs every field in required and additionalProperties set to false; optional fields use a null union type."
+  ],
+  [
+   "With Structured Outputs, how should your code detect that the model declined an unsafe request?",
+   "Check the message's refusal field",
+   [
+    "Check for an HTTP 451 status",
+    "Check if content equals \"{}\"",
+    "Check finish_reason for \"schema\""
+   ],
+   "Refusals do not follow your schema, so the API puts the refusal text in a separate refusal field."
+  ],
+  [
+   "Which tokenizer library does OpenAI provide for counting tokens locally?",
+   "tiktoken",
+   [
+    "sentencepiece",
+    "tokenizers-openai",
+    "wordpiece"
+   ],
+   "tiktoken implements OpenAI's BPE encodings, such as o200k_base used by GPT-4o."
+  ],
+  [
+   "Which tiktoken encoding is used by GPT-4o models?",
+   "o200k_base",
+   [
+    "cl100k_base",
+    "p50k_base",
+    "r50k_base"
+   ],
+   "GPT-4o uses o200k_base; GPT-4 and GPT-3.5 Turbo used cl100k_base."
+  ],
+  [
+   "In Chat Completions, how do you send an image along with a question?",
+   "A content part of type image_url with a URL or data URL",
+   [
+    "A file path inside the system message text",
+    "A separate images array at the top level",
+    "A base64 string in the user message name"
+   ],
+   "The user message content becomes a list of parts, such as a text part and an image_url part."
+  ],
+  [
+   "In Chat Completions image inputs, what does setting detail to \"low\" do?",
+   "Uses a low-resolution view and fewer tokens",
+   [
+    "Blurs faces before the model sees them",
+    "Returns a shorter text answer",
+    "Skips the image if it is large"
+   ],
+   "Low detail processes a downscaled image at a small fixed token cost, good when fine details do not matter."
+  ]
+ ],
+ "anthropic-api": [
+  [
+   "Which endpoint do you call to send a conversation to Claude with the Anthropic API?",
+   "POST /v1/messages",
+   [
+    "POST /v1/completions",
+    "POST /v1/chat/completions",
+    "POST /v1/generate"
+   ],
+   "The Messages API is the main interface; the older Text Completions API is legacy."
+  ],
+  [
+   "Which headers does a raw HTTP request to the Anthropic Messages API need besides content-type?",
+   "x-api-key and anthropic-version",
+   [
+    "Authorization and openai-version",
+    "x-api-key and x-model-name",
+    "api-token and claude-version"
+   ],
+   "Requests authenticate with x-api-key and pin the API version with anthropic-version (for example 2023-06-01)."
+  ],
+  [
+   "Which parameter is required in every Anthropic Messages API request, along with model and messages?",
+   "max_tokens",
+   [
+    "temperature",
+    "system",
+    "stop_sequences"
+   ],
+   "max_tokens is required and caps the number of tokens Claude may generate."
+  ],
+  [
+   "Where does Claude's reply text appear in a Messages API response?",
+   "In content, a list of blocks such as type text",
+   [
+    "In choices[0].message.content",
+    "In a top-level completion string",
+    "In output.text of the first candidate"
+   ],
+   "The response content is a list of typed blocks, so text sits in content[i].text where type is text."
+  ],
+  [
+   "A Messages API response has stop_reason \"max_tokens\". What should you do if you need the full answer?",
+   "Raise max_tokens and send the request again",
+   [
+    "Lower temperature so the model writes less",
+    "Remove the system prompt and send it again",
+    "Nothing, max_tokens means it finished"
+   ],
+   "\"max_tokens\" means generation was cut off; \"end_turn\" is a natural finish."
+  ],
+  [
+   "How do you pass a system prompt in the Anthropic Messages API?",
+   "In the top-level system parameter",
+   [
+    "As a message with role system",
+    "In the anthropic-system header",
+    "As the first assistant message"
+   ],
+   "Unlike some other APIs, messages only use user and assistant roles; system instructions go in system."
+  ],
+  [
+   "Which kind of content best belongs in a Claude system prompt?",
+   "A role, rules and context that apply to the whole chat",
+   [
+    "The user's latest question for this turn",
+    "Tool results returned by your code",
+    "The final answer you expect Claude to copy"
+   ],
+   "System prompts set persistent behavior; per-turn questions and tool results go in the messages."
+  ],
+  [
+   "You give Claude tools in the Messages API and it decides to use one. What is the response's stop_reason?",
+   "\"tool_use\"",
+   [
+    "\"function_call\"",
+    "\"tool_calls\"",
+    "\"end_turn\""
+   ],
+   "The response contains tool_use blocks and stop_reason \"tool_use\", signaling your code should run the tool."
+  ],
+  [
+   "How do you return a tool's output to Claude in the Messages API?",
+   "A user message with a tool_result block and the tool_use_id",
+   [
+    "An assistant message with the result as text",
+    "A message with role tool and the call id",
+    "A system parameter update with the result"
+   ],
+   "tool_result blocks go in the next user message and reference the id of the matching tool_use block."
+  ],
+  [
+   "How do you describe a tool's input parameters to Claude in the Messages API?",
+   "With a JSON Schema in the tool's input_schema",
+   [
+    "With a Python type hint string in name",
+    "With an OpenAPI URL in description",
+    "With an example call in the system prompt"
+   ],
+   "Each tool has name, description and input_schema; Claude's tool_use input follows that schema."
+  ],
+  [
+   "Which tool_choice setting makes Claude call one specific tool named get_weather?",
+   "{\"type\": \"tool\", \"name\": \"get_weather\"}",
+   [
+    "{\"type\": \"auto\", \"name\": \"get_weather\"}",
+    "{\"type\": \"any\", \"tool\": \"get_weather\"}",
+    "{\"force\": \"get_weather\"}"
+   ],
+   "\"auto\" lets Claude decide, \"any\" forces some tool, \"tool\" forces the named one and \"none\" disables tools."
+  ],
+  [
+   "How do you mark the end of a reusable prompt prefix for prompt caching in the Anthropic API?",
+   "Add cache_control {\"type\": \"ephemeral\"} to a content block",
+   [
+    "Send the header x-cache-prefix: true",
+    "Set cache=true at the top of the request",
+    "Wrap the prefix in <cache> tags in the text"
+   ],
+   "cache_control on a block caches everything up to and including that block for later requests."
+  ],
+  [
+   "Which usage field shows that a Messages API request was served from the prompt cache?",
+   "cache_read_input_tokens",
+   [
+    "cached_output_tokens",
+    "prompt_cache_hits",
+    "reused_prompt_tokens"
+   ],
+   "cache_read_input_tokens counts tokens read from cache; cache_creation_input_tokens counts tokens written to it."
+  ],
+  [
+   "You cache a long system prompt with Anthropic prompt caching, then change one word at its start. What happens on the next request?",
+   "The cache misses, because the prefix must match exactly",
+   [
+    "The cache hits, since most of the text is unchanged",
+    "The request fails with a cache conflict error",
+    "Only the changed word is sent to the model"
+   ],
+   "Caching matches an exact prefix (tools, then system, then messages); any change before a breakpoint invalidates it."
+  ],
+  [
+   "What is the default lifetime of an Anthropic prompt cache entry, refreshed each time it is used?",
+   "5 minutes",
+   [
+    "24 hours",
+    "30 seconds",
+    "7 days"
+   ],
+   "The default ephemeral cache lives about 5 minutes and is refreshed on each hit; a longer 1-hour option also exists."
+  ],
+  [
+   "How do you send an image to Claude in the Messages API?",
+   "An image content block with a base64 or URL source",
+   [
+    "An image_url string inside a text block",
+    "A multipart file upload to /v1/images",
+    "A link to the image in the system prompt"
+   ],
+   "Image blocks use source types such as base64 (with media_type) or url, placed in user message content."
+  ],
+  [
+   "Which image formats does the Claude Messages API accept as image inputs?",
+   "JPEG, PNG, GIF and WebP",
+   [
+    "JPEG, PNG, BMP and TIFF",
+    "PNG, SVG, HEIC and WebP",
+    "JPEG, PSD, GIF and RAW"
+   ],
+   "The supported media types are image/jpeg, image/png, image/gif and image/webp."
+  ],
+  [
+   "You ask Claude to compare two photos. How should the request be structured?",
+   "One user message with two image blocks and a text block",
+   [
+    "Two requests, then merge both answers yourself",
+    "Both images in the system parameter as text",
+    "One image per assistant message in the history"
+   ],
+   "A single message can hold several image blocks plus text, so Claude sees both images together."
+  ],
+  [
+   "Which Anthropic API endpoint returns the input token count of a request without generating a response?",
+   "POST /v1/messages/count_tokens",
+   [
+    "GET /v1/tokens",
+    "POST /v1/messages?dry_run=true",
+    "POST /v1/tokenize"
+   ],
+   "The token counting endpoint accepts the same model, system, tools and messages and returns input_tokens."
+  ],
+  [
+   "You set max_tokens to 50 for a task that needs a long answer. What is the likely result?",
+   "A truncated answer with stop_reason \"max_tokens\"",
+   [
+    "An API error saying the limit is too small",
+    "A full answer with extra tokens billed",
+    "Claude summarizes to fit in exactly 50 tokens"
+   ],
+   "max_tokens is a hard cap; the model is not told to be brief, so the output just stops at the limit."
+  ]
+ ],
+ "gemini-api": [
+  [
+   "In the Gemini API REST interface, which method generates a response for a model?",
+   "models/{model}:generateContent",
+   [
+    "models/{model}:complete",
+    "chat/completions",
+    "models/{model}:predictText"
+   ],
+   "generateContent returns a full response; streamGenerateContent returns it in chunks."
+  ],
+  [
+   "In a Gemini generateContent request, which role names are used in contents for a chat history?",
+   "user and model",
+   [
+    "user and assistant",
+    "human and ai",
+    "client and bot"
+   ],
+   "Gemini uses role \"model\" for its own turns, not \"assistant\"."
+  ],
+  [
+   "In the Gemini API, what is a content's parts field?",
+   "A list of pieces such as text, inline data or function calls",
+   [
+    "The list of safety ratings for the response",
+    "The token counts of each section of a prompt",
+    "The ordered list of model versions to try"
+   ],
+   "A content holds a role plus parts; one turn can mix text and media parts."
+  ],
+  [
+   "Using the google-genai Python SDK, how do you read the text of a response?",
+   "response.text",
+   [
+    "response.choices[0].text",
+    "response.content[0].text",
+    "response.output_text[0]"
+   ],
+   "response.text is a shortcut to the text parts of the first candidate."
+  ],
+  [
+   "In the Gemini API, how do you give the model persistent instructions such as a persona?",
+   "The system_instruction field of the request or config",
+   [
+    "A content with role system in contents",
+    "A header named x-goog-system-prompt",
+    "A safety setting with the instruction text"
+   ],
+   "system_instruction is separate from contents; contents only use the user and model roles."
+  ],
+  [
+   "In the google-genai Python SDK, where do you set a system instruction for generate_content?",
+   "config=types.GenerateContentConfig(system_instruction=...)",
+   [
+    "client.models.system = \"...\" before the call",
+    "contents=[{\"role\": \"system\", \"text\": \"...\"}]",
+    "genai.configure(system_prompt=\"...\")"
+   ],
+   "Generation options such as system_instruction, temperature and tools go in GenerateContentConfig."
+  ],
+  [
+   "How do you declare a function the Gemini model may call?",
+   "In tools, as function_declarations with a JSON Schema",
+   [
+    "As a Python string in the system instruction",
+    "In safety_settings with the function name",
+    "As a URL in the generation config"
+   ],
+   "Each declaration has a name, description and parameters schema; the model replies with a functionCall part."
+  ],
+  [
+   "After the Gemini model returns a functionCall part, how do you send your function's result back?",
+   "A functionResponse part in the next request",
+   [
+    "A new system_instruction with the result",
+    "A model role message containing only text",
+    "The result in generationConfig.output"
+   ],
+   "You append the model's functionCall turn and then a functionResponse part with the name and result."
+  ],
+  [
+   "Which Gemini function calling mode forces the model to always return a function call?",
+   "ANY",
+   [
+    "AUTO",
+    "NONE",
+    "REQUIRED"
+   ],
+   "function_calling_config mode ANY forces a call (optionally limited by allowed_function_names); AUTO lets the model choose."
+  ],
+  [
+   "In the google-genai Python SDK, what happens when you pass a Python function directly in tools?",
+   "The SDK can call it automatically and return the final answer",
+   [
+    "The SDK sends the function's source code as text",
+    "The request fails until you write a JSON schema",
+    "The function runs once before the request is sent"
+   ],
+   "Automatic function calling builds the declaration from the signature and docstring, runs the function and continues."
+  ],
+  [
+   "How do you send a small image inline with a Gemini prompt over REST?",
+   "An inline_data part with mime_type and base64 data",
+   [
+    "An image_url part with a public link only",
+    "A multipart upload in the same HTTP request",
+    "A text part containing the file path"
+   ],
+   "Inline data suits small files; larger ones should be uploaded with the Files API first."
+  ],
+  [
+   "You need Gemini to analyze a large video file that would make the request too big to send inline. What should you use?",
+   "Upload it with the Files API and reference the file",
+   [
+    "Split the video into many inline_data parts",
+    "Convert the video to text and send that instead",
+    "Send a YouTube search query in the prompt"
+   ],
+   "The Files API stores media temporarily and you pass the file reference in a part."
+  ],
+  [
+   "Which kinds of input can Gemini 1.5 and later models accept in one prompt?",
+   "Text, images, audio and video",
+   [
+    "Text and images only",
+    "Text and audio only",
+    "Text, images and 3D meshes"
+   ],
+   "Gemini models are natively multimodal and accept audio and video in addition to text and images."
+  ],
+  [
+   "How can you check how many tokens a Gemini prompt uses before sending it to generateContent?",
+   "Call the countTokens method",
+   [
+    "Read the usage header from a HEAD request",
+    "Divide the character count by ten",
+    "Call generateContent with max tokens 0"
+   ],
+   "countTokens returns the total tokens for the same contents, including media."
+  ],
+  [
+   "Gemini 1.5 Pro supports a very long context window. What does this most directly allow?",
+   "Putting whole books or long videos in a single prompt",
+   [
+    "Generating output of unlimited length",
+    "Remembering chats across separate API calls",
+    "Training the model on your private data"
+   ],
+   "A large context window is about input size. Output length is limited separately and calls stay stateless."
+  ],
+  [
+   "You send the same large document to Gemini in many requests. Which feature can reduce cost for the repeated part?",
+   "Context caching",
+   [
+    "Grounding with Google Search",
+    "Function calling in ANY mode",
+    "Lowering the temperature"
+   ],
+   "Context caching stores reusable input tokens so later requests can reference them at a lower rate."
+  ],
+  [
+   "Which tool lets Gemini 2.0 and later models base answers on fresh web results?",
+   "The google_search tool (Grounding with Google Search)",
+   [
+    "The code_execution tool with a web URL",
+    "A function declaration named search",
+    "A system instruction that says browse"
+   ],
+   "Adding google_search to tools lets the model search and cite web sources."
+  ],
+  [
+   "When a Gemini response is grounded with Google Search, where do you find the sources it used?",
+   "In the candidate's grounding_metadata",
+   [
+    "In response.text after the answer",
+    "In the safety_ratings field",
+    "In the usage_metadata field"
+   ],
+   "grounding_metadata holds search queries, source chunks and supports linking text segments to sources."
+  ],
+  [
+   "How do you ask Gemini to return JSON that follows a schema?",
+   "Set response_mime_type to application/json and a response_schema",
+   [
+    "Add the word JSON to the system instruction only",
+    "Set temperature to 0 and max tokens to 1",
+    "Use the streamGenerateContent method"
+   ],
+   "Structured output uses response_mime_type plus response_schema in the generation config."
+  ],
+  [
+   "A Gemini candidate has finish_reason MAX_TOKENS. What happened?",
+   "Output stopped at the max_output_tokens limit",
+   [
+    "The model completed its answer normally",
+    "The response was blocked for safety",
+    "The model requested a function call"
+   ],
+   "MAX_TOKENS means the output was cut off; STOP is a natural finish and SAFETY means it was blocked."
+  ]
+ ]
+}

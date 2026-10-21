@@ -1,0 +1,2628 @@
+{
+ "postgresql": [
+  [
+   "In PostgreSQL, what happens to the old version of a row when you UPDATE it?",
+   "It is kept as a dead tuple until VACUUM reclaims it",
+   [
+    "It is overwritten in place inside the same data page",
+    "It is copied into a separate rollback segment file",
+    "It is physically deleted the moment the transaction commits"
+   ],
+   "PostgreSQL MVCC writes a new row version and leaves the old one as a dead tuple. Unlike Oracle or InnoDB, there is no undo log; VACUUM later reclaims the space."
+  ],
+  [
+   "In PostgreSQL at the default READ COMMITTED level, what does a SELECT see if another transaction has updated a row but not committed yet?",
+   "The last committed version of the row",
+   [
+    "The uncommitted new version of the row",
+    "Nothing, the SELECT waits until the other commits",
+    "A serialization failure error"
+   ],
+   "MVCC gives each statement a snapshot of committed data, so readers never block on writers and never see dirty data. PostgreSQL does not allow dirty reads at any level."
+  ],
+  [
+   "Which PostgreSQL index type is the usual choice for speeding up the @> containment operator on a JSONB column?",
+   "GIN",
+   [
+    "B-Tree",
+    "BRIN",
+    "Hash"
+   ],
+   "GIN (Generalized Inverted Index) indexes the keys and values inside a JSONB document, which is what @>, ? and ?| need. A B-Tree only compares whole values."
+  ],
+  [
+   "A huge append-only PostgreSQL table stores events whose created_at value grows with the physical row order. Which index type gives tiny size and good range filtering on created_at?",
+   "BRIN",
+   [
+    "GIN",
+    "GiST",
+    "Hash"
+   ],
+   "BRIN stores min and max values per block range, so it is extremely small and works well when the column correlates with physical order."
+  ],
+  [
+   "Which PostgreSQL index type supports an exclusion constraint that prevents overlapping booking time ranges (the && operator on tstzrange)?",
+   "GiST",
+   [
+    "B-Tree",
+    "BRIN",
+    "Hash"
+   ],
+   "GiST supports range and geometric operators such as && (overlaps), so EXCLUDE USING gist (room WITH =, during WITH &&) is the standard pattern. A B-Tree only handles equality and ordering."
+  ],
+  [
+   "What does EXPLAIN ANALYZE do differently from plain EXPLAIN in PostgreSQL?",
+   "It executes the query and reports real timings and row counts",
+   [
+    "It shows estimated costs only, without running the query",
+    "It rewrites the query into a faster equivalent form",
+    "It refreshes table statistics before showing the plan"
+   ],
+   "EXPLAIN only shows the planner's estimates. EXPLAIN ANALYZE actually runs the statement and adds actual time, actual rows and loops to each plan node."
+  ],
+  [
+   "In EXPLAIN ANALYZE output, a scan node estimated rows=10 but the actual rows were 250000. What is the most likely first fix?",
+   "Run ANALYZE on the table to refresh planner statistics",
+   [
+    "Run VACUUM FULL to rebuild the table",
+    "Increase work_mem for the session",
+    "Drop and recreate the primary key"
+   ],
+   "A large gap between estimated and actual rows usually means stale or missing statistics. ANALYZE recollects them so the planner can choose a better plan."
+  ],
+  [
+   "Why should you be careful running EXPLAIN ANALYZE DELETE FROM orders WHERE created_at < '2020-01-01' in PostgreSQL?",
+   "The DELETE really runs and removes the rows",
+   [
+    "It locks the whole database for writes",
+    "It disables autovacuum on the table",
+    "It drops the indexes that it uses"
+   ],
+   "EXPLAIN ANALYZE executes the statement. To inspect a data-modifying plan safely, wrap it in BEGIN and ROLLBACK."
+  ],
+  [
+   "What does a plain VACUUM (without FULL) do in PostgreSQL?",
+   "Marks space from dead tuples as reusable without blocking reads or writes",
+   [
+    "Rewrites the table into a new file and returns space to the OS",
+    "Rebuilds every index on the table from scratch",
+    "Deletes rows older than the autovacuum threshold"
+   ],
+   "Plain VACUUM records freed space in the free space map for reuse and runs alongside normal traffic. Returning space to the OS by rewriting the table is what VACUUM FULL does."
+  ],
+  [
+   "What is the main operational drawback of VACUUM FULL on a busy PostgreSQL table?",
+   "It takes an ACCESS EXCLUSIVE lock, blocking reads and writes",
+   [
+    "It cannot return freed disk space to the operating system",
+    "It only works on tables that have no indexes defined",
+    "It can only run while autovacuum is turned off"
+   ],
+   "VACUUM FULL rewrites the whole table into a new file, which needs an exclusive lock for the duration. Tools like pg_repack are used to avoid this downtime."
+  ],
+  [
+   "Why must autovacuum not be disabled permanently on a PostgreSQL database with heavy writes?",
+   "Vacuum freezes old rows to prevent transaction ID wraparound",
+   [
+    "Vacuum is what moves committed data from WAL into tables",
+    "Vacuum is required before new foreign keys can be added",
+    "Vacuum is what rotates and compresses the server logs"
+   ],
+   "Transaction IDs are 32-bit, so old rows must be frozen. Without vacuuming, PostgreSQL eventually stops accepting writes to protect against wraparound."
+  ],
+  [
+   "In PostgreSQL, what does SELECT '{\"a\": {\"b\": 5}}'::jsonb -> 'a' ->> 'b' return?",
+   "5 as text",
+   [
+    "5 as jsonb",
+    "{\"b\": 5} as jsonb",
+    "NULL"
+   ],
+   "The -> operator returns jsonb (the inner object), and ->> returns the selected value as text."
+  ],
+  [
+   "Which statement about jsonb compared with json in PostgreSQL is true?",
+   "jsonb stores a parsed binary form and keeps only the last duplicate key",
+   [
+    "jsonb preserves key order and whitespace exactly as entered",
+    "jsonb cannot be indexed, unlike the json type",
+    "jsonb only accepts objects, never arrays or scalars"
+   ],
+   "jsonb is decomposed on input, so it drops whitespace, does not keep key order and keeps only the last value of a duplicate key. In return it is faster to query and supports GIN indexes."
+  ],
+  [
+   "A PostgreSQL table uses PARTITION BY RANGE (created_at). What lets a query with WHERE created_at >= '2024-06-01' skip irrelevant partitions?",
+   "Partition pruning",
+   [
+    "Index-only scans",
+    "Parallel sequential scans",
+    "Deferred constraint checking"
+   ],
+   "Partition pruning compares the WHERE clause with each partition's bounds and excludes partitions that cannot contain matching rows, at plan time or at execution time."
+  ],
+  [
+   "In PostgreSQL 11 or later, you insert a row into a range-partitioned table, but its key matches no partition and there is no DEFAULT partition. What happens?",
+   "The INSERT fails with an error",
+   [
+    "The row goes into the last partition",
+    "A new partition is created automatically",
+    "The row is stored in the parent table"
+   ],
+   "PostgreSQL raises an error that no partition was found for the row. A DEFAULT partition, added in version 11, can catch such rows."
+  ],
+  [
+   "You want a primary key on a partitioned PostgreSQL table partitioned by created_at. What must the key include?",
+   "The partition key column created_at",
+   [
+    "Only a serial or identity column",
+    "A hash index on all columns",
+    "Nothing extra, any columns work"
+   ],
+   "Unique constraints on partitioned tables must include all partition key columns, because each partition enforces uniqueness only locally."
+  ],
+  [
+   "What is the main purpose of PostgreSQL's Write-Ahead Log (WAL)?",
+   "Logging changes first so the database can recover after a crash",
+   [
+    "Caching query results so repeated reads are faster",
+    "Storing old row versions for MVCC snapshots",
+    "Recording slow statements for later tuning"
+   ],
+   "Changes are written to WAL before data pages are flushed, so after a crash PostgreSQL replays WAL to a consistent state. WAL also feeds streaming replication and point-in-time recovery."
+  ],
+  [
+   "Which PostgreSQL replication type can copy only selected tables to a server running a different major version?",
+   "Logical replication",
+   [
+    "Physical streaming replication",
+    "WAL file shipping to a hot standby",
+    "Synchronous streaming replication"
+   ],
+   "Logical replication sends row changes through publications and subscriptions, so it works per table and across major versions. Physical replication copies the whole cluster byte for byte and needs the same major version."
+  ],
+  [
+   "Table orders has customer_id REFERENCES customers(id) ON DELETE CASCADE. What happens when you delete a customer in PostgreSQL?",
+   "That customer's orders are deleted too",
+   [
+    "Their orders get customer_id set to NULL",
+    "The delete fails if the customer has orders",
+    "The orders keep a dangling customer_id"
+   ],
+   "ON DELETE CASCADE removes referencing rows automatically. SET NULL is a different action, and the default NO ACTION would make the delete fail."
+  ],
+  [
+   "You add a foreign key on orders.customer_id referencing customers(id) in PostgreSQL. Which index is created automatically on orders.customer_id?",
+   "None, you must create it yourself if needed",
+   [
+    "A B-Tree index on customer_id",
+    "A hash index on customer_id",
+    "A unique index on customer_id"
+   ],
+   "PostgreSQL requires a unique index on the referenced columns but never indexes the referencing column automatically. Without it, deletes on customers and joins can be slow."
+  ]
+ ],
+ "mysql": [
+  [
+   "Which storage engine is the default in MySQL 5.5 and later?",
+   "InnoDB",
+   [
+    "MyISAM",
+    "MEMORY",
+    "CSV"
+   ],
+   "InnoDB became the default in MySQL 5.5 because it supports transactions, row-level locking and crash recovery."
+  ],
+  [
+   "Which feature does InnoDB provide that MyISAM does not?",
+   "Transactions with COMMIT and ROLLBACK",
+   [
+    "Full-text search indexes",
+    "Compressed read-only tables with myisampack",
+    "A stored row count for instant COUNT(*)"
+   ],
+   "MyISAM is non-transactional. Both engines support full-text indexes (InnoDB since 5.6), while myisampack and the stored row count are MyISAM features."
+  ],
+  [
+   "What locking granularity does MyISAM use for writes?",
+   "Table-level locks",
+   [
+    "Row-level locks",
+    "Page-level locks",
+    "Column-level locks"
+   ],
+   "MyISAM locks the whole table for each write, so concurrent writes serialize. InnoDB uses row-level locks instead."
+  ],
+  [
+   "In InnoDB at REPEATABLE READ, what does SELECT ... WHERE id BETWEEN 10 AND 20 FOR UPDATE lock?",
+   "Next-key locks on the scanned index range",
+   [
+    "The entire table for the transaction",
+    "Nothing, it reads a consistent snapshot",
+    "Only rows that already exist, no gaps"
+   ],
+   "InnoDB uses next-key locks (record plus gap locks) so other transactions cannot insert phantom rows into the locked range."
+  ],
+  [
+   "Two InnoDB transactions each hold a row lock that the other one needs. What does InnoDB do by default?",
+   "Detects the deadlock and rolls back one transaction",
+   [
+    "Waits forever until an admin kills one",
+    "Commits both transactions in arbitrary order",
+    "Escalates both row locks to a table lock"
+   ],
+   "InnoDB deadlock detection is on by default. It picks a victim, rolls it back and returns error 1213 so the application can retry."
+  ],
+  [
+   "Which MySQL binlog_format always logs the actual changed rows instead of SQL statements?",
+   "ROW",
+   [
+    "STATEMENT",
+    "MIXED",
+    "DYNAMIC"
+   ],
+   "ROW logs row images for every change. MIXED switches between statement and row logging, and DYNAMIC is an InnoDB row format, not a binlog format."
+  ],
+  [
+   "What does semisynchronous replication add to default asynchronous MySQL replication?",
+   "Commit waits until a replica confirms it received the events",
+   [
+    "Replicas apply events in parallel using many threads",
+    "Replicas accept writes and sync them back to the source",
+    "The binlog is compressed before being sent"
+   ],
+   "With semisync, the source waits for at least one replica to acknowledge receipt before the commit returns, which reduces data loss on failover."
+  ],
+  [
+   "Why can statement-based replication produce different data on a replica for INSERT INTO t VALUES (UUID())?",
+   "UUID() is re-evaluated on the replica, giving another value",
+   [
+    "The replica rejects statements that call functions",
+    "Statement events are applied in a random order",
+    "The replica truncates values longer than 32 chars"
+   ],
+   "In STATEMENT format the SQL text is replayed, so nondeterministic functions like UUID() run again on the replica. MySQL marks such statements unsafe and MIXED switches them to row logging."
+  ],
+  [
+   "What does the InnoDB buffer pool cache in memory?",
+   "Table and index data pages",
+   [
+    "Parsed SQL statements and their plans",
+    "Final result sets of SELECT queries",
+    "Binary log events before they are sent"
+   ],
+   "The buffer pool holds data and index pages so reads and writes avoid disk I/O. MySQL 8.0 removed the old query cache entirely."
+  ],
+  [
+   "A dedicated MySQL server with spare RAM shows many disk reads for hot InnoDB data. Which setting should you raise first?",
+   "innodb_buffer_pool_size",
+   [
+    "max_connections",
+    "sort_buffer_size",
+    "innodb_log_buffer_size"
+   ],
+   "A larger buffer pool keeps more of the working set in memory. sort_buffer_size is per sort and the log buffer only stages redo log writes."
+  ],
+  [
+   "A table has a B-Tree index on (last_name, first_name). Under the leftmost-prefix rule, which WHERE clause cannot use it for a normal index lookup?",
+   "WHERE first_name = 'Ali'",
+   [
+    "WHERE last_name = 'Nur'",
+    "WHERE last_name = 'Nur' AND first_name = 'Ali'",
+    "WHERE last_name LIKE 'Nu%'"
+   ],
+   "A composite index is sorted by last_name first, so a lookup must start with last_name. A condition on first_name alone cannot seek into it (at best a skip scan or full index scan)."
+  ],
+  [
+   "In MySQL EXPLAIN, what does 'Using index' in the Extra column mean?",
+   "The query was answered from the index alone, without reading table rows",
+   [
+    "An index was created automatically for this query",
+    "The optimizer ignored indexes and scanned the table",
+    "The index was used only for sorting via filesort"
+   ],
+   "'Using index' means a covering index: every needed column is in the index, so InnoDB skips the lookup into the clustered index."
+  ],
+  [
+   "An index exists on created_at, but WHERE YEAR(created_at) = 2024 is slow. Which rewrite lets MySQL use the index?",
+   "WHERE created_at >= '2024-01-01' AND created_at < '2025-01-01'",
+   [
+    "WHERE YEAR(created_at) IN (2024)",
+    "WHERE CAST(created_at AS CHAR) LIKE '2024%'",
+    "WHERE DATE_FORMAT(created_at, '%Y') = '2024'"
+   ],
+   "Wrapping an indexed column in a function hides it from a normal range scan. A plain range on the raw column is sargable."
+  ],
+  [
+   "How are rows of an InnoDB table physically organized?",
+   "In a clustered index ordered by the primary key",
+   [
+    "In a heap file in insertion order",
+    "In a hash table keyed by row ID",
+    "In separate files for each column"
+   ],
+   "InnoDB stores rows inside the primary key B-Tree. Secondary indexes store the primary key value to find the row."
+  ],
+  [
+   "Which MySQL system variable sets the time threshold, in seconds, for logging a query to the slow query log?",
+   "long_query_time",
+   [
+    "slow_query_threshold",
+    "min_examined_row_limit",
+    "log_queries_not_using_indexes"
+   ],
+   "Queries running longer than long_query_time are logged when slow_query_log is on. The other two real variables add filters, and slow_query_threshold does not exist."
+  ],
+  [
+   "Which tool bundled with MySQL summarizes a slow query log by grouping similar queries?",
+   "mysqldumpslow",
+   [
+    "mysqlcheck",
+    "mysqlbinlog",
+    "mysqlimport"
+   ],
+   "mysqldumpslow abstracts literal values and groups similar statements with counts and times. mysqlbinlog reads binary logs, not the slow log."
+  ],
+  [
+   "What is the default transaction isolation level of InnoDB?",
+   "REPEATABLE READ",
+   [
+    "READ COMMITTED",
+    "READ UNCOMMITTED",
+    "SERIALIZABLE"
+   ],
+   "InnoDB defaults to REPEATABLE READ, unlike PostgreSQL and SQL Server which default to READ COMMITTED."
+  ],
+  [
+   "Which anomaly is possible for plain SELECTs in InnoDB at READ COMMITTED but not at REPEATABLE READ?",
+   "Non-repeatable reads",
+   [
+    "Dirty reads",
+    "Dirty writes",
+    "Torn page writes"
+   ],
+   "At READ COMMITTED each SELECT takes a fresh snapshot, so rereading a row can show another transaction's committed change. REPEATABLE READ reuses the first snapshot of the transaction."
+  ],
+  [
+   "With autocommit enabled (the MySQL default), what happens to an UPDATE run without START TRANSACTION?",
+   "It is committed immediately as its own transaction",
+   [
+    "It stays pending until you run COMMIT",
+    "It is rolled back when the session ends",
+    "It is queued until the next checkpoint"
+   ],
+   "With autocommit = 1, every statement outside an explicit transaction is its own transaction and commits on success."
+  ],
+  [
+   "In MySQL you run START TRANSACTION, an INSERT, then ALTER TABLE, then ROLLBACK. What happens to the INSERT?",
+   "It stays, since ALTER TABLE caused an implicit commit",
+   [
+    "It is rolled back together with the ALTER TABLE",
+    "It is rolled back, but the ALTER TABLE remains",
+    "The ROLLBACK fails with a syntax error"
+   ],
+   "Most DDL statements in MySQL cause an implicit commit before they run, so the earlier INSERT is already committed when ROLLBACK runs."
+  ]
+ ],
+ "sqlite": [
+  [
+   "What does it mean that SQLite is serverless?",
+   "The app's process reads and writes the database file directly",
+   [
+    "It runs only inside cloud functions such as AWS Lambda",
+    "It uses a background daemon that starts on demand",
+    "It keeps all data in the browser's IndexedDB"
+   ],
+   "SQLite is a library linked into the application. There is no separate server process; each connection opens the database file itself."
+  ],
+  [
+   "How is a complete SQLite database usually stored?",
+   "In a single ordinary file on disk",
+   [
+    "In a directory with one file per table",
+    "In shared memory that is lost at reboot",
+    "In files managed by a separate server"
+   ],
+   "The whole database (tables, indexes, schema) lives in one cross-platform file, plus temporary journal or WAL files during writes."
+  ],
+  [
+   "Which journal mode does a new SQLite database use by default to guarantee atomic commits?",
+   "DELETE (rollback journal)",
+   [
+    "WAL",
+    "MEMORY",
+    "OFF"
+   ],
+   "The default journal_mode is DELETE: a rollback journal is created for each write transaction and deleted on commit. WAL must be enabled explicitly."
+  ],
+  [
+   "A script runs 100000 INSERTs into SQLite with no BEGIN or COMMIT and is very slow. What is the most effective fix?",
+   "Wrap the inserts in a single transaction",
+   [
+    "Add an index on every column",
+    "Run VACUUM before inserting",
+    "Change all column types to TEXT"
+   ],
+   "Without an explicit transaction, each INSERT is its own transaction with its own disk sync. One transaction around the batch makes it orders of magnitude faster."
+  ],
+  [
+   "In SQLite rollback journal mode, while a writer holds the EXCLUSIVE lock to commit, what can other connections do with the database?",
+   "They can neither read nor write it",
+   [
+    "They can still read the last committed data",
+    "They can write to other tables in the file",
+    "They can read pages from their own cache"
+   ],
+   "The EXCLUSIVE lock covers the whole file, so readers and writers must wait. WAL mode removes this reader blocking."
+  ],
+  [
+   "Which SQLite result code means a connection could not get a lock before its busy timeout expired (the 'database is locked' error)?",
+   "SQLITE_BUSY",
+   [
+    "SQLITE_CORRUPT",
+    "SQLITE_FULL",
+    "SQLITE_MISMATCH"
+   ],
+   "SQLITE_BUSY is returned when another connection holds a conflicting lock. A busy timeout makes SQLite retry for a while before returning it."
+  ],
+  [
+   "Why does the SQLite documentation warn against keeping a database file on a network filesystem such as NFS?",
+   "Their file locking is often unreliable and can corrupt data",
+   [
+    "SQLite cannot open files over 2 GB on a network",
+    "Network paths are not valid in connection strings",
+    "SQLite encrypts files differently on network drives"
+   ],
+   "SQLite relies on correct file locks from the OS. Many network filesystems implement locking poorly, so concurrent access can corrupt the database."
+  ],
+  [
+   "What is the main benefit of PRAGMA journal_mode=WAL in SQLite?",
+   "Readers do not block the writer, and the writer does not block readers",
+   [
+    "Several writers can commit to the database at the same time",
+    "The database no longer needs any extra files on disk",
+    "Commits no longer need to survive a crash"
+   ],
+   "In WAL mode, writes are appended to a separate log while readers keep using their snapshot. There is still only one writer at a time."
+  ],
+  [
+   "Which extra files appear next to app.db while a SQLite database is open in WAL mode?",
+   "app.db-wal and app.db-shm",
+   [
+    "app.db-journal and app.db-lock",
+    "app.db-log and app.db-idx",
+    "app.db-tmp and app.db-bak"
+   ],
+   "The -wal file holds new transactions and the -shm file is a shared-memory index used to coordinate readers. The -journal file belongs to rollback mode."
+  ],
+  [
+   "In SQLite WAL mode, which operation copies committed pages from the WAL file back into the main database file?",
+   "A checkpoint",
+   [
+    "A VACUUM",
+    "A REINDEX",
+    "An ANALYZE"
+   ],
+   "Checkpoints run automatically (by default when the WAL reaches about 1000 pages) or via PRAGMA wal_checkpoint, moving content into the main file."
+  ],
+  [
+   "You declared REFERENCES in SQLite, but deleting a parent row leaves orphaned child rows without any error. What is the most likely cause?",
+   "Foreign keys are off until PRAGMA foreign_keys = ON",
+   [
+    "SQLite ignores the REFERENCES clause entirely",
+    "The child table was created WITHOUT ROWID",
+    "The parent table lacks an AUTOINCREMENT key"
+   ],
+   "For backward compatibility SQLite does not enforce foreign keys by default. The pragma must be set on each new connection."
+  ],
+  [
+   "Which SQLite pragma sets how long a connection waits for a lock before returning SQLITE_BUSY?",
+   "busy_timeout",
+   [
+    "lock_timeout",
+    "wait_time",
+    "journal_timeout"
+   ],
+   "PRAGMA busy_timeout = 5000 makes SQLite retry for up to 5 seconds. The other names are not SQLite pragmas."
+  ],
+  [
+   "Which SQLite pragma is commonly used by apps to record which schema migration has been applied?",
+   "user_version",
+   [
+    "schema_version",
+    "application_id",
+    "data_version"
+   ],
+   "user_version is a free integer in the file header reserved for applications. schema_version is maintained by SQLite itself, and changing it manually can corrupt the database."
+  ],
+  [
+   "Which schema change can SQLite's ALTER TABLE perform directly?",
+   "Add a new column",
+   [
+    "Change a column's data type",
+    "Add a CHECK constraint to existing data",
+    "Change which column is the primary key"
+   ],
+   "SQLite's ALTER TABLE supports RENAME TABLE, RENAME COLUMN, ADD COLUMN and (since 3.35) DROP COLUMN. Other changes need a table rebuild."
+  ],
+  [
+   "What is the recommended way to change a column's type in an existing SQLite table?",
+   "Create a new table, copy rows, drop old, rename new",
+   [
+    "Run ALTER TABLE t MODIFY COLUMN c INTEGER",
+    "Run ALTER TABLE t ALTER COLUMN c TYPE INTEGER",
+    "Run REINDEX after editing the declared type"
+   ],
+   "SQLite has no ALTER COLUMN, so the documented procedure is to rebuild the table inside a transaction and recreate its indexes and triggers."
+  ],
+  [
+   "In an ordinary (non-STRICT) SQLite table with column age INTEGER, what happens when you insert the value 'abc'?",
+   "The text 'abc' is stored as-is",
+   [
+    "The insert fails with a type mismatch",
+    "The value 0 is stored instead",
+    "NULL is stored instead"
+   ],
+   "SQLite uses type affinity: it tries to convert 'abc' to an integer, cannot, and stores the text. STRICT tables (3.37+) would reject it."
+  ],
+  [
+   "Which use case is the best fit for SQLite?",
+   "Local storage for a mobile or desktop app",
+   [
+    "A web backend with thousands of concurrent writers",
+    "One database shared by servers in several regions",
+    "A central store written by many bank branches"
+   ],
+   "SQLite shines as an embedded, zero-configuration store for one application. Heavy concurrent writes from many clients suit client/server databases better."
+  ],
+  [
+   "How many write transactions can be active at the same time on one SQLite database file?",
+   "One",
+   [
+    "One per table",
+    "One per CPU core",
+    "Unlimited, with row-level locks"
+   ],
+   "SQLite serializes writes for the whole file, even in WAL mode. Many readers can run, but only one writer at a time."
+  ],
+  [
+   "In SQLite WAL mode, a reader keeps a very old transaction open for hours while writes continue. What is the typical effect?",
+   "Checkpoints cannot finish, so the WAL file keeps growing",
+   [
+    "The writer is blocked until the reader finishes",
+    "The reader starts seeing uncommitted writes",
+    "The database falls back to rollback journal mode"
+   ],
+   "A checkpoint cannot overwrite pages a reader still needs, so the WAL cannot be reset and grows. Readers never see uncommitted data."
+  ],
+  [
+   "What is the main risk of PRAGMA synchronous = OFF in SQLite?",
+   "Power loss can corrupt the database or lose recent commits",
+   [
+    "Foreign key constraints are no longer checked on writes",
+    "Readers can see uncommitted data from other writers",
+    "The database falls back from WAL to rollback mode"
+   ],
+   "With synchronous OFF, SQLite hands data to the OS without waiting for it to reach disk. Writes are faster, but an OS crash or power loss can corrupt the file."
+  ]
+ ],
+ "mongodb": [
+  [
+   "What is BSON in MongoDB?",
+   "A binary-encoded serialization of JSON-like documents",
+   [
+    "A query language for MongoDB collections",
+    "A compression format for collection files",
+    "A schema language for validating JSON"
+   ],
+   "MongoDB stores documents as BSON, which is fast to traverse and adds types that JSON lacks, such as Date, ObjectId and Decimal128."
+  ],
+  [
+   "Which of these types exists in BSON but not in plain JSON?",
+   "ObjectId",
+   [
+    "Boolean",
+    "Array",
+    "Null"
+   ],
+   "BSON extends JSON with types like ObjectId, Date, Int64 and Decimal128. Boolean, array and null exist in JSON already."
+  ],
+  [
+   "What is the maximum size of a single BSON document in MongoDB?",
+   "16 MB",
+   [
+    "4 MB",
+    "64 MB",
+    "1 GB"
+   ],
+   "The 16 MB limit prevents a single document from using excessive RAM or bandwidth. Larger files are stored with GridFS."
+  ],
+  [
+   "Which aggregation stage filters documents, similar to WHERE in SQL?",
+   "$match",
+   [
+    "$project",
+    "$group",
+    "$unwind"
+   ],
+   "$match keeps only documents that match a query. $project reshapes fields, $group aggregates and $unwind expands arrays."
+  ],
+  [
+   "What does db.orders.aggregate([{ $group: { _id: \"$status\", n: { $sum: 1 } } }]) return?",
+   "One document per status value with its count",
+   [
+    "Every order with a new field n set to 1",
+    "The total number of orders as one number",
+    "Orders sorted by status in groups of one"
+   ],
+   "$group with _id: \"$status\" creates one output document per distinct status, and $sum: 1 counts the documents in each group."
+  ],
+  [
+   "A document has tags: [\"a\", \"b\", \"c\"]. What does { $unwind: \"$tags\" } output for it?",
+   "Three documents, one per array element",
+   [
+    "One document with tags joined into a string",
+    "One document with a flattened tags array",
+    "One document with fields tags.0 to tags.2"
+   ],
+   "$unwind emits a copy of the document for each array element, with tags set to that single element."
+  ],
+  [
+   "Why should $match usually appear as early as possible in a MongoDB pipeline?",
+   "So indexes can be used and fewer documents reach later stages",
+   [
+    "Because $match must be the first stage by syntax",
+    "Because $group cannot run before a $match",
+    "Because $match results are cached between runs"
+   ],
+   "A $match at the start can use indexes and shrinks the data every later stage processes. It is not required to be first."
+  ],
+  [
+   "Which MongoDB aggregation stage performs a left outer join with another collection?",
+   "$lookup",
+   [
+    "$unionWith",
+    "$merge",
+    "$facet"
+   ],
+   "$lookup adds matching documents from another collection as an array. $unionWith appends documents, and $merge writes results to a collection."
+  ],
+  [
+   "A collection has a compound index { a: 1, b: 1 }. Which query can use this index through its prefix?",
+   "find({ a: 5 })",
+   [
+    "find({ b: 5 })",
+    "find({ c: 5 })",
+    "find({ b: { $gt: 1 } })"
+   ],
+   "A compound index supports queries on its prefixes: a, or a and b. A query only on b cannot use the index for efficient lookup."
+  ],
+  [
+   "explain() for a MongoDB query shows a COLLSCAN stage. What does that mean?",
+   "No index was used; every document was scanned",
+   [
+    "The query was covered by an index",
+    "The collection is sharded across nodes",
+    "The plan was taken from the plan cache"
+   ],
+   "COLLSCAN is a full collection scan. Adding a suitable index usually changes it to IXSCAN."
+  ],
+  [
+   "Which MongoDB index type automatically deletes documents after a period based on a date field?",
+   "TTL index",
+   [
+    "Sparse index",
+    "Partial index",
+    "Hashed index"
+   ],
+   "A TTL index on a Date field with expireAfterSeconds lets a background task remove expired documents, roughly once a minute."
+  ],
+  [
+   "You create a collection with validationAction: \"warn\" and a $jsonSchema validator. What happens when an insert violates the schema?",
+   "The document is inserted and a warning is logged",
+   [
+    "The insert is rejected with an error",
+    "The invalid fields are removed",
+    "The document goes to a quarantine collection"
+   ],
+   "With validationAction warn, MongoDB logs violations but accepts the write. The default action, error, rejects invalid documents."
+  ],
+  [
+   "In a three-member MongoDB replica set, the primary crashes. What happens next?",
+   "The remaining members elect a new primary",
+   [
+    "Writes queue on secondaries until it returns",
+    "Every secondary starts accepting writes",
+    "The set stays read-only until an admin acts"
+   ],
+   "The two remaining members still form a majority, so they hold an election and promote a secondary, usually within seconds."
+  ],
+  [
+   "What does writeConcern { w: \"majority\" } guarantee in a MongoDB replica set?",
+   "The write is acknowledged after most voting members have it",
+   [
+    "The write goes to the majority of shards",
+    "The write is retried until most clients see it",
+    "The write is acknowledged once on the primary"
+   ],
+   "Majority write concern waits until a majority of voting members have applied the write, so it survives a failover and will not be rolled back."
+  ],
+  [
+   "Why is a monotonically increasing shard key, such as a timestamp, a poor choice with ranged sharding?",
+   "All new inserts go to one shard, creating a hot spot",
+   [
+    "MongoDB cannot range-shard on date fields",
+    "Chunks can no longer be split or moved",
+    "Queries by timestamp must hit every shard"
+   ],
+   "With ranged sharding, increasing values always fall into the last chunk, so one shard takes all writes. Hashed or compound keys spread them."
+  ],
+  [
+   "In a sharded MongoDB cluster, which component routes client queries to the right shards?",
+   "mongos",
+   [
+    "The config server replica set",
+    "An arbiter node",
+    "The primary of the first shard"
+   ],
+   "Clients connect to mongos, which uses metadata from the config servers to route each operation to the shards that own the data."
+  ],
+  [
+   "Starting with which MongoDB version are multi-document ACID transactions supported on replica sets?",
+   "4.0",
+   [
+    "3.2",
+    "3.6",
+    "5.0"
+   ],
+   "MongoDB 4.0 added multi-document transactions on replica sets, and 4.2 extended them to sharded clusters."
+  ],
+  [
+   "Without an explicit transaction, is an update that changes several fields of one MongoDB document atomic?",
+   "Yes, writes to a single document are atomic",
+   [
+    "No, each field is updated separately",
+    "Only if the document is under 1 MB",
+    "Only if the changed fields are indexed"
+   ],
+   "MongoDB guarantees atomicity at the single-document level, including embedded documents. Transactions are only needed across documents."
+  ],
+  [
+   "What happens when a MongoDB capped collection reaches its size limit and you insert a new document?",
+   "The oldest documents are overwritten",
+   [
+    "The insert fails with an error",
+    "The collection doubles its size",
+    "The new document is silently rejected"
+   ],
+   "Capped collections work like a circular buffer: they keep insertion order and remove the oldest documents to make room."
+  ],
+  [
+   "Which collection option enforces JSON Schema rules on MongoDB inserts and updates?",
+   "validator with $jsonSchema",
+   [
+    "strict with $schema",
+    "enforce with $types",
+    "rules with $validate"
+   ],
+   "db.createCollection(name, { validator: { $jsonSchema: {...} } }) defines schema validation, which can also be added later with collMod."
+  ]
+ ],
+ "redis": [
+  [
+   "Which Redis data type fits a game leaderboard ranked by score?",
+   "Sorted Set",
+   [
+    "Hash",
+    "List",
+    "Set"
+   ],
+   "A Sorted Set keeps members ordered by a score, and ZADD, ZRANGE and ZRANK work in logarithmic time."
+  ],
+  [
+   "Key counter holds the string \"10\". What does INCR counter return in Redis?",
+   "11",
+   [
+    "An error, because the value is a string",
+    "101",
+    "10"
+   ],
+   "Redis strings that hold integers can be incremented atomically. INCR returns the new value, 11."
+  ],
+  [
+   "In Redis you run LPUSH mylist a b c. What does LRANGE mylist 0 -1 return?",
+   "c, b, a",
+   [
+    "a, b, c",
+    "b, c, a",
+    "a, c, b"
+   ],
+   "LPUSH inserts each value at the head in order, so c ends up first. RPUSH would keep a, b, c."
+  ],
+  [
+   "Which Redis command sets a field inside a Hash, such as the email of user:42?",
+   "HSET",
+   [
+    "SADD",
+    "ZADD",
+    "LSET"
+   ],
+   "HSET user:42 email a@b.kz sets one field of the hash. LSET changes a list element by index."
+  ],
+  [
+   "In Redis you run SADD tags x x y. What does SCARD tags return?",
+   "2",
+   [
+    "3",
+    "1",
+    "0"
+   ],
+   "A Set stores unique members, so the duplicate x is ignored and the set has two members."
+  ],
+  [
+   "In Redis you run EXPIRE session 60, then SET session newvalue with no options. What happens to the TTL?",
+   "It is removed, so the key no longer expires",
+   [
+    "The original 60 seconds keep counting",
+    "It resets to a fresh 60 seconds",
+    "SET fails because the key has a TTL"
+   ],
+   "A plain SET discards any existing TTL. Use SET with KEEPTTL (Redis 6.0+) or EX to keep or set one."
+  ],
+  [
+   "What does the Redis TTL command return for an existing key that has no expiration?",
+   "-1",
+   [
+    "-2",
+    "0",
+    "nil"
+   ],
+   "TTL returns -1 for a key without an expiry and -2 when the key does not exist."
+  ],
+  [
+   "Redis has maxmemory set and maxmemory-policy noeviction (the default). What happens when memory is full?",
+   "Writes that need more memory return an error",
+   [
+    "The least recently used keys are deleted",
+    "Random keys that have a TTL are deleted",
+    "Redis swaps data out to disk"
+   ],
+   "With noeviction, Redis refuses commands that would use more memory and keeps serving reads. Eviction only happens with another policy."
+  ],
+  [
+   "Redis is used as a pure cache and many keys have no TTL. Which maxmemory-policy evicts the least recently used keys among all keys?",
+   "allkeys-lru",
+   [
+    "volatile-lru",
+    "noeviction",
+    "volatile-ttl"
+   ],
+   "The volatile-* policies only evict keys that have a TTL, so here they would barely free memory. allkeys-lru considers every key."
+  ],
+  [
+   "Which Redis persistence option logs every write command and usually loses less data on a crash?",
+   "AOF (append-only file)",
+   [
+    "RDB snapshots",
+    "The replication backlog",
+    "Keyspace notifications"
+   ],
+   "AOF appends each write and replays it on restart. RDB saves point-in-time snapshots, so writes since the last snapshot can be lost."
+  ],
+  [
+   "Redis AOF is configured with appendfsync everysec. What is the durability trade-off?",
+   "About one second of writes can be lost on a crash",
+   [
+    "The AOF is fully rewritten every second",
+    "An RDB snapshot is taken every second",
+    "Every write is fsynced before replying"
+   ],
+   "everysec fsyncs once per second, balancing speed and safety. appendfsync always fsyncs every write but is much slower."
+  ],
+  [
+   "How does Redis create an RDB snapshot with BGSAVE without blocking clients?",
+   "It forks a child process that writes the snapshot",
+   [
+    "It pauses all clients while writing",
+    "It streams the data to a replica first",
+    "It writes only keys changed since startup"
+   ],
+   "The child uses copy-on-write memory to write a consistent snapshot while the parent keeps serving requests."
+  ],
+  [
+   "A Redis Pub/Sub subscriber disconnects for a minute and reconnects. What happens to messages published meanwhile?",
+   "They are lost, Pub/Sub stores nothing",
+   [
+    "They are delivered after it resubscribes",
+    "They are kept for the channel's TTL",
+    "They are replayed from the AOF file"
+   ],
+   "Pub/Sub is fire-and-forget: only currently connected subscribers receive messages. Redis Streams provide durable, replayable messaging."
+  ],
+  [
+   "A Redis client runs PSUBSCRIBE news.*. Which messages does it receive?",
+   "Messages on channels like news.sport and news.tech",
+   [
+    "Only messages on the literal channel news.*",
+    "Changes to keys whose names start with news.",
+    "Only the last message on each channel"
+   ],
+   "PSUBSCRIBE subscribes to channel name patterns using glob-style matching. Key changes are only sent through keyspace notifications."
+  ],
+  [
+   "What is the main job of Redis Sentinel?",
+   "Monitoring a primary and promoting a replica if it fails",
+   [
+    "Splitting keys across primaries by hash slot",
+    "Encrypting traffic between clients and Redis",
+    "Compressing RDB files before backups"
+   ],
+   "Sentinel provides high availability for non-clustered Redis: monitoring, notification and automatic failover. Sharding by hash slot is Redis Cluster."
+  ],
+  [
+   "How many hash slots does Redis Cluster divide the keyspace into?",
+   "16384",
+   [
+    "1024",
+    "4096",
+    "65536"
+   ],
+   "Each key maps to one of 16384 slots via CRC16(key) mod 16384, and slots are assigned to primaries."
+  ],
+  [
+   "In Redis Cluster, MSET user1:name A user1:age 20 fails with a CROSSSLOT error. What is the standard fix?",
+   "Use hash tags such as {user1}:name and {user1}:age",
+   [
+    "Run CLUSTER RESET before the command",
+    "Wrap the command in MULTI and EXEC",
+    "Switch the client to the RESP3 protocol"
+   ],
+   "Only the part inside braces is hashed, so keys sharing {user1} land in the same slot and multi-key commands work."
+  ],
+  [
+   "What is the main benefit of Redis pipelining?",
+   "Fewer network round trips by batching commands",
+   [
+    "Making the batch of commands atomic",
+    "Running commands in parallel on many cores",
+    "Compressing commands to save bandwidth"
+   ],
+   "The client sends many commands without waiting for each reply. A pipeline is not atomic; other clients' commands can interleave."
+  ],
+  [
+   "Inside a Redis MULTI/EXEC block, one command fails at runtime (for example INCR on a list). What happens?",
+   "The other commands still run; nothing is rolled back",
+   [
+    "All commands in the block are rolled back",
+    "EXEC returns nil and no command runs",
+    "Redis retries the failed command once"
+   ],
+   "Redis transactions do not support rollback. Runtime errors are returned for that command only; EXEC returns nil only when a WATCHed key changed."
+  ],
+  [
+   "What does WATCH balance do when used before MULTI in Redis?",
+   "EXEC aborts if balance changes before it runs",
+   [
+    "It locks balance so others cannot write it",
+    "It streams every change of balance to the client",
+    "It delays the expiry of balance during the transaction"
+   ],
+   "WATCH gives optimistic locking: if another client modifies the watched key before EXEC, the transaction is not executed and EXEC returns nil."
+  ]
+ ],
+ "cassandra": [
+  [
+   "How is data in a Cassandra table organized?",
+   "Rows grouped into partitions by partition key",
+   [
+    "Rows in one global B-Tree by primary key",
+    "BSON documents stored in collections",
+    "Each column stored in its own file"
+   ],
+   "Cassandra is a wide-column store: the partition key decides which partition (and nodes) a row belongs to, and rows inside a partition are sorted by clustering columns."
+  ],
+  [
+   "A Cassandra table has PRIMARY KEY ((user_id), created_at). What is the partition key?",
+   "user_id",
+   [
+    "created_at",
+    "user_id and created_at together",
+    "Neither, the table has no partition key"
+   ],
+   "The first element of the primary key (in the inner parentheses) is the partition key. created_at is a clustering column."
+  ],
+  [
+   "What does a clustering column do in a Cassandra table?",
+   "Sets the sort order of rows within a partition",
+   [
+    "Decides which node stores the partition",
+    "Sets the replication factor of the table",
+    "Creates a secondary index on the column"
+   ],
+   "Clustering columns order rows on disk inside each partition, which makes range queries and ORDER BY on them efficient. Node placement comes from the partition key."
+  ],
+  [
+   "A table has PRIMARY KEY ((sensor_id, day), ts). Which query works without ALLOW FILTERING?",
+   "WHERE sensor_id = ? AND day = ? AND ts > ?",
+   [
+    "WHERE sensor_id = ? AND ts > ?",
+    "WHERE ts > ?",
+    "WHERE day = ? AND ts > ?"
+   ],
+   "Cassandra must know the full partition key (sensor_id and day) to locate the partition. Then a range on the clustering column ts is allowed."
+  ],
+  [
+   "Why do Cassandra time-series models often add a time bucket, such as day, to the partition key?",
+   "To keep partitions from growing without bound",
+   [
+    "To allow joins between different tables",
+    "Because two partition key columns are required",
+    "To make all writes synchronous"
+   ],
+   "A partition per sensor would grow forever. Bucketing by day keeps each partition a manageable size."
+  ],
+  [
+   "With replication factor 3, writes and reads both use QUORUM. Why do reads see the latest write?",
+   "2 + 2 > 3, so the read and write replica sets overlap",
+   [
+    "QUORUM waits for all three replicas",
+    "QUORUM always reads from the coordinator",
+    "QUORUM locks the row during the write"
+   ],
+   "When R + W > RF, at least one replica in every read has the latest write, and the newest timestamp wins."
+  ],
+  [
+   "In Cassandra, how many replicas must acknowledge a write at consistency level ONE?",
+   "One replica",
+   [
+    "A majority of replicas",
+    "All replicas",
+    "One replica in every data center"
+   ],
+   "ONE returns success after a single replica acknowledges. It gives the lowest latency but the weakest consistency."
+  ],
+  [
+   "Which Cassandra consistency level requires a quorum only within the coordinator's data center, avoiding cross-DC latency?",
+   "LOCAL_QUORUM",
+   [
+    "EACH_QUORUM",
+    "QUORUM",
+    "LOCAL_ONE"
+   ],
+   "LOCAL_QUORUM counts replicas in the local DC only. QUORUM counts across all DCs, and EACH_QUORUM needs a quorum in every DC."
+  ],
+  [
+   "A Cassandra keyspace has replication factor 3 on a 6-node cluster. What does that mean?",
+   "Each row is stored on three nodes",
+   [
+    "Each row is split into three pieces",
+    "Three nodes act as masters",
+    "Every write needs three acknowledgments"
+   ],
+   "RF is the number of copies of each partition. How many replicas must acknowledge is set separately by the consistency level."
+  ],
+  [
+   "Which Cassandra replication strategy should a production keyspace spanning several data centers use?",
+   "NetworkTopologyStrategy",
+   [
+    "SimpleStrategy",
+    "LocalStrategy",
+    "ShardedStrategy"
+   ],
+   "NetworkTopologyStrategy sets a replication factor per DC and is rack-aware. SimpleStrategy ignores topology and is meant for single-DC testing."
+  ],
+  [
+   "With replication factor 3 and QUORUM reads and writes, one replica node goes down. What happens to requests for its data?",
+   "They still succeed, since two of three replicas respond",
+   [
+    "They fail until the node comes back",
+    "Only reads succeed until it returns",
+    "Only writes succeed until it returns"
+   ],
+   "QUORUM with RF 3 needs 2 replicas, so one failure is tolerated. Hinted handoff and repair later catch the node up."
+  ],
+  [
+   "In Cassandra, how do you usually serve a query that needs data from two entities?",
+   "Model a denormalized table designed for that query",
+   [
+    "Use a JOIN between the two tables in CQL",
+    "Use a foreign key with ON DELETE CASCADE",
+    "Use a subquery in the WHERE clause"
+   ],
+   "CQL has no joins or foreign keys. Cassandra data modeling starts from queries and duplicates data into query-specific tables."
+  ],
+  [
+   "In Cassandra, what happens when you INSERT a row whose primary key already exists?",
+   "It overwrites the existing values without an error",
+   [
+    "It fails with a duplicate key error",
+    "It creates a second row with the same key",
+    "It is ignored unless IF EXISTS is used"
+   ],
+   "INSERT and UPDATE are both upserts in Cassandra. Values with the newer timestamp win."
+  ],
+  [
+   "Which CQL clause makes an INSERT succeed only when the row does not exist yet?",
+   "IF NOT EXISTS",
+   [
+    "ON CONFLICT DO NOTHING",
+    "WHERE NOT EXISTS",
+    "USING UNIQUE"
+   ],
+   "IF NOT EXISTS turns the insert into a lightweight transaction based on Paxos. It is slower than a normal write. ON CONFLICT is PostgreSQL syntax."
+  ],
+  [
+   "When a write arrives at a Cassandra replica, what happens first?",
+   "It is appended to the commit log and written to a memtable",
+   [
+    "It is written straight into an existing SSTable",
+    "It is merged into the largest SSTable on disk",
+    "It is placed in the compaction queue"
+   ],
+   "The commit log gives durability and the memtable is an in-memory structure. Memtables are later flushed to new SSTables."
+  ],
+  [
+   "What happens to a Cassandra SSTable after it has been written to disk?",
+   "It is never modified; changes go to newer SSTables",
+   [
+    "It is edited in place on each update",
+    "It is deleted after the next read",
+    "It is loaded back into a memtable"
+   ],
+   "SSTables are immutable. Reads merge data from the memtable and several SSTables, and compaction later combines them."
+  ],
+  [
+   "What does a DELETE in Cassandra actually write?",
+   "A tombstone that compaction purges later",
+   [
+    "An immediate removal from every SSTable",
+    "A lock on the row until repair runs",
+    "A new empty memtable for the table"
+   ],
+   "Because SSTables are immutable, deletes are markers. Tombstones are removed by compaction after gc_grace_seconds."
+  ],
+  [
+   "What is the main purpose of compaction in Cassandra?",
+   "Merging SSTables and discarding obsolete data",
+   [
+    "Compressing commit log segments on disk",
+    "Rebalancing token ranges between nodes",
+    "Copying data to new replicas after failure"
+   ],
+   "Compaction merges SSTables, keeps the newest version of each cell and removes expired tombstones, which reduces the number of files a read must check."
+  ],
+  [
+   "Which compaction strategy is recommended for time-series data written in time order and expired with TTL?",
+   "TimeWindowCompactionStrategy",
+   [
+    "SizeTieredCompactionStrategy",
+    "LeveledCompactionStrategy",
+    "DateTieredCompactionStrategy"
+   ],
+   "TWCS groups SSTables by time window so whole expired windows can be dropped cheaply. DateTieredCompactionStrategy is deprecated in favor of TWCS."
+  ],
+  [
+   "What does running nodetool repair do in Cassandra?",
+   "Synchronizes data between replicas to fix inconsistencies",
+   [
+    "Rebuilds corrupted SSTables from the commit log",
+    "Changes the replication factor of a keyspace",
+    "Removes a dead node from the ring"
+   ],
+   "Anti-entropy repair compares replicas using Merkle trees and streams missing data. It should run regularly, within gc_grace_seconds."
+  ]
+ ],
+ "clickhouse": [
+  [
+   "Why is SELECT avg(price) FROM sales fast in ClickHouse even when sales has 200 columns?",
+   "Only the price column is read from disk",
+   [
+    "The whole row is cached in RAM",
+    "ClickHouse precomputes all averages",
+    "Rows are sorted by price on insert"
+   ],
+   "In columnar storage each column lives in its own files, so the query reads just the column it needs."
+  ],
+  [
+   "Which workload is a poor fit for ClickHouse?",
+   "Many small single-row updates per second",
+   [
+    "Aggregating billions of log rows",
+    "Scanning a few columns of a wide table",
+    "Batch-loading daily event files"
+   ],
+   "ClickHouse is built for analytics on large, mostly append-only data. Frequent point updates are expensive because data parts are immutable."
+  ],
+  [
+   "What does the ORDER BY clause of a MergeTree table define?",
+   "The sort order in parts and, by default, the primary index",
+   [
+    "A uniqueness constraint on those columns",
+    "The order of rows returned by every SELECT",
+    "How data is split across shards"
+   ],
+   "Rows in each part are sorted by ORDER BY, and the sparse primary index is built from it unless PRIMARY KEY is set separately. It does not enforce uniqueness."
+  ],
+  [
+   "You insert two rows with the same primary key into a plain MergeTree table. What happens?",
+   "Both rows are stored",
+   [
+    "The second insert fails",
+    "The second row replaces the first",
+    "Only the row with larger values is kept"
+   ],
+   "The MergeTree primary key is for sorting and data skipping, not uniqueness. Deduplication needs an engine like ReplacingMergeTree."
+  ],
+  [
+   "When does ReplacingMergeTree remove rows with the same sorting key?",
+   "During background merges, at no guaranteed time",
+   [
+    "At insert time, by rejecting the duplicate",
+    "Right after each INSERT statement commits",
+    "Whenever any SELECT reads the table"
+   ],
+   "Deduplication happens only when parts merge, so queries may still see duplicates. Use FINAL or GROUP BY when exact results matter."
+  ],
+  [
+   "Which ClickHouse engine sums numeric columns of rows with the same sorting key during merges?",
+   "SummingMergeTree",
+   [
+    "CollapsingMergeTree",
+    "ReplacingMergeTree",
+    "Log"
+   ],
+   "SummingMergeTree collapses rows with equal keys into one row with summed values when parts merge. Queries should still use sum() since merges are not immediate."
+  ],
+  [
+   "Which column type stores partial aggregate states for an AggregatingMergeTree table?",
+   "AggregateFunction",
+   [
+    "Nullable",
+    "LowCardinality",
+    "Array"
+   ],
+   "AggregateFunction(uniq, UInt64) stores intermediate states written with -State functions and read back with -Merge functions such as uniqMerge."
+  ],
+  [
+   "What is the default index_granularity of a MergeTree table (rows per primary index mark)?",
+   "8192",
+   [
+    "1024",
+    "65536",
+    "1"
+   ],
+   "The sparse primary index stores one mark per granule of 8192 rows by default, which keeps the index small enough for memory."
+  ],
+  [
+   "In open-source ClickHouse server with default settings, which compression codec does MergeTree use for columns?",
+   "LZ4",
+   [
+    "ZSTD",
+    "Gzip",
+    "Snappy"
+   ],
+   "LZ4 is the default because it decompresses very fast. ZSTD can be set per column or in server settings for a better ratio."
+  ],
+  [
+   "Which ClickHouse codec stores the differences between consecutive values, which suits slowly increasing timestamps?",
+   "Delta",
+   [
+    "Gorilla",
+    "LZ4HC",
+    "ZSTD"
+   ],
+   "Delta (or DoubleDelta) turns increasing values into small numbers that then compress well with LZ4 or ZSTD. Gorilla targets floating-point gauges."
+  ],
+  [
+   "Why does columnar data usually compress better than row-oriented data?",
+   "Values in one column share a type and are often similar",
+   [
+    "Rows are encrypted before compression",
+    "Columns are stored as JSON text",
+    "Each value gets its own dictionary"
+   ],
+   "Neighboring values of the same column are homogeneous and often repetitive, so general and specialized codecs reach high ratios."
+  ],
+  [
+   "What does vectorized query execution mean in ClickHouse?",
+   "Processing column values in blocks, not row by row",
+   [
+    "Running every query on the GPU as vector math",
+    "Storing each row as an embedding vector",
+    "Sending one row at a time to each thread"
+   ],
+   "Operators work on blocks of column data, which cuts per-row overhead and lets the CPU use caches and SIMD efficiently."
+  ],
+  [
+   "Which CPU feature does vectorized execution in ClickHouse mainly exploit?",
+   "SIMD instructions",
+   [
+    "Hyper-threading only",
+    "Hardware transactional memory",
+    "Virtualization extensions"
+   ],
+   "SIMD (such as SSE and AVX) applies one instruction to many values at once, which fits tight loops over column blocks."
+  ],
+  [
+   "What is a table with the Distributed engine in ClickHouse?",
+   "A proxy over local tables on shards, storing no data",
+   [
+    "A table that copies all data to every node",
+    "A table that keeps its data in ZooKeeper",
+    "A table that caches results of remote queries"
+   ],
+   "A Distributed table forwards queries to local tables on each shard and merges the results. The data itself lives in the local MergeTree tables."
+  ],
+  [
+   "Which ClickHouse engine keeps the replicas of a shard in sync?",
+   "ReplicatedMergeTree",
+   [
+    "Distributed",
+    "Buffer",
+    "Merge"
+   ],
+   "ReplicatedMergeTree coordinates replicas through ClickHouse Keeper or ZooKeeper. Distributed only routes queries across shards."
+  ],
+  [
+   "When you insert into a Distributed table that spans several shards, what decides each row's target shard?",
+   "The sharding key in the table definition",
+   [
+    "The first column of the ORDER BY",
+    "The node with the most free disk",
+    "The PARTITION BY expression"
+   ],
+   "The Distributed engine evaluates the sharding key (for example rand() or cityHash64(user_id)) and uses shard weights to route each row."
+  ],
+  [
+   "What usually causes a 'Too many parts' error in ClickHouse?",
+   "Many tiny inserts creating parts faster than merges",
+   [
+    "Too many columns in one table",
+    "Too many concurrent SELECT queries",
+    "Too many data skipping indexes"
+   ],
+   "Each INSERT creates at least one new part. Many small inserts outrun background merges until ClickHouse throttles or rejects writes."
+  ],
+  [
+   "An app sends 1000 single-row INSERTs per second to ClickHouse. What is the best fix?",
+   "Batch rows client-side or enable async_insert",
+   [
+    "Add more columns to the ORDER BY key",
+    "Switch the table to the Log engine",
+    "Run OPTIMIZE TABLE after every insert"
+   ],
+   "ClickHouse prefers fewer, larger inserts (thousands of rows or more). async_insert lets the server buffer small inserts into larger parts."
+  ],
+  [
+   "Which ClickHouse function gives a fast approximate count of distinct values?",
+   "uniq",
+   [
+    "uniqExact",
+    "count",
+    "groupArray"
+   ],
+   "uniq uses an adaptive sampling algorithm with small memory use. uniqExact is precise but needs memory proportional to the number of distinct values."
+  ],
+  [
+   "A ClickHouse dashboard repeatedly aggregates raw events by hour and is slow. Which feature fits best?",
+   "A materialized view that pre-aggregates on insert",
+   [
+    "A larger index_granularity setting",
+    "A Distributed table over one shard",
+    "A Buffer table in front of the raw table"
+   ],
+   "A materialized view can write hourly aggregates into a SummingMergeTree or AggregatingMergeTree table as data arrives, so the dashboard reads far fewer rows."
+  ]
+ ],
+ "duckdb": [
+  [
+   "How does DuckDB run?",
+   "In-process inside the host application, with no server",
+   [
+    "As a cluster managed by a coordinator node",
+    "As a cloud warehouse accessed over REST",
+    "As a daemon that clients reach over TCP"
+   ],
+   "DuckDB is an embedded library, like SQLite, but optimized for analytics. It runs inside Python, R, a CLI or another app."
+  ],
+  [
+   "In Python, what does duckdb.connect() with no arguments create?",
+   "An in-memory database lost when the process ends",
+   [
+    "A file named duckdb.db in the current folder",
+    "A connection to a shared server instance",
+    "An error, because a path is required"
+   ],
+   "The default database is :memory:. Pass a file path to persist data."
+  ],
+  [
+   "How does a persistent DuckDB database store its data?",
+   "In a single database file",
+   [
+    "As a folder of Parquet files",
+    "Inside an SQLite file",
+    "As one CSV file per table"
+   ],
+   "DuckDB uses its own single-file storage format, similar in spirit to SQLite but columnar."
+  ],
+  [
+   "Can two separate processes write to the same DuckDB database file at the same time?",
+   "No, only one process can open it read-write",
+   [
+    "Yes, using row-level locks across processes",
+    "Yes, but only on Linux",
+    "Yes, once WAL mode is enabled"
+   ],
+   "DuckDB allows one read-write process, or several read-only processes. Threads within that one process can write concurrently."
+  ],
+  [
+   "Why does DuckDB's vectorized engine aggregate faster than a row-at-a-time engine?",
+   "It processes batches of column values, cutting per-row overhead",
+   [
+    "It precomputes all aggregates when data is loaded",
+    "It sends each row to a separate thread",
+    "It stores every column as a B-Tree index"
+   ],
+   "Operators handle vectors of values at once, which keeps data in CPU caches and reduces interpretation overhead."
+  ],
+  [
+   "Which DuckDB statement sets the number of CPU threads it uses?",
+   "SET threads = 4",
+   [
+    "SET cores = 4",
+    "SET parallelism = 4",
+    "SET max_cpus = 4"
+   ],
+   "DuckDB uses all available cores by default, and the threads setting limits or raises that."
+  ],
+  [
+   "What does SELECT count(*) FROM 'events/*.parquet' do in DuckDB?",
+   "Counts rows across all matching Parquet files",
+   [
+    "Fails, since files must be imported first",
+    "Counts the number of matching files",
+    "Counts rows in the first matching file only"
+   ],
+   "DuckDB can query Parquet, CSV and JSON files in place, and glob patterns combine many files into one table."
+  ],
+  [
+   "Which DuckDB function reads a CSV file and auto-detects the delimiter, header and column types?",
+   "read_csv('file.csv')",
+   [
+    "load_csv('file.csv')",
+    "import_csv('file.csv')",
+    "csv_scan('file.csv')"
+   ],
+   "read_csv uses a CSV sniffer to detect the dialect and types. You can also simply write FROM 'file.csv'."
+  ],
+  [
+   "Why is SELECT a FROM 'big.parquet' much faster in DuckDB than SELECT * FROM 'big.parquet' on a wide file?",
+   "Only column a's data is read from the file",
+   [
+    "Parquet files are cached after one query",
+    "DuckDB builds an index on column a first",
+    "SELECT * decompresses the file twice"
+   ],
+   "Parquet is columnar, so DuckDB uses projection pushdown to read just the needed column chunks. Filters can also skip row groups."
+  ],
+  [
+   "Which DuckDB statement writes query results to a Parquet file?",
+   "COPY (SELECT * FROM t) TO 'out.parquet' (FORMAT parquet)",
+   [
+    "EXPORT t INTO PARQUET 'out.parquet'",
+    "SAVE (SELECT * FROM t) AS 'out.parquet'",
+    "INSERT INTO 'out.parquet' SELECT * FROM t"
+   ],
+   "COPY ... TO with FORMAT parquet writes the result of a query or table. FORMAT csv and json work the same way."
+  ],
+  [
+   "Which DuckDB query is valid shorthand for SELECT * FROM tbl?",
+   "FROM tbl",
+   [
+    "GET tbl",
+    "READ tbl",
+    "ROWS tbl"
+   ],
+   "DuckDB supports FROM-first syntax, and a bare FROM tbl returns all columns."
+  ],
+  [
+   "In DuckDB, what does SELECT * EXCLUDE (password) FROM users return?",
+   "All columns except password",
+   [
+    "Only the password column",
+    "Rows where password is NULL",
+    "An error, EXCLUDE is not valid"
+   ],
+   "EXCLUDE is a DuckDB extension to star expressions. REPLACE is a related one that swaps in an expression for a column."
+  ],
+  [
+   "What does GROUP BY ALL do in DuckDB?",
+   "Groups by every non-aggregated column in the SELECT list",
+   [
+    "Puts all rows into one single group",
+    "Groups by every column of the table",
+    "Keeps NULL groups that are normally dropped"
+   ],
+   "GROUP BY ALL infers the grouping columns from the SELECT list, so you do not have to repeat them."
+  ],
+  [
+   "Which workload fits DuckDB worst?",
+   "Many concurrent small writes from many app clients",
+   [
+    "Aggregating a 10 GB Parquet dataset on a laptop",
+    "Joining CSV exports inside a notebook",
+    "Running analytics in a Python ETL script"
+   ],
+   "DuckDB is an OLAP engine for one process. High-concurrency transactional workloads from many clients suit an OLTP server like PostgreSQL."
+  ],
+  [
+   "Which statement best compares DuckDB with SQLite?",
+   "DuckDB is columnar for analytics; SQLite is row-based for transactions",
+   [
+    "DuckDB is a server; SQLite is embedded",
+    "DuckDB is row-based; SQLite is columnar",
+    "DuckDB requires a schema server; SQLite does not"
+   ],
+   "Both are embedded single-file databases. DuckDB targets scans and aggregations, while SQLite targets point reads and small transactions."
+  ],
+  [
+   "A pandas DataFrame df exists in your Python scope. How do you query it with DuckDB?",
+   "duckdb.sql('SELECT * FROM df')",
+   [
+    "duckdb.load(df).sql('SELECT *')",
+    "duckdb.sql('SELECT * FROM pandas.df')",
+    "df.duckdb('SELECT *')"
+   ],
+   "DuckDB's replacement scans find Python variables by name, so a DataFrame can be queried directly without copying it into a table first."
+  ],
+  [
+   "Which method turns a DuckDB relation in Python into a pandas DataFrame?",
+   ".df()",
+   [
+    ".frame()",
+    ".as_pandas()",
+    ".to_table()"
+   ],
+   "duckdb.sql('...').df() returns a pandas DataFrame. Related methods include .pl() for Polars and .arrow() for Arrow."
+  ],
+  [
+   "Why can DuckDB query a large Apache Arrow table in Python with very little overhead?",
+   "It reads Arrow's columnar buffers without copying them",
+   [
+    "It converts Arrow tables to CSV first",
+    "It uploads the table to a DuckDB server",
+    "It samples only 10 percent of the rows"
+   ],
+   "DuckDB and Arrow are both columnar, so DuckDB scans Arrow memory directly (zero-copy) and can push down filters and projections."
+  ],
+  [
+   "Which R call opens an in-memory DuckDB connection through DBI?",
+   "dbConnect(duckdb::duckdb())",
+   [
+    "dbConnect(RSQLite::SQLite())",
+    "duckdb_open(memory = TRUE)",
+    "DBI::duckConnect()"
+   ],
+   "The duckdb R package provides a DBI driver, so standard DBI functions like dbGetQuery work. dplyr can also use it via dbplyr."
+  ],
+  [
+   "Which DuckDB extension lets it read Parquet files directly from S3 or HTTPS URLs?",
+   "httpfs",
+   [
+    "json",
+    "fts",
+    "spatial"
+   ],
+   "httpfs adds HTTP(S) and S3 file system support. Recent DuckDB versions can autoload it when you query a remote path."
+  ]
+ ],
+ "snowflake": [
+  [
+   "Which three layers make up Snowflake's architecture?",
+   "Database storage, query processing and cloud services",
+   [
+    "Ingestion, indexing and reporting services",
+    "Master, worker and coordinator node pools",
+    "Row store, column store and result cache"
+   ],
+   "Storage holds data centrally, virtual warehouses process queries, and the cloud services layer handles metadata, security and optimization."
+  ],
+  [
+   "What does Snowflake's separation of storage and compute let you do?",
+   "Scale or pause compute without moving data",
+   [
+    "Avoid paying for storage entirely",
+    "Share CPU with other accounts' warehouses",
+    "Keep indexes on separate disks"
+   ],
+   "All warehouses read the same central storage, so compute can be resized, added or suspended independently of the data."
+  ],
+  [
+   "Two teams run heavy queries on one Snowflake warehouse and slow each other down. What is the typical fix?",
+   "Give each team its own virtual warehouse",
+   [
+    "Copy the tables into a second database",
+    "Add indexes to the shared tables",
+    "Increase the Time Travel retention"
+   ],
+   "Warehouses are isolated compute clusters over the same data, so separate warehouses remove contention without duplicating data."
+  ],
+  [
+   "Many users run queries at the same time and queries queue, but each query is fast on its own. Which Snowflake feature helps most?",
+   "A multi-cluster warehouse that adds clusters",
+   [
+    "Resizing the warehouse from Medium to XL",
+    "A clustering key on the main table",
+    "A longer AUTO_SUSPEND period"
+   ],
+   "Scaling out with more clusters targets concurrency. Scaling up to a larger size mainly speeds up individual heavy queries."
+  ],
+  [
+   "What does AUTO_SUSPEND = 60 do on a Snowflake warehouse?",
+   "Suspends it after 60 seconds of inactivity",
+   [
+    "Cancels queries that run over 60 seconds",
+    "Resumes it every 60 seconds",
+    "Limits it to 60 credits per day"
+   ],
+   "An idle warehouse suspends to stop consuming credits. AUTO_RESUME restarts it when a new query arrives."
+  ],
+  [
+   "What happens when you resize a Snowflake warehouse from Small to Medium?",
+   "Its compute doubles, and so do its credits per hour",
+   [
+    "The amount of data it can query doubles",
+    "It can store twice as much table data",
+    "Credits per hour stay the same as before"
+   ],
+   "Each size step doubles the compute resources and the credit rate. Storage is independent of warehouse size."
+  ],
+  [
+   "How does Snowflake physically store table data?",
+   "In immutable, compressed columnar micro-partitions",
+   [
+    "In B-Tree indexes defined by the user",
+    "In row-oriented pages on local disks",
+    "In one file per table per day"
+   ],
+   "Data is automatically split into micro-partitions (roughly 50 to 500 MB uncompressed) stored in columnar form, with metadata about each."
+  ],
+  [
+   "Why can WHERE event_date = '2024-05-01' be fast in Snowflake without any indexes?",
+   "Min and max metadata per micro-partition lets it skip partitions",
+   [
+    "Snowflake builds a hash index on every date column",
+    "Results always come from the query result cache",
+    "Dates are kept in a separate lookup table"
+   ],
+   "Snowflake keeps value ranges for every column in each micro-partition and prunes those that cannot match the filter."
+  ],
+  [
+   "When does defining a clustering key on a Snowflake table usually make sense?",
+   "On very large tables whose common filters prune poorly",
+   [
+    "On every table right after creating it",
+    "On small lookup tables with few rows",
+    "On tables used only for full scans"
+   ],
+   "Automatic clustering costs credits, so it pays off on multi-terabyte tables where natural load order does not match query filters."
+  ],
+  [
+   "What does SELECT * FROM orders AT(OFFSET => -3600) return in Snowflake?",
+   "The table as it was one hour ago",
+   [
+    "Only rows changed in the last hour",
+    "Rows inserted more than one hour ago",
+    "The table one hour after the next load"
+   ],
+   "Time Travel's AT clause queries historical data at a timestamp, an offset in seconds, or a statement ID."
+  ],
+  [
+   "Which Snowflake command restores a table dropped within its Time Travel retention period?",
+   "UNDROP TABLE orders",
+   [
+    "RESTORE TABLE orders",
+    "RECOVER TABLE orders",
+    "ROLLBACK TABLE orders"
+   ],
+   "UNDROP works for tables, schemas and databases while their data is still in Time Travel."
+  ],
+  [
+   "What is Fail-safe in Snowflake?",
+   "A 7-day period where only Snowflake can recover data",
+   [
+    "A setting that blocks DROP statements on tables",
+    "A read-only replica users query during outages",
+    "An extra Time Travel window users can query"
+   ],
+   "After Time Travel ends, permanent tables enter a 7-day Fail-safe period. Users cannot query it; Snowflake support can recover data in disasters."
+  ],
+  [
+   "What is the default DATA_RETENTION_TIME_IN_DAYS (Time Travel) for a permanent Snowflake table?",
+   "1",
+   [
+    "0",
+    "7",
+    "90"
+   ],
+   "The default is 1 day. Enterprise edition and higher can raise it up to 90 days for permanent tables."
+  ],
+  [
+   "What is a stage in Snowflake?",
+   "A location of data files for loading or unloading",
+   [
+    "A single step in a query execution plan",
+    "A temporary virtual warehouse for loads",
+    "A sandbox copy of a production database"
+   ],
+   "Stages are internal (Snowflake-managed) or external (S3, GCS, Azure). COPY INTO loads from them and unloads to them."
+  ],
+  [
+   "Which syntax refers to the current user's internal stage in Snowflake?",
+   "@~",
+   [
+    "@%orders",
+    "@!",
+    "@*"
+   ],
+   "@~ is the user stage, @%table_name is a table stage, and @name refers to a named stage."
+  ],
+  [
+   "You run COPY INTO t FROM @s twice on the same unchanged files. What happens on the second run?",
+   "Files already loaded are skipped",
+   [
+    "Every row is loaded a second time",
+    "The command fails with a duplicate error",
+    "The table is truncated and reloaded"
+   ],
+   "Snowflake keeps load metadata per table for 64 days and skips files it already loaded, unless FORCE = TRUE is used."
+  ],
+  [
+   "What is Snowpipe used for?",
+   "Loading files soon after they land in a stage",
+   [
+    "Streaming query results to BI tools",
+    "Replicating databases across regions",
+    "Scheduling SQL tasks on a cron"
+   ],
+   "Snowpipe runs serverless, continuous micro-batch loads, usually triggered by cloud storage event notifications."
+  ],
+  [
+   "How does Snowflake Secure Data Sharing give another account access to data?",
+   "It grants read access to the provider's data without copying it",
+   [
+    "It exports the data as files for the consumer",
+    "It copies the tables into the consumer's storage",
+    "It sends a signed snapshot of the database"
+   ],
+   "Shares expose objects through metadata only. Consumers query live data, and no storage is duplicated."
+  ],
+  [
+   "A consumer with its own full Snowflake account queries a database shared with it. Who pays for the compute of those queries?",
+   "The consumer, through its own warehouse",
+   [
+    "The provider of the share",
+    "Both accounts split it equally",
+    "Nobody, shared queries are free"
+   ],
+   "Consumers run queries on their own warehouses. Providers pay only for storage, and for compute in reader accounts they create."
+  ],
+  [
+   "What happens to storage right after CREATE TABLE dev_orders CLONE orders in Snowflake?",
+   "Nothing is copied; both tables share micro-partitions",
+   [
+    "All data is duplicated into new storage",
+    "Only the schema is copied; the clone is empty",
+    "The clone stays read-only until a refresh"
+   ],
+   "Zero-copy cloning only copies metadata. New storage is used only for micro-partitions that change later in either table."
+  ]
+ ],
+ "bigquery": [
+  [
+   "In BigQuery's default on-demand model, what must you provision before running a query?",
+   "Nothing, compute is allocated automatically",
+   [
+    "A cluster of worker virtual machines",
+    "A virtual warehouse of a chosen size",
+    "A dedicated database server instance"
+   ],
+   "BigQuery is serverless: Google allocates slots per query, and you only create datasets and tables."
+  ],
+  [
+   "What does BigQuery on-demand pricing charge queries for?",
+   "Bytes processed by the query",
+   [
+    "Rows returned to the client",
+    "Wall-clock run time of the query",
+    "Number of tables joined"
+   ],
+   "On-demand queries are billed by the bytes read from the referenced columns. Capacity pricing instead bills reserved slots."
+  ],
+  [
+   "Does adding LIMIT 10 reduce the bytes billed for SELECT * on a non-clustered BigQuery table?",
+   "No, all selected columns are still scanned",
+   [
+    "Yes, only 10 rows are read",
+    "Yes, only the first partition is read",
+    "Yes, bytes billed drop by about 90 percent"
+   ],
+   "LIMIT is applied after scanning, so cost depends on selected columns and pruning. Use column selection, partition filters or table preview instead."
+  ],
+  [
+   "A BigQuery table is partitioned on its DATE column event_date. Which query clause enables partition pruning?",
+   "WHERE event_date = '2024-05-01'",
+   [
+    "WHERE user_id = 42",
+    "WHERE country = 'KZ'",
+    "ORDER BY event_date LIMIT 100"
+   ],
+   "Only filters on the partitioning column let BigQuery skip partitions. Sorting with LIMIT still scans every partition."
+  ],
+  [
+   "Which BigQuery table option rejects queries that do not filter on the partition column?",
+   "require_partition_filter = TRUE",
+   [
+    "partition_expiration_days = 1",
+    "enforce_pruning = TRUE",
+    "max_staleness = 1"
+   ],
+   "require_partition_filter protects large partitioned tables from accidental full scans. partition_expiration_days deletes old partitions instead."
+  ],
+  [
+   "What does clustering a BigQuery table by customer_id mainly improve?",
+   "Filters and aggregations on customer_id read fewer blocks",
+   [
+    "Every customer_id value becomes unique",
+    "Inserts into the table become free",
+    "Joins on other columns get faster"
+   ],
+   "Clustering sorts data within storage blocks, so BigQuery can skip blocks that cannot match filters on the clustered columns."
+  ],
+  [
+   "How many clustering columns can a BigQuery table have at most?",
+   "4",
+   [
+    "1",
+    "10",
+    "16"
+   ],
+   "BigQuery allows up to four clustering columns, and their order matters, like a composite index."
+  ],
+  [
+   "What is a slot in BigQuery?",
+   "A unit of virtual CPU and memory for running queries",
+   [
+    "A storage block holding 1 GB of data",
+    "A reserved name for a temporary table",
+    "A concurrent user session in the console"
+   ],
+   "Queries are split into stages run by many slots in parallel. Reservations buy a fixed number of slots."
+  ],
+  [
+   "What is the name of the distributed query engine behind BigQuery?",
+   "Dremel",
+   [
+    "Spanner",
+    "Bigtable",
+    "Borg"
+   ],
+   "BigQuery runs on Dremel for execution, Colossus for storage and the Jupiter network for shuffles. Borg is Google's cluster manager."
+  ],
+  [
+   "A team runs heavy, steady BigQuery workloads all day and wants predictable cost. Which pricing model fits?",
+   "Capacity pricing with slot reservations",
+   [
+    "On-demand pricing by bytes scanned",
+    "Streaming insert pricing",
+    "Long-term storage pricing"
+   ],
+   "Capacity (slot-based) pricing charges for reserved compute regardless of bytes scanned, which suits constant heavy usage."
+  ],
+  [
+   "You rerun an identical BigQuery query within 24 hours, and the tables have not changed. What usually happens?",
+   "Cached results are returned at no charge",
+   [
+    "The query is billed again at full price",
+    "The query fails as a duplicate",
+    "Results are returned only for new rows"
+   ],
+   "BigQuery caches query results for about 24 hours. Cached results are not billed, unless caching is disabled or the query is non-deterministic."
+  ],
+  [
+   "What does UNNEST do with an ARRAY column in BigQuery?",
+   "Turns array elements into rows",
+   [
+    "Joins elements into one string",
+    "Removes NULL elements from the array",
+    "Converts the array into a STRUCT"
+   ],
+   "UNNEST produces a table with one row per element, which you can join, filter or aggregate."
+  ],
+  [
+   "What does SELECT o.id, item.sku FROM orders o, UNNEST(o.items) AS item return in BigQuery?",
+   "One row per item of each order",
+   [
+    "One row per order with items as a list",
+    "Only orders that have exactly one item",
+    "Only the first item of each order"
+   ],
+   "The comma is a correlated cross join with the order's own array. Orders with empty arrays drop out unless you use LEFT JOIN UNNEST."
+  ],
+  [
+   "In BigQuery, how do you select field city from a STRUCT column named address?",
+   "address.city",
+   [
+    "address['city']",
+    "address->city",
+    "address::city"
+   ],
+   "STRUCT fields are accessed with dot notation. The -> and :: operators are PostgreSQL syntax."
+  ],
+  [
+   "Why does BigQuery recommend nested and repeated fields for orders and their line items?",
+   "They avoid costly joins by storing related data together",
+   [
+    "They are required for table partitioning",
+    "They make every column nullable by default",
+    "They raise the project's slot quota"
+   ],
+   "Denormalizing into ARRAY of STRUCT keeps line items inside the order row, so queries avoid large shuffling joins."
+  ],
+  [
+   "How can you see how many bytes a BigQuery query will process before running it?",
+   "Use a dry run",
+   [
+    "Run it with LIMIT 1 first",
+    "Check INFORMATION_SCHEMA.TABLES",
+    "Prefix it with EXPLAIN ANALYZE"
+   ],
+   "A dry run validates the query and returns the estimated bytes processed without billing. The console shows the same estimate."
+  ],
+  [
+   "Which BigQuery job setting makes a query fail instead of processing more bytes than a limit?",
+   "Maximum bytes billed",
+   [
+    "Maximum rows returned",
+    "Query timeout in seconds",
+    "Slot usage limit"
+   ],
+   "With maximum bytes billed set, a query that would exceed it fails before running and incurs no charge."
+  ],
+  [
+   "What is a BigQuery external table?",
+   "A table whose data stays in a source like Cloud Storage",
+   [
+    "A table copied nightly from Cloud Storage",
+    "A table stored in another Google account",
+    "A view over a remote MySQL database"
+   ],
+   "External tables read files (CSV, Parquet, and so on) in place at query time, so no data is loaded into BigQuery storage."
+  ],
+  [
+   "Compared with a native BigQuery table, querying a CSV external table in Cloud Storage is usually:",
+   "Slower, because files are parsed at query time",
+   [
+    "Faster, because no storage format is involved",
+    "Identical, since the data is loaded first",
+    "Impossible to join with native tables"
+   ],
+   "Native tables use an optimized columnar format with metadata. External CSV files must be read and parsed on each query."
+  ],
+  [
+   "Which BigQuery feature runs a live query against a Cloud SQL database?",
+   "Federated queries with EXTERNAL_QUERY",
+   [
+    "BigQuery Data Transfer Service",
+    "A Cloud Storage external table",
+    "A materialized view"
+   ],
+   "EXTERNAL_QUERY sends SQL through a connection to Cloud SQL or AlloyDB and returns results as a temporary table. Transfer Service copies data on a schedule."
+  ]
+ ],
+ "elasticsearch": [
+  [
+   "What does an inverted index map in Elasticsearch?",
+   "Each term to the documents that contain it",
+   [
+    "Each document to its sorted fields",
+    "Each shard to its replica nodes",
+    "Each field to its data type"
+   ],
+   "Full-text search looks up query terms in the inverted index to find matching documents quickly, instead of scanning every document."
+  ],
+  [
+   "What tokens does the standard analyzer produce for 'The Quick-Brown fox'?",
+   "the, quick, brown, fox",
+   [
+    "the quick-brown fox",
+    "quick, brown, fox",
+    "the, quick-brown, fox"
+   ],
+   "The standard tokenizer splits on word boundaries such as spaces and hyphens, and the lowercase filter lowercases. Stop words are not removed by default."
+  ],
+  [
+   "Which Elasticsearch field type fits a status or email value used for exact filters and aggregations?",
+   "keyword",
+   [
+    "text",
+    "long",
+    "match_only_text"
+   ],
+   "keyword stores the value as a single unanalyzed term, which suits exact matches, sorting and aggregations. text is analyzed for full-text search."
+  ],
+  [
+   "In what order does an Elasticsearch analyzer apply its parts?",
+   "Character filters, tokenizer, token filters",
+   [
+    "Tokenizer, character filters, token filters",
+    "Token filters, tokenizer, character filters",
+    "Tokenizer, token filters, character filters"
+   ],
+   "Character filters clean the raw text, the tokenizer splits it into tokens, and token filters change, add or remove tokens."
+  ],
+  [
+   "Which Elasticsearch API shows the tokens an analyzer produces for a given string?",
+   "_analyze",
+   [
+    "_explain",
+    "_validate",
+    "_search"
+   ],
+   "POST _analyze with an analyzer and text returns the tokens, which helps debug why a query does or does not match."
+  ],
+  [
+   "Field title is of type text, and a document has title 'Quick Fox'. What does a term query for 'Quick Fox' on title return?",
+   "No hits",
+   [
+    "The document, because term analyzes its input",
+    "The document, because term ignores case",
+    "An error, because term cannot run on text"
+   ],
+   "The indexed terms are 'quick' and 'fox', but a term query looks for the exact unanalyzed term 'Quick Fox'. Use a match query for text fields."
+  ],
+  [
+   "In an Elasticsearch bool query, how does a filter clause differ from a must clause?",
+   "filter does not affect scoring and can be cached",
+   [
+    "filter excludes matches instead of including them",
+    "must only works on keyword fields",
+    "filter only works on numeric fields"
+   ],
+   "Both must match, but filter runs in filter context: no relevance score, so it is faster and cacheable. must_not is the clause that excludes."
+  ],
+  [
+   "Which query finds documents with price from 10 to 20, both inclusive?",
+   "{\"range\": {\"price\": {\"gte\": 10, \"lte\": 20}}}",
+   [
+    "{\"range\": {\"price\": {\"gt\": 10, \"lt\": 20}}}",
+    "{\"term\": {\"price\": \"10..20\"}}",
+    "{\"match\": {\"price\": [10, 20]}}"
+   ],
+   "gte and lte are inclusive bounds, while gt and lt are exclusive, so the second option would skip 10 and 20."
+  ],
+  [
+   "Can you change number_of_shards on an existing Elasticsearch index with a settings update?",
+   "No, you reindex or use the split or shrink APIs",
+   [
+    "Yes, at any time with PUT _settings",
+    "Yes, but only when the cluster is yellow",
+    "Yes, after removing all replicas"
+   ],
+   "The primary shard count is fixed at index creation because documents are routed by hash modulo the shard count. number_of_replicas can change any time."
+  ],
+  [
+   "What does setting number_of_replicas to 1 on an Elasticsearch index do?",
+   "Keeps one copy of each primary shard on another node",
+   [
+    "Splits each shard into two pieces",
+    "Copies the index to a second cluster",
+    "Doubles the number of primary shards"
+   ],
+   "Replicas provide failover and extra read capacity. A replica is never placed on the same node as its primary."
+  ],
+  [
+   "A single-node Elasticsearch cluster has an index with number_of_replicas set to 1. What is the cluster health?",
+   "yellow",
+   [
+    "green",
+    "red",
+    "offline"
+   ],
+   "All primaries are assigned, but the replicas cannot be placed on the same node, so they stay unassigned and the status is yellow."
+  ],
+  [
+   "What does red cluster health mean in Elasticsearch?",
+   "At least one primary shard is unassigned",
+   [
+    "Some replica shards are unassigned",
+    "CPU usage is above 90 percent",
+    "The cluster has only one node"
+   ],
+   "Red means some data is unavailable for search and indexing. Yellow means only replicas are missing."
+  ],
+  [
+   "Which Elasticsearch aggregation returns a document count for each distinct value of status?",
+   "terms",
+   [
+    "cardinality",
+    "histogram",
+    "avg"
+   ],
+   "terms creates one bucket per value with doc_count. cardinality only returns an approximate number of distinct values."
+  ],
+  [
+   "A terms aggregation on a text field named status fails by default. What is the usual fix?",
+   "Aggregate on the keyword sub-field status.keyword",
+   [
+    "Increase the size parameter of terms",
+    "Reduce the index to a single shard",
+    "Use a match query instead"
+   ],
+   "Text fields have fielddata disabled by default. Dynamic mapping adds a .keyword sub-field that supports aggregations."
+  ],
+  [
+   "Why set \"size\": 0 in an Elasticsearch search used only for aggregations?",
+   "To skip returning hits and get only aggregations",
+   [
+    "To aggregate over zero shards",
+    "To limit each aggregation to zero buckets",
+    "To return hits without any scoring"
+   ],
+   "size controls how many hits are returned. With 0, Elasticsearch skips fetching documents, which is faster and allows request caching."
+  ],
+  [
+   "You index {\"age\": \"25\"} into a new index with default dynamic mapping. What type does age get?",
+   "text with a keyword sub-field",
+   [
+    "long",
+    "integer",
+    "keyword only"
+   ],
+   "A JSON string is mapped as text plus a keyword sub-field because numeric detection is off by default. Send 25 without quotes to get long."
+  ],
+  [
+   "How do you change an existing Elasticsearch field from text to keyword?",
+   "Create a new index with the new mapping and reindex",
+   [
+    "Send PUT _mapping with the new type",
+    "Refresh the index after editing the mapping",
+    "Change it on the replica shards only"
+   ],
+   "Existing field types cannot be changed because indexed data depends on them. You can only add new fields or sub-fields to a mapping."
+  ],
+  [
+   "What is an index template in Elasticsearch used for?",
+   "Auto-applying settings and mappings to new matching indices",
+   [
+    "Copying documents from one index to another",
+    "Restoring an index from a snapshot",
+    "Saving a query that dashboards can reuse"
+   ],
+   "Templates match index name patterns such as logs-* and apply settings, mappings and aliases when such an index is created."
+  ],
+  [
+   "Which Elasticsearch field type stores embeddings for approximate kNN vector search?",
+   "dense_vector",
+   [
+    "float_array",
+    "geo_point",
+    "nested"
+   ],
+   "A dense_vector field with indexing enabled supports the knn search option. float_array is not an Elasticsearch type."
+  ],
+  [
+   "Which graph-based algorithm does Elasticsearch use for approximate kNN search on dense_vector fields?",
+   "HNSW",
+   [
+    "IVF-PQ",
+    "LSH",
+    "k-d tree"
+   ],
+   "Elasticsearch builds Hierarchical Navigable Small World graphs via Lucene, trading some accuracy for much faster search than brute force."
+  ]
+ ],
+ "supabase": [
+  [
+   "Which database powers every Supabase project?",
+   "PostgreSQL",
+   [
+    "MySQL",
+    "MongoDB",
+    "CockroachDB"
+   ],
+   "Each Supabase project is a full Postgres database, and Auth, Storage and Realtime are built around it."
+  ],
+  [
+   "Which SQL statement enables the pgvector extension in a Supabase project?",
+   "create extension vector;",
+   [
+    "install extension pgvector;",
+    "enable module vector;",
+    "alter database add vector;"
+   ],
+   "pgvector is installed under the extension name vector. You can also enable it from the Extensions page of the dashboard."
+  ],
+  [
+   "A Supabase table has Row Level Security enabled and no policies. What does a select with the anon key return?",
+   "No rows",
+   [
+    "All rows",
+    "Only rows the user created",
+    "Only rows marked public"
+   ],
+   "With RLS on, access is denied unless a policy allows it, so the query returns an empty result rather than data."
+  ],
+  [
+   "Which RLS policy expression lets users read only their own rows in a todos table with a user_id column?",
+   "using (auth.uid() = user_id)",
+   [
+    "using (auth.role() = user_id)",
+    "with check (true)",
+    "using (current_user = 'anon')"
+   ],
+   "auth.uid() returns the ID of the signed-in user from the JWT. A USING clause filters which existing rows are visible."
+  ],
+  [
+   "In a Postgres RLS policy, what does the WITH CHECK clause control?",
+   "Which new or updated rows may be written",
+   [
+    "Which existing rows SELECT can see",
+    "Which roles may create new policies",
+    "Which columns are sent to the client"
+   ],
+   "USING filters existing rows for reads, updates and deletes. WITH CHECK validates the rows produced by INSERT and UPDATE."
+  ],
+  [
+   "Why must the Supabase service_role key never be shipped in browser code?",
+   "It bypasses Row Level Security",
+   [
+    "It expires after one hour",
+    "It only works from server IP addresses",
+    "It disables Realtime for the project"
+   ],
+   "The service_role key has full access to the database regardless of policies. Browsers should only use the anon (publishable) key."
+  ],
+  [
+   "Which Supabase Realtime feature streams INSERT, UPDATE and DELETE events from database tables to clients?",
+   "Postgres Changes",
+   [
+    "Broadcast",
+    "Presence",
+    "Edge Functions"
+   ],
+   "Postgres Changes listens to database changes. Broadcast sends ephemeral client messages, and Presence tracks shared online state."
+  ],
+  [
+   "You subscribe to Postgres Changes on a messages table but receive no events. What setup step is commonly missing?",
+   "Adding the table to the supabase_realtime publication",
+   [
+    "Creating a trigger that calls pg_notify",
+    "Enabling the pg_cron extension",
+    "Turning off RLS on the table"
+   ],
+   "Realtime only streams tables included in the supabase_realtime publication. RLS still applies to the events, so it should stay on."
+  ],
+  [
+   "Which Supabase Realtime feature tracks which users are currently online in a channel?",
+   "Presence",
+   [
+    "Broadcast",
+    "Postgres Changes",
+    "Database Webhooks"
+   ],
+   "Presence keeps a synced state per channel and emits join and leave events, which suits online indicators."
+  ],
+  [
+   "In which language and runtime are Supabase Edge Functions written?",
+   "TypeScript on a Deno-based runtime",
+   [
+    "Python on AWS Lambda",
+    "Go compiled to WebAssembly",
+    "PL/pgSQL inside the database"
+   ],
+   "Edge Functions are TypeScript (or JavaScript) functions running on Supabase's Deno-compatible edge runtime."
+  ],
+  [
+   "Where should a Supabase app call a third-party API that requires a secret key?",
+   "In an Edge Function that reads the key from secrets",
+   [
+    "In client code with the key in a VITE_ variable",
+    "Inside an RLS policy on the target table",
+    "In the metadata of a Storage bucket"
+   ],
+   "Variables prefixed VITE_ are bundled into the browser code and become public. Edge Functions keep secrets on the server."
+  ],
+  [
+   "What does making a Supabase Storage bucket public do?",
+   "Lets anyone download files by URL without auth",
+   [
+    "Lets anyone upload and delete files",
+    "Lists all files on a public index page",
+    "Makes browsers cache files forever"
+   ],
+   "Public buckets skip access checks for downloads only. Uploads, updates and deletes are still governed by policies."
+  ],
+  [
+   "How is access to files in a private Supabase Storage bucket controlled?",
+   "With RLS policies on the storage.objects table",
+   [
+    "With a .htaccess file inside the bucket",
+    "With IAM roles in Google Cloud",
+    "With a separate API key for each file"
+   ],
+   "Storage keeps file metadata in Postgres, so the same RLS policy system controls who can read and write objects."
+  ],
+  [
+   "Which supabase-js Storage method creates a time-limited link to a file in a private bucket?",
+   "createSignedUrl",
+   [
+    "getPublicUrl",
+    "download",
+    "list"
+   ],
+   "createSignedUrl(path, expiresIn) returns a URL valid for the given number of seconds. getPublicUrl only works for public buckets."
+  ],
+  [
+   "After a user signs in with supabase-js, what does the client attach to its API requests?",
+   "A JWT access token for the user",
+   [
+    "The user's password hash",
+    "The service_role key",
+    "A database connection string"
+   ],
+   "The access token identifies the user, so PostgREST and RLS can use auth.uid() and the authenticated role."
+  ],
+  [
+   "Where does Supabase Auth store user accounts?",
+   "In the auth.users table of the project database",
+   [
+    "In a separate MongoDB cluster",
+    "Only in browser localStorage",
+    "Automatically in public.profiles"
+   ],
+   "Users live in the auth schema. A common pattern is a public.profiles table filled by a trigger on auth.users."
+  ],
+  [
+   "Which supabase-js method sends a passwordless email login link or one-time code?",
+   "signInWithOtp",
+   [
+    "signUp",
+    "signInWithPassword",
+    "resetPasswordForEmail"
+   ],
+   "signInWithOtp sends a magic link or a code, depending on the email template. signUp creates a user with a password."
+  ],
+  [
+   "What does supabase-js do when the user's access token is about to expire?",
+   "Uses the refresh token to get a new session",
+   [
+    "Logs the user out immediately",
+    "Asks the user for the password again",
+    "Switches to the anon key for good"
+   ],
+   "With autoRefreshToken on (the default), the client exchanges the refresh token for a new access token in the background."
+  ],
+  [
+   "Which open-source tool generates Supabase's REST API from the database schema?",
+   "PostgREST",
+   [
+    "Hasura",
+    "Prisma",
+    "PostGraphile"
+   ],
+   "PostgREST turns tables, views and functions into REST endpoints automatically. Supabase's GraphQL API comes from the pg_graphql extension."
+  ],
+  [
+   "What does supabase.from('posts').select('id, title, author:profiles(name)') do?",
+   "Fetches posts with each author's name via the foreign key",
+   [
+    "Creates a view named author in the database",
+    "Runs two requests and merges them in the client",
+    "Fails, since joins require raw SQL"
+   ],
+   "PostgREST detects the foreign key between posts and profiles and embeds the related row. author: is an alias for the embedded resource."
+  ]
+ ],
+ "firebase": [
+  [
+   "How does Cloud Firestore store data compared with the Firebase Realtime Database?",
+   "Firestore uses collections of documents; RTDB is one JSON tree",
+   [
+    "Firestore is one JSON tree; RTDB uses documents",
+    "Both store data as SQL tables with rows",
+    "Firestore stores strings only; RTDB any type"
+   ],
+   "Firestore organizes data into documents grouped in collections. Realtime Database stores everything as a single large JSON tree."
+  ],
+  [
+   "An app needs queries that filter on several fields and sort the results. Which Firebase database fits better?",
+   "Cloud Firestore",
+   [
+    "Realtime Database",
+    "Firebase Hosting",
+    "Cloud Storage for Firebase"
+   ],
+   "Firestore supports compound queries with indexes. Realtime Database queries can only filter or sort on one property at a time."
+  ],
+  [
+   "What is the maximum size of a single Cloud Firestore document?",
+   "1 MiB",
+   [
+    "16 MB",
+    "100 KB",
+    "10 MB"
+   ],
+   "A Firestore document can be at most 1 MiB. Larger content belongs in Cloud Storage or in subcollections."
+  ],
+  [
+   "Which of these paths points to a Firestore document rather than a collection?",
+   "users/alice/orders/order1",
+   [
+    "users/alice/orders",
+    "users",
+    "users/alice/orders/order1/items"
+   ],
+   "Paths alternate collection and document, so document paths have an even number of segments."
+  ],
+  [
+   "You delete a Firestore document that has subcollections. What happens to the subcollections?",
+   "They remain and must be deleted separately",
+   [
+    "They are deleted automatically",
+    "The delete fails with an error",
+    "They move to the parent collection"
+   ],
+   "Deleting a document does not delete its subcollections. Use a recursive delete from the CLI or Admin SDK."
+  ],
+  [
+   "What does the Firestore rule allow read, write: if request.auth != null; permit?",
+   "Any signed-in user can read and write",
+   [
+    "Only the document owner can read and write",
+    "Only admins with custom claims can access",
+    "Nobody, until the rules are deployed"
+   ],
+   "It checks only that a user is authenticated, not who they are, so any signed-in user can access every matched document."
+  ],
+  [
+   "Which rule on match /users/{userId} lets only that user read their own profile document?",
+   "allow read: if request.auth.uid == userId;",
+   [
+    "allow read: if resource.uid == true;",
+    "allow read: if request.time < userId;",
+    "allow read: if userId != null;"
+   ],
+   "request.auth.uid is the caller's UID, and userId is the wildcard from the path, so the two must be equal."
+  ],
+  [
+   "Firestore rules allow reading posts only where published == true. A client queries all posts with no filter. What happens?",
+   "The query fails with a permission error",
+   [
+    "Only published posts are returned silently",
+    "All posts return, since rules apply to writes",
+    "Unpublished posts come back with empty fields"
+   ],
+   "Rules are not filters: Firestore rejects a query that could return disallowed documents. The query must include where published == true."
+  ],
+  [
+   "Which Firestore web SDK function subscribes to live updates of a document?",
+   "onSnapshot",
+   [
+    "getDoc",
+    "onValue",
+    "watchDoc"
+   ],
+   "onSnapshot calls your callback with the current data and again on every change. onValue is the Realtime Database equivalent."
+  ],
+  [
+   "What should a React component do with the function returned by Firestore's onSnapshot when it unmounts?",
+   "Call it to stop the listener",
+   [
+    "Store it in Firestore for later",
+    "Pass it to getDoc to refresh",
+    "Ignore it, listeners stop themselves"
+   ],
+   "onSnapshot returns an unsubscribe function. Not calling it leaks listeners and keeps billing reads."
+  ],
+  [
+   "A Firestore listener fires right after a local write, before the server confirms it. Which property shows this?",
+   "metadata.hasPendingWrites",
+   [
+    "metadata.fromCache",
+    "snapshot.exists",
+    "metadata.isLocalOnly"
+   ],
+   "Latency compensation fires local events immediately with hasPendingWrites set to true. fromCache means the data came from the local cache, not that a write is pending."
+  ],
+  [
+   "In the Cloud Firestore Android and Apple SDKs, offline persistence is:",
+   "Enabled by default",
+   [
+    "Disabled and impossible to enable",
+    "Available only on a paid plan",
+    "Available only for Realtime Database"
+   ],
+   "Mobile SDKs cache data offline by default. In the web SDK it must be enabled explicitly."
+  ],
+  [
+   "A user writes data to Firestore while offline with persistence enabled. What happens?",
+   "Writes apply locally and sync when back online",
+   [
+    "Writes throw an error immediately",
+    "Writes are dropped after 60 seconds",
+    "Writes are sent through an SMS fallback"
+   ],
+   "The SDK queues writes in the local cache, shows them to listeners right away and sends them when the connection returns."
+  ],
+  [
+   "Which Firebase Auth web function notifies your app when the user signs in or out?",
+   "onAuthStateChanged",
+   [
+    "onSnapshot",
+    "onUserLoaded",
+    "onIdTokenExpired"
+   ],
+   "onAuthStateChanged runs on startup once the auth state is known and on every sign-in or sign-out, which suits route guards."
+  ],
+  [
+   "How should you grant an admin role that Firebase security rules can check securely?",
+   "Set a custom claim with the Admin SDK on a server",
+   [
+    "Store role: admin in the client's localStorage",
+    "Edit the ID token inside the browser",
+    "Make the user an Owner in project IAM"
+   ],
+   "Custom claims are inside the signed ID token and appear as request.auth.token.admin in rules. Clients cannot change them."
+  ],
+  [
+   "How long is a Firebase Auth ID token valid before the SDK refreshes it?",
+   "One hour",
+   [
+    "Five minutes",
+    "24 hours",
+    "It never expires"
+   ],
+   "ID tokens are short-lived JWTs that expire after one hour. The SDK refreshes them with a long-lived refresh token."
+  ],
+  [
+   "In Cloud Functions for Firebase (2nd gen), which trigger runs when a new Firestore document is created?",
+   "onDocumentCreated",
+   [
+    "onValueCreated",
+    "onObjectFinalized",
+    "onCall"
+   ],
+   "onDocumentCreated comes from firebase-functions/v2/firestore. onValueCreated is for Realtime Database and onObjectFinalized is for Cloud Storage."
+  ],
+  [
+   "Why might a Cloud Function triggered on Firestore document updates run in an endless loop?",
+   "It writes to the same document that triggers it",
+   [
+    "It uses too many environment variables",
+    "It is deployed in a different region",
+    "It returns a value instead of a promise"
+   ],
+   "Each write fires the trigger again. Guard with a condition, for example skip when the field already has the new value."
+  ],
+  [
+   "What does a callable function (onCall) give you compared with a plain HTTP function?",
+   "The caller's Auth context passed in automatically",
+   [
+    "Unlimited invocations that are never billed",
+    "Direct access to the client's localStorage",
+    "Execution inside the user's own browser"
+   ],
+   "The client SDK sends the ID token (and App Check token) and the function receives request.auth already verified."
+  ],
+  [
+   "Which Firebase database bills mainly by the number of document reads, writes and deletes?",
+   "Cloud Firestore",
+   [
+    "Realtime Database",
+    "Cloud Storage for Firebase",
+    "Firebase Hosting"
+   ],
+   "Firestore charges per operation plus storage. Realtime Database charges mainly for stored data and downloaded bandwidth."
+  ]
+ ]
+}

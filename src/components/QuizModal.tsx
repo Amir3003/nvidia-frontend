@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useApp } from '../context/AppContext';
 import type { QuizQuestion } from '../data';
 import { QUIZ_BANK, QUIZ_LENGTH, SECONDS_PER_QUESTION } from '../db/quizBank';
+import { loadCatalogQuestions } from '../db/quizCatalog';
 import { CloseIcon, CheckIcon, AlertTriangleIcon } from './Icons';
 
 function shuffle<T>(items: T[]): T[] {
@@ -13,9 +14,14 @@ function shuffle<T>(items: T[]): T[] {
   return a;
 }
 
-// Fresh attempt: shuffled question order and shuffled options with the correct index remapped.
-function buildAttempt(skillId: string, fallback: QuizQuestion[]): QuizQuestion[] {
-  const pool = QUIZ_BANK[skillId]?.length ? QUIZ_BANK[skillId] : fallback;
+// Fresh attempt: a random draw from the pool, shuffled options with the correct index remapped.
+async function loadPool(skillId: string, fallback: QuizQuestion[]): Promise<QuizQuestion[]> {
+  if (QUIZ_BANK[skillId]?.length) return QUIZ_BANK[skillId];
+  const catalog = await loadCatalogQuestions(skillId);
+  return catalog.length ? catalog : fallback;
+}
+
+function buildAttempt(pool: QuizQuestion[]): QuizQuestion[] {
   return shuffle(pool)
     .slice(0, QUIZ_LENGTH)
     .map((q) => {
@@ -38,10 +44,25 @@ export const QuizModal: React.FC = () => {
   const [isCompleted, setIsCompleted] = useState(false);
   const [secondsRemaining, setSecondsRemaining] = useState(0);
   const [hasSubmittedAnswer, setHasSubmittedAnswer] = useState(false);
+  const [pool, setPool] = useState<QuizQuestion[] | null>(null);
+
+  // Load the question pool once per opened skill; banks for catalog topics are fetched lazily.
+  useEffect(() => {
+    if (!activeQuizSkill) return;
+    let cancelled = false;
+    setPool(null);
+    setQuestions([]);
+    loadPool(activeQuizSkill.id, activeQuizSkill.quizQuestions)
+      .then((p) => !cancelled && setPool(p))
+      .catch(() => !cancelled && setPool([]));
+    return () => {
+      cancelled = true;
+    };
+  }, [activeQuizSkill]);
 
   const startAttempt = useCallback(() => {
-    if (!activeQuizSkill) return;
-    const qs = buildAttempt(activeQuizSkill.id, activeQuizSkill.quizQuestions);
+    if (!pool) return;
+    const qs = buildAttempt(pool);
     setQuestions(qs);
     setAnswers(qs.map(() => null));
     setCurrentQuestionIndex(0);
@@ -49,7 +70,7 @@ export const QuizModal: React.FC = () => {
     setIsCompleted(false);
     setSecondsRemaining(qs.length * SECONDS_PER_QUESTION);
     setHasSubmittedAnswer(false);
-  }, [activeQuizSkill]);
+  }, [pool]);
 
   useEffect(() => {
     startAttempt();
@@ -119,7 +140,36 @@ export const QuizModal: React.FC = () => {
     return () => window.removeEventListener('keydown', onKey);
   }, [activeQuizSkill, isCompleted, currentQ, hasSubmittedAnswer, handleConfirmAnswer, handleNextQuestion, closeSkillQuiz]);
 
-  if (!activeQuizSkill || totalQuestions === 0) return null;
+  if (!activeQuizSkill) return null;
+
+  if (totalQuestions === 0) {
+    const failed = pool !== null;
+    return (
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${activeQuizSkill.name} quiz`}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) closeSkillQuiz();
+        }}
+        className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
+      >
+        <div className="w-full max-w-md bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-6 text-center space-y-3 text-slate-900">
+          <div className="text-[15px] font-bold text-indigo-950">{activeQuizSkill.name} Verification</div>
+          <p className="text-[13px] text-slate-600">
+            {failed ? 'Questions for this quiz are not available yet. Please try again later.' : 'Loading questions...'}
+          </p>
+          <button
+            type="button"
+            onClick={closeSkillQuiz}
+            className="h-10 px-5 rounded-btn border border-teal-300/80 bg-white/90 hover:bg-white text-teal-900 text-[13px] font-bold cursor-pointer"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const progressPercent = (answeredCount / totalQuestions) * 100;
   const minutes = Math.floor(secondsRemaining / 60);
@@ -280,7 +330,7 @@ export const QuizModal: React.FC = () => {
                 <p className="text-[14px] text-slate-600 max-w-md mx-auto mt-3 leading-relaxed">
                   {passed
                     ? `${userProfile.name || 'You'} passed the ${activeQuizSkill.name} check. The Verified badge will be added to your profile and CV.`
-                    : `You need at least ${neededToPass} correct answers. Review "${activeQuizSkill.resourceTitle}" and try again; questions and answer order change every attempt.`}
+                    : `You need at least ${neededToPass} correct answers. Review "${activeQuizSkill.resourceTitle}" and try again; every attempt draws a new random set of questions.`}
                 </p>
               </div>
 

@@ -1,0 +1,1820 @@
+{
+ "algorithms": [
+  [
+   "QuickSort always picks the first element as the pivot. What is its running time on an array that is already sorted?",
+   "O(n^2)",
+   [
+    "O(n log n)",
+    "O(n)",
+    "O(log n)"
+   ],
+   "Each partition splits off only the pivot, so the recursion depth is n and the total work is n + (n-1) + ... + 1, which is O(n^2)."
+  ],
+  [
+   "How much auxiliary memory does a standard top-down MergeSort on an array of n elements use?",
+   "O(n)",
+   [
+    "O(1)",
+    "O(log n)",
+    "O(n^2)"
+   ],
+   "Merging two sorted halves needs a temporary buffer proportional to n. Only the recursion stack is O(log n), the buffer dominates."
+  ],
+  [
+   "You must sort records by date while keeping records with the same date in their original order. Which algorithm guarantees this?",
+   "MergeSort",
+   [
+    "Heapsort",
+    "In-place QuickSort",
+    "Selection sort"
+   ],
+   "MergeSort is stable when ties are taken from the left half first. Heapsort, typical in-place QuickSort and array selection sort can reorder equal keys."
+  ],
+  [
+   "What is the lower bound on the worst-case number of comparisons for any comparison-based sorting algorithm on n elements?",
+   "Omega(n log n)",
+   [
+    "Omega(n)",
+    "Omega(log n)",
+    "Omega(n^2)"
+   ],
+   "A decision tree that distinguishes all n! orderings has height at least log2(n!), which is Omega(n log n). Non-comparison sorts like counting sort avoid this bound."
+  ],
+  [
+   "Roughly how many comparisons does binary search need in the worst case to find a value in a sorted array of 1,000,000 elements?",
+   "About 20",
+   [
+    "About 10",
+    "About 1,000",
+    "About 500,000"
+   ],
+   "Each step halves the range, so it needs about log2(1,000,000), which is close to 20 steps."
+  ],
+  [
+   "Binary search uses lo = 0, hi = n, while lo < hi: mid = (lo + hi) // 2. When a[mid] < target, which update is correct and avoids an infinite loop?",
+   "lo = mid + 1",
+   [
+    "lo = mid",
+    "hi = mid - 1",
+    "hi = mid + 1"
+   ],
+   "a[mid] is too small, so the answer lies strictly right of mid. Setting lo = mid can loop forever when hi = lo + 1."
+  ],
+  [
+   "Which condition must hold for binary search on an array to return correct results?",
+   "The array is sorted by the search key",
+   [
+    "The array has no duplicate values",
+    "The array length is a power of two",
+    "The array is stored in a linked list"
+   ],
+   "Binary search discards half the range based on order, which only works if the elements are sorted. Duplicates and odd lengths are fine."
+  ],
+  [
+   "Which algorithm finds the path with the fewest edges from a source vertex in an unweighted graph?",
+   "Breadth-first search",
+   [
+    "Depth-first search",
+    "Topological sort",
+    "Kruskal's algorithm"
+   ],
+   "BFS visits vertices in order of distance in edges, so the first time it reaches a vertex is along a shortest path. DFS may reach it through a long path first."
+  ],
+  [
+   "An iterative depth-first search replaces the recursion with which data structure?",
+   "A stack",
+   [
+    "A queue",
+    "A min-heap",
+    "A priority queue"
+   ],
+   "DFS goes deep first, which is last-in first-out order, so it uses a stack. A queue gives BFS order instead."
+  ],
+  [
+   "What is the time complexity of BFS or DFS on a graph with V vertices and E edges stored as adjacency lists?",
+   "O(V + E)",
+   [
+    "O(V * E)",
+    "O(V^2)",
+    "O(E log V)"
+   ],
+   "Each vertex is visited once and each adjacency list is scanned once. O(V^2) applies to an adjacency matrix."
+  ],
+  [
+   "During DFS on a directed graph, you reach a neighbor that is still on the current recursion stack. What does this show?",
+   "The graph contains a cycle",
+   [
+    "The graph is bipartite",
+    "The neighbor is unreachable",
+    "The graph is a tree"
+   ],
+   "An edge to an ancestor still on the stack is a back edge, and a back edge in a directed graph means a cycle exists."
+  ],
+  [
+   "Which property of a graph can make Dijkstra's algorithm return wrong shortest distances?",
+   "Negative edge weights",
+   [
+    "Edges with weight zero",
+    "Cycles with positive weights",
+    "Undirected edges"
+   ],
+   "Dijkstra assumes a vertex's distance is final once it is extracted, which breaks when a later negative edge could shorten it. Zero weights are fine."
+  ],
+  [
+   "After V - 1 rounds of Bellman-Ford, one extra round still relaxes some edge. What does this indicate?",
+   "A negative cycle is reachable from the source",
+   [
+    "The graph is not connected",
+    "The source has no outgoing edges",
+    "All edge weights are positive"
+   ],
+   "Without negative cycles, shortest paths have at most V - 1 edges and are final after V - 1 rounds. Any further improvement proves a negative cycle."
+  ],
+  [
+   "What is the time complexity of the Bellman-Ford algorithm on a graph with V vertices and E edges?",
+   "O(V * E)",
+   [
+    "O(E log V)",
+    "O(V + E)",
+    "O(V^3)"
+   ],
+   "It relaxes all E edges in each of V - 1 rounds. O(E log V) is Dijkstra with a binary heap, and O(V^3) is Floyd-Warshall."
+  ],
+  [
+   "What is the time complexity of Dijkstra's algorithm using a binary heap on a graph with V vertices and E edges?",
+   "O((V + E) log V)",
+   [
+    "O(V * E)",
+    "O(V + E)",
+    "O(V^2 log V)"
+   ],
+   "Each vertex is extracted once and each edge may cause a decrease-key or push, and every heap operation costs O(log V)."
+  ],
+  [
+   "Which two properties make a problem a good fit for dynamic programming?",
+   "Overlapping subproblems and optimal substructure",
+   [
+    "Sorted input and a greedy choice property",
+    "Disjoint subproblems and no recursion",
+    "Constant input size and random access"
+   ],
+   "DP pays off when the same subproblems repeat and an optimal answer is built from optimal sub-answers. Disjoint subproblems suit plain divide and conquer."
+  ],
+  [
+   "The naive recursive fib(n) takes exponential time. What is the time complexity after adding memoization?",
+   "O(n)",
+   [
+    "O(log n)",
+    "O(n^2)",
+    "O(2^n)"
+   ],
+   "Each value fib(0) to fib(n) is computed once and then reused, and each computation does O(1) work."
+  ],
+  [
+   "What is the time complexity of the standard DP for 0/1 knapsack with n items and integer capacity W?",
+   "O(n * W)",
+   [
+    "O(n log n)",
+    "O(2^n)",
+    "O(n + W)"
+   ],
+   "The table has n * W cells, each filled in O(1). This is pseudo-polynomial, since W can be exponential in its number of bits."
+  ],
+  [
+   "For activity selection (choose the most non-overlapping intervals), which greedy rule is provably optimal?",
+   "Pick the interval that finishes earliest",
+   [
+    "Pick the interval that starts earliest",
+    "Pick the shortest interval",
+    "Pick the interval with the fewest overlaps"
+   ],
+   "Choosing the earliest finish leaves the most room for the rest, and an exchange argument proves it optimal. The other rules have counterexamples."
+  ],
+  [
+   "With coins {1, 3, 4} and amount 6, compare greedy (always take the largest coin that fits) with the optimal solution.",
+   "Greedy uses 3 coins, optimal uses 2",
+   [
+    "Both use 2 coins",
+    "Both use 3 coins",
+    "Greedy uses 2 coins, optimal uses 3"
+   ],
+   "Greedy takes 4 + 1 + 1 (3 coins), while 3 + 3 needs only 2. Greedy change-making is only optimal for certain coin systems."
+  ]
+ ],
+ "data-structures": [
+  [
+   "In a dynamic array (like a Python list or C++ vector) that doubles its capacity when full, what is the amortized cost of appending one element?",
+   "O(1)",
+   [
+    "O(log n)",
+    "O(n)",
+    "O(n log n)"
+   ],
+   "Occasional O(n) copies are spread over many cheap appends; total copy work stays below 2n, so each append is O(1) amortized."
+  ],
+  [
+   "What is the cost of accessing the k-th element of a singly linked list that has only a head pointer?",
+   "O(k)",
+   [
+    "O(1)",
+    "O(log k)",
+    "O(k^2)"
+   ],
+   "A linked list has no random access, so you follow k next pointers from the head."
+  ],
+  [
+   "Which technique detects whether a singly linked list has a cycle using O(1) extra memory?",
+   "Slow and fast pointers (Floyd's algorithm)",
+   [
+    "Sorting the nodes by address",
+    "Storing visited nodes in a hash set",
+    "Reversing the list twice"
+   ],
+   "A fast pointer moving two steps meets a slow pointer moving one step only if there is a cycle. A hash set also works but uses O(n) memory."
+  ],
+  [
+   "In a doubly linked list, you have a pointer to a node in the middle. What is the cost of removing that node?",
+   "O(1)",
+   [
+    "O(log n)",
+    "O(n)",
+    "O(n log n)"
+   ],
+   "The node knows both neighbors, so you relink prev.next and next.prev directly without traversing the list."
+  ],
+  [
+   "Starting with an empty stack: push 1, push 2, push 3, pop, push 4, pop, pop. Which element remains on the stack?",
+   "1",
+   [
+    "2",
+    "3",
+    "4"
+   ],
+   "Pops remove 3, then 4, then 2 (last in, first out), leaving only 1."
+  ],
+  [
+   "Which data structure is the standard choice for checking whether brackets in a string like ([]{}) are balanced?",
+   "A stack",
+   [
+    "A queue",
+    "A min-heap",
+    "A trie"
+   ],
+   "Each closing bracket must match the most recent unmatched opening bracket, which is exactly last-in first-out order."
+  ],
+  [
+   "Starting with an empty queue: enqueue 1, enqueue 2, enqueue 3, dequeue, enqueue 4, dequeue. What is now at the front?",
+   "3",
+   [
+    "1",
+    "2",
+    "4"
+   ],
+   "Dequeues remove 1 and then 2 (first in, first out), so 3 is at the front, followed by 4."
+  ],
+  [
+   "A queue is implemented with two stacks (an inbox and an outbox). What is the amortized cost per enqueue or dequeue?",
+   "O(1)",
+   [
+    "O(log n)",
+    "O(n)",
+    "O(sqrt n)"
+   ],
+   "Each element is pushed and popped at most twice in total, so even though one transfer can be O(n), the amortized cost is O(1)."
+  ],
+  [
+   "A hash table uses chaining and a bad hash function sends all n keys to the same bucket. What is the lookup time?",
+   "O(n)",
+   [
+    "O(1)",
+    "O(log n)",
+    "O(n log n)"
+   ],
+   "All keys sit in one chain, so a lookup scans a list of length n. The O(1) average assumes keys spread evenly."
+  ],
+  [
+   "Why does a hash table grow and rehash when its load factor (items per bucket) gets too high?",
+   "To keep chains short so operations stay O(1) on average",
+   [
+    "To keep the keys in sorted order",
+    "To remove duplicate keys from buckets",
+    "To reduce the memory the table uses"
+   ],
+   "A high load factor means more collisions and longer probe sequences. Resizing restores a low load factor, at the cost of more memory."
+  ],
+  [
+   "What happens when you run d = {}; d[[1, 2]] = 3 in Python?",
+   "It raises TypeError: unhashable type: 'list'",
+   [
+    "It stores the key as the tuple (1, 2)",
+    "It stores the value under the key 1",
+    "It silently creates an empty dict"
+   ],
+   "Dict keys must be hashable, and lists are mutable and unhashable. Use a tuple (1, 2) as the key instead."
+  ],
+  [
+   "Which traversal of a binary search tree visits the keys in ascending sorted order?",
+   "In-order",
+   [
+    "Pre-order",
+    "Post-order",
+    "Level-order"
+   ],
+   "In-order visits left subtree, then node, then right subtree, which matches the BST ordering property."
+  ],
+  [
+   "You insert the keys 1, 2, 3, ..., n in order into a plain (unbalanced) BST. What is the worst-case search time afterwards?",
+   "O(n)",
+   [
+    "O(1)",
+    "O(log n)",
+    "O(n log n)"
+   ],
+   "Every new key becomes a right child, so the tree degenerates into a linked list of height n. Self-balancing trees prevent this."
+  ],
+  [
+   "What invariant does an AVL tree maintain at every node?",
+   "Subtree heights differ by at most 1",
+   [
+    "Both subtrees have equal size",
+    "Every node has exactly two children",
+    "Left child keys equal the parent key"
+   ],
+   "The AVL balance factor is kept in {-1, 0, 1} by rotations, which keeps the height O(log n)."
+  ],
+  [
+   "Which of these is one of the rules of a red-black tree?",
+   "A red node cannot have a red child",
+   [
+    "Every leaf must be red",
+    "The root must be red",
+    "Every path has the same number of red nodes"
+   ],
+   "Red-black trees forbid two reds in a row and require the same number of black nodes on every root-to-leaf path, which bounds the height at O(log n)."
+  ],
+  [
+   "A binary heap is stored in a 0-indexed array. What is the index of the parent of the element at index i (for i > 0)?",
+   "(i - 1) // 2",
+   [
+    "i // 2 + 1",
+    "2 * i + 1",
+    "(i + 1) // 2"
+   ],
+   "With 0-based indexing, children of i are 2i + 1 and 2i + 2, so the parent of i is (i - 1) // 2. 2i + 1 is the left child."
+  ],
+  [
+   "What is the time complexity of building a binary heap from n unsorted elements with bottom-up heapify (sift-down from the last parent)?",
+   "O(n)",
+   [
+    "O(n log n)",
+    "O(log n)",
+    "O(n^2)"
+   ],
+   "Most nodes are near the bottom and sift down only a short distance; summing the heights gives O(n). Inserting one by one is O(n log n)."
+  ],
+  [
+   "You need the k largest values from a stream of n numbers using little memory. Which approach is the standard choice?",
+   "Keep a min-heap of size k, O(n log k)",
+   [
+    "Keep a max-heap of all n values, O(n)",
+    "Sort the stream at the end, O(n)",
+    "Keep a stack of size k, O(n)"
+   ],
+   "The min-heap root is the smallest of the current top k, so each new value is compared with it and swapped in if larger, using O(k) memory."
+  ],
+  [
+   "A road graph has 1,000,000 vertices and 3,000,000 edges. Which representation is usually the right choice?",
+   "Adjacency list",
+   [
+    "Adjacency matrix",
+    "Incidence matrix",
+    "Edge list sorted by weight only"
+   ],
+   "The graph is sparse. An adjacency matrix would need 10^12 cells, while adjacency lists use O(V + E) memory."
+  ],
+  [
+   "What is the time to check whether a word of length L exists in a trie that holds N words?",
+   "O(L)",
+   [
+    "O(log N)",
+    "O(N)",
+    "O(L * N)"
+   ],
+   "A trie lookup follows one edge per character, independent of how many words are stored. That is why tries suit prefix search and autocomplete."
+  ]
+ ],
+ "competitive-programming": [
+  [
+   "A problem has n up to 2 * 10^5 and a time limit of 1 second. Which time complexity is a safe target?",
+   "O(n log n)",
+   [
+    "O(n^2)",
+    "O(n^2 log n)",
+    "O(2^n)"
+   ],
+   "n log n is about 3.6 million operations, well within a second. n^2 is 4 * 10^10, far above the roughly 10^8 simple operations per second rule of thumb."
+  ],
+  [
+   "What is the time complexity of this loop: i = 1; while i < n: i = i * 2?",
+   "O(log n)",
+   [
+    "O(n)",
+    "O(sqrt n)",
+    "O(n log n)"
+   ],
+   "i doubles each iteration, so it reaches n after about log2(n) steps."
+  ],
+  [
+   "You have a sorted array and pointers at both ends to find a pair with sum equal to target. The current sum is less than target. What should you do?",
+   "Move the left pointer one step right",
+   [
+    "Move the right pointer one step left",
+    "Move both pointers inward",
+    "Restart from the middle"
+   ],
+   "Moving the left pointer right increases the sum, because the array is sorted. Moving the right pointer left would make it smaller."
+  ],
+  [
+   "What is the time complexity of the standard 3Sum solution (sort, then two pointers for each fixed first element)?",
+   "O(n^2)",
+   [
+    "O(n log n)",
+    "O(n^3)",
+    "O(n)"
+   ],
+   "Sorting is O(n log n), then for each of n elements the two-pointer scan is O(n), giving O(n^2) overall."
+  ],
+  [
+   "You need the maximum sum of any contiguous subarray of fixed length k. With a sliding window, how do you update the sum when the window moves one step?",
+   "Add the new element and subtract the leaving one",
+   [
+    "Recompute the sum of all k elements",
+    "Multiply the sum by the new element",
+    "Add the new element only"
+   ],
+   "Each shift changes only two elements, so updating in O(1) gives O(n) total instead of O(n * k)."
+  ],
+  [
+   "What is the length of the longest substring without repeating characters in abcabcbb?",
+   "3",
+   [
+    "2",
+    "4",
+    "7"
+   ],
+   "abc is the longest window with all distinct characters. A sliding window with a last-seen map finds it in O(n)."
+  ],
+  [
+   "Which data structure gives O(n) total time for computing the maximum of every window of size k in an array?",
+   "A monotonic deque",
+   [
+    "A binary search tree",
+    "A hash map",
+    "A segment tree"
+   ],
+   "A deque keeps candidate indices in decreasing value order, and each index is pushed and popped once. A segment tree or BST would give O(n log k) or O(n log n)."
+  ],
+  [
+   "For a positive integer x, what does x & (x - 1) compute?",
+   "x with its lowest set bit cleared",
+   [
+    "x with its highest set bit cleared",
+    "Only the lowest set bit of x",
+    "The number of set bits in x"
+   ],
+   "Subtracting 1 flips the lowest set bit and the zeros below it, so ANDing clears exactly that bit. For example, 12 & 11 is 8."
+  ],
+  [
+   "Which expression correctly tests whether an integer x is a power of two?",
+   "x > 0 and (x & (x - 1)) == 0",
+   [
+    "(x & 1) == 0",
+    "(x | (x - 1)) == 0",
+    "x % 2 == 0 and x > 2"
+   ],
+   "A power of two has exactly one set bit, so clearing the lowest set bit gives zero. x > 0 excludes zero."
+  ],
+  [
+   "What is the value of 5 ^ 3 in C++, Java or Python, where ^ is bitwise XOR?",
+   "6",
+   [
+    "8",
+    "125",
+    "2"
+   ],
+   "101 XOR 011 is 110, which is 6. In these languages ^ is XOR, not exponentiation."
+  ],
+  [
+   "Every number in an array appears exactly twice except one, which appears once. What finds that number in O(n) time and O(1) space?",
+   "XOR all the elements together",
+   [
+    "Add all elements and divide by 2",
+    "AND all the elements together",
+    "Sort and take the middle element"
+   ],
+   "a ^ a = 0 and a ^ 0 = a, so the paired values cancel and only the single value remains."
+  ],
+  [
+   "For x = 12 (binary 1100) in two's complement, what is x & -x?",
+   "4",
+   [
+    "8",
+    "12",
+    "1"
+   ],
+   "x & -x isolates the lowest set bit. In 1100 that bit is worth 4. Fenwick trees rely on this trick."
+  ],
+  [
+   "A segment tree over n elements supports point update and range sum query. What is the cost of each operation?",
+   "O(log n)",
+   [
+    "O(1)",
+    "O(sqrt n)",
+    "O(n)"
+   ],
+   "Both walk a path from root to leaf and touch O(log n) nodes. Building the tree takes O(n)."
+  ],
+  [
+   "For a recursive segment tree over n elements stored in an array, how large is the array usually allocated to be safe for any n?",
+   "4n",
+   [
+    "n",
+    "2n",
+    "n log n"
+   ],
+   "When n is not a power of two, the tree can use indices beyond 2n, and 4n is a proven safe bound."
+  ],
+  [
+   "What does lazy propagation add to a segment tree?",
+   "Range updates in O(log n)",
+   [
+    "Point queries in O(1)",
+    "Building the tree in O(1)",
+    "Sorting the array in O(n)"
+   ],
+   "Pending updates are stored at internal nodes and pushed down only when needed, so updating a whole range costs O(log n) instead of O(n)."
+  ],
+  [
+   "With both path compression and union by rank, what is the amortized cost per union-find operation?",
+   "O(alpha(n)), inverse Ackermann",
+   [
+    "O(log n)",
+    "O(sqrt n)",
+    "O(1) worst case"
+   ],
+   "Tarjan proved the inverse Ackermann bound, which is at most 4 or 5 for any practical n, but it is amortized, not worst case per operation."
+  ],
+  [
+   "While adding edges of an undirected graph to a union-find structure, find(u) == find(v) for a new edge (u, v). What does this mean?",
+   "Adding the edge would create a cycle",
+   [
+    "The graph is now fully connected",
+    "u and v have no common neighbor",
+    "The edge is a bridge of the graph"
+   ],
+   "u and v are already in the same component, so a new edge closes a cycle. Kruskal's algorithm skips such edges."
+  ],
+  [
+   "The modulus p = 10^9 + 7 is prime. How do you compute the modular inverse of a (with a not divisible by p)?",
+   "pow(a, p - 2, p)",
+   [
+    "pow(a, p - 1, p)",
+    "pow(a, p, p)",
+    "(p - a) % p"
+   ],
+   "By Fermat's little theorem a^(p-1) is 1 mod p, so a^(p-2) is the inverse. a^(p-1) is always 1."
+  ],
+  [
+   "In C++, (a - b) % m can be negative when a < b. Which expression always gives a result in [0, m)?",
+   "((a - b) % m + m) % m",
+   [
+    "(a - b) % m + m",
+    "abs(a - b) % m",
+    "(a % m - b) % m"
+   ],
+   "C++ % keeps the sign of the dividend, so adding m and taking % m again shifts the result into range. abs gives a different value."
+  ],
+  [
+   "What does pow(3, 4, 5) return in Python?",
+   "1",
+   [
+    "4",
+    "81",
+    "0"
+   ],
+   "3^4 is 81, and 81 mod 5 is 1. The three-argument pow computes modular exponentiation efficiently."
+  ]
+ ],
+ "unit-testing": [
+  [
+   "What is the order of the steps in the classic test-driven development cycle?",
+   "Red, Green, Refactor",
+   [
+    "Green, Red, Refactor",
+    "Refactor, Red, Green",
+    "Red, Refactor, Green"
+   ],
+   "First write a failing test (red), then the simplest code that passes (green), then clean up the code with the tests as a safety net (refactor)."
+  ],
+  [
+   "In the Green step of TDD, how much production code should you write?",
+   "Just enough to make the failing test pass",
+   [
+    "The complete feature with all edge cases",
+    "Enough to pass the next three planned tests",
+    "Nothing until the code is refactored"
+   ],
+   "TDD grows the code in small steps driven by tests. Extra code written ahead of tests is untested and is added only when a new failing test asks for it."
+  ],
+  [
+   "In Python unittest, self.assertEqual(0.1 + 0.2, 0.3) fails. Which assertion fixes the test?",
+   "self.assertAlmostEqual(0.1 + 0.2, 0.3)",
+   [
+    "self.assertIs(0.1 + 0.2, 0.3)",
+    "self.assertTrue(0.1 + 0.2 == 0.3)",
+    "self.assertIn(0.3, [0.1 + 0.2])"
+   ],
+   "0.1 + 0.2 is 0.30000000000000004 in binary floating point. assertAlmostEqual compares after rounding to 7 decimal places by default."
+  ],
+  [
+   "In pytest, how do you assert that calling parse('') raises ValueError?",
+   "with pytest.raises(ValueError): parse('')",
+   [
+    "assert parse('') == ValueError",
+    "assert raises(parse(''), ValueError)",
+    "pytest.expect(ValueError, parse(''))"
+   ],
+   "pytest.raises is a context manager that fails the test if the block does not raise the given exception. The other forms call parse first, so the exception escapes."
+  ],
+  [
+   "In Jest, expect({ a: 1 }).toBe({ a: 1 }) fails. Which matcher compares the objects by value?",
+   "toEqual",
+   [
+    "toBeTruthy",
+    "toBeDefined",
+    "toHaveLength"
+   ],
+   "toBe uses Object.is, which checks reference identity, and two object literals are different references. toEqual compares recursively by value."
+  ],
+  [
+   "Which test double mainly returns canned answers to calls and does not verify how it was called?",
+   "Stub",
+   [
+    "Mock",
+    "Spy",
+    "Dummy"
+   ],
+   "A stub supplies preset return values. A mock is set up with expectations about calls, a spy records calls, and a dummy is passed but never used."
+  ],
+  [
+   "In Jest, you call jest.spyOn(obj, 'save') without any mock implementation. What happens when the code calls obj.save()?",
+   "The original method runs and the call is recorded",
+   [
+    "The call returns undefined and is recorded",
+    "The call throws until a return value is set",
+    "The original method runs and nothing is recorded"
+   ],
+   "By default jest.spyOn wraps the real method, so it still executes while the spy tracks calls. Use mockImplementation or mockReturnValue to replace it."
+  ],
+  [
+   "Tests replace a real PostgreSQL repository with a working in-memory implementation that stores data in a dictionary. Which kind of test double is this?",
+   "Fake",
+   [
+    "Stub",
+    "Dummy",
+    "Spy"
+   ],
+   "A fake has real working behavior with a shortcut, such as an in-memory store. A stub only returns fixed values."
+  ],
+  [
+   "Module app.py does from requests import get and calls get(url). In tests of app, which target should unittest.mock.patch replace?",
+   "'app.get'",
+   [
+    "'requests.get'",
+    "'requests.api.get'",
+    "'get'"
+   ],
+   "Patch where the name is looked up. app already holds its own reference to get, so patching requests.get leaves app.get unchanged."
+  ],
+  [
+   "With Python unittest.mock, how do you check that mock_send was called exactly once with the argument 5?",
+   "mock_send.assert_called_once_with(5)",
+   [
+    "assert mock_send(5) == 1",
+    "mock_send.called_with(5, times=1)",
+    "assert mock_send.call_count(5) == 1"
+   ],
+   "assert_called_once_with fails unless there was exactly one call with those arguments. call_count is an attribute, not a function."
+  ],
+  [
+   "A function contains if x > 0: y = 1 with no else branch. One test calls it with x = 5. What coverage does this give for that if statement?",
+   "100% line coverage but 50% branch coverage",
+   [
+    "100% line and 100% branch coverage",
+    "50% line coverage and 50% branch coverage",
+    "50% line coverage but 100% branch coverage"
+   ],
+   "Every line runs, but the False branch where the condition fails is never taken. Branch coverage is stricter than line coverage."
+  ],
+  [
+   "What does 100% line coverage of a module actually guarantee?",
+   "Every line ran at least once during the tests",
+   [
+    "The module contains no bugs",
+    "Every branch outcome was tested",
+    "Every possible input was checked"
+   ],
+   "Coverage measures execution, not correctness. A line can run with assertions that check nothing, and branches or input ranges can still be untested."
+  ],
+  [
+   "What does mutation testing measure?",
+   "Whether the tests fail when small bugs are injected into the code",
+   [
+    "How many lines of code the tests execute",
+    "How long the test suite takes to run",
+    "Whether tests pass when run in random order"
+   ],
+   "Tools change operators or constants to create mutants. If no test fails, the mutant survives, which shows weak assertions even with high coverage."
+  ],
+  [
+   "A function average(nums) returns sum(nums) / len(nums). Which input is the most important edge case to test?",
+   "An empty list",
+   [
+    "A list of one million numbers",
+    "A list of positive integers",
+    "A list sorted in ascending order"
+   ],
+   "len([]) is 0, so the function raises ZeroDivisionError. The behavior for empty input must be defined and tested."
+  ],
+  [
+   "A field accepts integers from 1 to 100 inclusive. Using boundary value analysis, which set of inputs should you test?",
+   "0, 1, 100, 101",
+   [
+    "1, 50, 100",
+    "-100, 0, 100, 1000",
+    "2, 50, 99"
+   ],
+   "Bugs cluster at boundaries, such as < instead of <=. Testing just inside and just outside each limit catches off-by-one errors."
+  ],
+  [
+   "What is equivalence partitioning in test design?",
+   "Splitting inputs into classes that behave alike and testing one value from each",
+   [
+    "Running the same test on several machines at once",
+    "Giving every test an equal share of the time budget",
+    "Comparing two implementations on random inputs"
+   ],
+   "If the code treats all values in a class the same way, one representative per class covers it, which cuts redundant tests."
+  ],
+  [
+   "A test fails only around midnight because the code reads the system clock directly. What is the best fix?",
+   "Inject a clock the test can control",
+   [
+    "Retry the test automatically on failure",
+    "Skip the test between 23:00 and 01:00",
+    "Increase the test timeout"
+   ],
+   "Making time a dependency lets tests set a fixed time, so the result is deterministic. Retries and skips only hide the flakiness."
+  ],
+  [
+   "What distinguishes an integration test from a unit test?",
+   "It checks that several real components work together",
+   [
+    "It always runs in a production environment",
+    "It must be written before the code exists",
+    "It replaces every dependency with a mock"
+   ],
+   "Integration tests exercise real collaborators, such as a repository with a real database. Unit tests isolate one unit, often with test doubles."
+  ],
+  [
+   "According to the test pyramid, how should a test suite usually be balanced?",
+   "Many unit tests, fewer integration tests, fewest end-to-end tests",
+   [
+    "Many end-to-end tests, fewer integration tests, fewest unit tests",
+    "Equal numbers of unit, integration and end-to-end tests",
+    "Only end-to-end tests, since they test real user flows"
+   ],
+   "Unit tests are fast and precise, while higher-level tests are slower and more brittle, so the pyramid keeps most tests at the bottom."
+  ],
+  [
+   "Integration tests share one database and pass or fail depending on the order they run in. What is the best fix?",
+   "Isolate each test's data, for example by rolling back a transaction after each test",
+   [
+    "Always run the tests in alphabetical order",
+    "Run the whole suite twice and keep the better result",
+    "Remove the assertions that depend on stored data"
+   ],
+   "Order dependence means tests leak state into each other. Giving each test a clean, isolated state makes results independent of order."
+  ]
+ ],
+ "linear-algebra": [
+  [
+   "A is a 2x3 matrix and B is a 3x4 matrix. What is the shape of AB?",
+   "2x4",
+   [
+    "3x3",
+    "4x2",
+    "2x3"
+   ],
+   "The inner dimensions (3 and 3) must match and disappear, leaving rows of A by columns of B."
+  ],
+  [
+   "What is the determinant of the 2x2 matrix [[1, 2], [3, 4]]?",
+   "-2",
+   [
+    "2",
+    "10",
+    "-10"
+   ],
+   "For [[a, b], [c, d]] the determinant is ad - bc, which is 1*4 - 2*3 = -2."
+  ],
+  [
+   "Square matrices A and B satisfy det(A) = 2 and det(B) = 3. What is det(AB)?",
+   "6",
+   [
+    "5",
+    "1.5",
+    "9"
+   ],
+   "The determinant is multiplicative: det(AB) = det(A) det(B)."
+  ],
+  [
+   "A is a 3x3 matrix with det(A) = 5. What is det(2A)?",
+   "40",
+   [
+    "10",
+    "20",
+    "13"
+   ],
+   "Scaling an n x n matrix by c scales the determinant by c^n, so det(2A) = 2^3 * 5 = 40."
+  ],
+  [
+   "What is the dot product of [1, 2, 3] and [4, 5, 6]?",
+   "32",
+   [
+    "21",
+    "36",
+    "[4, 10, 18]"
+   ],
+   "1*4 + 2*5 + 3*6 = 4 + 10 + 18 = 32. The elementwise product [4, 10, 18] is not the dot product."
+  ],
+  [
+   "Two nonzero vectors have a dot product of 0. What does this tell you?",
+   "They are orthogonal",
+   [
+    "They are parallel",
+    "They have equal length",
+    "One is a multiple of the other"
+   ],
+   "u . v = |u| |v| cos(theta), and with nonzero lengths this is 0 only when cos(theta) = 0, so the angle is 90 degrees."
+  ],
+  [
+   "What is the cosine similarity between [1, 0] and [1, 1]?",
+   "About 0.707",
+   [
+    "1",
+    "0.5",
+    "0"
+   ],
+   "The dot product is 1 and the norms are 1 and sqrt(2), so the cosine is 1 / sqrt(2), about 0.707 (an angle of 45 degrees)."
+  ],
+  [
+   "What are the eigenvalues of the diagonal matrix [[2, 0], [0, 3]]?",
+   "2 and 3",
+   [
+    "0 and 5",
+    "5 and 6",
+    "1 and 6"
+   ],
+   "The eigenvalues of a diagonal (or triangular) matrix are its diagonal entries."
+  ],
+  [
+   "What are the eigenvalues of the matrix [[2, 1], [1, 2]]?",
+   "1 and 3",
+   [
+    "2 and 2",
+    "0 and 4",
+    "-1 and 3"
+   ],
+   "det([[2 - t, 1], [1, 2 - t]]) = (2 - t)^2 - 1 = 0 gives t = 1 or t = 3, with eigenvectors [1, -1] and [1, 1]."
+  ],
+  [
+   "A 2x2 matrix has trace 5 and determinant 6. What are its eigenvalues?",
+   "2 and 3",
+   [
+    "1 and 6",
+    "1 and 5",
+    "-2 and -3"
+   ],
+   "The eigenvalues sum to the trace and multiply to the determinant, and 2 + 3 = 5 with 2 * 3 = 6."
+  ],
+  [
+   "Which property holds for every real symmetric matrix?",
+   "Its eigenvalues are real and it has orthogonal eigenvectors",
+   [
+    "All its eigenvalues are positive",
+    "Its determinant is always 1",
+    "It is always invertible"
+   ],
+   "The spectral theorem guarantees real eigenvalues and an orthonormal eigenbasis. Eigenvalues can still be zero or negative, so the other claims fail."
+  ],
+  [
+   "What is the rank of the matrix [[1, 2], [2, 4]]?",
+   "1",
+   [
+    "2",
+    "0",
+    "4"
+   ],
+   "The second row is twice the first, so only one row is linearly independent."
+  ],
+  [
+   "Are the vectors (1, 0), (0, 1) and (1, 1) linearly independent in R^2?",
+   "No, because three vectors in R^2 must be dependent",
+   [
+    "Yes, because no two of them are parallel",
+    "Yes, because each one has a nonzero entry",
+    "No, because (1, 1) is not a unit vector"
+   ],
+   "R^2 has dimension 2, so any 3 vectors are dependent. Indeed (1, 1) = (1, 0) + (0, 1)."
+  ],
+  [
+   "A 3x5 matrix has rank 3. What is the dimension of its null space?",
+   "2",
+   [
+    "0",
+    "3",
+    "5"
+   ],
+   "By rank-nullity, rank + nullity equals the number of columns, so nullity = 5 - 3 = 2."
+  ],
+  [
+   "Which of these subsets of R^2 is a vector subspace?",
+   "The line y = 2x",
+   [
+    "The line y = 2x + 1",
+    "The first quadrant x >= 0, y >= 0",
+    "The unit circle x^2 + y^2 = 1"
+   ],
+   "A subspace must contain zero and be closed under addition and scaling. y = 2x + 1 misses the origin and the quadrant fails under multiplication by -1."
+  ],
+  [
+   "In the singular value decomposition A = U S V^T, what are the diagonal entries of S?",
+   "Nonnegative singular values",
+   [
+    "The eigenvalues of A, possibly negative",
+    "The diagonal entries of A",
+    "The column norms of A"
+   ],
+   "Singular values are square roots of the eigenvalues of A^T A, so they are never negative, and they are usually listed in descending order."
+  ],
+  [
+   "In PCA, the principal directions are the eigenvectors of which matrix?",
+   "The covariance matrix of the centered data",
+   [
+    "The raw data matrix itself",
+    "The identity matrix",
+    "The matrix of pairwise distances"
+   ],
+   "PCA finds directions of maximum variance, which are the eigenvectors of the covariance matrix, ordered by eigenvalue."
+  ],
+  [
+   "Which preprocessing step is required before computing PCA on a data matrix?",
+   "Subtract the mean of each feature",
+   [
+    "Sort the rows by the first feature",
+    "Square every value",
+    "Remove every negative value"
+   ],
+   "Without centering, the first component points toward the mean instead of the direction of greatest variance. Scaling features is also common when units differ."
+  ],
+  [
+   "According to the Eckart-Young theorem, how do you get the best rank-k approximation of a matrix (in Frobenius norm)?",
+   "Keep the k largest singular values in the SVD",
+   [
+    "Keep the first k rows of the matrix",
+    "Keep the k largest entries of the matrix",
+    "Keep the k smallest singular values in the SVD"
+   ],
+   "Truncated SVD minimizes the approximation error among all rank-k matrices. The error equals the root of the sum of squares of the dropped singular values."
+  ],
+  [
+   "A PCA on centered data gives covariance eigenvalues 5, 3 and 2. What fraction of the total variance does the first component explain?",
+   "50%",
+   [
+    "5%",
+    "33%",
+    "62.5%"
+   ],
+   "The total variance is 5 + 3 + 2 = 10, and the first component accounts for 5 / 10 = 50%."
+  ]
+ ],
+ "statistics": [
+  [
+   "Salaries in a team are 1, 2, 3, 4 and 100 (thousand dollars). Which measure best describes a typical salary?",
+   "The median, 3",
+   [
+    "The mean, 22",
+    "The mode, 100",
+    "The range, 99"
+   ],
+   "The single outlier pulls the mean up to 22, while the median is unaffected. The median is robust to outliers."
+  ],
+  [
+   "What is the median of 7, 1, 3, 9?",
+   "5",
+   [
+    "3",
+    "7",
+    "4"
+   ],
+   "Sorted, the values are 1, 3, 7, 9. With an even count, the median is the average of the two middle values, (3 + 7) / 2 = 5."
+  ],
+  [
+   "What is the mode of 1, 2, 2, 3, 3, 3, 4?",
+   "3",
+   [
+    "2",
+    "2.5",
+    "4"
+   ],
+   "The mode is the most frequent value, and 3 appears three times."
+  ],
+  [
+   "Household incomes form a strongly right-skewed distribution. How do the mean and median usually compare?",
+   "The mean is greater than the median",
+   [
+    "The mean is less than the median",
+    "The mean equals the median",
+    "The median is undefined"
+   ],
+   "A long right tail of very high incomes pulls the mean up, while the median stays near the center of the bulk."
+  ],
+  [
+   "What is the population standard deviation of 2, 4, 4, 4, 5, 5, 7, 9?",
+   "2",
+   [
+    "4",
+    "5",
+    "1.5"
+   ],
+   "The mean is 5, the squared deviations sum to 32, the population variance is 32 / 8 = 4, and the square root is 2."
+  ],
+  [
+   "Why does the sample variance divide by n - 1 instead of n?",
+   "So it is an unbiased estimate of the population variance",
+   [
+    "So it is always smaller than the population variance",
+    "So it equals the standard deviation",
+    "So it works when n = 1"
+   ],
+   "Deviations are measured from the sample mean, which makes them slightly too small. Dividing by n - 1 (Bessel's correction) removes that bias."
+  ],
+  [
+   "You add 10 to every value in a dataset. What happens to the standard deviation?",
+   "It stays the same",
+   [
+    "It increases by 10",
+    "It is multiplied by 10",
+    "It increases by 100"
+   ],
+   "Shifting all values moves the mean by the same amount, so every deviation from the mean is unchanged."
+  ],
+  [
+   "You multiply every value in a dataset by 3. What happens to the variance?",
+   "It is multiplied by 9",
+   [
+    "It is multiplied by 3",
+    "It stays the same",
+    "It increases by 3"
+   ],
+   "Every deviation is multiplied by 3 and variance uses squared deviations, so it scales by 3^2 = 9. The standard deviation scales by 3."
+  ],
+  [
+   "For a normal distribution, roughly what share of values lies within one standard deviation of the mean?",
+   "About 68%",
+   [
+    "About 50%",
+    "About 95%",
+    "About 99.7%"
+   ],
+   "The 68-95-99.7 rule gives about 68% within 1 SD, 95% within 2 SD and 99.7% within 3 SD."
+  ],
+  [
+   "IQ scores are modeled as normal with mean 100 and SD 15. What is the z-score of a score of 130?",
+   "2",
+   [
+    "1.5",
+    "30",
+    "0.5"
+   ],
+   "z = (x - mean) / SD = (130 - 100) / 15 = 2, so the score is two standard deviations above the mean."
+  ],
+  [
+   "In hypothesis testing, what is a Type I error?",
+   "Rejecting a null hypothesis that is true",
+   [
+    "Failing to reject a false null hypothesis",
+    "Using the wrong test statistic",
+    "Choosing too small a sample"
+   ],
+   "A Type I error is a false positive, and its probability is the significance level alpha. Failing to reject a false null is a Type II error."
+  ],
+  [
+   "What is the correct definition of a p-value?",
+   "The probability, assuming H0 is true, of data at least as extreme as observed",
+   [
+    "The probability that the null hypothesis is true",
+    "The probability that the alternative hypothesis is true",
+    "The probability that the result happened by chance only"
+   ],
+   "A p-value is computed under the null hypothesis. It is not the probability that H0 or H1 is true."
+  ],
+  [
+   "A test with significance level alpha = 0.05 gives p = 0.03. What is the correct decision?",
+   "Reject the null hypothesis",
+   [
+    "Fail to reject the null hypothesis",
+    "Accept the null hypothesis as true",
+    "Repeat the test until p < 0.01"
+   ],
+   "Since p < alpha, the result is statistically significant at the 5% level, so H0 is rejected."
+  ],
+  [
+   "A study reports p = 0.03. Which interpretation is correct?",
+   "Data this extreme would be rare if H0 were true",
+   [
+    "There is a 3% chance that H0 is true",
+    "There is a 97% chance the effect is real",
+    "The effect size is 3%"
+   ],
+   "The p-value describes data under H0, not the probability of hypotheses, and it says nothing direct about effect size."
+  ],
+  [
+   "What is the correct interpretation of a 95% confidence interval for a mean?",
+   "About 95% of intervals built this way would contain the true mean",
+   [
+    "The true mean lies in this interval with 95% probability",
+    "95% of the data values lie in this interval",
+    "The sample mean will be in this range 95% of the time"
+   ],
+   "The 95% refers to the long-run success rate of the method. Once computed, a specific interval either contains the fixed true mean or not."
+  ],
+  [
+   "Other things equal, you quadruple the sample size. What happens to the width of a confidence interval for the mean?",
+   "It is roughly halved",
+   [
+    "It is roughly quartered",
+    "It stays the same",
+    "It roughly doubles"
+   ],
+   "The standard error is SD / sqrt(n), so multiplying n by 4 divides the width by sqrt(4) = 2."
+  ],
+  [
+   "How does a 99% confidence interval compare with a 95% interval from the same data?",
+   "It is wider",
+   [
+    "It is narrower",
+    "It has the same width",
+    "It has a different center"
+   ],
+   "Higher confidence needs a larger critical value (about 2.58 instead of 1.96), so the interval is wider around the same estimate."
+  ],
+  [
+   "A fitted linear regression is y = 3 + 2x. How do you interpret the coefficient 2?",
+   "Each unit increase in x adds 2 to predicted y",
+   [
+    "y equals 2 when x equals 0",
+    "x causes y to double",
+    "The model explains 2% of the variance"
+   ],
+   "The slope is the change in the predicted y per one-unit change in x. The intercept 3 is the prediction at x = 0. Regression alone does not prove causation."
+  ],
+  [
+   "A linear regression has R^2 = 0.8. What does this mean?",
+   "The model explains 80% of the variance in y",
+   [
+    "80% of predictions are exactly correct",
+    "The slope of the line is 0.8",
+    "The correlation between x and y is 0.8"
+   ],
+   "R^2 is the share of variance in the target explained by the model. In simple regression it equals the squared correlation, so r is about 0.89, not 0.8."
+  ],
+  [
+   "Ordinary least squares regression chooses coefficients that minimize what?",
+   "The sum of squared residuals",
+   [
+    "The sum of absolute residuals",
+    "The largest single residual",
+    "The number of points off the line"
+   ],
+   "OLS minimizes the squared vertical distances. Minimizing absolute residuals is least absolute deviations, which is more robust to outliers."
+  ]
+ ],
+ "probability": [
+  [
+   "You toss two fair coins. What is the probability that both land heads?",
+   "1/4",
+   [
+    "1/2",
+    "1/3",
+    "3/4"
+   ],
+   "The tosses are independent, so the probability is 1/2 * 1/2 = 1/4."
+  ],
+  [
+   "A and B are independent with P(A) = 0.5 and P(B) = 0.4. What is P(A and B)?",
+   "0.2",
+   [
+    "0.9",
+    "0.1",
+    "0.45"
+   ],
+   "For independent events P(A and B) = P(A) * P(B) = 0.5 * 0.4 = 0.2."
+  ],
+  [
+   "A and B are mutually exclusive with P(A) = 0.3 and P(B) = 0.4. Are they independent?",
+   "No, since P(A and B) = 0 but P(A)P(B) = 0.12",
+   [
+    "Yes, since they cannot affect each other",
+    "Yes, since P(A) + P(B) is less than 1",
+    "It cannot be decided from this data"
+   ],
+   "If A happens, B cannot, so knowing A changes the probability of B. Disjoint events with positive probabilities are always dependent."
+  ],
+  [
+   "You roll a fair six-sided die twice. What is the probability of getting at least one six?",
+   "11/36",
+   [
+    "1/3",
+    "1/6",
+    "1/36"
+   ],
+   "Use the complement: P(no six) = (5/6)^2 = 25/36, so P(at least one) = 1 - 25/36 = 11/36. Adding 1/6 + 1/6 double counts double six."
+  ],
+  [
+   "A fair die is rolled and you are told the result is even. What is the probability that it is a 6?",
+   "1/3",
+   [
+    "1/6",
+    "1/2",
+    "2/3"
+   ],
+   "Conditioning shrinks the sample space to {2, 4, 6}, and 6 is one of three equally likely outcomes."
+  ],
+  [
+   "Two cards are drawn without replacement from a standard 52-card deck. What is the probability that both are aces?",
+   "1/221",
+   [
+    "1/169",
+    "1/26",
+    "2/13"
+   ],
+   "P = 4/52 * 3/51 = 12/2652 = 1/221. 1/169 would be the answer with replacement."
+  ],
+  [
+   "P(A and B) = 0.1 and P(B) = 0.4. What is P(A | B)?",
+   "0.25",
+   [
+    "0.04",
+    "0.4",
+    "0.5"
+   ],
+   "By definition P(A | B) = P(A and B) / P(B) = 0.1 / 0.4 = 0.25."
+  ],
+  [
+   "A disease affects 1% of people. A test detects it 99% of the time and gives a false positive 5% of the time. A random person tests positive. Roughly what is the chance they have the disease?",
+   "About 17%",
+   [
+    "About 99%",
+    "About 95%",
+    "About 50%"
+   ],
+   "P(+) = 0.01*0.99 + 0.99*0.05 = 0.0594, and P(D | +) = 0.0099 / 0.0594, about 0.17. The low base rate makes most positives false."
+  ],
+  [
+   "Which formula is Bayes' theorem?",
+   "P(A|B) = P(B|A) P(A) / P(B)",
+   [
+    "P(A|B) = P(A) P(B) / P(B|A)",
+    "P(A|B) = P(B|A) P(B) / P(A)",
+    "P(A|B) = P(A) + P(B) - P(B|A)"
+   ],
+   "It follows from writing P(A and B) as both P(A|B) P(B) and P(B|A) P(A) and solving for P(A|B)."
+  ],
+  [
+   "X is a continuous random variable with a density. What is P(X = 2.5) exactly?",
+   "0",
+   [
+    "The density f(2.5)",
+    "1 divided by the range of X",
+    "It depends on the mean of X"
+   ],
+   "For a continuous variable, probability is the area under the density, and a single point has zero width, so its probability is 0."
+  ],
+  [
+   "X is Binomial with n = 20 trials and success probability p = 0.25. What is Var(X)?",
+   "3.75",
+   [
+    "5",
+    "4.75",
+    "15"
+   ],
+   "The variance of a binomial is np(1 - p) = 20 * 0.25 * 0.75 = 3.75. The mean np is 5."
+  ],
+  [
+   "A Bernoulli random variable has success probability p = 0.3. What is its variance?",
+   "0.21",
+   [
+    "0.3",
+    "0.09",
+    "0.7"
+   ],
+   "Var = p(1 - p) = 0.3 * 0.7 = 0.21. 0.09 is p^2."
+  ],
+  [
+   "X is uniform on the interval [0, 0.5]. What is the value of its probability density function inside that interval?",
+   "2",
+   [
+    "0.5",
+    "1",
+    "0.25"
+   ],
+   "The density must integrate to 1 over a width of 0.5, so it equals 1 / 0.5 = 2. A density can exceed 1; only probabilities cannot."
+  ],
+  [
+   "Which condition must every probability density function f satisfy?",
+   "f(x) >= 0 and its integral over all x equals 1",
+   [
+    "f(x) <= 1 for every x",
+    "f is symmetric around its mean",
+    "f(x) > 0 for every real x"
+   ],
+   "Densities are nonnegative and integrate to 1. They may exceed 1, be asymmetric, and be zero outside a range."
+  ],
+  [
+   "Waiting time X follows an exponential distribution with rate lambda = 2 per minute. What is E[X]?",
+   "0.5 minutes",
+   [
+    "2 minutes",
+    "4 minutes",
+    "0.25 minutes"
+   ],
+   "The mean of an exponential distribution is 1 / lambda = 1 / 2. 0.25 is its variance, 1 / lambda^2."
+  ],
+  [
+   "What is the expected value of one roll of a fair six-sided die?",
+   "3.5",
+   [
+    "3",
+    "4",
+    "6"
+   ],
+   "E = (1 + 2 + 3 + 4 + 5 + 6) / 6 = 21 / 6 = 3.5. The expected value need not be a possible outcome."
+  ],
+  [
+   "A random variable X has E[X] = 4. What is E[2X + 3]?",
+   "11",
+   [
+    "8",
+    "14",
+    "7"
+   ],
+   "Expectation is linear: E[2X + 3] = 2 E[X] + 3 = 8 + 3 = 11."
+  ],
+  [
+   "Which statement holds for any two random variables X and Y with finite means, even if they are dependent?",
+   "E[X + Y] = E[X] + E[Y]",
+   [
+    "Var(X + Y) = Var(X) + Var(Y)",
+    "E[XY] = E[X] E[Y]",
+    "P(X = x, Y = y) = P(X = x) P(Y = y)"
+   ],
+   "Linearity of expectation needs no independence. The variance rule needs uncorrelated variables, and the other two need independence."
+  ],
+  [
+   "You pay 1 dollar to play. If a fair die shows 6 you receive 5 dollars, otherwise nothing. What is your expected net gain per game?",
+   "About -0.17 dollars",
+   [
+    "About +0.17 dollars",
+    "About -0.83 dollars",
+    "Exactly 0 dollars"
+   ],
+   "Expected payout is 5 * 1/6, about 0.83, minus the 1 dollar cost gives about -1/6, so you lose about 17 cents per game on average."
+  ],
+  [
+   "What does the law of large numbers state?",
+   "The sample mean approaches the expected value as n grows",
+   [
+    "The sample mean becomes normally distributed",
+    "After a long losing streak a win becomes more likely",
+    "Every outcome eventually occurs equally often in any sample"
+   ],
+   "LLN is about convergence of averages. The normal shape of the sample mean is the central limit theorem, and streaks do not change independent probabilities."
+  ]
+ ],
+ "calculus": [
+  [
+   "What is the derivative of sin(x^2) with respect to x?",
+   "2x cos(x^2)",
+   [
+    "cos(x^2)",
+    "2x sin(x^2)",
+    "cos(2x)"
+   ],
+   "By the chain rule, the outer derivative cos(x^2) is multiplied by the inner derivative 2x."
+  ],
+  [
+   "What is the derivative of e^(3x) with respect to x?",
+   "3e^(3x)",
+   [
+    "e^(3x)",
+    "3x e^(3x - 1)",
+    "e^(3x) / 3"
+   ],
+   "The chain rule multiplies e^(3x) by the derivative of 3x, which is 3. The power rule does not apply to exponentials."
+  ],
+  [
+   "What is the derivative of ln(x^2 + 1) with respect to x?",
+   "2x / (x^2 + 1)",
+   [
+    "1 / (x^2 + 1)",
+    "2x ln(x^2 + 1)",
+    "1 / (2x)"
+   ],
+   "The derivative of ln(u) is u' / u, and here u' = 2x."
+  ],
+  [
+   "The sigmoid is s(x) = 1 / (1 + e^(-x)). What is its derivative?",
+   "s(x) (1 - s(x))",
+   [
+    "s(x)^2",
+    "1 - s(x)",
+    "e^(-x) s(x)"
+   ],
+   "Differentiating gives e^(-x) / (1 + e^(-x))^2, which simplifies to s(x)(1 - s(x)). Its maximum is 0.25 at x = 0."
+  ],
+  [
+   "What is the derivative of x e^x with respect to x?",
+   "(x + 1) e^x",
+   [
+    "e^x",
+    "x e^x",
+    "x e^(x - 1)"
+   ],
+   "By the product rule: 1 * e^x + x * e^x = (x + 1) e^x."
+  ],
+  [
+   "For f(x, y) = x^2 y + y^3, what is the partial derivative with respect to x?",
+   "2xy",
+   [
+    "2xy + 3y^2",
+    "x^2 + 3y^2",
+    "2x"
+   ],
+   "Treat y as a constant: x^2 y becomes 2xy and y^3 becomes 0."
+  ],
+  [
+   "For f(x, y) = x^2 y + y^3, what is the partial derivative with respect to y?",
+   "x^2 + 3y^2",
+   [
+    "2xy",
+    "2xy + 3y^2",
+    "3y^2"
+   ],
+   "Treat x as a constant: x^2 y becomes x^2 and y^3 becomes 3y^2."
+  ],
+  [
+   "What is the gradient of f(x, y) = x^2 + 3y at the point (1, 2)?",
+   "(2, 3)",
+   [
+    "(1, 3)",
+    "(2, 6)",
+    "(2, 12)"
+   ],
+   "The gradient is (df/dx, df/dy) = (2x, 3), which at x = 1 is (2, 3)."
+  ],
+  [
+   "At a point where the gradient of f is nonzero, in which direction does f increase fastest?",
+   "In the direction of the gradient",
+   [
+    "Opposite to the gradient",
+    "Perpendicular to the gradient",
+    "Along the x axis only"
+   ],
+   "The directional derivative is the dot product of the gradient with a unit vector, which is largest along the gradient. Gradient descent steps the opposite way."
+  ],
+  [
+   "In which direction is the directional derivative of a differentiable f equal to zero?",
+   "Perpendicular to the gradient",
+   [
+    "Along the gradient",
+    "Opposite to the gradient",
+    "Along the vector (1, 1)"
+   ],
+   "The dot product of the gradient with a perpendicular unit vector is zero. That direction is tangent to the level curve."
+  ],
+  [
+   "What is the value of the integral of x^2 from 0 to 1?",
+   "1/3",
+   [
+    "1/2",
+    "1",
+    "2/3"
+   ],
+   "An antiderivative is x^3 / 3, and evaluating from 0 to 1 gives 1/3."
+  ],
+  [
+   "What is the value of the integral of sin(x) from 0 to pi?",
+   "2",
+   [
+    "0",
+    "1",
+    "pi"
+   ],
+   "An antiderivative is -cos(x), so the value is -cos(pi) + cos(0) = 1 + 1 = 2."
+  ],
+  [
+   "Using integration by parts, what is the indefinite integral of x e^x?",
+   "(x - 1) e^x + C",
+   [
+    "x e^x + C",
+    "(x + 1) e^x + C",
+    "x^2 e^x / 2 + C"
+   ],
+   "With u = x and dv = e^x dx: x e^x minus the integral of e^x, which gives x e^x - e^x + C. Differentiate to check."
+  ],
+  [
+   "If F(x) is the integral of f(t) from 0 to x, with f continuous, what is F'(x)?",
+   "f(x)",
+   [
+    "f(x) - f(0)",
+    "F(x) / x",
+    "f'(x)"
+   ],
+   "This is the fundamental theorem of calculus: differentiating an integral with a variable upper limit returns the integrand."
+  ],
+  [
+   "What is the coefficient of x^3 in the Maclaurin series of e^x?",
+   "1/6",
+   [
+    "1/3",
+    "1",
+    "3"
+   ],
+   "e^x = sum of x^n / n!, so the coefficient of x^3 is 1 / 3! = 1/6."
+  ],
+  [
+   "What are the first two nonzero terms of the Maclaurin series of sin(x)?",
+   "x - x^3 / 6",
+   [
+    "1 - x^2 / 2",
+    "x + x^3 / 6",
+    "x - x^2 / 2"
+   ],
+   "sin(x) = x - x^3/3! + x^5/5! - ..., with only odd powers. 1 - x^2/2 begins the series for cos(x)."
+  ],
+  [
+   "Using a first-order Taylor approximation of sqrt(x) around x = 4, what is the estimate for sqrt(4.1)?",
+   "2.025",
+   [
+    "2.05",
+    "2.1",
+    "2.01"
+   ],
+   "f(4) = 2 and f'(x) = 1 / (2 sqrt(x)) = 0.25 at 4, so the estimate is 2 + 0.25 * 0.1 = 2.025."
+  ],
+  [
+   "What kind of critical point does f(x, y) = x^2 - y^2 have at the origin?",
+   "A saddle point",
+   [
+    "A local minimum",
+    "A local maximum",
+    "It is not a critical point"
+   ],
+   "The gradient (2x, -2y) is zero at the origin, but f rises along the x axis and falls along the y axis."
+  ],
+  [
+   "At a critical point of a twice differentiable f(x, y), the Hessian is positive definite. What can you conclude?",
+   "The point is a local minimum",
+   [
+    "The point is a local maximum",
+    "The point is a saddle point",
+    "The test is inconclusive"
+   ],
+   "A positive definite Hessian means f curves upward in every direction. Negative definite means a maximum, and mixed signs mean a saddle."
+  ],
+  [
+   "Where is the critical point of f(x, y) = x^2 + y^2 - 4x + 6y?",
+   "(2, -3)",
+   [
+    "(-2, 3)",
+    "(4, -6)",
+    "(0, 0)"
+   ],
+   "Setting 2x - 4 = 0 and 2y + 6 = 0 gives x = 2 and y = -3. Completing the square shows it is the minimum."
+  ]
+ ],
+ "optimization": [
+  [
+   "Gradient descent minimizes f(x) = x^2 from x0 = 3 with learning rate 0.1. What is x1?",
+   "2.4",
+   [
+    "2.7",
+    "0.6",
+    "3.6"
+   ],
+   "The gradient at 3 is 2 * 3 = 6, so x1 = 3 - 0.1 * 6 = 2.4."
+  ],
+  [
+   "Gradient descent on f(x) = x^2 uses learning rate 1.5. What happens to the iterates?",
+   "They flip sign and grow, so the method diverges",
+   [
+    "They converge to 0 in one step",
+    "They converge slowly to 0",
+    "They stay at the starting point"
+   ],
+   "The update is x - 1.5 * 2x = -2x, so the magnitude doubles every step. Rates below 1 converge for this function."
+  ],
+  [
+   "How does stochastic gradient descent differ from full-batch gradient descent?",
+   "It uses the gradient of one example or a small batch",
+   [
+    "It uses second derivatives of the loss",
+    "It picks random step directions",
+    "It needs a convex loss function"
+   ],
+   "Each SGD step is cheap but noisy, because the mini-batch gradient only estimates the full gradient. The noise can even help escape poor regions."
+  ],
+  [
+   "What does adding momentum to gradient descent do?",
+   "Accumulates past gradients to smooth and speed up updates",
+   [
+    "Doubles the learning rate after each epoch",
+    "Resets the weights when the loss rises",
+    "Computes exact second derivatives"
+   ],
+   "Momentum keeps a decaying average of gradients, which dampens oscillation across steep directions and builds speed along consistent ones."
+  ],
+  [
+   "The Adam optimizer keeps exponential moving averages of which quantities?",
+   "The gradients and the squared gradients",
+   [
+    "The weights and the squared weights",
+    "The losses and the learning rates",
+    "The gradients and the Hessian"
+   ],
+   "The first moment acts like momentum, and the second moment scales each parameter's step, similar to RMSProp."
+  ],
+  [
+   "Why does Adam apply bias correction to its moment estimates?",
+   "The averages start at zero and are biased low early on",
+   [
+    "To stop the learning rate from ever decaying",
+    "To make the loss function convex",
+    "To remove noise from the training labels"
+   ],
+   "Starting both moving averages at 0 makes the first estimates too small. Dividing by (1 - beta^t) corrects this, which matters most in early steps."
+  ],
+  [
+   "What does AdamW change compared with Adam plus an L2 penalty in the loss?",
+   "It applies weight decay directly to weights, outside the adaptive step",
+   [
+    "It removes the second-moment estimate",
+    "It replaces momentum with Nesterov momentum",
+    "It disables bias correction"
+   ],
+   "With Adam, an L2 term is rescaled by the adaptive denominator. AdamW decouples weight decay so every weight shrinks at the intended rate."
+  ],
+  [
+   "What is the key advantage of minimizing a convex function?",
+   "Any local minimum is also a global minimum",
+   [
+    "Gradient descent needs no learning rate",
+    "The minimum is always at zero",
+    "The minimum is always unique"
+   ],
+   "Convexity rules out spurious local minima. The minimizer need not be unique (a flat bottom), unless the function is strictly convex."
+  ],
+  [
+   "Which of these functions of one real variable is convex on the whole real line?",
+   "f(x) = e^x",
+   [
+    "f(x) = sin(x)",
+    "f(x) = x^3",
+    "f(x) = -x^2"
+   ],
+   "e^x has second derivative e^x > 0 everywhere. x^3 is concave for x < 0, -x^2 is concave, and sin(x) alternates."
+  ],
+  [
+   "A twice differentiable function f of one variable is convex exactly when which condition holds?",
+   "f''(x) >= 0 for all x",
+   [
+    "f'(x) >= 0 for all x",
+    "f(x) >= 0 for all x",
+    "f''(x) = 0 at some x"
+   ],
+   "A nonnegative second derivative means the slope never decreases. f'(x) >= 0 only means f is nondecreasing."
+  ],
+  [
+   "f and g are convex functions. Which of these is guaranteed to be convex?",
+   "max(f(x), g(x))",
+   [
+    "min(f(x), g(x))",
+    "f(x) - g(x)",
+    "f(x) * g(x)"
+   ],
+   "The pointwise maximum of convex functions is convex. The minimum, difference and product can fail, for example x^2 - 2x^2 = -x^2."
+  ],
+  [
+   "At a constrained optimum of f subject to g(x) = c found with Lagrange multipliers, what relationship holds (with regular constraints)?",
+   "grad f = lambda * grad g",
+   [
+    "grad f = 0",
+    "grad g = 0",
+    "f = lambda * g"
+   ],
+   "At the optimum, the level set of f is tangent to the constraint, so their gradients are parallel. grad f = 0 is the unconstrained condition."
+  ],
+  [
+   "What is the maximum of f(x, y) = xy subject to x + y = 10?",
+   "25",
+   [
+    "10",
+    "50",
+    "100"
+   ],
+   "Lagrange conditions give y = lambda and x = lambda, so x = y = 5 and xy = 25."
+  ],
+  [
+   "What is the minimum of x^2 + y^2 subject to x + y = 2?",
+   "2",
+   [
+    "1",
+    "4",
+    "0"
+   ],
+   "Lagrange conditions give 2x = 2y, so x = y = 1 and the value is 1 + 1 = 2."
+  ],
+  [
+   "How is a Lagrange multiplier lambda interpreted in a constrained optimization problem?",
+   "The rate of change of the optimal value as the constraint level changes",
+   [
+    "The step size used by the optimizer",
+    "The number of constraints that are active",
+    "The curvature of the objective function"
+   ],
+   "lambda measures how sensitive the optimum is to relaxing the constraint, which is why economists call it a shadow price."
+  ],
+  [
+   "At a point, the gradient of a loss is zero and the Hessian has both positive and negative eigenvalues. What is this point?",
+   "A saddle point",
+   [
+    "A global minimum",
+    "A local minimum",
+    "A local maximum"
+   ],
+   "The loss curves up in some directions and down in others. In high-dimensional neural network losses, saddle points are very common."
+  ],
+  [
+   "Gradient descent runs on f(x) = x^4 - 2x^2, which has minima at x = 1 and x = -1. It starts at exactly x0 = 0. What happens?",
+   "It stays at x = 0 because the gradient is zero there",
+   [
+    "It moves to x = 1",
+    "It moves to x = -1",
+    "It diverges to infinity"
+   ],
+   "f'(x) = 4x^3 - 4x is 0 at x = 0, a local maximum, so the update does nothing. This is one reason weights are initialized randomly."
+  ],
+  [
+   "Which loss is standard for multi-class classification with softmax outputs?",
+   "Cross-entropy",
+   [
+    "Mean squared error",
+    "Hinge loss on raw labels",
+    "Mean absolute error"
+   ],
+   "Cross-entropy is the negative log likelihood of the true class, and with softmax it gives well-behaved gradients. MSE is mainly for regression."
+  ],
+  [
+   "You must predict a single constant c for a set of targets. Which c minimizes the mean squared error?",
+   "The mean of the targets",
+   [
+    "The median of the targets",
+    "The mode of the targets",
+    "The midrange of the targets"
+   ],
+   "Setting the derivative of the sum of (y - c)^2 to zero gives c = mean. Minimizing mean absolute error gives the median instead."
+  ],
+  [
+   "What effect does adding an L2 penalty lambda * ||w||^2 to the training loss have?",
+   "It pushes weights toward smaller values",
+   [
+    "It sets many weights to exactly zero",
+    "It raises the learning rate",
+    "It makes the loss non-convex"
+   ],
+   "L2 shrinks weights smoothly and reduces overfitting. Exact zeros are typical of the L1 penalty."
+  ]
+ ]
+}

@@ -1,0 +1,1416 @@
+{
+ "control-theory": [
+  [
+   "In a PID controller, which term removes the steady-state error to a constant setpoint on a plant with no built-in integrator?",
+   "The integral term",
+   [
+    "The proportional term",
+    "The derivative term",
+    "The derivative filter"
+   ],
+   "The integral term keeps growing while any error remains, so it drives the steady-state error to zero. Proportional action alone leaves a residual offset on such a plant."
+  ],
+  [
+   "A PID-controlled motor saturates at full voltage for several seconds, then overshoots badly once it nears the setpoint. What is the most likely cause?",
+   "Integral windup during saturation",
+   [
+    "Derivative kick from a setpoint step",
+    "Quantization noise in the encoder",
+    "Too much derivative filtering"
+   ],
+   "While the output is saturated the integrator keeps accumulating error, and that stored value must unwind, causing overshoot. Anti-windup (clamping or back-calculation) fixes it."
+  ],
+  [
+   "A position loop tuned with P and I terms only oscillates with large overshoot. Which change most directly adds damping?",
+   "Add a moderate derivative term",
+   [
+    "Double the integral gain",
+    "Double the proportional gain",
+    "Lower the sample rate"
+   ],
+   "The derivative term reacts to the rate of change of the error and opposes fast motion, which adds damping. Raising Ki or Kp generally makes overshoot worse."
+  ],
+  [
+   "Why do many PID implementations compute the derivative on the measurement instead of on the error?",
+   "To avoid a derivative kick when the setpoint steps",
+   [
+    "To remove the need for an integral term",
+    "To make the loop respond faster to setpoint steps",
+    "To reduce steady-state error to zero"
+   ],
+   "A setpoint step makes the error jump instantly, so d(error)/dt spikes. Differentiating the measurement gives the same damping without that spike."
+  ],
+  [
+   "Why is the derivative term of a practical PID controller usually passed through a low-pass filter?",
+   "It amplifies high-frequency sensor noise",
+   [
+    "It accumulates error over long periods",
+    "It causes steady-state offset",
+    "It saturates the integrator"
+   ],
+   "Differentiation boosts gain proportionally to frequency, so measurement noise is amplified. A first-order filter on the D term limits that high-frequency gain."
+  ],
+  [
+   "A discrete PI controller runs integral += e*dt, then u = Kp*e + Ki*integral, starting from integral = 0. With Kp = 2, Ki = 1, dt = 0.1 and e = 1 at every step, what is u after the 10th step?",
+   "3.0",
+   [
+    "2.0",
+    "2.1",
+    "12.0"
+   ],
+   "After 10 steps the integral is 10 * 1 * 0.1 = 1.0, so u = 2 * 1 + 1 * 1.0 = 3.0."
+  ],
+  [
+   "A state-space model x' = Ax + Bu has 4 states and 2 inputs. What are the dimensions of B?",
+   "4 x 2",
+   [
+    "2 x 4",
+    "4 x 4",
+    "2 x 2"
+   ],
+   "B maps the input vector (2 x 1) into the state derivative (4 x 1), so it must be 4 x 2."
+  ],
+  [
+   "When is a continuous-time LTI system x' = Ax asymptotically stable?",
+   "All eigenvalues of A have negative real parts",
+   [
+    "All eigenvalues of A lie inside the unit circle",
+    "The determinant of A is positive",
+    "All entries of A are negative"
+   ],
+   "Each mode decays as exp(lambda t), which goes to zero only when Re(lambda) < 0. The unit-circle test applies to discrete-time systems."
+  ],
+  [
+   "For a system x' = Ax + Bu with n states, which condition means it is fully controllable?",
+   "The matrix [B, AB, ..., A^(n-1)B] has rank n",
+   [
+    "The matrix A has rank n",
+    "The matrix [C; CA; ...; CA^(n-1)] has rank n",
+    "The matrix B is square and invertible"
+   ],
+   "The Kalman controllability test checks the rank of the controllability matrix. The stacked C, CA, ... matrix is the observability test instead."
+  ],
+  [
+   "A discrete-time system x[k+1] = A x[k] has eigenvalues 0.5 and -1.2. What can you conclude?",
+   "It is unstable because one eigenvalue has magnitude above 1",
+   [
+    "It is stable because the eigenvalues have opposite signs",
+    "It is stable because one eigenvalue is negative",
+    "It is marginally stable because the eigenvalues average below 1"
+   ],
+   "In discrete time every eigenvalue must lie strictly inside the unit circle. The mode with magnitude 1.2 grows by 20 percent each step."
+  ],
+  [
+   "What does a continuous-time LQR controller minimize?",
+   "The integral of x'Qx + u'Ru over time",
+   [
+    "The peak overshoot of the step response",
+    "The settling time subject to input limits",
+    "The H-infinity norm of the closed loop"
+   ],
+   "LQR finds the state feedback that minimizes a quadratic cost trading state error (weighted by Q) against control effort (weighted by R)."
+  ],
+  [
+   "In an LQR design, you increase R while keeping Q fixed. What is the typical effect on the closed loop?",
+   "Smaller control effort and a slower response",
+   [
+    "Larger control effort and a faster response",
+    "Zero steady-state error to any setpoint",
+    "Loss of closed-loop stability"
+   ],
+   "R penalizes control effort, so a larger R makes the optimizer use gentler inputs, which slows the response. Stability is still guaranteed under the usual LQR assumptions."
+  ],
+  [
+   "How is the gain K of an infinite-horizon LQR controller u = -Kx usually computed?",
+   "By solving the algebraic Riccati equation",
+   [
+    "By placing poles at chosen locations",
+    "By running a Ziegler-Nichols experiment",
+    "By inverting the controllability matrix"
+   ],
+   "The steady-state Riccati equation gives the matrix P, and K = R^-1 B'P. Pole placement also gives a K, but not the one that minimizes the quadratic cost."
+  ],
+  [
+   "What does receding horizon mean in Model Predictive Control?",
+   "Optimize over a horizon, apply only the first input, then re-solve",
+   [
+    "Compute the whole input sequence once and play it back",
+    "Shrink the horizon by one step until the goal is reached",
+    "Use a fixed gain matrix computed offline for all steps"
+   ],
+   "At each sample MPC solves an optimization over a finite future horizon, applies only the first control move, and repeats with the new measurement, which gives feedback."
+  ],
+  [
+   "Compared with LQR, what is the main practical advantage of Model Predictive Control?",
+   "It handles input and state limits directly",
+   [
+    "It needs no model of the plant",
+    "It is cheaper to compute at runtime",
+    "It guarantees zero noise sensitivity"
+   ],
+   "MPC solves a constrained optimization online, so limits like actuator saturation or safe state bounds are part of the problem. LQR has no native way to impose them."
+  ],
+  [
+   "What is the main drawback of MPC on a fast embedded controller?",
+   "An optimization must be solved within every sample period",
+   [
+    "It cannot be used with multiple inputs",
+    "It only works for linear time-invariant plants",
+    "It requires a sensor for every state"
+   ],
+   "MPC must finish solving its optimization before the next sample, which can be demanding at kHz rates. Nonlinear and MIMO versions exist, so those are not inherent limits."
+  ],
+  [
+   "On a Bode plot of the open-loop transfer function, where is the gain margin read?",
+   "At the frequency where the phase crosses -180 degrees",
+   [
+    "At the frequency where the gain crosses 0 dB",
+    "At the frequency where the gain peaks",
+    "At the lowest plotted frequency"
+   ],
+   "Gain margin is how much the loop gain can rise before the magnitude reaches 0 dB at the phase crossover (-180 degrees). Phase margin is read at the 0 dB crossover."
+  ],
+  [
+   "An open-loop transfer function has a gain crossover where its phase is -135 degrees. What is the phase margin?",
+   "45 degrees",
+   [
+    "135 degrees",
+    "-45 degrees",
+    "225 degrees"
+   ],
+   "Phase margin = 180 + phase at the gain crossover = 180 + (-135) = 45 degrees."
+  ],
+  [
+   "For an open-loop stable system, what does the Nyquist criterion say about closed-loop stability under unity negative feedback?",
+   "Stable if the Nyquist plot does not encircle the point -1",
+   [
+    "Stable if the Nyquist plot does not encircle the origin",
+    "Stable if the plot crosses the real axis only once",
+    "Stable if the plot stays inside the unit circle"
+   ],
+   "With no open-loop right-half-plane poles (P = 0), the closed loop is stable when the number of encirclements of -1 is zero, since Z = N + P."
+  ],
+  [
+   "What is the magnitude slope of a pure integrator 1/s on a Bode plot?",
+   "-20 dB per decade",
+   [
+    "+20 dB per decade",
+    "-40 dB per decade",
+    "-10 dB per decade"
+   ],
+   "|1/(j omega)| = 1/omega, which falls by a factor of 10 (20 dB) for every decade of frequency. A double integrator would give -40 dB per decade."
+  ]
+ ],
+ "sensor-fusion": [
+  [
+   "Under which assumptions is the standard Kalman filter the optimal estimator?",
+   "Linear models with Gaussian noise",
+   [
+    "Nonlinear models with uniform noise",
+    "Linear models with no process noise only",
+    "Any model as long as sensors are fast"
+   ],
+   "With linear dynamics and Gaussian noise, the Kalman filter gives the minimum mean-square error estimate. For nonlinear models, variants such as the EKF or UKF are approximations."
+  ],
+  [
+   "How does the Extended Kalman Filter handle nonlinear motion and measurement models?",
+   "It linearizes them using Jacobians",
+   [
+    "It propagates a set of sigma points",
+    "It samples thousands of weighted particles",
+    "It ignores the nonlinear terms entirely"
+   ],
+   "The EKF uses first-order Taylor expansions, computing Jacobians of f and h around the latest estimate. Sigma points belong to the UKF and particles to particle filters."
+  ],
+  [
+   "In the EKF prediction step P = F P F' + Q, what is F?",
+   "The Jacobian of the motion model",
+   [
+    "The Jacobian of the measurement model",
+    "The Kalman gain from the previous step",
+    "The measurement noise covariance"
+   ],
+   "F linearizes the state transition f(x, u) around the current estimate so the covariance can be propagated. The measurement Jacobian H is used in the update step."
+  ],
+  [
+   "In a Kalman filter, you increase the measurement noise covariance R. What happens to the Kalman gain?",
+   "It decreases, so the filter trusts the prediction more",
+   [
+    "It increases, so the filter trusts the sensor more",
+    "It stays the same because R affects only P",
+    "It becomes negative and the filter diverges"
+   ],
+   "The gain is roughly P / (P + R) in the scalar case, so a larger R shrinks it and new measurements move the estimate less."
+  ],
+  [
+   "A Kalman filter is configured with a process noise covariance Q that is far too small. What is the typical symptom?",
+   "It becomes overconfident and lags or ignores real changes",
+   [
+    "It becomes noisy and follows every sensor spike",
+    "It runs faster because P stays large",
+    "It turns into a moving average of the measurements"
+   ],
+   "A tiny Q tells the filter its model is nearly perfect, so P shrinks and the gain drops. The estimate then fails to track real maneuvers and can diverge."
+  ],
+  [
+   "How does the Unscented Kalman Filter propagate uncertainty through a nonlinear function?",
+   "It passes deterministic sigma points through the function",
+   [
+    "It computes analytic Jacobians at the mean",
+    "It draws random particles and resamples them",
+    "It approximates the function with a lookup table"
+   ],
+   "The unscented transform picks sigma points that capture the mean and covariance, maps each through the nonlinear function, and recombines them. No Jacobians are needed."
+  ],
+  [
+   "How many sigma points does the standard UKF use for an n-dimensional state?",
+   "2n + 1",
+   [
+    "n + 1",
+    "2n",
+    "n squared"
+   ],
+   "One sigma point sits at the mean and two lie symmetrically along each of the n directions of the covariance square root, giving 2n + 1."
+  ],
+  [
+   "Why might an engineer choose a UKF over an EKF for a strongly nonlinear model?",
+   "It is more accurate and needs no Jacobians",
+   [
+    "It is always cheaper per step than an EKF",
+    "It removes the need for a process noise model",
+    "It works without any model of the system"
+   ],
+   "The unscented transform is accurate to at least second order for the mean, while the EKF is first order, and it avoids deriving Jacobians. It is usually somewhat more expensive."
+  ],
+  [
+   "In a Kalman filter update, what is the innovation (residual)?",
+   "The measurement minus the predicted measurement",
+   [
+    "The predicted state minus the previous state",
+    "The Kalman gain times the process noise",
+    "The trace of the covariance matrix"
+   ],
+   "The innovation y = z - h(x_pred) is how much the measurement disagrees with the prediction. The update adds K times this residual to the state."
+  ],
+  [
+   "Why does a complementary filter for tilt combine a high-passed gyro angle with a low-passed accelerometer angle?",
+   "The gyro drifts slowly while the accelerometer is noisy at high frequency",
+   [
+    "The gyro is noisy at high frequency while the accelerometer drifts slowly",
+    "Both sensors drift, so their errors cancel when added",
+    "The accelerometer measures angular rate directly"
+   ],
+   "Integrated gyro rate is smooth but accumulates bias drift, while the accelerometer gravity angle is drift-free but noisy. Each filter keeps the band where its sensor is reliable."
+  ],
+  [
+   "A complementary filter runs angle = 0.98 * (angle + gyro * dt) + 0.02 * accAngle. With angle = 10, gyro = 0, dt = 0.01 and accAngle = 20, what is the new angle?",
+   "10.2",
+   [
+    "10.0",
+    "19.8",
+    "10.4"
+   ],
+   "0.98 * (10 + 0) + 0.02 * 20 = 9.8 + 0.4 = 10.2. The estimate moves only 2 percent of the way toward the accelerometer angle per step."
+  ],
+  [
+   "In the complementary filter angle = a * (angle + gyro * dt) + (1 - a) * accAngle, what happens if you raise a from 0.95 to 0.995?",
+   "The accelerometer corrects gyro drift more slowly",
+   [
+    "The gyro is ignored and accelerometer noise dominates",
+    "The filter stops integrating the gyro rate",
+    "The output becomes independent of dt"
+   ],
+   "A larger a gives a longer time constant, tau = a * dt / (1 - a), so the gyro dominates longer and the accelerometer pulls the angle back more slowly."
+  ],
+  [
+   "An accelerometer-only tilt estimate on a car becomes wrong during hard braking. Why?",
+   "Linear acceleration adds to gravity in the measured vector",
+   [
+    "Braking changes the gyro bias",
+    "The magnetometer saturates during braking",
+    "Accelerometers cannot measure negative values"
+   ],
+   "An accelerometer measures specific force, which equals gravity only when the body is not accelerating. Braking tilts the measured vector and corrupts the angle."
+  ],
+  [
+   "In a typical loosely coupled IMU + GPS Kalman filter, what role does each sensor play?",
+   "The IMU drives the high-rate prediction and GPS provides updates",
+   [
+    "GPS drives the high-rate prediction and the IMU provides updates",
+    "Both are fused only when GPS has fewer than four satellites",
+    "The IMU is used only to initialize the GPS receiver"
+   ],
+   "IMU samples arrive at hundreds of Hz and propagate the state, while GPS position and velocity fixes at about 1 to 10 Hz correct the accumulated drift."
+  ],
+  [
+   "What is a key advantage of tightly coupled over loosely coupled GPS/INS integration?",
+   "It still helps with under four satellites",
+   [
+    "It needs no IMU bias estimation",
+    "It runs without any GPS receiver",
+    "It requires no time synchronization"
+   ],
+   "Tightly coupled filters fuse raw pseudoranges and range rates, so even one to three satellites still constrain the solution. A loosely coupled filter needs a full GPS fix."
+  ],
+  [
+   "Why does position from a low-cost IMU alone drift so quickly?",
+   "Double integration makes a constant bias grow quadratically",
+   [
+    "Gyro noise cancels out the accelerometer readings",
+    "The IMU only measures position at a low rate",
+    "Gravity is removed perfectly, leaving no signal"
+   ],
+   "Position comes from integrating acceleration twice, so a constant accelerometer bias b produces an error of about 0.5 * b * t^2."
+  ],
+  [
+   "A robot moving at 20 m/s fuses GPS fixes that are 100 ms old as if they were current. Roughly how large is the resulting position error?",
+   "2 m",
+   [
+    "0.2 m",
+    "20 m",
+    "0.02 m"
+   ],
+   "The vehicle travels 20 m/s * 0.1 s = 2 m during the delay, so treating the stale fix as current misplaces it by about that much along the direction of travel."
+  ],
+  [
+   "GPS fixes reach your filter 200 ms after they were measured, while IMU data is near real time. Which approach handles this correctly?",
+   "Buffer past states, apply the fix at its timestamp, then re-propagate",
+   [
+    "Apply each fix immediately as if it were current, then continue",
+    "Discard every GPS fix older than one IMU sample period",
+    "Average each fix with the current IMU acceleration reading"
+   ],
+   "Storing a history of states and IMU inputs lets the filter fuse the measurement at the moment it was taken, then replay the newer IMU data to reach the present."
+  ],
+  [
+   "Which GPS receiver output is commonly used to synchronize sensor clocks precisely?",
+   "The PPS signal",
+   [
+    "The GSV sentence",
+    "The HDOP value",
+    "The almanac data"
+   ],
+   "The PPS pulse edge is aligned to the top of each GPS second with very low jitter, so it gives a precise time reference for timestamping other sensors."
+  ],
+  [
+   "How do many Kalman filters reject outlier measurements such as GPS multipath jumps?",
+   "Gate on the Mahalanobis distance of the innovation",
+   [
+    "Clamp the Kalman gain to exactly 1",
+    "Reset the covariance P to zero",
+    "Skip the prediction step for that sample"
+   ],
+   "The innovation weighted by its covariance follows a chi-square distribution, so a measurement whose Mahalanobis distance exceeds a chosen threshold can be rejected."
+  ]
+ ],
+ "embedded-c": [
+  [
+   "Which C statement sets bit 3 of the register REG without changing any other bit?",
+   "REG |= (1U << 3);",
+   [
+    "REG = (1U << 3);",
+    "REG &= (1U << 3);",
+    "REG ^= ~(1U << 3);"
+   ],
+   "OR with a mask sets only the masked bit. Plain assignment overwrites every other bit, and AND would clear all the others."
+  ],
+  [
+   "Which C statement clears bit 5 of REG and leaves all other bits unchanged?",
+   "REG &= ~(1U << 5);",
+   [
+    "REG |= ~(1U << 5);",
+    "REG &= (1U << 5);",
+    "REG ^= (1U << 5);"
+   ],
+   "AND with an inverted mask forces bit 5 to 0 and keeps every other bit. XOR would toggle bit 5, which sets it if it was already 0."
+  ],
+  [
+   "What is the value of (0xF0 >> 4) & 0x3 in C?",
+   "3",
+   [
+    "0",
+    "15",
+    "12"
+   ],
+   "0xF0 >> 4 is 0x0F, and 0x0F & 0x03 keeps the two low bits, giving 3."
+  ],
+  [
+   "For uint8_t x = 0xA5, which expression extracts bits 7 to 4 as a value from 0 to 15?",
+   "(x >> 4) & 0x0F",
+   [
+    "(x & 0x0F) >> 4",
+    "(x << 4) & 0xF0",
+    "x & 0xF0"
+   ],
+   "Shifting right by 4 moves the upper nibble into bits 3 to 0, and the mask removes anything else, giving 0x0A here. x & 0xF0 keeps the nibble in place, yielding 0xA0."
+  ],
+  [
+   "Which line sets the 3-bit field in bits 6 to 4 of REG to the value 5 without touching other bits?",
+   "REG = (REG & ~(0x7U << 4)) | (5U << 4);",
+   [
+    "REG = (REG | (0x7U << 4)) & (5U << 4);",
+    "REG = (REG & (0x7U << 4)) | (5U << 4);",
+    "REG |= (5U << 4);"
+   ],
+   "First clear the field with an inverted mask, then OR in the new value. REG |= (5U << 4) alone cannot clear bits that were already 1."
+  ],
+  [
+   "A flag set in an ISR is polled in while (!flag) {} in main, and the loop never exits with optimization on. What fixes it?",
+   "Declare the flag volatile",
+   [
+    "Declare the flag static",
+    "Declare the flag const",
+    "Declare the flag register"
+   ],
+   "Without volatile the compiler may read the flag once and keep it in a register, since nothing in the loop changes it. volatile forces a fresh memory read each time."
+  ],
+  [
+   "On an 8-bit AVR, main reads a volatile uint32_t counter that an ISR increments. Occasionally it reads a corrupted value. Why?",
+   "The 4-byte read is not atomic and the ISR can fire midway",
+   [
+    "volatile disables the ISR during the read",
+    "The compiler caches the counter in a register",
+    "uint32_t is not supported on 8-bit MCUs"
+   ],
+   "An 8-bit CPU reads the counter one byte at a time, so an interrupt between bytes mixes old and new values. volatile does not make access atomic; briefly disable interrupts while reading."
+  ],
+  [
+   "Which definition correctly gives access to a 32-bit hardware register at address 0x40021018?",
+   "#define REG (*(volatile uint32_t *)0x40021018)",
+   [
+    "#define REG ((volatile uint32_t)0x40021018)",
+    "#define REG (*(uint32_t volatile **)0x40021018)",
+    "#define REG (&(volatile uint32_t *)0x40021018)"
+   ],
+   "Casting the address to a pointer to volatile uint32_t and dereferencing it gives an lvalue that reads and writes the register. The first wrong option is just a number, not a memory access."
+  ],
+  [
+   "What is the difference between volatile uint32_t *p and uint32_t * volatile p?",
+   "The first makes the pointed-to data volatile, the second the pointer itself",
+   [
+    "The first makes the pointer volatile, the second the pointed-to data",
+    "They are identical declarations with different spelling",
+    "The first is read-only, the second is write-only"
+   ],
+   "Qualifiers apply to what is on their left, or to the right if nothing is left. For memory-mapped I/O you want the data volatile, as in volatile uint32_t *p."
+  ],
+  [
+   "What is the recommended pattern for heavy processing triggered by an interrupt?",
+   "Set a flag or queue data in the ISR, process it in the main loop",
+   [
+    "Do all processing in the ISR so it runs immediately",
+    "Call printf in the ISR to log the event first",
+    "Disable all interrupts globally inside the main loop"
+   ],
+   "Short ISRs keep interrupt latency low for other sources. Deferring the work avoids blocking calls and long critical sections inside interrupt context."
+  ],
+  [
+   "An STM32 timer ISR keeps executing over and over and main never runs. What is the most likely cause?",
+   "The ISR does not clear the timer's update interrupt flag",
+   [
+    "The timer prescaler is set too high",
+    "The ISR is missing the volatile keyword",
+    "The main loop has no infinite loop"
+   ],
+   "If the pending flag in the peripheral is not cleared, the interrupt is requested again as soon as the ISR returns, so the CPU re-enters it continuously."
+  ],
+  [
+   "On an ARM Cortex-M NVIC, which interrupt is serviced first when two configurable interrupts are pending?",
+   "The one with the lower numeric priority value",
+   [
+    "The one with the higher numeric priority value",
+    "The one with the higher IRQ number",
+    "The one that became pending last"
+   ],
+   "On Cortex-M a lower priority number means higher urgency, so priority 1 preempts priority 5. With equal priority, the lower exception number wins."
+  ],
+  [
+   "Why does STM32 GPIO provide the BSRR register in addition to ODR?",
+   "To set or reset pins atomically without a read-modify-write",
+   [
+    "To read the input level of each pin",
+    "To configure pins as analog inputs",
+    "To select the alternate function of a pin"
+   ],
+   "Writing a 1 to a BSRR bit sets or resets one pin in a single write, so an ISR modifying other pins cannot be overwritten by a concurrent ODR |= in main."
+  ],
+  [
+   "A timer is clocked at 72 MHz with prescaler register PSC = 71 and auto-reload ARR = 999. What is the update event frequency?",
+   "1 kHz",
+   [
+    "1 MHz",
+    "72 kHz",
+    "100 Hz"
+   ],
+   "Update rate = 72 MHz / ((PSC + 1) * (ARR + 1)) = 72,000,000 / (72 * 1000) = 1000 Hz."
+  ],
+  [
+   "A timer in edge-aligned PWM mode 1 has ARR = 999. Which compare value CCR gives a 25 percent duty cycle?",
+   "250",
+   [
+    "249",
+    "750",
+    "25"
+   ],
+   "The period is ARR + 1 = 1000 counts and the output is high while the counter is below CCR, so CCR = 250 gives 250 / 1000 = 25 percent."
+  ],
+  [
+   "With a fixed timer clock, you raise the PWM frequency by lowering the auto-reload value. What else changes?",
+   "The duty-cycle resolution gets coarser",
+   [
+    "The duty-cycle resolution gets finer",
+    "The PWM output voltage gets higher",
+    "The timer clock frequency gets higher"
+   ],
+   "The number of counts per period equals ARR + 1, and that is also the number of possible duty steps. Fewer counts per period means fewer steps."
+  ],
+  [
+   "What does the WFI instruction do on an ARM Cortex-M core?",
+   "Puts the core to sleep until an interrupt occurs",
+   [
+    "Waits until a flag variable becomes 1",
+    "Resets the core and restarts the firmware",
+    "Disables all interrupts until the next reset"
+   ],
+   "Wait For Interrupt stops the core clock to save power, and any enabled interrupt wakes it. Deeper modes are selected by also setting SLEEPDEEP in the System Control Register."
+  ],
+  [
+   "On an STM32 microcontroller, how does the firmware resume after waking from Standby mode?",
+   "It restarts from the reset vector, as after a reset",
+   [
+    "It continues from the instruction after WFI",
+    "It continues from the last ISR that ran",
+    "It resumes from a snapshot stored in flash"
+   ],
+   "Standby powers down most of the chip and loses SRAM and register contents (apart from the backup domain), so wake-up behaves like a reset. Sleep and Stop modes resume after WFI."
+  ],
+  [
+   "Which practice most directly reduces current draw in a battery-powered microcontroller application?",
+   "Disable clocks to peripherals that are not in use",
+   [
+    "Raise the core clock to the maximum",
+    "Poll inputs in a tight loop instead of sleeping",
+    "Leave unused pins as floating digital inputs"
+   ],
+   "Each clocked peripheral draws dynamic current, so gating unused clocks saves power. Floating digital inputs can toggle on noise and draw extra current."
+  ],
+  [
+   "In C, after uint8_t x = 0x80; x = x << 1; what is the value of x?",
+   "0x00",
+   [
+    "0x100",
+    "0x40",
+    "0xFF"
+   ],
+   "x is promoted to int, so x << 1 is 0x100, but storing it back in a uint8_t keeps only the low 8 bits, which are 0x00."
+  ]
+ ],
+ "arduino": [
+  [
+   "How do setup() and loop() behave in an Arduino sketch?",
+   "setup() runs once after reset, then loop() repeats forever",
+   [
+    "loop() runs once, then setup() repeats forever",
+    "Both run once in order and the board halts",
+    "Both run in parallel on separate threads"
+   ],
+   "The Arduino core calls setup() once at power-up or reset, then calls loop() repeatedly for as long as the board is powered."
+  ],
+  [
+   "Inside loop() you write: int count = 0; count++; Serial.println(count); What does the Serial Monitor show?",
+   "1 on every iteration",
+   [
+    "1, 2, 3 and so on",
+    "0 on every iteration",
+    "A compile error"
+   ],
+   "count is a local variable re-created and set to 0 on every call to loop(), so it is always 1 when printed. Making it static or global would make it accumulate."
+  ],
+  [
+   "What range of values does analogRead() return on an Arduino Uno?",
+   "0 to 1023",
+   [
+    "0 to 255",
+    "0 to 4095",
+    "0 to 5000"
+   ],
+   "The ATmega328P ADC is 10-bit, so readings range from 0 to 1023. 0 to 255 is the default range of analogWrite()."
+  ],
+  [
+   "On an Uno with the default 5 V reference, analogRead() returns 512. Approximately what voltage is on the pin?",
+   "2.5 V",
+   [
+    "0.5 V",
+    "5.12 V",
+    "1.0 V"
+   ],
+   "Voltage is about reading * 5 V / 1024, so 512 corresponds to roughly 2.5 V."
+  ],
+  [
+   "What does analogWrite(9, 127) produce on an Arduino Uno?",
+   "A PWM signal with about 50 percent duty cycle",
+   [
+    "A steady voltage of about 2.5 V",
+    "A 127 Hz square wave",
+    "A 127 mV analog voltage"
+   ],
+   "The Uno has no DAC, so analogWrite() outputs PWM on pins marked with a tilde. 127 of 255 is about half duty; it averages to 2.5 V only after filtering."
+  ],
+  [
+   "A button connects digital pin 2 to GND, and the pin is set with pinMode(2, INPUT_PULLUP). What does digitalRead(2) return while the button is pressed?",
+   "LOW",
+   [
+    "HIGH",
+    "A random value",
+    "It depends on the baud rate"
+   ],
+   "The internal pull-up holds the pin HIGH when the button is open; pressing it connects the pin to ground, so it reads LOW."
+  ],
+  [
+   "The Serial Monitor shows garbled characters after Serial.begin(115200) in the sketch. What is the most likely fix?",
+   "Set the Serial Monitor baud rate to 115200",
+   [
+    "Change the USB cable to a shorter one",
+    "Add delay(1000) after every print",
+    "Use Serial.write() instead of Serial.print()"
+   ],
+   "Both ends of a UART link must use the same baud rate. If the monitor is set to 9600 while the board sends at 115200, the bytes decode as garbage."
+  ],
+  [
+   "What is the difference between Serial.print(x) and Serial.println(x)?",
+   "println() also sends a carriage return and newline",
+   [
+    "println() sends the value in binary format",
+    "println() waits for an acknowledgment",
+    "println() clears the receive buffer first"
+   ],
+   "Both print the value as text, but println() appends a carriage return and line feed so the next output starts on a new line."
+  ],
+  [
+   "What does Serial.available() return?",
+   "The number of bytes waiting in the receive buffer",
+   [
+    "Whether the USB cable is connected",
+    "The configured baud rate",
+    "The number of free bytes in the transmit buffer"
+   ],
+   "It returns how many received bytes can be read right now, so code typically checks if (Serial.available() > 0) before calling Serial.read()."
+  ],
+  [
+   "Uploading a sketch to an Uno fails while a Bluetooth module is wired to pins 0 and 1. Why?",
+   "Pins 0 and 1 are the UART that USB uploads use",
+   [
+    "Pins 0 and 1 are reserved for the reset circuit",
+    "Pins 0 and 1 are only analog inputs",
+    "The bootloader disables pins 0 and 1"
+   ],
+   "On the Uno, pins 0 (RX) and 1 (TX) share the hardware serial port with the USB-to-serial chip, so another device driving RX interferes with uploading."
+  ],
+  [
+   "Which call correctly attaches an interrupt to a button on pin 2 of an Uno, triggering when the pin goes from HIGH to LOW?",
+   "attachInterrupt(digitalPinToInterrupt(2), onPress, FALLING);",
+   [
+    "attachInterrupt(2, onPress, LOW_TO_HIGH);",
+    "attachInterrupt(digitalPinToInterrupt(2), onPress, RISING);",
+    "attachInterrupt(onPress, 2, FALLING);"
+   ],
+   "digitalPinToInterrupt() maps the pin to its interrupt number, and FALLING triggers on a HIGH to LOW edge. RISING triggers on the opposite edge."
+  ],
+  [
+   "Which digital pins on an Arduino Uno support attachInterrupt()?",
+   "Pins 2 and 3",
+   [
+    "Pins 0 and 1",
+    "Pins 10 to 13",
+    "All digital pins"
+   ],
+   "The ATmega328P has two external interrupt lines, INT0 and INT1, on digital pins 2 and 3. Other pins only have pin-change interrupts, which attachInterrupt() does not use."
+  ],
+  [
+   "What happens to millis() while code is running inside an ISR on an Arduino Uno?",
+   "Its value does not advance",
+   [
+    "It advances twice as fast",
+    "It resets to zero",
+    "It returns a negative number"
+   ],
+   "millis() is updated by a timer interrupt, which cannot run while another ISR is executing, so it will not increment inside the ISR. delay() also does not work there."
+  ],
+  [
+   "How should a global variable that an ISR changes and loop() reads be declared?",
+   "As volatile",
+   [
+    "As const",
+    "As static inside loop()",
+    "As a #define macro"
+   ],
+   "volatile tells the compiler the value can change outside the normal flow, so it reloads it from memory instead of using a cached copy."
+  ],
+  [
+   "On an Arduino Uno, using the standard Servo library disables analogWrite() on which pins?",
+   "Pins 9 and 10",
+   [
+    "Pins 5 and 6",
+    "Pins 3 and 11",
+    "Pins 0 and 1"
+   ],
+   "On non-Mega boards the Servo library uses Timer1, which drives the PWM on pins 9 and 10. Pins 5 and 6 use Timer0 and pins 3 and 11 use Timer2."
+  ],
+  [
+   "What is an Arduino shield?",
+   "A board that plugs onto the headers to add hardware",
+   [
+    "A firmware layer that protects the bootloader",
+    "A plastic case that protects the board",
+    "A library that blocks pin conflicts"
+   ],
+   "Shields stack onto the standard header layout to add features such as motor drivers, Ethernet or displays, usually with a companion library."
+  ],
+  [
+   "Why is it risky to change the prescaler of Timer0 on an Arduino Uno?",
+   "millis() and delay() depend on Timer0",
+   [
+    "Timer0 drives the USB serial chip",
+    "Timer0 controls the ADC reference",
+    "Timer0 is needed by the bootloader"
+   ],
+   "The Arduino core uses Timer0 overflow interrupts for millis(), micros() and delay(), so changing its prescaler distorts all timing functions."
+  ],
+  [
+   "On the ATmega328P used in the Arduino Uno, which timer is 16-bit?",
+   "Timer1",
+   [
+    "Timer0",
+    "Timer2",
+    "Timer3"
+   ],
+   "Timer0 and Timer2 are 8-bit, and Timer1 is the only 16-bit timer. The ATmega328P has no Timer3; that exists on chips like the ATmega2560."
+  ],
+  [
+   "Timer1 on a 16 MHz Uno runs in CTC mode with a prescaler of 256. Which OCR1A value gives a 1 Hz compare interrupt?",
+   "62499",
+   [
+    "62500",
+    "15624",
+    "65535"
+   ],
+   "The timer ticks at 16,000,000 / 256 = 62,500 Hz, and in CTC mode the period is OCR1A + 1 ticks, so OCR1A = 62,500 - 1 = 62,499."
+  ],
+  [
+   "Which code avoids a bug when millis() overflows after about 49.7 days?",
+   "if (millis() - start >= interval)",
+   [
+    "if (millis() >= start + interval)",
+    "if (millis() > interval)",
+    "if (start + millis() >= interval)"
+   ],
+   "Unsigned subtraction wraps correctly, so the elapsed time is right across the overflow. Comparing millis() to start + interval fails when that sum wraps around."
+  ]
+ ],
+ "raspberry-pi": [
+  [
+   "What logic level do Raspberry Pi GPIO pins use?",
+   "3.3 V, and they are not 5 V tolerant",
+   [
+    "5 V, and they are 3.3 V compatible",
+    "1.8 V, and they are 3.3 V tolerant",
+    "12 V, matching typical motor drivers"
+   ],
+   "Raspberry Pi GPIO operates at 3.3 V. Applying 5 V to an input can permanently damage the SoC, so 5 V signals need a level shifter or divider."
+  ],
+  [
+   "On the 40-pin Raspberry Pi header, physical pin 11 corresponds to which BCM GPIO number?",
+   "GPIO17",
+   [
+    "GPIO11",
+    "GPIO27",
+    "GPIO4"
+   ],
+   "BOARD numbering counts physical header pins, while BCM numbering uses the SoC GPIO numbers. Physical pin 11 is BCM GPIO17."
+  ],
+  [
+   "What is the right way to run a 12 V DC motor from a Raspberry Pi GPIO pin?",
+   "Use a motor driver or MOSFET with a separate supply",
+   [
+    "Connect the motor directly between GPIO and GND",
+    "Power the motor from the 3.3 V pin",
+    "Use a resistor in series with the motor"
+   ],
+   "A GPIO pin can only source a few milliamps at 3.3 V. A driver switches the motor current from its own supply, and a flyback diode protects against inductive spikes."
+  ],
+  [
+   "Using the gpiozero library, which code turns on an LED connected to BCM GPIO17?",
+   "led = LED(17); led.on()",
+   [
+    "led = LED(11); led.on()",
+    "led = LED(17); led.high()",
+    "led = LED(\"P17\"); led.start()"
+   ],
+   "gpiozero uses BCM numbering by default, and the LED class has on(), off() and toggle(). Pin 11 is the physical number of GPIO17, not its BCM number."
+  ],
+  [
+   "Which Linux interface replaces the deprecated sysfs GPIO interface (/sys/class/gpio)?",
+   "The GPIO character device, used through libgpiod",
+   [
+    "The /proc/gpio virtual file",
+    "Direct writes to /dev/mem only",
+    "The /sys/bus/i2c driver directory"
+   ],
+   "Since Linux 4.8, GPIO lines are exposed as /dev/gpiochipN character devices, and libgpiod tools such as gpioset and gpioget use them. sysfs GPIO is kept only for compatibility."
+  ],
+  [
+   "In the legacy sysfs GPIO interface, after a pin is exported as gpioN, which file do you write \"out\" to in order to make it an output?",
+   "/sys/class/gpio/gpioN/direction",
+   [
+    "/sys/class/gpio/gpioN/value",
+    "/sys/class/gpio/gpioN/edge",
+    "/sys/class/gpio/export"
+   ],
+   "The direction file accepts \"in\" or \"out\". The value file then reads or sets the level, and edge configures interrupt triggering for inputs."
+  ],
+  [
+   "Which command scans I2C bus 1 on a Raspberry Pi and shows the addresses of connected devices?",
+   "i2cdetect -y 1",
+   [
+    "i2cdump -y 1",
+    "lsusb -t",
+    "spidev_test -D 1"
+   ],
+   "i2cdetect from i2c-tools probes each 7-bit address on the bus and prints a grid of responding devices. i2cdump reads registers from one known device."
+  ],
+  [
+   "You connect three sensors to a Raspberry Pi over SPI. What does SPI need for this that I2C does not?",
+   "A separate chip select line for each device",
+   [
+    "A unique 7-bit address for each device",
+    "Pull-up resistors on every line",
+    "A separate clock frequency per device"
+   ],
+   "SPI devices share clock and data lines, and the master picks one with its chip select (CE) line. I2C instead selects devices by address on two shared wires."
+  ],
+  [
+   "A Raspberry Pi UART is wired to an Arduino Uno. What must you add between Uno TX and Pi RX?",
+   "A level shifter or divider down to 3.3 V",
+   [
+    "A pull-up resistor to 5 V",
+    "A capacitor to filter the data",
+    "Nothing, since UART is voltage independent"
+   ],
+   "The Uno drives 5 V logic and the Pi input is not 5 V tolerant. TX and RX must also be crossed and the grounds connected."
+  ],
+  [
+   "Where do you enable the SPI, I2C or serial interfaces on Raspberry Pi OS from a terminal?",
+   "sudo raspi-config, under Interface Options",
+   [
+    "sudo systemctl enable spi-i2c",
+    "sudo apt install interfaces",
+    "sudo nano /etc/hostname"
+   ],
+   "raspi-config writes the needed dtparam lines to the boot configuration file and loads the drivers. A reboot may be required afterward."
+  ],
+  [
+   "On a Raspberry Pi 3 or 4 with Bluetooth enabled, which UART is mapped to GPIO14 and GPIO15 by default?",
+   "The mini UART",
+   [
+    "The PL011 UART",
+    "The USB UART",
+    "The SPI UART"
+   ],
+   "The full PL011 UART is assigned to Bluetooth, so the header gets the mini UART, whose baud rate depends on the core clock. A device tree overlay can swap them."
+  ],
+  [
+   "Which Python library is the official camera interface for the libcamera stack on Raspberry Pi OS Bullseye and later?",
+   "Picamera2",
+   [
+    "picamera",
+    "pygame.camera",
+    "PiCam-Lite"
+   ],
+   "Picamera2 is built on libcamera. The original picamera library depended on the legacy camera stack and does not work with libcamera."
+  ],
+  [
+   "Through which interface does the official Raspberry Pi Camera Module connect to the board?",
+   "MIPI CSI",
+   [
+    "MIPI DSI",
+    "SPI",
+    "USB 2.0"
+   ],
+   "The camera ribbon plugs into the CSI connector. The similar-looking DSI connector is for displays, so the cable must go into the correct one."
+  ],
+  [
+   "Which CPU does the Raspberry Pi 4 Model B use?",
+   "A quad-core ARM Cortex-A72",
+   [
+    "A quad-core Intel Atom",
+    "A dual-core ARM Cortex-M4",
+    "A single-core RISC-V"
+   ],
+   "The Pi 4 uses the Broadcom BCM2711 SoC with four 64-bit Cortex-A72 cores. Cortex-M parts are microcontrollers, not application processors."
+  ],
+  [
+   "A Raspberry Pi 4 without network access shows the wrong date and time after every reboot. Why?",
+   "It has no battery-backed real-time clock",
+   [
+    "Its CPU clock resets after every reboot",
+    "The SD card stores time in UTC only",
+    "Its GPIO pins disable the system clock"
+   ],
+   "The Pi 4 has no RTC, so it gets time over the network via NTP. Without a network it falls back to a saved time, so an external RTC module is needed offline."
+  ],
+  [
+   "How do you read an analog potentiometer with a Raspberry Pi?",
+   "Use an external ADC such as the MCP3008 over SPI",
+   [
+    "Call analogRead() on any GPIO pin",
+    "Read the voltage from /sys/class/gpio",
+    "Configure a GPIO pin as an analog input"
+   ],
+   "The Raspberry Pi has no built-in ADC, so analog signals need an external converter. The MCP3008 is a common 10-bit, 8-channel SPI ADC."
+  ],
+  [
+   "What is a common cause of microSD card corruption on a Raspberry Pi?",
+   "Cutting power while the system is writing",
+   [
+    "Using SPI and I2C at the same time",
+    "Running the CPU at its stock frequency",
+    "Enabling SSH on the first boot"
+   ],
+   "Removing power mid-write can leave the file system inconsistent. Use sudo shutdown before unplugging, and consider a read-only root or a UPS for embedded setups."
+  ],
+  [
+   "For a headless setup, which file can you create on the boot partition so that SSH is enabled on first boot?",
+   "An empty file named ssh",
+   [
+    "A file named enable_ssh.conf",
+    "A file named sshd_config.txt",
+    "A file named authorized_ssh"
+   ],
+   "At boot, Raspberry Pi OS checks for a file named ssh (or ssh.txt) on the boot partition, enables the SSH server and deletes the file. Raspberry Pi Imager settings can do the same."
+  ],
+  [
+   "What changed about the default user in Raspberry Pi OS releases from April 2022 onward?",
+   "There is no default pi user; you create one at setup",
+   [
+    "The default user became root with no password",
+    "The default password changed to admin",
+    "Logins became possible only through VNC"
+   ],
+   "To improve security, the fixed pi / raspberry account was removed. The username and password are now set in the first-boot wizard or in Raspberry Pi Imager."
+  ],
+  [
+   "Which power supply does Raspberry Pi recommend for the Raspberry Pi 4 Model B?",
+   "5 V, 3 A over USB-C",
+   [
+    "5 V, 1 A over micro-USB",
+    "12 V, 2 A over a barrel jack",
+    "3.3 V, 3 A over GPIO"
+   ],
+   "The official Pi 4 supply is 5.1 V at 3 A through USB-C. A weak supply causes undervoltage warnings and throttling."
+  ]
+ ],
+ "jetson": [
+  [
+   "In NVIDIA JetPack, what is Jetson Linux (formerly L4T)?",
+   "The BSP: kernel, bootloader and Ubuntu root file system",
+   [
+    "A cloud service for training models before deployment",
+    "A Python library for reading CSI cameras",
+    "A desktop GPU driver for x86 workstations"
+   ],
+   "Jetson Linux is the BSP at the base of JetPack. CUDA, cuDNN, TensorRT and other libraries are installed on top of it."
+  ],
+  [
+   "Which command shows the Jetson Linux (L4T) release installed on a Jetson device?",
+   "cat /etc/nv_tegra_release",
+   [
+    "nvcc --l4t-version",
+    "cat /proc/jetpack",
+    "lsmod | grep tegra"
+   ],
+   "The /etc/nv_tegra_release file records the L4T release and revision, which maps to a specific JetPack version."
+  ],
+  [
+   "How does memory on a Jetson module differ from a desktop with a discrete NVIDIA GPU?",
+   "The CPU and GPU share the same physical DRAM",
+   [
+    "The GPU has its own dedicated GDDR memory",
+    "The GPU cannot access system memory",
+    "The CPU accesses memory only through PCIe"
+   ],
+   "Jetson SoCs integrate the GPU and share one LPDDR memory pool. Copies between host and device buffers still move data within the same DRAM, so zero-copy designs can avoid them."
+  ],
+  [
+   "On a Jetson, which CUDA allocation lets both CPU and GPU access the same buffer without explicit cudaMemcpy calls?",
+   "cudaMallocManaged",
+   [
+    "cudaMalloc",
+    "cudaMallocPitch",
+    "cudaMemcpyToSymbol"
+   ],
+   "Managed (unified) memory gives one pointer usable from host and device. cudaMalloc returns device-only memory that the CPU cannot dereference."
+  ],
+  [
+   "Which built-in Jetson utility prints live CPU, GPU (GR3D) and memory usage along with power rails?",
+   "tegrastats",
+   [
+    "nvidia-settings",
+    "glxinfo",
+    "lspci -v"
+   ],
+   "tegrastats ships with Jetson Linux and reports per-core CPU load, GR3D GPU load, RAM use, temperatures and, on many modules, power."
+  ],
+  [
+   "Which command shows the current power mode on a Jetson?",
+   "sudo nvpmodel -q",
+   [
+    "sudo nvpmodel -m 0 --dry",
+    "sudo jetson_clocks --mode",
+    "sudo tegrastats -p"
+   ],
+   "nvpmodel -q queries the active power mode, and nvpmodel -m N switches to mode N as defined in /etc/nvpmodel.conf."
+  ],
+  [
+   "What does sudo jetson_clocks do?",
+   "Locks clocks at the current power mode maximum",
+   [
+    "Switches the board to the lowest power mode",
+    "Resets all clocks to their boot defaults",
+    "Overclocks the GPU beyond the mode limits"
+   ],
+   "jetson_clocks pins clocks at the highest frequency allowed by the active nvpmodel mode, which removes DVFS ramp-up delays. It does not exceed the mode's limits."
+  ],
+  [
+   "What does selecting a lower power budget mode with nvpmodel typically change on a Jetson?",
+   "It caps CPU and GPU frequencies and may take CPU cores offline",
+   [
+    "It switches the GPU to FP64 precision",
+    "It disables the CUDA runtime entirely",
+    "It lowers the memory size reported to Linux"
+   ],
+   "Each nvpmodel mode defines a power budget through the number of online CPU cores and maximum CPU, GPU and memory clocks."
+  ],
+  [
+   "Which nvcc flag targets the GPU in a Jetson AGX Orin?",
+   "-arch=sm_87",
+   [
+    "-arch=sm_72",
+    "-arch=sm_53",
+    "-arch=sm_86"
+   ],
+   "Jetson Orin has compute capability 8.7. sm_72 is Jetson Xavier, sm_53 is the original Jetson Nano, and sm_86 is desktop Ampere GPUs."
+  ],
+  [
+   "On which multimedia framework are NVIDIA DeepStream SDK pipelines built?",
+   "GStreamer",
+   [
+    "FFmpeg",
+    "OpenMAX IL only",
+    "DirectShow"
+   ],
+   "DeepStream provides GStreamer plugins (nvstreammux, nvinfer, nvtracker and others), so pipelines are assembled from GStreamer elements."
+  ],
+  [
+   "In a DeepStream pipeline, which plugin runs neural network inference using TensorRT?",
+   "nvinfer",
+   [
+    "nvstreammux",
+    "nvdsosd",
+    "nvvideoconvert"
+   ],
+   "Gst-nvinfer loads a TensorRT engine and attaches detection or classification metadata. nvstreammux batches inputs and nvdsosd draws overlays."
+  ],
+  [
+   "A DeepStream app processes four camera streams with one model. Which plugin batches frames from the sources before inference?",
+   "nvstreammux",
+   [
+    "nvinfer",
+    "nvtracker",
+    "nvmsgbroker"
+   ],
+   "nvstreammux combines frames from multiple sources into one batch so nvinfer can run them together efficiently."
+  ],
+  [
+   "In DeepStream, which plugin assigns persistent IDs to detected objects across frames?",
+   "nvtracker",
+   [
+    "nvinfer",
+    "nvstreammux",
+    "nvdsosd"
+   ],
+   "nvtracker associates detections over time and gives each object a tracking ID, which is needed for counting or trajectory analysis."
+  ],
+  [
+   "Which GStreamer source element captures from a MIPI CSI camera through the Jetson ISP?",
+   "nvarguscamerasrc",
+   [
+    "v4l2src",
+    "videotestsrc",
+    "filesrc"
+   ],
+   "nvarguscamerasrc uses the libargus camera stack and the hardware ISP for debayering. v4l2src is typically used for USB cameras."
+  ],
+  [
+   "Which GStreamer source element reads frames from a USB webcam exposed as /dev/video0 on a Jetson?",
+   "v4l2src device=/dev/video0",
+   [
+    "nvarguscamerasrc sensor-id=0",
+    "udpsrc port=0",
+    "appsrc name=video0"
+   ],
+   "USB UVC cameras appear as V4L2 devices, so v4l2src reads them. nvarguscamerasrc is for CSI sensors handled by the ISP."
+  ],
+  [
+   "What is a main advantage of a MIPI CSI camera over a USB camera on a Jetson?",
+   "It uses the onboard ISP, lowering CPU load and latency",
+   [
+    "It needs no driver or device tree support",
+    "It works on any computer without changes",
+    "It can be hot-plugged while the board runs"
+   ],
+   "CSI sensors feed the hardware ISP directly, which handles debayering and processing. CSI sensors usually need a matching driver and device tree entry."
+  ],
+  [
+   "Which command builds a TensorRT engine from an ONNX model and saves it?",
+   "trtexec --onnx=model.onnx --saveEngine=model.engine",
+   [
+    "trtexec --engine=model.onnx --save=model.trt",
+    "nvcc --onnx model.onnx -o model.engine",
+    "tensorrt build model.onnx model.engine"
+   ],
+   "trtexec ships with TensorRT; --onnx parses the model and --saveEngine serializes the optimized engine for later loading."
+  ],
+  [
+   "A TensorRT engine built on a desktop RTX GPU fails to load on a Jetson. What is the correct fix?",
+   "Rebuild the engine on the Jetson from the ONNX model",
+   [
+    "Rename the engine file extension to .plan",
+    "Copy the desktop CUDA libraries to the Jetson",
+    "Convert the engine to FP32 with a script"
+   ],
+   "Serialized TensorRT engines are tied to the GPU model and TensorRT version they were built with. Keep the ONNX model and build the engine on the target."
+  ],
+  [
+   "What extra step does TensorRT need to run a model trained in FP32 at INT8 precision with good accuracy?",
+   "Calibration on representative input data",
+   [
+    "Retraining the model from scratch in FP16",
+    "Removing all convolution layers first",
+    "Converting the model to TensorFlow Lite"
+   ],
+   "INT8 needs a scale for each tensor. TensorRT finds them by calibrating on sample inputs, or reads them from a QAT model with quantize and dequantize nodes."
+  ],
+  [
+   "On Jetson Xavier or AGX Orin, what does trtexec --useDLACore=0 --allowGPUFallback do?",
+   "Runs supported layers on DLA 0 and the rest on the GPU",
+   [
+    "Runs the whole model on CPU core 0",
+    "Disables the GPU and uses only the CPU",
+    "Runs layers on DLA 0 and drops unsupported ones"
+   ],
+   "The Deep Learning Accelerator supports a subset of layers. With GPU fallback enabled, unsupported layers run on the GPU instead of causing the build to fail."
+  ]
+ ],
+ "fpga": [
+  [
+   "How many configuration bits does a 6-input LUT store?",
+   "64",
+   [
+    "6",
+    "36",
+    "32"
+   ],
+   "A k-input LUT stores one output bit for each of the 2^k input combinations, so a 6-input LUT holds 2^6 = 64 bits."
+  ],
+  [
+   "How does a LUT in an FPGA implement a Boolean function?",
+   "It stores the truth table in memory cells",
+   [
+    "It wires together fixed AND and OR gates",
+    "It runs the function on a tiny CPU",
+    "It uses analog comparators on the inputs"
+   ],
+   "The LUT inputs act as an address into SRAM cells holding the truth table, so any function of its inputs can be implemented."
+  ],
+  [
+   "What does the Verilog code always @(posedge clk) q <= d; infer?",
+   "A D flip-flop",
+   [
+    "A level-sensitive latch",
+    "A combinational multiplexer",
+    "A tristate buffer"
+   ],
+   "Assigning on a clock edge creates an edge-triggered register that captures d on each rising edge of clk."
+  ],
+  [
+   "In Verilog, always @(*) if (en) q = d; has no else branch. What does synthesis infer?",
+   "A latch",
+   [
+    "A D flip-flop",
+    "A multiplexer with zero default",
+    "A synthesis error"
+   ],
+   "When en is 0, q must keep its old value, which requires storage without a clock, so the tool infers a latch. Add an else or a default assignment."
+  ],
+  [
+   "What does always @(posedge clk) begin a <= b; b <= a; end do in Verilog?",
+   "Swaps a and b on every rising clock edge",
+   [
+    "Copies b into both a and b",
+    "Copies a into both a and b",
+    "Causes a race and is not synthesizable"
+   ],
+   "Non-blocking assignments read all right-hand sides first and update together, so the registers swap. With blocking = both would end up equal."
+  ],
+  [
+   "What is the setup time of a flip-flop?",
+   "How long data must be stable before the clock edge",
+   [
+    "How long data must be stable after the clock edge",
+    "The delay from the clock edge to a valid output",
+    "The minimum width of the clock high phase"
+   ],
+   "If data changes within the setup window before the edge, the flip-flop may capture a wrong or metastable value. Stability after the edge is the hold time."
+  ],
+  [
+   "How should a single-bit asynchronous signal be safely brought into a new clock domain?",
+   "Through a two-flip-flop synchronizer",
+   [
+    "Through a single combinational buffer",
+    "By sampling it on both clock edges",
+    "By adding a longer wire delay"
+   ],
+   "The first flop may go metastable, and the second gives it a full cycle to resolve, sharply reducing the chance of failure downstream."
+  ],
+  [
+   "What is the standard way to move a multi-bit data stream between two unrelated clock domains?",
+   "An asynchronous FIFO with Gray-coded pointers",
+   [
+    "A two-flop synchronizer on every data bit",
+    "A shared register read on both clocks",
+    "A combinational path with a false path constraint"
+   ],
+   "The FIFO lets each side work in its own clock. Gray-coded pointers change one bit at a time, so they can be synchronized safely for the full and empty flags."
+  ],
+  [
+   "Why is synchronizing each bit of a binary counter separately with two-flop synchronizers unsafe?",
+   "Bits may settle on different clock cycles",
+   [
+    "Two-flop synchronizers only work on clock signals",
+    "Synthesis tools reject buses in synchronizers",
+    "It doubles the counter's clock frequency"
+   ],
+   "When several bits change at once, each synchronizer can capture old or new data independently, so the received value may never have existed."
+  ],
+  [
+   "A design meets timing after synthesis but fails after place and route. What is the most likely reason?",
+   "Real routing delays exceed the synthesis estimates",
+   [
+    "The bitstream was generated before routing",
+    "Synthesis ignored the clock constraint",
+    "The simulation testbench was too short"
+   ],
+   "Synthesis only estimates net delays. After placement and routing, actual wire lengths and congestion are known, and long routes can push paths past the clock period."
+  ],
+  [
+   "A long combinational path fails timing at the target clock. Which change most directly fixes it?",
+   "Insert pipeline registers to split the path",
+   [
+    "Remove the clock constraint for that path",
+    "Add a latch at the end of the path",
+    "Lower the I/O drive strength"
+   ],
+   "Pipelining divides the logic into shorter stages that each fit within one clock period, at the cost of added latency."
+  ],
+  [
+   "A Vivado timing report shows a negative WNS (worst negative slack) for a clock. What does that mean?",
+   "At least one path misses its timing",
+   [
+    "The design runs faster than the constraint",
+    "The clock is not constrained at all",
+    "The design has no paths on that clock"
+   ],
+   "Slack is required time minus arrival time. A negative WNS means the worst path arrives late, so the design is not guaranteed to work at that frequency."
+  ],
+  [
+   "How does synthesis treat a delay such as #10 in Verilog RTL code?",
+   "It ignores the delay",
+   [
+    "It inserts a 10 ns buffer chain",
+    "It adds 10 flip-flops in series",
+    "It reports a fatal error"
+   ],
+   "Delays are a simulation construct only. Hardware timing comes from the real gates and routing, which is why simulation-only delays can hide bugs."
+  ],
+  [
+   "A combinational always block lists only some inputs in its sensitivity list, such as always @(a). What is a likely result?",
+   "Simulation and synthesized hardware behave differently",
+   [
+    "Synthesis infers a flip-flop clocked by a",
+    "Synthesis removes the missing inputs from the logic",
+    "The design runs at twice the clock rate"
+   ],
+   "Synthesis builds logic from the code, ignoring the incomplete list, while the simulator only re-evaluates when a changes. Use always @(*) to avoid the mismatch."
+  ],
+  [
+   "What happens to an SRAM-based FPGA's configuration when power is removed?",
+   "It is lost and reloaded from flash",
+   [
+    "It is kept permanently in the LUT memory",
+    "It is restored from the last simulation",
+    "It is stored in the JTAG cable"
+   ],
+   "SRAM configuration cells are volatile, so the bitstream is usually kept in SPI flash and loaded on each power-up. Flash and antifuse FPGAs are non-volatile."
+  ],
+  [
+   "In the AMD Vivado flow, which order is correct?",
+   "Synthesis, implementation, bitstream generation",
+   [
+    "Implementation, synthesis, bitstream generation",
+    "Bitstream generation, synthesis, implementation",
+    "Synthesis, bitstream generation, implementation"
+   ],
+   "Synthesis maps RTL to a netlist, implementation places and routes it on the device, and the bitstream is generated from the routed design."
+  ],
+  [
+   "Which XDC command defines a 100 MHz clock on the input port clk?",
+   "create_clock -period 10 [get_ports clk]",
+   [
+    "create_clock -period 100 [get_ports clk]",
+    "set_input_delay -clock 100 [get_ports clk]",
+    "create_clock -freq 10 [get_ports clk]"
+   ],
+   "create_clock takes the period in nanoseconds, and 1 / 100 MHz = 10 ns. Without it, timing analysis does not know the target frequency."
+  ],
+  [
+   "Two unrelated clocks cross only through proper synchronizers. Which constraint tells the timing tools not to analyze paths between them?",
+   "set_clock_groups -asynchronous",
+   [
+    "set_input_delay -clock",
+    "create_generated_clock",
+    "set_multicycle_path 2"
+   ],
+   "Declaring the clocks asynchronous removes meaningless cross-domain timing checks. set_multicycle_path relaxes paths between related clocks rather than removing them."
+  ],
+  [
+   "What does set_input_delay model in an XDC or SDC constraint file?",
+   "Delay of external logic before data reaches an input port",
+   [
+    "Delay added inside the FPGA by an IDELAY block",
+    "Delay between two internal flip-flops",
+    "Delay of the clock buffer tree"
+   ],
+   "set_input_delay tells the tool how much of the clock period is used outside the FPGA, so it can check the remaining internal path from the input port."
+  ],
+  [
+   "Which XDC property assigns a top-level port to a physical package pin?",
+   "PACKAGE_PIN",
+   [
+    "IOSTANDARD",
+    "DRIVE",
+    "SLEW"
+   ],
+   "set_property PACKAGE_PIN E3 [get_ports clk] places the port on pin E3. IOSTANDARD sets the voltage standard, such as LVCMOS33, but not the location."
+  ]
+ ]
+}

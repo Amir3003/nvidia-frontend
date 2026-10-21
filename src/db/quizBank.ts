@@ -1,16 +1,11 @@
 import type { QuizQuestion } from '../data';
+import type { QuizTuple } from './quizTypes';
+import { tuplesToQuestions } from './quizCatalog';
 
-// Verification question bank: 15 questions per skill.
-// The correct answer is always written first; QuizModal shuffles options per attempt.
-type Q = [question: string, correct: string, wrong: [string, string, string], explanation: string];
-
-const build = (items: Q[]): QuizQuestion[] =>
-  items.map(([question, correct, wrong, explanation]) => ({
-    question,
-    options: [correct, ...wrong],
-    correctIndex: 0,
-    explanation,
-  }));
+// Verification question bank for the original skills: 15 questions per skill.
+// The larger topic catalog lives in ./quizzes and loads on demand (see quizCatalog.ts).
+type Q = QuizTuple;
+const build = (items: Q[]): QuizQuestion[] => tuplesToQuestions(items);
 
 export const QUIZ_BANK: Record<string, QuizQuestion[]> = {
   docker: build([
@@ -212,5 +207,6 @@ export const QUIZ_BANK: Record<string, QuizQuestion[]> = {
   ]),
 };
 
-export const QUIZ_LENGTH = 15;
+// Each attempt draws this many random questions from the skill's pool.
+export const QUIZ_LENGTH = 10;
 export const SECONDS_PER_QUESTION = 60;
