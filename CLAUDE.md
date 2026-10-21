@@ -33,3 +33,4 @@
 - Radar feed: daily GitHub Action runs 4 searches, extracts in batches and merges with the previous feed (`backend/merge.mjs`); undated items expire after 21 days. Missing deadlines read "see official page".
 - Discord server: channel intros are pinned by `npm run discord:setup` (dry run; `-- --apply` posts or edits). Onboarding Q4 gives roles Builder, Radar Alerts, Hackathon Squad.
 - Marketing sources: `marketing/instagram-launch` (carousels, `render.mjs`) and `marketing/tiktok-video` (animated video with Piper voiceover). Rendered PNG/MP4 are gitignored.
+- Skill quizzes: 236 topics. The original 11 are in `src/db/quizBase.json`, 225 more in `src/db/quizzes/<group>.json` (20 questions each, lazy-loaded; catalog in `src/db/quizCatalog.data.ts`). Each attempt draws 10 random questions, pass at 7. Answer options must be similar in length so the longest is never a giveaway: run `npm run check:quizzes` after any quiz edit.
