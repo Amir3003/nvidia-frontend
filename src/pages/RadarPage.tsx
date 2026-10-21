@@ -14,6 +14,8 @@ import {
   UserIcon,
 } from '../components/Icons';
 
+type RadarFilter = 'All' | 'Hackathons' | 'Grants' | 'Internships' | 'Near me' | 'Match >80%';
+
 export const RadarPage: React.FC = () => {
   const navigate = useNavigate();
   const {
@@ -27,9 +29,35 @@ export const RadarPage: React.FC = () => {
   } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState<'All' | 'Hackathons' | 'Grants' | 'Internships' | 'Near me' | 'Match >80%'>('All');
+  const [activeFilter, setActiveFilter] = useState<RadarFilter>('All');
   // The radar is global; the country filter appears only when the profile has a country.
   const country = profileCountry(userProfile.location || '');
+
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
+
+  const primaryFilters: RadarFilter[] = ['All', 'Hackathons', 'Grants', 'Internships'];
+  const secondaryFilters: RadarFilter[] = [...(country ? (['Near me'] as RadarFilter[]) : []), 'Match >80%'];
+  const secondaryActive = secondaryFilters.includes(activeFilter);
+
+  const renderChip = (filter: RadarFilter) => {
+    const isActive = activeFilter === filter;
+    return (
+      <button
+        key={filter}
+        type="button"
+        onClick={() => setActiveFilter(filter)}
+        className={`
+          snap-start flex-shrink-0 min-h-[44px] h-10 px-4 rounded-xl text-mini font-mono transition-all border cursor-pointer active:scale-95
+          ${isActive
+            ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white border-emerald-500 font-bold shadow-xs'
+            : 'bg-slate-900/80 text-teal-200/80 border-teal-500/30 hover:bg-slate-800/80 hover:text-white hover:border-teal-400 shadow-xs'
+          }
+        `}
+      >
+        {filter === 'Near me' ? `Open from ${country}` : filter}
+      </button>
+    );
+  };
 
   // Check if candidate profile has been configured with skills
   const isProfileReady = userProfile.isOnboarded && userProfile.skills && userProfile.skills.length > 0;
@@ -126,31 +154,25 @@ export const RadarPage: React.FC = () => {
             />
           </div>
 
-          {/* Filter Chips */}
-          <div className="flex flex-wrap items-center gap-2">
-            {([
-              'All', 'Hackathons', 'Grants', 'Internships',
-              ...(country ? (['Near me'] as const) : []),
-              'Match >80%',
-            ] as const).map((filter) => {
-              const isActive = activeFilter === filter;
-              return (
-                <button
-                  key={filter}
-                  type="button"
-                  onClick={() => setActiveFilter(filter)}
-                  className={`
-                    min-h-[44px] h-10 px-4 rounded-xl text-mini font-mono transition-all border cursor-pointer active:scale-95
-                    ${isActive
-                      ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white border-emerald-500 font-bold shadow-xs'
-                      : 'bg-slate-900/80 text-teal-200/80 border-teal-500/30 hover:bg-slate-800/80 hover:text-white hover:border-teal-400 shadow-xs'
-                    }
-                  `}
-                >
-                  {filter === 'Near me' ? `Open from ${country}` : filter}
-                </button>
-              );
-            })}
+          {/* Filter chips: type filters up front, the rest behind a secondary control.
+              On mobile the row scrolls and the last chip peeks out. */}
+          <div className="min-w-0 md:max-w-[60%]">
+            <div className="flex flex-nowrap md:flex-wrap items-center gap-2 overflow-x-auto md:overflow-visible -mx-4 px-4 sm:-mx-6 sm:px-6 md:mx-0 md:px-0 pb-1 md:pb-0 snap-x snap-proximity scroll-px-4 sm:scroll-px-6 md:scroll-px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {primaryFilters.map((filter) => renderChip(filter))}
+              <button
+                type="button"
+                onClick={() => setShowMoreFilters((v) => !v)}
+                aria-expanded={showMoreFilters || secondaryActive}
+                className={`snap-start flex-shrink-0 min-h-[44px] h-10 px-4 rounded-xl text-mini font-mono transition-all border cursor-pointer active:scale-95 ${secondaryActive ? 'border-emerald-500 text-emerald-300' : 'bg-transparent text-teal-200/80 border-dashed border-teal-500/40 hover:text-white hover:border-teal-400'}`}
+              >
+                {showMoreFilters || secondaryActive ? 'Fewer filters' : 'More filters'}
+              </button>
+            </div>
+            {(showMoreFilters || secondaryActive) && (
+              <div className="flex flex-wrap items-center gap-2 mt-2">
+                {secondaryFilters.map((filter) => renderChip(filter))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -281,26 +303,46 @@ export const RadarPage: React.FC = () => {
         </div>
 
         {filteredOpportunities.length === 0 && (
-          <div className="p-12 text-center border border-dashed border-teal-500/30 rounded-card bg-slate-900/60">
-            <p className="text-[14px] text-teal-200 font-mono">
+          <div className="mx-auto max-w-xl p-8 sm:p-10 text-center border border-teal-500/30 rounded-card bg-slate-900/60 flex flex-col items-center">
+            <div className="w-12 h-12 rounded-xl bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center text-emerald-300 mb-4">
+              <RadarIcon size={22} />
+            </div>
+            <h2 className="text-subheading font-bold text-white mb-2">
+              {opportunities.length === 0 ? 'The radar is listening' : 'Nothing matches right now'}
+            </h2>
+            <p className="text-[14px] text-teal-200 leading-relaxed mb-1">
               {opportunities.length === 0
-                ? 'No sourced opportunities have been published yet. Please check back after the scheduled scan.'
+                ? 'We only publish listings with a confirmed future deadline and an official source link. New verified listings are added every day.'
                 : !searchQuery.trim() && activeFilter === 'Near me'
                   ? `Nothing is confirmed open from ${country} yet. A listing shows here when its source says online, worldwide or names ${country}.`
                 : !searchQuery.trim() && (activeFilter === 'Grants' || activeFilter === 'Internships')
                   ? `No ${activeFilter.toLowerCase()} on the radar yet. The daily scan adds new ones with an official link.`
                   : 'No matching opportunities found for current criteria.'}
             </p>
-            <button
-              type="button"
-              onClick={() => {
-                setSearchQuery('');
-                setActiveFilter('All');
-              }}
-              className="min-h-[44px] h-10 px-5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-mono text-mini font-semibold rounded-xl shadow-xs cursor-pointer active:scale-95 transition-all"
-            >
-              Reset Filters
-            </button>
+            <p className="text-[13px] text-teal-200/70 leading-relaxed mb-6">
+              Use the time to get ready: a sharper CV and verified skills make every application faster.
+            </p>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
+              <Link
+                to="/cv"
+                className="min-h-[44px] px-5 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-mono text-mini font-semibold rounded-xl shadow-xs cursor-pointer active:scale-95 transition-all"
+              >
+                <FileTextIcon size={14} className="text-white" />
+                <span>Open CV &amp; Skill Lab</span>
+              </Link>
+              {(searchQuery.trim() !== '' || activeFilter !== 'All') && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setActiveFilter('All');
+                  }}
+                  className="min-h-[44px] px-5 bg-slate-900/80 border border-teal-500/30 hover:border-teal-400 text-teal-100 font-mono text-mini font-semibold rounded-xl cursor-pointer active:scale-95 transition-all"
+                >
+                  Reset Filters
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>
