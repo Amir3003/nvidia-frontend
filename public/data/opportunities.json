@@ -32,5 +32,21 @@
     "id": "scan-3f5d55639402",
     "firstSeen": "2026-10-21",
     "lastSeen": "2026-10-21"
+  },
+  {
+    "id": "scan-6585aef7bed6",
+    "type": "GRANT",
+    "title": "Summer Fellowship (US)",
+    "summary": "The Institute for Law & AI’s Summer Fellowship (US) is a paid program that offers law students, professionals, and academics the opportunity to participate at the leading edge of AI law and policy, with a particular focus on United States Law and Policy.",
+    "location": "Washington, DC",
+    "countries": [],
+    "organization": "Institute for Law & AI",
+    "url": "https://law-ai.org/summer-fellowship-us",
+    "deadline": "2027-01-29",
+    "deadlineEvidence": "Applications close on January 29, 2027.",
+    "eligibility": "check source",
+    "skills": [],
+    "firstSeen": "2026-10-22",
+    "lastSeen": "2026-10-22"
   }
 ]
