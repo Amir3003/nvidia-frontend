@@ -10,10 +10,11 @@ export function confirmedDeadline(deadline, quote, source, today) {
   const clean = quote.toLowerCase();
   if (!clean.includes(String(year))) return false;
   const monthName = MONTHS[month - 1];
-  const namedMonth = new RegExp(`\\b${monthName.slice(0, 3)}[a-z]*\\b`, 'i').test(clean);
-  const dayNumber = new RegExp(`(^|\\D)0?${day}(?:st|nd|rd|th)?(?!\\d)`, 'i').test(clean);
-  const numericDate = new RegExp(`\\b${year}[-/.]0?${month}[-/.]0?${day}\\b`).test(clean) ||
-    new RegExp(`\\b0?${day}[-/.]0?${month}[-/.]${year}\\b`).test(clean);
+  // The patterns below are built only from these validated numbers and the fixed MONTHS list.
+  const namedMonth = new RegExp(`\\b${monthName.slice(0, 3)}[a-z]*\\b`, 'i').test(clean); // nosemgrep: javascript.lang.security.audit.detect-non-literal-regexp.detect-non-literal-regexp
+  const dayNumber = new RegExp(`(^|\\D)0?${day}(?:st|nd|rd|th)?(?!\\d)`, 'i').test(clean); // nosemgrep: javascript.lang.security.audit.detect-non-literal-regexp.detect-non-literal-regexp
+  const numericDate = new RegExp(`\\b${year}[-/.]0?${month}[-/.]0?${day}\\b`).test(clean) || // nosemgrep: javascript.lang.security.audit.detect-non-literal-regexp.detect-non-literal-regexp
+    new RegExp(`\\b0?${day}[-/.]0?${month}[-/.]${year}\\b`).test(clean); // nosemgrep: javascript.lang.security.audit.detect-non-literal-regexp.detect-non-literal-regexp
   return numericDate || (namedMonth && dayNumber);
 }
 

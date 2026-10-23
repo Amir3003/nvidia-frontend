@@ -160,7 +160,8 @@ export function serve() {
   const server = http.createServer(async (request, response) => {
     const requestOrigin = request.headers.origin;
     const allowed = [origin, 'http://127.0.0.1:5173'].includes(requestOrigin);
-    if (allowed) response.setHeader('Access-Control-Allow-Origin', requestOrigin);
+    // Origin is echoed only after an exact match against the allowlist above.
+    if (allowed) response.setHeader('Access-Control-Allow-Origin', requestOrigin); // nosemgrep: javascript.express.security.cors-misconfiguration.cors-misconfiguration
     response.setHeader('Content-Type', 'application/json; charset=utf-8');
     if (request.method !== 'GET' || !['/api/opportunities', '/api/status'].includes(request.url)) {
       response.writeHead(404).end(JSON.stringify({ error: 'Not found' }));

@@ -1,0 +1,15 @@
+# Semgrep ignore list. This file replaces Semgrep's built-in defaults, so the
+# usual build and dependency folders are listed here too.
+node_modules/
+dist/
+build/
+coverage/
+.git/
+*.min.js
+
+# Quiz content, not code. The questions quote insecure examples on purpose
+# (for example unencrypted WebSocket URLs) to teach the secure answer.
+src/db/quizzes/
+
+# Third-party Claude Code skills copied in as-is. Not part of the app or bots.
+.claude/

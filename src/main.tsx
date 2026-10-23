@@ -4,12 +4,18 @@ import { BrowserRouter } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import App from './App';
 import './index.css';
+import { initErrorTracking, ErrorBoundary } from './lib/sentry';
+import { ErrorFallback } from './components/ErrorFallback';
+
+initErrorTracking();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
       <AppProvider>
-        <App />
+        <ErrorBoundary fallback={<ErrorFallback />}>
+          <App />
+        </ErrorBoundary>
       </AppProvider>
     </BrowserRouter>
   </React.StrictMode>

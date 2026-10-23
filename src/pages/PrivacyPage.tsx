@@ -20,6 +20,7 @@ const SENT = [
   ['Loading opportunities', 'The app downloads the public opportunity list. This request contains none of your data.'],
   ['Test notification', 'Only if a QADAM server is configured: the channel name and your first name are sent so the bot can message you.'],
   ['Support ticket', 'Opens your own email app with a prepared message. Nothing is sent until you press Send there.'],
+  ['Error reports', 'If the app crashes, a technical error report (error message, page address, browser type) is sent to Sentry so we can fix it. It does not include your name, email, IP address, CV or profile fields.'],
   ['Official site links', 'Opening an organizer site is a normal visit to that site. Its own privacy policy applies.'],
 ];
 
