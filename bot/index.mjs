@@ -35,11 +35,11 @@ async function callApi(method, payload = {}) {
     });
     const data = await res.json();
     if (!data.ok) {
-      console.error(`[Telegram API Error] ${method}:`, data.description);
+      console.error('[Telegram API Error] %s:', method, data.description);
     }
     return data;
   } catch (err) {
-    console.error(`[Network Error] ${method}:`, err.message);
+    console.error('[Network Error] %s:', method, err.message);
     return { ok: false, error: err.message };
   }
 }
@@ -68,8 +68,9 @@ async function answerCallback(callbackQueryId, text = null, showAlert = false) {
 }
 
 // Content Renderers
+// Telegram parse_mode HTML only needs &, < and > escaped; values never go into attributes.
 function escapeHtml(value) {
-  return String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+  return String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;'); // nosemgrep: javascript.audit.detect-replaceall-sanitization.detect-replaceall-sanitization
 }
 
 async function loadRadarSafe() {

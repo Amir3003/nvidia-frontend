@@ -211,9 +211,10 @@ export const CvLabPage: React.FC = () => {
       .join(' ')
       .toLowerCase();
     // Each word must start a word in the text, so "rag" finds RAG but not "storage".
+    // The word is regex-escaped, so it cannot inject a pattern.
     return query
       .split(/\s+/)
-      .every((word) => new RegExp(`(^|[^a-z0-9])${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`).test(haystack));
+      .every((word) => new RegExp(`(^|[^a-z0-9])${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`).test(haystack)); // nosemgrep: javascript.lang.security.audit.detect-non-literal-regexp.detect-non-literal-regexp
   };
 
   // A search always looks across every quiz; without one, "For you" shows only needed quizzes.

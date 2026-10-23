@@ -60,12 +60,12 @@ async function callDiscordRest(endpoint, method = 'GET', body = null) {
     if (res.status === 204) return { ok: true, status: 204 };
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      console.error(`[Discord REST Error] ${method} ${endpoint} (${res.status}):`, data);
+      console.error('[Discord REST Error] %s %s (%d):', method, endpoint, res.status, data);
       return { ok: false, status: res.status, error: data };
     }
     return { ok: true, data };
   } catch (err) {
-    console.error(`[Discord Network Error] ${method} ${endpoint}:`, err.message);
+    console.error('[Discord Network Error] %s %s:', method, endpoint, err.message);
     return { ok: false, error: err.message };
   }
 }
@@ -83,7 +83,7 @@ async function sendDirectMessage(userId, payload) {
   });
 
   if (!channelRes.ok || !channelRes.data?.id) {
-    console.error(`Failed to create DM channel with user ${userId}:`, channelRes.error);
+    console.error('Failed to create DM channel with user %s:', userId, channelRes.error);
     return { ok: false, error: 'Could not open DM channel' };
   }
 
