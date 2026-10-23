@@ -21,6 +21,7 @@ const SENT = [
   ['Test notification', 'Only if a QADAM server is configured: the channel name and your first name are sent so the bot can message you.'],
   ['Support ticket', 'Opens your own email app with a prepared message. Nothing is sent until you press Send there.'],
   ['Error reports', 'If the app crashes, a technical error report (error message, page address, browser type) is sent to Sentry so we can fix it. It does not include your name, email, IP address, CV or profile fields.'],
+  ['Pilot request form', 'If an institution requests a pilot, the details typed into the form (institution, name, email, phone, city, cohort size, message) are stored so we can reply. They are used for nothing else.'],
   ['Official site links', 'Opening an organizer site is a normal visit to that site. Its own privacy policy applies.'],
 ];
 

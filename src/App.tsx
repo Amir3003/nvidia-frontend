@@ -52,12 +52,11 @@ export const App: React.FC = () => {
     return <Navigate to="/welcome" replace />;
   }
 
-  // Standalone Welcome landing page with zero blocking overlay on fresh entry
+  // Public B2B landing for training centers (light brand palette, no ambient background)
   if (location.pathname === '/welcome') {
     return (
-      <div className="min-h-[100dvh] flex flex-col bg-transparent text-slate-100 antialiased selection:bg-accent/20 selection:text-white font-sans relative">
+      <div className="min-h-[100dvh] flex flex-col bg-[#F7F4EE] antialiased font-sans relative">
         <ScrollToTop />
-        <AmbientBackground />
         <WelcomePage />
         <OnboardingWizard />
       </div>
