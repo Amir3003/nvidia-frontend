@@ -19,7 +19,8 @@ export function anonymize(payload: any, customNames: string[] = []): AnonymizeRe
   const allNames = Array.from(new Set([...detectedNames.filter(Boolean), 'Candidate', 'John Doe']));
   allNames.forEach((name) => {
     if (name.trim().length > 1) {
-      const regex = new RegExp(`\\b${name.trim()}\\b`, 'gi');
+      const escaped = name.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`\\b${escaped}\\b`, 'gi');
       if (regex.test(jsonString)) {
         jsonString = jsonString.replace(regex, '[USER_NAME_1]');
         fieldsMaskedCount++;
