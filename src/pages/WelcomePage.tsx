@@ -38,11 +38,11 @@ const STATUS_CLASS: Record<Status, string> = {
 };
 
 const glassCard =
-  'rounded-3xl bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_20px_50px_-15px_rgba(6,182,212,0.22)] text-slate-900';
+  'rounded-2xl bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_20px_50px_-20px_rgba(6,182,212,0.25)] text-slate-900';
 const primaryButton =
-  'min-h-[48px] px-7 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-mono font-semibold text-[15px] shadow-xl shadow-emerald-500/25 active:scale-[0.98] transition-all cursor-pointer inline-flex items-center justify-center gap-2.5';
+  'min-h-[48px] px-7 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-semibold text-[15px] shadow-lg shadow-emerald-900/30 active:scale-[0.99] transition-all cursor-pointer inline-flex items-center justify-center gap-2.5';
 const ghostButton =
-  'min-h-[48px] px-7 rounded-xl border border-teal-400/40 bg-slate-900/40 hover:bg-slate-800/60 text-teal-100 hover:text-white font-mono font-semibold text-[15px] backdrop-blur-md transition-all cursor-pointer inline-flex items-center justify-center gap-2.5';
+  'min-h-[48px] px-7 rounded-xl border border-teal-400/40 bg-slate-900/40 hover:bg-slate-800/60 text-teal-100 hover:text-white font-semibold text-[15px] backdrop-blur-md transition-all cursor-pointer inline-flex items-center justify-center gap-2.5';
 const eyebrowDark = 'text-[12px] font-mono uppercase tracking-[0.16em] text-teal-300';
 const container = 'max-w-6xl mx-auto px-4 sm:px-6';
 
@@ -95,12 +95,12 @@ const Reveal: React.FC<{ children: React.ReactNode; className?: string; delay?: 
     return () => observer.disconnect();
   }, []);
 
-  const hidden = from === 'left' ? '-translate-x-12' : from === 'right' ? 'translate-x-12' : 'translate-y-10';
+  const hidden = from === 'left' ? '-translate-x-6' : from === 'right' ? 'translate-x-6' : 'translate-y-6';
   return (
     <div
       ref={ref}
       style={{ transitionDelay: `${delay}ms` }}
-      className={`transition-all duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${
+      className={`transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${
         visible ? 'opacity-100 translate-x-0 translate-y-0' : `opacity-0 ${hidden}`
       } ${className}`}
     >
@@ -383,17 +383,19 @@ const TEAM = [
 // Display title for a "stop", aligned left or right like an itinerary.
 const StopTitle: React.FC<{ index: string; label: string; title: string; align: 'left' | 'right' }> = ({ index, label, title, align }) => (
   <Reveal from={align}>
-    <div className={`flex items-center gap-3 ${align === 'right' ? 'justify-end' : ''}`}>
-      {align === 'left' && <span className="w-2 h-2 rounded-full bg-emerald-400" />}
+    <div className={`flex items-center gap-3 ${align === 'right' ? 'lg:justify-end' : ''}`}>
+      <span className={`w-2 h-2 rounded-full bg-emerald-400 ${align === 'right' ? 'lg:hidden' : ''}`} />
       <span className={eyebrowDark}>
-        Stop {index} · {label}
+        {index} · {label}
       </span>
-      {align === 'right' && <span className="w-2 h-2 rounded-full bg-emerald-400" />}
+      {align === 'right' && <span className="hidden lg:block w-2 h-2 rounded-full bg-emerald-400" />}
     </div>
     <div className={`mt-2 h-px bg-gradient-to-r ${align === 'left' ? 'from-teal-400/40 to-transparent' : 'from-transparent to-teal-400/40'}`} />
     <h2
-      className={`mt-4 text-[48px] sm:text-[88px] lg:text-[120px] leading-[0.9] font-black tracking-tight uppercase text-white drop-shadow-[0_4px_28px_rgba(16,185,129,0.28)] break-words ${
-        align === 'right' ? 'text-right' : ''
+      className={`mt-5 text-[34px] sm:text-[48px] lg:text-[60px] leading-[1.05] font-semibold tracking-[-0.02em] text-white max-w-4xl break-words ${
+        align === 'right' ? 'lg:ml-auto' : ''
+      } ${
+        align === 'right' ? 'lg:text-right' : ''
       }`}
     >
       {title}
@@ -532,14 +534,14 @@ export const WelcomePage: React.FC = () => {
             <button
               type="button"
               onClick={openStudentLogin}
-              className="hidden sm:inline-flex h-10 px-4 items-center rounded-btn text-mini font-mono font-semibold text-teal-100 hover:text-white hover:bg-teal-500/10 border border-teal-500/30 transition-colors cursor-pointer"
+              className="hidden sm:inline-flex h-10 px-4 items-center rounded-btn text-[13px] font-semibold text-teal-100 hover:text-white hover:bg-teal-500/10 border border-teal-500/30 transition-colors cursor-pointer"
             >
               Student login
             </button>
             <button
               type="button"
               onClick={openPilot}
-              className="h-10 px-3.5 sm:px-5 rounded-btn bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-mini font-mono font-semibold transition-all shadow-md shadow-emerald-900/30 cursor-pointer inline-flex items-center gap-2 whitespace-nowrap"
+              className="h-10 px-3.5 sm:px-5 rounded-btn bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-[13px] font-semibold transition-all shadow-md shadow-emerald-900/30 cursor-pointer inline-flex items-center gap-2 whitespace-nowrap"
             >
               Request a pilot
               <ChevronRightIcon size={13} className="hidden sm:block" />
@@ -582,18 +584,18 @@ export const WelcomePage: React.FC = () => {
       {/* Hero */}
       <section className="min-h-[100dvh] flex flex-col items-center justify-center text-center px-4 sm:px-6 pt-28 pb-20 relative z-10 max-w-5xl mx-auto">
         <div className="space-y-6 sm:space-y-8 flex flex-col items-center">
-          <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-teal-500/10 border border-teal-400/30 text-teal-300 text-sm md:text-base font-semibold shadow-lg backdrop-blur-md">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400 motion-reduce:animate-none" />
-            <span>For training centers in Kazakhstan</span>
+          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-teal-500/10 border border-teal-400/30 text-teal-200 text-[13px] font-mono tracking-wide backdrop-blur-md">
+            <span className="w-2 h-2 rounded-full bg-emerald-400" />
+            <span>QADAM Hub · For training centers in Kazakhstan</span>
           </div>
 
-          <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-[7.5rem] font-black tracking-tight text-white drop-shadow-[0_4px_28px_rgba(16,185,129,0.28)] leading-none">
-            QADAM <span className="text-teal-300">Hub</span>
+          <h1 className="text-[40px] sm:text-6xl lg:text-[72px] font-semibold tracking-[-0.025em] text-white leading-[1.05] max-w-4xl">
+            Opportunity and career support for your cohort
           </h1>
 
-          <p className="text-lg sm:text-xl md:text-2xl text-teal-100/90 leading-relaxed max-w-3xl mx-auto">
-            Opportunity and career support for your cohort. Learners find internships, hackathons and grants that fit their
-            skills. Staff see who is applying.
+          <p className="text-lg sm:text-xl text-teal-100/85 leading-relaxed max-w-2xl mx-auto">
+            Learners find internships, hackathons and grants that fit their skills. Your staff see who is applying, without
+            chasing links in chats.
           </p>
 
           <div className="pt-2 flex flex-col sm:flex-row justify-center gap-3 w-full sm:w-auto">
@@ -616,8 +618,8 @@ export const WelcomePage: React.FC = () => {
         </div>
 
         <div className="hidden md:flex absolute bottom-6 left-1/2 -translate-x-1/2 flex-col items-center gap-2 opacity-75">
-          <span className="text-[12px] font-mono tracking-wider text-teal-300 uppercase font-medium">4 steps</span>
-          <div className="w-1.5 h-6 rounded-full bg-teal-400/70 animate-bounce motion-reduce:animate-none" />
+          <span className="text-[11px] font-mono tracking-[0.16em] text-teal-300/80 uppercase">How it works</span>
+          <div className="w-px h-8 bg-gradient-to-b from-teal-300/70 to-transparent" />
         </div>
       </section>
 
@@ -626,7 +628,7 @@ export const WelcomePage: React.FC = () => {
         <div className={`${glassCard} p-5 sm:p-6 flex flex-col gap-5`}>
           <div className="flex items-center justify-between gap-3 border-b border-teal-200/80 pb-3">
             <div className="flex items-center gap-2 min-w-0">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse motion-reduce:animate-none shrink-0" />
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
               <span className="text-mini font-mono font-bold text-teal-950 uppercase tracking-wider truncate">How it works</span>
             </div>
             {stagePills(setActiveStage)}
@@ -661,7 +663,7 @@ export const WelcomePage: React.FC = () => {
                 >
                   <div className="flex items-center justify-between border-b border-teal-200/80 pb-3">
                     <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse motion-reduce:animate-none" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                       <span className="text-mini font-mono font-bold text-teal-950 uppercase tracking-wider">How it works</span>
                     </div>
                     <div className="flex items-center gap-3">
@@ -672,7 +674,7 @@ export const WelcomePage: React.FC = () => {
                   <div className="flex-1 flex flex-col justify-center py-4 space-y-5">
                     <div className="space-y-1">
                       <div className={`text-mini font-mono uppercase tracking-wider font-semibold ${item.accent}`}>{item.kicker}</div>
-                      <h3 className="text-4xl xl:text-5xl font-mono font-bold text-indigo-950 tracking-tight">{item.title}</h3>
+                      <h3 className="text-3xl xl:text-4xl font-mono font-semibold text-indigo-950 tracking-tight">{item.title}</h3>
                     </div>
                     <div className="max-w-xl">
                       <StageVisual stage={index as Stage} />
@@ -713,7 +715,7 @@ export const WelcomePage: React.FC = () => {
       <div className="relative z-10 space-y-28 sm:space-y-40 py-24 sm:py-32">
         {/* Stop 1: the gap (title left, card right) */}
         <section className={container}>
-          <StopTitle index="1" label="The problem" title="The gap" align="left" />
+          <StopTitle index="01" label="The problem" title="The gap after the classroom" align="left" />
           <div className="mt-10 grid lg:grid-cols-2 gap-8 items-center">
             <Reveal from="left" delay={100}>
               <p className="text-lg sm:text-xl text-teal-100/90 leading-relaxed max-w-md">
@@ -754,7 +756,7 @@ export const WelcomePage: React.FC = () => {
 
         {/* Stop 2: workspace (title right, card left) */}
         <section className={container}>
-          <StopTitle index="2" label="Staff workspace" title="Your cohort" align="right" />
+          <StopTitle index="02" label="Staff workspace" title="One view of your cohort" align="right" />
           <div className="mt-10 grid lg:grid-cols-2 gap-8 items-center">
             <Reveal from="left" delay={200} className="order-2 lg:order-1">
               <div className={`${glassCard} p-5 sm:p-7 space-y-4`}>
@@ -782,7 +784,7 @@ export const WelcomePage: React.FC = () => {
 
         {/* Stop 3: pilot and pricing (title left, cards right) */}
         <section id="pilot" className={`${container} scroll-mt-24`}>
-          <StopTitle index="3" label="Pilot and pricing" title="Pilot first" align="left" />
+          <StopTitle index="03" label="Pilot and pricing" title="Pilot first, then a subscription" align="left" />
           <div className="mt-10 grid lg:grid-cols-[0.8fr_1.2fr] gap-8 items-center">
             <Reveal from="left" delay={100}>
               <p className="text-lg sm:text-xl text-teal-100/90 leading-relaxed max-w-md">
@@ -798,7 +800,7 @@ export const WelcomePage: React.FC = () => {
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className={`${glassCard} p-6 sm:p-7 flex flex-col`}>
                   <p className="text-mini font-mono font-bold text-emerald-700 uppercase tracking-wider">Step 1 · Pilot</p>
-                  <p className="mt-3 text-4xl font-black tracking-tight text-indigo-950">Free</p>
+                  <p className="mt-3 text-4xl font-semibold tracking-tight text-indigo-950">Free</p>
                   <p className="text-[13px] font-mono text-teal-800">for 4 to 6 weeks</p>
                   <ul className="mt-5 space-y-2.5">
                     {['One cohort of 30 to 50 learners', 'One staff lead from your side', 'Weekly check-in with our team', 'Summary of learner activity at the end'].map((item) => (
@@ -811,7 +813,7 @@ export const WelcomePage: React.FC = () => {
                 </div>
                 <div className={`${glassCard} p-6 sm:p-7 flex flex-col`}>
                   <p className="text-mini font-mono font-bold text-indigo-700 uppercase tracking-wider">Step 2 · Subscription</p>
-                  <p className="mt-3 text-4xl font-black tracking-tight text-indigo-950 whitespace-nowrap">149 USD</p>
+                  <p className="mt-3 text-4xl font-semibold tracking-tight text-indigo-950 whitespace-nowrap">149 USD</p>
                   <p className="text-[13px] font-mono text-teal-800">per month, per institution</p>
                   <ul className="mt-5 space-y-2.5 flex-1">
                     {['Up to 100 active learners', 'Staff accounts and cohort tools', 'Recommendations for every learner', 'Basic reporting on learner activity'].map((item) => (
@@ -832,7 +834,7 @@ export const WelcomePage: React.FC = () => {
 
         {/* Stop 4: where we are (title right, card left) */}
         <section className={container}>
-          <StopTitle index="4" label="Where we are" title="Honest status" align="right" />
+          <StopTitle index="04" label="Where we are" title="Prototype today, workspace next" align="right" />
           <div className="mt-10 grid lg:grid-cols-2 gap-8 items-center">
             <Reveal from="left" delay={200} className="order-2 lg:order-1">
               <div className={`${glassCard} p-6 sm:p-8 grid sm:grid-cols-2 gap-6`}>
@@ -862,8 +864,8 @@ export const WelcomePage: React.FC = () => {
             </Reveal>
             <Reveal from="right" delay={100} className="order-1 lg:order-2 lg:text-right">
               <p className="text-lg sm:text-xl text-teal-100/90 leading-relaxed lg:ml-auto max-w-md">
-                Prototype today, staff workspace next. We do not have signed institutional partners yet. The pilot is how we plan
-                to earn them.
+                We would rather show exactly what works now than promise everything at once. We do not have signed
+                institutional partners yet; the pilot is how we plan to earn them.
               </p>
             </Reveal>
           </div>
@@ -871,7 +873,7 @@ export const WelcomePage: React.FC = () => {
 
         {/* Stop 5: team (title left, cards right) */}
         <section id="team" className={`${container} scroll-mt-24`}>
-          <StopTitle index="5" label="Team" title="The crew" align="left" />
+          <StopTitle index="05" label="Team" title="The team behind QADAM Hub" align="left" />
           <div className="mt-10 grid lg:grid-cols-[0.8fr_1.2fr] gap-8 items-center">
             <Reveal from="left" delay={100}>
               <p className="text-lg sm:text-xl text-teal-100/90 leading-relaxed max-w-md">
@@ -902,7 +904,7 @@ export const WelcomePage: React.FC = () => {
           <div className="grid lg:grid-cols-[0.8fr_1.2fr] gap-10">
             <Reveal from="left">
               <p className={eyebrowDark}>FAQ</p>
-              <h2 className="mt-3 text-4xl sm:text-5xl font-black tracking-tight text-white leading-tight">Questions from program leads</h2>
+              <h2 className="mt-3 text-[34px] sm:text-[44px] font-semibold tracking-[-0.02em] text-white leading-tight">Questions from program leads</h2>
               <p className="mt-5 text-[16px] text-teal-100/80 leading-relaxed">
                 Something else? Write to{' '}
                 <a href={`mailto:${CONTACT_EMAIL}`} className="text-teal-300 hover:text-white underline underline-offset-4 inline-block">
@@ -940,7 +942,7 @@ export const WelcomePage: React.FC = () => {
           <Reveal>
             <div className="rounded-3xl bg-slate-900/60 backdrop-blur-md border border-teal-500/25 px-6 py-12 sm:px-12 sm:py-16 text-center">
               <p className={eyebrowDark}>One pilot partner</p>
-              <h2 className="mt-4 text-4xl sm:text-6xl font-black tracking-tight text-white drop-shadow-[0_4px_28px_rgba(16,185,129,0.28)]">
+              <h2 className="mt-4 text-[34px] sm:text-[52px] font-semibold tracking-[-0.02em] text-white leading-tight">
                 Run a pilot with one cohort
               </h2>
               <p className="mt-5 text-lg text-teal-100/85 max-w-2xl mx-auto leading-relaxed">
