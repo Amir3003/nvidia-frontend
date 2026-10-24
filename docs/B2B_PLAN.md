@@ -51,7 +51,7 @@ The owner rejected a light ivory and navy version. The public site keeps the ori
 ## 5. Pilot request form
 
 - Modal over the landing, `z-50`, bounded height with scroll, closes on backdrop click and Escape, focus moves to the first field.
-- Fields: institution (required), your name (required), role (director, program lead, career staff, other), work email (required, validated), phone or Telegram (optional), city (Almaty, Astana, Shymkent, other), learners per cohort (under 30, 30 to 50, 50 to 100, over 100), message (optional, 1000 characters).
+- Fields: institution (required), your name (required), role (director, program lead, career staff, other), work email (required, validated), phone or Telegram (optional), city (free text with suggestions for Kazakhstan and Central Asia), learners per cohort (under 30, 30 to 50, 50 to 100, over 100), message (optional, 1000 characters).
 - Hidden honeypot field to stop simple bots.
 - Submit stores the request in Supabase table `pilot_requests` (insert-only for the public, read only from the Supabase dashboard). Migration: `supabase/migrations/202610230001_pilot_requests.sql`.
 - If Supabase is not configured or the insert fails, the form opens a prepared email instead, so no request is lost.

@@ -14,7 +14,12 @@ interface PilotRequestModalProps {
 }
 
 const ROLES = ['Director', 'Program lead', 'Career staff', 'Other'];
-const CITIES = ['Almaty', 'Astana', 'Shymkent', 'Other'];
+// Suggestions only: the city field accepts any text.
+const CITY_SUGGESTIONS = [
+  'Almaty', 'Astana', 'Shymkent', 'Karaganda', 'Aktobe', 'Taraz', 'Pavlodar', 'Ust-Kamenogorsk', 'Semey',
+  'Atyrau', 'Kostanay', 'Kyzylorda', 'Aktau', 'Uralsk', 'Petropavl', 'Turkestan', 'Kokshetau', 'Taldykorgan',
+  'Ekibastuz', 'Zhezkazgan', 'Bishkek', 'Tashkent', 'Samarkand', 'Dushanbe', 'Baku', 'Online only',
+];
 const COHORT_SIZES = ['Under 30', '30 to 50', '50 to 100', 'Over 100'];
 
 const emptyRequest: PilotRequest = {
@@ -222,11 +227,22 @@ export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onCl
 
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="pilot-city" className={labelClass}>City</label>
-                <select id="pilot-city" className={fieldClass} value={request.city} onChange={update('city')}>
-                  <option value="">Select</option>
-                  {CITIES.map((city) => <option key={city} value={city}>{city}</option>)}
-                </select>
+                <label htmlFor="pilot-city" className={labelClass}>
+                  City <span className="font-normal text-teal-800/80">(any city)</span>
+                </label>
+                <input
+                  id="pilot-city"
+                  list="pilot-city-options"
+                  className={fieldClass}
+                  value={request.city}
+                  onChange={update('city')}
+                  maxLength={60}
+                  autoComplete="address-level2"
+                  placeholder="Start typing, e.g. Karaganda"
+                />
+                <datalist id="pilot-city-options">
+                  {CITY_SUGGESTIONS.map((city) => <option key={city} value={city} />)}
+                </datalist>
               </div>
               <div>
                 <label htmlFor="pilot-size" className={labelClass}>Learners per cohort</label>
