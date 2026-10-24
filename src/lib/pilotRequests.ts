@@ -13,8 +13,6 @@ export interface PilotRequest {
   message: string;
 }
 
-export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 export function pilotRequestMailto(request: PilotRequest): string {
   const lines = [
     `Institution: ${request.institution}`,

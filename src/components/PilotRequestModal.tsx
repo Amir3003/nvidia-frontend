@@ -2,25 +2,23 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CheckIcon, CloseIcon } from './Icons';
 import {
   CONTACT_EMAIL,
-  EMAIL_PATTERN,
   PilotRequest,
   pilotRequestMailto,
   submitPilotRequest,
 } from '../lib/pilotRequests';
+import { PILOT_COHORT_SIZES, PILOT_ROLES, PilotErrors, validatePilotRequest } from '../lib/pilotValidation';
 
 interface PilotRequestModalProps {
   open: boolean;
   onClose: () => void;
 }
 
-const ROLES = ['Director', 'Program lead', 'Career staff', 'Other'];
 // Suggestions only: the city field accepts any text.
 const CITY_SUGGESTIONS = [
   'Almaty', 'Astana', 'Shymkent', 'Karaganda', 'Aktobe', 'Taraz', 'Pavlodar', 'Ust-Kamenogorsk', 'Semey',
   'Atyrau', 'Kostanay', 'Kyzylorda', 'Aktau', 'Uralsk', 'Petropavl', 'Turkestan', 'Kokshetau', 'Taldykorgan',
   'Ekibastuz', 'Zhezkazgan', 'Bishkek', 'Tashkent', 'Samarkand', 'Dushanbe', 'Baku', 'Online only',
 ];
-const COHORT_SIZES = ['Under 30', '30 to 50', '50 to 100', 'Over 100'];
 
 const emptyRequest: PilotRequest = {
   institution: '',
@@ -33,6 +31,18 @@ const emptyRequest: PilotRequest = {
   message: '',
 };
 
+// Field ids in form order, used to focus the first invalid field.
+const FIELD_IDS: Record<keyof PilotRequest, string> = {
+  institution: 'pilot-institution',
+  contactName: 'pilot-name',
+  role: 'pilot-role',
+  email: 'pilot-email',
+  phone: 'pilot-phone',
+  city: 'pilot-city',
+  cohortSize: 'pilot-size',
+  message: 'pilot-message',
+};
+
 const fieldClass =
   'w-full h-11 px-3 rounded-xl bg-white/90 border border-teal-200 text-[15px] text-indigo-950 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-colors';
 const labelClass = 'block text-[13px] font-semibold text-indigo-950 mb-1.5';
@@ -40,7 +50,7 @@ const labelClass = 'block text-[13px] font-semibold text-indigo-950 mb-1.5';
 export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onClose }) => {
   const [request, setRequest] = useState<PilotRequest>(emptyRequest);
   const [honeypot, setHoneypot] = useState('');
-  const [errors, setErrors] = useState<Partial<Record<keyof PilotRequest, string>>>({});
+  const [errors, setErrors] = useState<PilotErrors>({});
   const [status, setStatus] = useState<'idle' | 'sending' | 'stored' | 'email'>('idle');
   const firstFieldRef = useRef<HTMLInputElement>(null);
 
@@ -76,16 +86,15 @@ export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onCl
   };
 
   const validate = () => {
-    const next: Partial<Record<keyof PilotRequest, string>> = {};
-    if (request.institution.trim().length < 2) next.institution = 'Enter the name of your institution.';
-    if (request.contactName.trim().length < 2) next.contactName = 'Enter your name.';
-    if (!EMAIL_PATTERN.test(request.email.trim())) next.email = 'Enter a valid email address.';
+    const next = validatePilotRequest(request);
     setErrors(next);
-    const firstInvalid = { institution: 'pilot-institution', contactName: 'pilot-name', email: 'pilot-email' };
-    const firstKey = (Object.keys(firstInvalid) as (keyof typeof firstInvalid)[]).find((key) => next[key]);
-    if (firstKey) document.getElementById(firstInvalid[firstKey])?.focus();
-    return Object.keys(next).length === 0;
+    const firstKey = (Object.keys(FIELD_IDS) as (keyof PilotRequest)[]).find((key) => next[key]);
+    if (firstKey) document.getElementById(FIELD_IDS[firstKey])?.focus();
+    return !firstKey;
   };
+
+  const errorText = (key: keyof PilotRequest) =>
+    errors[key] ? <p className="mt-1 text-[13px] text-rose-700">{errors[key]}</p> : null;
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -97,6 +106,7 @@ export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onCl
       contactName: request.contactName.trim(),
       email: request.email.trim(),
       phone: request.phone.trim(),
+      city: request.city.trim(),
       message: request.message.trim(),
     };
     setStatus('sending');
@@ -169,7 +179,7 @@ export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onCl
                 autoComplete="organization"
                 aria-invalid={Boolean(errors.institution)}
               />
-              {errors.institution && <p className="mt-1 text-[13px] text-rose-700">{errors.institution}</p>}
+              {errorText('institution')}
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
@@ -180,18 +190,19 @@ export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onCl
                   className={fieldClass}
                   value={request.contactName}
                   onChange={update('contactName')}
-                  maxLength={120}
+                  maxLength={80}
                   autoComplete="name"
                   aria-invalid={Boolean(errors.contactName)}
                 />
-                {errors.contactName && <p className="mt-1 text-[13px] text-rose-700">{errors.contactName}</p>}
+                {errorText('contactName')}
               </div>
               <div>
                 <label htmlFor="pilot-role" className={labelClass}>Role</label>
-                <select id="pilot-role" className={fieldClass} value={request.role} onChange={update('role')}>
+                <select id="pilot-role" className={fieldClass} value={request.role} onChange={update('role')} aria-invalid={Boolean(errors.role)}>
                   <option value="">Select</option>
-                  {ROLES.map((role) => <option key={role} value={role}>{role}</option>)}
+                  {PILOT_ROLES.map((role) => <option key={role} value={role}>{role}</option>)}
                 </select>
+                {errorText('role')}
               </div>
             </div>
 
@@ -208,7 +219,7 @@ export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onCl
                   autoComplete="email"
                   aria-invalid={Boolean(errors.email)}
                 />
-                {errors.email && <p className="mt-1 text-[13px] text-rose-700">{errors.email}</p>}
+                {errorText('email')}
               </div>
               <div>
                 <label htmlFor="pilot-phone" className={labelClass}>
@@ -221,14 +232,17 @@ export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onCl
                   onChange={update('phone')}
                   maxLength={60}
                   autoComplete="tel"
+                  placeholder="+7 701 123 4567 or @username"
+                  aria-invalid={Boolean(errors.phone)}
                 />
+                {errorText('phone')}
               </div>
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="pilot-city" className={labelClass}>
-                  City <span className="font-normal text-teal-800/80">(any city)</span>
+                  City
                 </label>
                 <input
                   id="pilot-city"
@@ -239,17 +253,20 @@ export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onCl
                   maxLength={60}
                   autoComplete="address-level2"
                   placeholder="Start typing, e.g. Karaganda"
+                  aria-invalid={Boolean(errors.city)}
                 />
+                {errorText('city')}
                 <datalist id="pilot-city-options">
                   {CITY_SUGGESTIONS.map((city) => <option key={city} value={city} />)}
                 </datalist>
               </div>
               <div>
                 <label htmlFor="pilot-size" className={labelClass}>Learners per cohort</label>
-                <select id="pilot-size" className={fieldClass} value={request.cohortSize} onChange={update('cohortSize')}>
+                <select id="pilot-size" className={fieldClass} value={request.cohortSize} onChange={update('cohortSize')} aria-invalid={Boolean(errors.cohortSize)}>
                   <option value="">Select</option>
-                  {COHORT_SIZES.map((size) => <option key={size} value={size}>{size}</option>)}
+                  {PILOT_COHORT_SIZES.map((size) => <option key={size} value={size}>{size}</option>)}
                 </select>
+                {errorText('cohortSize')}
               </div>
             </div>
 
@@ -264,7 +281,9 @@ export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onCl
                 value={request.message}
                 onChange={update('message')}
                 maxLength={1000}
+                aria-invalid={Boolean(errors.message)}
               />
+              {errorText('message')}
             </div>
 
             <div className="hidden" aria-hidden="true">
