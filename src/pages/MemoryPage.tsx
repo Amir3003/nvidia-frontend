@@ -330,9 +330,6 @@ export const MemoryPage: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="add-memory-title"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setIsAddModalOpen(false);
-          }}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto"
         >
           <div className="w-full max-w-md max-h-[85vh] my-auto overflow-y-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-5 space-y-4 text-slate-900">
@@ -444,9 +441,6 @@ export const MemoryPage: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="raw-md-title"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setIsRawMdModalOpen(false);
-          }}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto"
         >
           <div className="w-full max-w-xl max-h-[85vh] my-auto overflow-y-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-5 space-y-4 text-slate-900">

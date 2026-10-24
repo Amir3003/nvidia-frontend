@@ -28,9 +28,6 @@ export const OpportunityDetailsModal: React.FC = () => {
       role="dialog"
       aria-modal="true"
       aria-labelledby="details-modal-title"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) setSelectedOpportunityForDetails(null);
-      }}
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
     >
       <div className="w-full max-w-xl max-h-[85vh] my-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl flex flex-col overflow-hidden text-slate-900">

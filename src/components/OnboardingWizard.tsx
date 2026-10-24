@@ -99,17 +99,6 @@ export const OnboardingWizard: React.FC = () => {
     }
   }, [isOnboardingOpen, userProfile]);
 
-  // Handle Escape key to close modal
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOnboardingOpen) {
-        setIsOnboardingOpen(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOnboardingOpen, setIsOnboardingOpen]);
-
   if (!isOnboardingOpen) return null;
 
   const toggleGoal = (goal: string) => {
@@ -202,9 +191,6 @@ export const OnboardingWizard: React.FC = () => {
       role="dialog"
       aria-modal="true"
       aria-labelledby="registration-title"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) setIsOnboardingOpen(false);
-      }}
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
     >
       <div className="w-full max-w-2xl max-h-[85vh] my-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-[0_24px_60px_-15px_rgba(6,182,212,0.3)] flex flex-col overflow-hidden text-slate-900">

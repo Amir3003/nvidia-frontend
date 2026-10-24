@@ -117,14 +117,11 @@ export const QuizModal: React.FC = () => {
     }
   }, [currentQuestionIndex, totalQuestions]);
 
-  // Keyboard: 1 to 4 (or A to D) select, Enter submits / advances, Escape closes
+  // Keyboard: 1 to 4 (or A to D) select, Enter submits / advances.
+  // Escape and backdrop clicks never close the quiz; only the close button does.
   useEffect(() => {
     if (!activeQuizSkill) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        closeSkillQuiz();
-        return;
-      }
       if (isCompleted || !currentQ) return;
       const key = e.key.toLowerCase();
       const idx = ['1', '2', '3', '4'].indexOf(key) >= 0 ? Number(key) - 1 : ['a', 'b', 'c', 'd'].indexOf(key);
@@ -149,9 +146,6 @@ export const QuizModal: React.FC = () => {
         role="dialog"
         aria-modal="true"
         aria-label={`${activeQuizSkill.name} quiz`}
-        onClick={(e) => {
-          if (e.target === e.currentTarget) closeSkillQuiz();
-        }}
         className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
       >
         <div className="w-full max-w-md bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-6 text-center space-y-3 text-slate-900">
@@ -190,9 +184,6 @@ export const QuizModal: React.FC = () => {
       role="dialog"
       aria-modal="true"
       aria-labelledby="quiz-modal-title"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) closeSkillQuiz();
-      }}
       className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
     >
       <div className="w-full max-w-3xl max-h-[92vh] sm:min-h-[560px] my-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl flex flex-col overflow-hidden text-slate-900">

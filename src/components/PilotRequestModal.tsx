@@ -56,15 +56,10 @@ export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onCl
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', onKey);
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     firstFieldRef.current?.focus();
     return () => {
-      window.removeEventListener('keydown', onKey);
       document.body.style.overflow = previousOverflow;
     };
   }, [open, onClose]);
@@ -120,7 +115,7 @@ export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onCl
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-6" role="dialog" aria-modal="true" aria-labelledby="pilot-title">
-      <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" />
       <div className="relative w-full sm:max-w-xl max-h-[92dvh] overflow-y-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] rounded-t-3xl sm:rounded-3xl border border-teal-300/40 shadow-[0_20px_50px_-15px_rgba(6,182,212,0.3)]">
         <div className="sticky top-0 z-10 flex items-start justify-between gap-4 px-5 sm:px-7 pt-5 sm:pt-6 pb-4 bg-[#EDF7F6]/95 backdrop-blur-md border-b border-teal-200/80">
           <div>
