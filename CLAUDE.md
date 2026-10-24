@@ -14,7 +14,7 @@
 
 ## Core UI/UX Requirements
 - **Global Page Scrolling:** Ensure natural browser-level scrolling (`html, body, #root { overflow-y: auto; height: auto; }`). Never trap viewports in fixed `h-screen overflow-hidden` containers that break scrolling.
-- **Modals & Dropdowns:** Target benchmark selectors and modals must use proper positioning (`z-50`, bounded height with `overflow-y-auto`, and backdrop click-to-close handlers) so they never get obstructed or cut off.
+- **Modals & Dropdowns:** Target benchmark selectors and modals must use proper positioning (`z-50`, bounded height with `overflow-y-auto`) so they never get obstructed or cut off. Modals (quizzes, forms, wizards, dialogs) close only through their visible close button (or Cancel in a confirm dialog): no backdrop click and no Escape, so progress is never lost by accident. Dropdowns and menus may still close on an outside click.
 - **Mobile Layout:** Maintain proper bottom padding (`pb-28`) on all main views so content is never obscured by the fixed mobile navigation bar.
 
 ## Working With the Owner

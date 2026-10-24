@@ -1383,9 +1383,6 @@ export const AccountPortalPage: React.FC = () => {
         <div
           role="dialog"
           aria-modal="true"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setIsResetConfirmOpen(false);
-          }}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
         >
           <div className="w-full max-w-md max-h-[85vh] my-auto overflow-y-auto bg-white p-6 rounded-card space-y-4 shadow-2xl border border-rose-200">
@@ -1422,9 +1419,6 @@ export const AccountPortalPage: React.FC = () => {
         <div
           role="dialog"
           aria-modal="true"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setIsLogoutModalOpen(false);
-          }}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
         >
           <div className="w-full max-w-md max-h-[85vh] my-auto overflow-y-auto bg-white p-6 rounded-card space-y-4 shadow-2xl border border-slate-200/80">

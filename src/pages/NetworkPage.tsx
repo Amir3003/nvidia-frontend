@@ -137,17 +137,11 @@ function Modal({
   onClose: () => void;
   children: React.ReactNode;
 }) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [onClose]);
   return (
     <div
       role="dialog"
       aria-modal="true"
       aria-label={title}
-      onClick={(e) => e.target === e.currentTarget && onClose()}
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm overflow-y-auto"
     >
       <div className="w-full max-w-md max-h-[85vh] my-auto overflow-y-auto rounded-card bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 shadow-2xl text-slate-900">
@@ -175,26 +169,18 @@ type ConfirmRequest = {
   onConfirm: () => void;
 };
 
-// In-app replacement for window.confirm. Sits above Modal and takes Escape first.
+// In-app replacement for window.confirm. Sits above Modal; closes only through its buttons.
 function ConfirmDialog({ request, onClose }: { request: ConfirmRequest; onClose: () => void }) {
   const confirmRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     confirmRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "Escape") return;
-      e.stopPropagation();
-      onClose();
-    };
-    window.addEventListener("keydown", onKey, true);
-    return () => window.removeEventListener("keydown", onKey, true);
-  }, [onClose]);
+  }, []);
   return (
     <div
       role="alertdialog"
       aria-modal="true"
       aria-labelledby="confirm-title"
       aria-describedby="confirm-message"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
       className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm overflow-y-auto"
     >
       <div className="w-full max-w-sm my-auto rounded-card bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 shadow-2xl text-slate-900 p-6">

@@ -10,6 +10,7 @@ import {
   TelegramIcon,
   DiscordIcon,
   KakaoTalkIcon,
+  CloseIcon,
 } from '../components/Icons';
 import { isKakaoChannelConfigured, kakaoChannelUrl } from '../lib/kakao';
 
@@ -476,13 +477,20 @@ export const NotificationsPage: React.FC = () => {
         <div
           role="dialog"
           aria-modal="true"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setIsTelegramModal(false);
-          }}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto"
         >
           <div className="w-full max-w-md max-h-[85vh] my-auto overflow-y-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-6 space-y-4 text-slate-900">
-            <h3 className="text-[17px] font-bold text-indigo-950">Link Telegram Account</h3>
+            <div className="flex items-start justify-between gap-3">
+              <h3 className="text-[17px] font-bold text-indigo-950">Link Telegram Account</h3>
+              <button
+                type="button"
+                onClick={() => setIsTelegramModal(false)}
+                aria-label="Close"
+                className="w-9 h-9 -mr-2 -mt-1 shrink-0 rounded-full hover:bg-white/80 flex items-center justify-center text-teal-800 cursor-pointer"
+              >
+                <CloseIcon size={16} />
+              </button>
+            </div>
             <p className="text-[13px] text-teal-950 leading-relaxed">
               Connect to <strong className="text-emerald-700">@QadamAgentBot</strong> to receive real-time opportunity radar notifications, ATS skill gap analysis, and interactive application proposals directly in Telegram.
             </p>
@@ -536,13 +544,20 @@ export const NotificationsPage: React.FC = () => {
         <div
           role="dialog"
           aria-modal="true"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setIsDiscordModal(false);
-          }}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto"
         >
           <div className="w-full max-w-md max-h-[85vh] my-auto overflow-y-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-6 space-y-4 text-slate-900">
-            <h3 className="text-[17px] font-bold text-indigo-950">Discord Server</h3>
+            <div className="flex items-start justify-between gap-3">
+              <h3 className="text-[17px] font-bold text-indigo-950">Discord Server</h3>
+              <button
+                type="button"
+                onClick={() => setIsDiscordModal(false)}
+                aria-label="Close"
+                className="w-9 h-9 -mr-2 -mt-1 shrink-0 rounded-full hover:bg-white/80 flex items-center justify-center text-teal-800 cursor-pointer"
+              >
+                <CloseIcon size={16} />
+              </button>
+            </div>
             <p className="text-[13px] text-teal-950 leading-relaxed">
               Join the QADAM server. Webhook secrets belong in the backend environment, never in the browser.
             </p>
