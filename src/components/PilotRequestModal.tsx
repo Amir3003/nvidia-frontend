@@ -29,8 +29,8 @@ const emptyRequest: PilotRequest = {
 };
 
 const fieldClass =
-  'w-full h-11 px-3 rounded-[10px] bg-white border border-[#DCD5C7] text-[15px] text-[#1B2440] placeholder:text-[#9AA0AC] focus:outline-none focus:border-[#1B2440] focus:ring-2 focus:ring-[#1B2440]/10 transition-colors';
-const labelClass = 'block text-[13px] font-medium text-[#1B2440] mb-1.5';
+  'w-full h-11 px-3 rounded-xl bg-white/90 border border-teal-200 text-[15px] text-indigo-950 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-colors';
+const labelClass = 'block text-[13px] font-semibold text-indigo-950 mb-1.5';
 
 export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onClose }) => {
   const [request, setRequest] = useState<PilotRequest>(emptyRequest);
@@ -105,12 +105,12 @@ export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onCl
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-6" role="dialog" aria-modal="true" aria-labelledby="pilot-title">
-      <div className="absolute inset-0 bg-[#1B2440]/45 backdrop-blur-[2px]" onClick={onClose} />
-      <div className="relative w-full sm:max-w-xl max-h-[92dvh] overflow-y-auto bg-[#F7F4EE] rounded-t-[20px] sm:rounded-[20px] border border-[#E4DED2] shadow-[0_24px_64px_-24px_rgba(27,36,64,0.45)]">
-        <div className="sticky top-0 z-10 flex items-start justify-between gap-4 px-5 sm:px-7 pt-5 sm:pt-6 pb-4 bg-[#F7F4EE] border-b border-[#E4DED2]">
+      <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full sm:max-w-xl max-h-[92dvh] overflow-y-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] rounded-t-3xl sm:rounded-3xl border border-teal-300/40 shadow-[0_20px_50px_-15px_rgba(6,182,212,0.3)]">
+        <div className="sticky top-0 z-10 flex items-start justify-between gap-4 px-5 sm:px-7 pt-5 sm:pt-6 pb-4 bg-[#EDF7F6]/95 backdrop-blur-md border-b border-teal-200/80">
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#8A6A2F]">Pilot request</p>
-            <h2 id="pilot-title" className="mt-1 text-[22px] font-semibold tracking-tight text-[#1B2440]">
+            <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-emerald-700 font-semibold">Pilot request</p>
+            <h2 id="pilot-title" className="mt-1 text-[22px] font-bold tracking-tight text-indigo-950">
               Run a pilot with one cohort
             </h2>
           </div>
@@ -118,7 +118,7 @@ export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onCl
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="w-11 h-11 -mr-2 -mt-1 flex items-center justify-center rounded-full text-[#4A5468] hover:bg-[#EDE7DA] transition-colors cursor-pointer"
+            className="w-11 h-11 -mr-2 -mt-1 flex items-center justify-center rounded-full text-teal-800 hover:bg-white/80 transition-colors cursor-pointer"
           >
             <CloseIcon size={20} />
           </button>
@@ -126,13 +126,13 @@ export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onCl
 
         {done ? (
           <div className="px-5 sm:px-7 py-8 space-y-4">
-            <div className="w-11 h-11 rounded-full bg-[#E6F2EF] text-[#0F766E] flex items-center justify-center">
+            <div className="w-11 h-11 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
               <CheckIcon size={22} />
             </div>
-            <h3 className="text-[19px] font-semibold text-[#1B2440]">
+            <h3 className="text-[19px] font-bold text-indigo-950">
               {status === 'stored' ? 'Thank you. Your request is in.' : 'Your email app should open now.'}
             </h3>
-            <p className="text-[15px] leading-relaxed text-[#4A5468]">
+            <p className="text-[15px] leading-relaxed text-teal-950">
               {status === 'stored'
                 ? 'We will reply by email to agree on a short call, the cohort and the start date.'
                 : `Press Send in your email app to finish. If it did not open, write to ${CONTACT_EMAIL}.`}
@@ -140,14 +140,14 @@ export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onCl
             <button
               type="button"
               onClick={onClose}
-              className="h-11 px-5 rounded-[10px] bg-[#1B2440] hover:bg-[#28345A] text-[#F7F4EE] text-[15px] font-medium transition-colors cursor-pointer"
+              className="h-11 px-5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 shadow-md shadow-emerald-900/20 text-white font-mono text-[15px] font-semibold transition-colors cursor-pointer"
             >
               Close
             </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} noValidate className="px-5 sm:px-7 py-6 space-y-4">
-            <p className="text-[15px] leading-relaxed text-[#4A5468]">
+            <p className="text-[15px] leading-relaxed text-teal-950">
               Free for 4 to 6 weeks with 30 to 50 learners and one staff lead. Tell us about your institution and we will
               reply by email.
             </p>
@@ -164,7 +164,7 @@ export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onCl
                 autoComplete="organization"
                 aria-invalid={Boolean(errors.institution)}
               />
-              {errors.institution && <p className="mt-1 text-[13px] text-[#B42318]">{errors.institution}</p>}
+              {errors.institution && <p className="mt-1 text-[13px] text-rose-700">{errors.institution}</p>}
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
@@ -179,7 +179,7 @@ export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onCl
                   autoComplete="name"
                   aria-invalid={Boolean(errors.contactName)}
                 />
-                {errors.contactName && <p className="mt-1 text-[13px] text-[#B42318]">{errors.contactName}</p>}
+                {errors.contactName && <p className="mt-1 text-[13px] text-rose-700">{errors.contactName}</p>}
               </div>
               <div>
                 <label htmlFor="pilot-role" className={labelClass}>Role</label>
@@ -203,11 +203,11 @@ export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onCl
                   autoComplete="email"
                   aria-invalid={Boolean(errors.email)}
                 />
-                {errors.email && <p className="mt-1 text-[13px] text-[#B42318]">{errors.email}</p>}
+                {errors.email && <p className="mt-1 text-[13px] text-rose-700">{errors.email}</p>}
               </div>
               <div>
                 <label htmlFor="pilot-phone" className={labelClass}>
-                  Phone or Telegram <span className="font-normal text-[#6B7385]">(optional)</span>
+                  Phone or Telegram <span className="font-normal text-teal-800/80">(optional)</span>
                 </label>
                 <input
                   id="pilot-phone"
@@ -239,7 +239,7 @@ export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onCl
 
             <div>
               <label htmlFor="pilot-message" className={labelClass}>
-                Anything we should know <span className="font-normal text-[#6B7385]">(optional)</span>
+                Anything we should know <span className="font-normal text-teal-800/80">(optional)</span>
               </label>
               <textarea
                 id="pilot-message"
@@ -257,13 +257,13 @@ export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onCl
             </div>
 
             <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
-              <p className="text-[12px] leading-relaxed text-[#6B7385]">
+              <p className="text-[12px] leading-relaxed text-teal-800/80">
                 We use these details only to reply to your request.
               </p>
               <button
                 type="submit"
                 disabled={status === 'sending'}
-                className="h-11 px-6 rounded-[10px] bg-[#1B2440] hover:bg-[#28345A] disabled:opacity-60 text-[#F7F4EE] text-[15px] font-medium transition-colors cursor-pointer whitespace-nowrap"
+                className="h-11 px-6 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 shadow-md shadow-emerald-900/20 disabled:opacity-60 text-white font-mono text-[15px] font-semibold transition-colors cursor-pointer whitespace-nowrap"
               >
                 {status === 'sending' ? 'Sending' : 'Send request'}
               </button>
