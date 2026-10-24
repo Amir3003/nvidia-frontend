@@ -67,24 +67,32 @@ The owner rejected a light ivory and navy version. The public site keeps the ori
 - Privacy page lists the pilot form.
 - Verification: `npm run build`, `npm run check:quizzes`, Semgrep, screenshots at 390 px and 1440 px.
 
-### Phase 2: pilot workspace (next)
-Data model in Supabase, all with row level security:
+### Phase 2: pilot workspace (built, early version)
+Migration `supabase/migrations/202610240002_cohorts.sql`, all tables under row level security:
 
-| Table | Columns | Access |
+| Table | What it holds | Who can read |
 |---|---|---|
-| `institutions` | id, name, city, plan, created_at | members read, owner updates |
-| `institution_members` | institution_id, user_id, role (`owner`, `staff`) | members read own institution |
-| `cohorts` | id, institution_id, name, starts_on, ends_on, invite_code | staff of the institution |
-| `cohort_learners` | cohort_id, user_id, joined_at | learner reads own row, staff read their cohorts |
-| `learner_activity` | user_id, opportunity_id, status (`saved`, `preparing`, `applied`), updated_at | learner writes own, staff read for their cohorts |
+| `institutions` | name, city | its staff, learners of its cohorts |
+| `institution_members` | staff user, role `owner` or `staff` | staff of that institution |
+| `cohorts` | name, dates, `invite_code` (10 characters, closes after `ends_on`) | its staff, its learners |
+| `cohort_learners` | who joined which cohort | the learner, staff of the cohort |
+| `learner_progress` | name, track, profile completion % | the learner, staff of the learner's cohort |
+| `learner_activity` | opportunity id, title, deadline, status `saved` / `preparing` / `applied` | the learner, staff of the learner's cohort |
+
+RPCs: `cohort_invite_info(code)` (public, shows cohort and institution name), `join_cohort(code)` (signed-in learner), `cohort_roster(cohort)` (staff, includes learner email and counts). Admin only, in the SQL editor: `create_institution(name, city, staff_email)` and `add_institution_staff(institution_id, email)`.
 
 Screens:
-- `/staff` dashboard: cohort switcher, stats (learners, profiles complete, saved, applied), learner table with filters and CSV export.
-- `/staff/cohorts/new`: name, dates, generates an invite link.
-- `/join/<invite_code>`: learner signs in with email code (already used by the network), joins the cohort.
-- Learner app: opportunity cards get "Save" and "Mark as applied", which write `learner_activity`.
-- Navigation renamed to the four steps: Discover (Radar), Prepare (CV Lab and Application Studio), Track (my applications). Memory leaves the learner menu.
-- Privacy page: what staff can see (name, profile completion, saved and applied opportunities) and what they cannot (CV text, messages).
+- `/student`: email code sign-in, then the invite code (prefilled from `/student?code=...`), then the profile wizard. Without a cohort the app is closed: every app route redirects to the landing.
+- `/staff`: email code sign-in, cohort list, new cohort form, invite code and link, stats, roster with filters, CSV export, remove learner.
+- Opportunity details: "My status" (saved, preparing, applied) for learners in a cohort.
+- `LearnerSync` revokes access if staff removed the learner and keeps the progress summary current.
+
+How to onboard a new institution:
+1. The staff member opens `/staff` and signs in once with their email (it says "No institution linked yet").
+2. In the Supabase SQL editor run `select create_institution('TUMA', 'Astana', 'staff@example.kz');` (more staff: `select add_institution_staff('<institution id>', 'second@example.kz');`).
+3. The staff member reloads `/staff`, creates a cohort and sends the invite link to learners.
+
+Not yet: staff roles beyond owner and staff, renaming the four steps in the learner navigation.
 
 ### Phase 3: after the pilot
 - Staff roles and permissions, more than one cohort per staff member.

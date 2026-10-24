@@ -1,7 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { CloseIcon, ExternalLinkIcon, CheckIcon } from './Icons';
+import { ActivityStatus, loadLocalStatuses, loadMembership, setOpportunityStatus } from '../lib/cohorts';
+
+const STATUS_OPTIONS: { value: ActivityStatus; label: string }[] = [
+  { value: 'saved', label: 'Saved' },
+  { value: 'preparing', label: 'Preparing' },
+  { value: 'applied', label: 'Applied' },
+];
 
 export const OpportunityDetailsModal: React.FC = () => {
   const navigate = useNavigate();
@@ -10,12 +17,36 @@ export const OpportunityDetailsModal: React.FC = () => {
     setSelectedOpportunityForDetails,
     userProfile,
   } = useApp();
+  const [status, setStatus] = useState<ActivityStatus | null>(null);
+  const [statusError, setStatusError] = useState('');
+  const membership = loadMembership();
+  const oppId = selectedOpportunityForDetails?.id;
+
+  useEffect(() => {
+    setStatusError('');
+    setStatus(oppId ? loadLocalStatuses()[oppId] || null : null);
+  }, [oppId]);
 
   if (!selectedOpportunityForDetails) return null;
 
   const opp = selectedOpportunityForDetails;
   const hasProfileSkills = Boolean(userProfile.skills?.length);
   const isHighMatch = opp.match >= 80;
+
+  // Learners in a cohort mark where they are; their staff see the counts.
+  const changeStatus = async (next: ActivityStatus) => {
+    if (!membership) return;
+    const value = status === next ? null : next;
+    const previous = status;
+    setStatus(value);
+    setStatusError('');
+    try {
+      await setOpportunityStatus(membership.userId, opp, value);
+    } catch {
+      setStatus(previous);
+      setStatusError('Could not save. Check your connection and try again.');
+    }
+  };
 
   const handleOpenDraft = () => {
     const targetId = opp.id;
@@ -110,6 +141,34 @@ export const OpportunityDetailsModal: React.FC = () => {
           </div>
           )}
         </div>
+
+        {membership && (
+          <div className="px-5 py-3 border-t border-teal-200/60 bg-white/60">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-mini font-mono uppercase tracking-wider text-teal-900 font-bold mr-1">My status</span>
+              {STATUS_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => changeStatus(option.value)}
+                  aria-pressed={status === option.value}
+                  className={`h-9 px-3.5 rounded-full text-[12px] font-semibold transition-colors cursor-pointer ${
+                    status === option.value
+                      ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white'
+                      : 'bg-white border border-teal-200 text-teal-900 hover:bg-teal-50'
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            {statusError ? (
+              <p role="alert" className="mt-1.5 text-[12px] text-rose-700">{statusError}</p>
+            ) : (
+              <p className="mt-1.5 text-[11px] text-teal-800">Your program staff at {membership.institutionName || 'your institution'} can see this status.</p>
+            )}
+          </div>
+        )}
 
         {/* Footer */}
         <div className="px-5 py-3.5 border-t border-teal-200/60 flex items-center justify-between bg-teal-50/70">

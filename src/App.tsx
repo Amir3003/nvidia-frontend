@@ -13,6 +13,10 @@ import { JoinPage } from './pages/JoinPage';
 import { AccountPortalPage } from './pages/AccountPortalPage';
 import { WelcomePage } from './pages/WelcomePage';
 import { PrivacyPage } from './pages/PrivacyPage';
+import { StudentAccessPage } from './pages/StudentAccessPage';
+import { StaffPage } from './pages/StaffPage';
+import { LearnerSync } from './components/LearnerSync';
+import { loadMembership } from './lib/cohorts';
 import { OnboardingWizard } from './components/OnboardingWizard';
 import { CvGapsModal } from './components/CvGapsModal';
 import { QuizModal } from './components/QuizModal';
@@ -24,6 +28,19 @@ export const App: React.FC = () => {
   const { userProfile } = useApp();
   const location = useLocation();
   const hasValidProfile = isProfileValid(userProfile);
+  // B2B: the app is open only to learners who joined a cohort with an invite code.
+  const hasAccess = hasValidProfile && Boolean(loadMembership());
+
+  // Staff workspace and student sign-in work without a local profile.
+  if (location.pathname === '/staff' || location.pathname === '/student') {
+    return (
+      <div className="min-h-[100dvh] flex flex-col bg-transparent text-slate-100 antialiased font-sans relative">
+        <ScrollToTop />
+        <AmbientBackground />
+        {location.pathname === '/staff' ? <StaffPage /> : <StudentAccessPage />}
+      </div>
+    );
+  }
 
   // Public privacy page, readable with or without an account
   if (location.pathname === '/privacy') {
@@ -47,8 +64,8 @@ export const App: React.FC = () => {
     );
   }
 
-  // If user profile is not valid and not on /welcome, redirect to /welcome
-  if (!hasValidProfile && location.pathname !== '/welcome') {
+  // Without a profile and a cohort, every app route goes back to the public landing.
+  if (!hasAccess && location.pathname !== '/welcome') {
     return <Navigate to="/welcome" replace />;
   }
 
@@ -59,7 +76,6 @@ export const App: React.FC = () => {
         <ScrollToTop />
         <AmbientBackground />
         <WelcomePage />
-        <OnboardingWizard />
       </div>
     );
   }
@@ -85,6 +101,7 @@ export const App: React.FC = () => {
     <div className="min-h-[100dvh] bg-transparent text-slate-100 flex flex-col lg:flex-row antialiased selection:bg-accent/20 selection:text-white font-sans relative">
       <ScrollToTop />
       <AmbientBackground />
+      <LearnerSync />
 
       {/* 248px Left Sidebar Navigation */}
       <Sidebar />
