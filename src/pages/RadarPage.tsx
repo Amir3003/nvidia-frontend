@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { PageHeader } from '../components/PageHeader';
+import { SuggestOpportunityModal } from '../components/SuggestOpportunityModal';
 import { availableIn, profileCountry } from '../db/location';
 import {
   SearchIcon,
@@ -12,6 +13,7 @@ import {
   BarChartIcon,
   RadarIcon,
   UserIcon,
+  PlusIcon,
 } from '../components/Icons';
 
 type RadarFilter = 'All' | 'Hackathons' | 'Grants' | 'Internships' | 'Near me' | 'Match >80%';
@@ -34,6 +36,7 @@ export const RadarPage: React.FC = () => {
   const country = profileCountry(userProfile.location || '');
 
   const [showMoreFilters, setShowMoreFilters] = useState(false);
+  const [isSuggestOpen, setIsSuggestOpen] = useState(false);
 
   const primaryFilters: RadarFilter[] = ['All', 'Hackathons', 'Grants', 'Internships'];
   const secondaryFilters: RadarFilter[] = [...(country ? (['Near me'] as RadarFilter[]) : []), 'Match >80%'];
@@ -174,6 +177,21 @@ export const RadarPage: React.FC = () => {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Suggest a missing opportunity: the radar is automated, so learners add what they found elsewhere. */}
+        <div className="p-4 sm:p-5 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-slate-900">
+          <p className="min-w-0 text-[14px] leading-relaxed text-indigo-950">
+            Did not find a hackathon, grant or internship you saw on Instagram or other social media?
+          </p>
+          <button
+            type="button"
+            onClick={() => setIsSuggestOpen(true)}
+            className="min-h-[44px] px-4 inline-flex items-center justify-center gap-2 flex-shrink-0 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-mono text-mini font-semibold rounded-xl shadow-xs cursor-pointer active:scale-95 transition-all"
+          >
+            <PlusIcon size={14} className="text-white" />
+            <span>Suggest it</span>
+          </button>
         </div>
 
         {/* Cards Grid */}
@@ -346,6 +364,8 @@ export const RadarPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      <SuggestOpportunityModal open={isSuggestOpen} onClose={() => setIsSuggestOpen(false)} />
     </div>
   );
 };

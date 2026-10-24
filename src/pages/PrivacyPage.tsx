@@ -24,6 +24,7 @@ const SENT = [
   ['Support ticket', 'Opens your own email app with a prepared message. Nothing is sent until you press Send there.'],
   ['Error reports', 'If the app crashes, a technical error report (error message, page address, browser type) is sent to Sentry so we can fix it. It does not include your name, email, IP address, CV or profile fields.'],
   ['Pilot request form', 'If an institution requests a pilot, the details typed into the form (institution, name, email, phone, city, cohort size, message) are stored so we can reply. They are used for nothing else.'],
+  ['Opportunity suggestions', 'If you suggest an opportunity, its title, link, type, deadline and your note are stored so we can review it. If you are signed in, your account id is attached.'],
   ['Official site links', 'Opening an organizer site is a normal visit to that site. Its own privacy policy applies.'],
 ];
 
