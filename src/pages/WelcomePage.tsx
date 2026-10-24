@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import { useApp } from '../context/AppContext';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { PilotRequestModal } from '../components/PilotRequestModal';
 import { CONTACT_EMAIL } from '../lib/pilotRequests';
 import {
@@ -143,8 +142,8 @@ const STAGES: {
     title: '03 / TRACK',
     heading: 'One view of your cohort',
     text: 'Staff see who has a complete profile, who is preparing and who already applied, and follow up only where it is needed.',
-    points: ['Invite a cohort with one link', 'Summary report at the end of the pilot'],
-    status: 'pilot',
+    points: ['Invite a cohort with one link', 'Export the roster as CSV'],
+    status: 'early',
     accent: 'text-sky-700',
   },
   {
@@ -404,7 +403,7 @@ const StopTitle: React.FC<{ index: string; label: string; title: string; align: 
 );
 
 export const WelcomePage: React.FC = () => {
-  const { setIsOnboardingOpen } = useApp();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const sectionRef = useRef<HTMLDivElement>(null);
   const [activeStage, setActiveStage] = useState<Stage>(0);
@@ -471,7 +470,11 @@ export const WelcomePage: React.FC = () => {
   const closePilot = useCallback(() => setSearchParams({}, { replace: true }), [setSearchParams]);
   const openStudentLogin = () => {
     setMenuOpen(false);
-    setIsOnboardingOpen(true);
+    navigate('/student');
+  };
+  const openStaffLogin = () => {
+    setMenuOpen(false);
+    navigate('/staff');
   };
   const scrollTo = (id: string) => {
     setMenuOpen(false);
@@ -533,6 +536,13 @@ export const WelcomePage: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               type="button"
+              onClick={openStaffLogin}
+              className="hidden lg:inline-flex h-10 px-3 items-center rounded-btn text-[13px] font-semibold text-teal-100/80 hover:text-white hover:bg-teal-500/10 transition-colors cursor-pointer"
+            >
+              Staff login
+            </button>
+            <button
+              type="button"
               onClick={openStudentLogin}
               className="hidden sm:inline-flex h-10 px-4 items-center rounded-btn text-[13px] font-semibold text-teal-100 hover:text-white hover:bg-teal-500/10 border border-teal-500/30 transition-colors cursor-pointer"
             >
@@ -572,8 +582,11 @@ export const WelcomePage: React.FC = () => {
                     {link.label}
                   </button>
                 ))}
-                <button type="button" onClick={openStudentLogin} className="h-12 text-left text-[15px] font-mono font-semibold text-white cursor-pointer">
+                <button type="button" onClick={openStudentLogin} className="h-12 text-left text-[15px] font-mono font-semibold text-white border-b border-teal-500/15 cursor-pointer">
                   Student login
+                </button>
+                <button type="button" onClick={openStaffLogin} className="h-12 text-left text-[15px] font-mono font-semibold text-white cursor-pointer">
+                  Staff login
                 </button>
               </nav>
             </div>
@@ -776,7 +789,7 @@ export const WelcomePage: React.FC = () => {
                 it, not with everyone.
               </p>
               <div className="mt-6 lg:flex lg:justify-end">
-                <StatusChip status="pilot" />
+                <StatusChip status="early" />
               </div>
             </Reveal>
           </div>
@@ -834,14 +847,14 @@ export const WelcomePage: React.FC = () => {
 
         {/* Stop 4: where we are (title right, card left) */}
         <section className={container}>
-          <StopTitle index="04" label="Where we are" title="Prototype today, workspace next" align="right" />
+          <StopTitle index="04" label="Where we are" title="A working prototype, ready for a pilot" align="right" />
           <div className="mt-10 grid lg:grid-cols-2 gap-8 items-center">
             <Reveal from="left" delay={200} className="order-2 lg:order-1">
               <div className={`${glassCard} p-6 sm:p-8 grid sm:grid-cols-2 gap-6`}>
                 <div>
                   <StatusChip status="live" />
                   <ul className="mt-4 space-y-2.5">
-                    {['Opportunity discovery matched to a profile', 'Listings with sources and checked deadlines', 'Telegram and Discord bots'].map((item) => (
+                    {['Opportunity discovery matched to a profile', 'Listings with sources and checked deadlines', 'Staff workspace: cohorts, invite codes, learner progress (early version)', 'Telegram and Discord bots'].map((item) => (
                       <li key={item} className="flex items-start gap-2 text-[13px] text-teal-950">
                         <CheckIcon size={15} className="mt-0.5 shrink-0 text-emerald-600" />
                         {item}
@@ -852,7 +865,7 @@ export const WelcomePage: React.FC = () => {
                 <div>
                   <StatusChip status="pilot" />
                   <ul className="mt-4 space-y-2.5">
-                    {['Institution accounts and staff permissions', 'Cohort management and reporting', 'CV matching and application support'].map((item) => (
+                    {['Staff roles and permissions', 'Monthly reports for the institution', 'CV matching and application support'].map((item) => (
                       <li key={item} className="flex items-start gap-2 text-[13px] text-teal-950">
                         <span className="mt-1.5 w-2 h-2 shrink-0 rounded-full bg-amber-500" />
                         {item}
@@ -974,6 +987,9 @@ export const WelcomePage: React.FC = () => {
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1">
             <button type="button" onClick={openStudentLogin} className="h-10 hover:text-white transition-colors cursor-pointer">
               Student login
+            </button>
+            <button type="button" onClick={openStaffLogin} className="h-10 hover:text-white transition-colors cursor-pointer">
+              Staff login
             </button>
             <Link to="/privacy" className="h-10 inline-flex items-center hover:text-white transition-colors">
               Privacy and your data

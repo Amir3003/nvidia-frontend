@@ -4,8 +4,14 @@ import { checked, networkClient } from "../lib/network";
 
 export function NetworkAccess({
   children,
+  title = "Sign in to the shared network",
+  intro = "Verify your email to connect with real teammates on any device. Your existing local workspace stays on this device.",
+  brandLine = "QADAM «Қадам» network",
 }: {
   children: (user: User) => React.ReactNode;
+  title?: string;
+  intro?: string;
+  brandLine?: string;
 }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -86,11 +92,11 @@ export function NetworkAccess({
     }
   }
   return (
-    <AccessCard title="Sign in to the shared network" step={sent ? 2 : 1}>
+    <AccessCard title={title} step={sent ? 2 : 1} brandLine={brandLine}>
       <p className="text-[13px] text-teal-950 leading-relaxed">
         {sent
           ? `We sent a sign-in code to ${email.trim()}. Check your inbox and spam folder.`
-          : "Verify your email to connect with real teammates on any device. Your existing local workspace stays on this device."}
+          : intro}
       </p>
       <form onSubmit={submit} className="space-y-4">
         <label className="block">
@@ -162,13 +168,15 @@ const labelClass =
 const inputClass =
   "w-full h-11 px-3.5 bg-white border border-teal-200/90 rounded-xl text-base md:text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none shadow-xs transition-colors disabled:bg-slate-50 disabled:text-slate-500";
 
-function AccessCard({
+export function AccessCard({
   title,
   step,
+  brandLine = "QADAM «Қадам» network",
   children,
 }: {
   title: string;
   step?: 1 | 2;
+  brandLine?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -187,7 +195,7 @@ function AccessCard({
             <div className="text-mini font-mono text-teal-800">
               {step
                 ? `Step ${step} of 2: ${step === 1 ? "Email" : "Verification code"}`
-                : "QADAM «Қадам» network"}
+                : brandLine}
             </div>
           </div>
         </div>

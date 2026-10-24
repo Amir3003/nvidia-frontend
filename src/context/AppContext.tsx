@@ -19,6 +19,8 @@ import {
   INITIAL_MEMORY,
 } from '../data';
 import { CATALOG_SKILLS } from '../db/quizCatalog';
+import { clearMembership } from '../lib/cohorts';
+import { networkClient } from '../lib/network';
 
 interface PrivacySettings {
   storeMemoryLocal: boolean;
@@ -281,6 +283,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const resetToDefaultProfile = () => {
     clearUserProfile();
+    // Logging out also ends cohort access and the account session on this device.
+    clearMembership();
+    networkClient?.auth.signOut().catch(() => undefined);
     localStorage.removeItem(MEMORY_STORAGE_KEY);
     localStorage.removeItem(LEGACY_MEMORY_STORAGE_KEY);
     localStorage.removeItem('qadam_user');

@@ -17,6 +17,8 @@ const STORED_LOCALLY = [
 ];
 
 const SENT = [
+  ['Your institution account', 'You sign in with your email (a one-time code) and join your cohort with an invite code from your institution. Your email and cohort membership are stored on our server.'],
+  ['What your institution staff see', 'Your name, track, how complete your profile is (a percentage), your email, and the opportunities you marked as saved, preparing or applied, with their deadlines. Staff do not see your CV text, skills details, messages or anything else in your profile.'],
   ['Loading opportunities', 'The app downloads the public opportunity list. This request contains none of your data.'],
   ['Test notification', 'Only if a QADAM server is configured: the channel name and your first name are sent so the bot can message you.'],
   ['Support ticket', 'Opens your own email app with a prepared message. Nothing is sent until you press Send there.'],
@@ -57,9 +59,10 @@ export const PrivacyPage: React.FC = () => {
       <div className={`${card} flex items-start gap-3`}>
         <ShieldIcon size={20} className="text-emerald-600 flex-shrink-0 mt-0.5" />
         <p className="text-[14px] leading-relaxed text-slate-800">
-          QADAM has no user accounts on a server. Everything you enter is stored in your browser's local storage on
-          this device. Your CV and profile are <strong>not</strong> sent to AI models. The AI scan that finds
-          opportunities reads public web pages only.
+          Your profile and CV stay in your browser's local storage on this device. Our server keeps only your email,
+          your cohort and a short progress summary that your institution staff can see (listed below). Your CV and
+          profile are <strong>not</strong> sent to AI models. The AI scan that finds opportunities reads public web
+          pages only.
         </p>
       </div>
 
@@ -103,7 +106,11 @@ export const PrivacyPage: React.FC = () => {
           <li>
             <strong>Log Out</strong> does the same and returns you to the start page.
           </li>
-          <li>Clearing this site's data in your browser settings also removes everything.</li>
+          <li>Clearing this site's data in your browser settings removes everything stored on this device.</li>
+          <li>
+            To delete your account, cohort membership and progress summary from our server, email us from the address
+            you signed in with and we will remove them.
+          </li>
         </ol>
         <p className="text-[12px] text-slate-500">Deleted data cannot be recovered, because no copy exists anywhere else.</p>
       </section>
