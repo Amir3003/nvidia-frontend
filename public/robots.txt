@@ -1,5 +1,13 @@
 User-agent: *
 Allow: /
-Disallow: /api/
+Disallow: /staff
+Disallow: /student
+Disallow: /account
+Disallow: /dashboard
+Disallow: /cv
+Disallow: /memory
+Disallow: /network
+Disallow: /notifications
+Disallow: /application-studio
 
-Sitemap: https://nvidia-pathfinder.vercel.app/sitemap.xml
+Sitemap: https://www.qadamhub.com/sitemap.xml

@@ -53,7 +53,7 @@ For local development use the same variables in your ignored `.env` file, then
 2. Save a network profile. Discovery is **off by default**; enable it explicitly if
    you want other signed-in users to discover your profile.
 3. Generate a connection link and copy it. It uses the domain you actually opened,
-   e.g. `https://nvidia-pathfinder.vercel.app/join#code=...`.
+   e.g. `https://www.qadamhub.com/join#code=...`.
 4. Device B (or a separate browser profile): open that link. `/join` works without
    local onboarding. Sign in with **a different email**, save a profile and
    explicitly accept the invitation.

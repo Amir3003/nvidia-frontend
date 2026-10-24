@@ -12,7 +12,7 @@ Use PowerShell in `C:\Users\Matebook\nvidia-frontend`. Node.js 24 is already ins
    BOT_USERNAME=QadamAgentBot
    DISCORD_BOT_TOKEN=PASTE_NEW_DISCORD_BOT_TOKEN_HERE
    DISCORD_WEBHOOK_URL=PASTE_NEW_DISCORD_WEBHOOK_HERE
-   WEB_APP_URL=https://nvidia-pathfinder.vercel.app
+   WEB_APP_URL=https://www.qadamhub.com
    ```
 
    Omit a line if you do not have its new value. `BOT_USERNAME` has no `@`. Never paste credentials into chat, GitHub, `VITE_` variables, or the browser console. `.env` is ignored by Git.

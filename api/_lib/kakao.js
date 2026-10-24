@@ -1,5 +1,5 @@
 // Kakao i Open Builder helpers shared by the /api/kakao/* functions.
-const FALLBACK_WEB_APP_URL = 'https://nvidia-pathfinder.vercel.app';
+const FALLBACK_WEB_APP_URL = 'https://www.qadamhub.com';
 
 export const webAppUrl = (subpath = '') =>
   `${(process.env.WEB_APP_URL || FALLBACK_WEB_APP_URL).replace(/\/+$/, '')}${subpath}`;

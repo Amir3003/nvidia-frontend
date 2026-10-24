@@ -6,9 +6,9 @@
 
 const TOKEN = process.env.DISCORD_BOT_TOKEN;
 const API = 'https://discord.com/api/v10';
-const SITE = 'https://nvidia-pathfinder.vercel.app';
+const SITE = 'https://www.qadamhub.com';
 const LOGO_URL = `${SITE}/brand/qadam-avatar.png`;
-const FOOTER = { text: 'QADAM (Қадам) · nvidia-pathfinder.vercel.app', icon_url: LOGO_URL };
+const FOOTER = { text: 'QADAM (Қадам) · www.qadamhub.com', icon_url: LOGO_URL };
 const EMERALD = 0x10b981;
 const INDIGO = 0x4f46e5;
 const CYAN = 0x06b6d4;
