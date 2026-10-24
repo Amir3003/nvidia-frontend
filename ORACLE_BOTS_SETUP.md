@@ -41,7 +41,7 @@ The website radar remains on Vercel + GitHub Actions. This VM runs only the two 
    TELEGRAM_BOT_TOKEN=YOUR_NEW_TELEGRAM_BOT_TOKEN
    BOT_USERNAME=QadamAgentBot
    DISCORD_BOT_TOKEN=YOUR_NEW_DISCORD_BOT_TOKEN
-   WEB_APP_URL=https://nvidia-pathfinder.vercel.app
+   WEB_APP_URL=https://www.qadamhub.com
    ```
 
    Do not add spaces around `=`. For optional `!broadcast`, also add `DISCORD_WEBHOOK_URL` and `DISCORD_BROADCAST_USER_ID`; do not add them otherwise.

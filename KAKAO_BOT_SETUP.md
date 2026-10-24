@@ -17,7 +17,7 @@ At [chatbot.kakao.com](https://chatbot.kakao.com):
 
 1. **+ 봇 만들기 > 카카오톡 챗봇**, name `QADAM`.
 2. **설정 > 카카오톡 채널 연결**: choose the QADAM channel.
-3. **스킬 > 생성**: URL `https://nvidia-pathfinder.vercel.app/api/kakao/skill`. If you set `KAKAO_SKILL_SECRET`, add the header `x-qadam-skill-key`.
+3. **스킬 > 생성**: URL `https://www.qadamhub.com/api/kakao/skill`. If you set `KAKAO_SKILL_SECRET`, add the header `x-qadam-skill-key`.
 4. **시나리오 > 폴백 블록**: response type "스킬데이터" with that skill. Every message goes through it.
 5. **배포**.
 
