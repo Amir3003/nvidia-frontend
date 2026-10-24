@@ -52,11 +52,12 @@ export const App: React.FC = () => {
     return <Navigate to="/welcome" replace />;
   }
 
-  // Public B2B landing for training centers (light brand palette, no ambient background)
+  // Public B2B landing for training centers, on the live ambient background
   if (location.pathname === '/welcome') {
     return (
-      <div className="min-h-[100dvh] flex flex-col bg-[#F7F4EE] antialiased font-sans relative">
+      <div className="min-h-[100dvh] flex flex-col bg-transparent text-slate-100 antialiased selection:bg-accent/20 selection:text-white font-sans relative">
         <ScrollToTop />
+        <AmbientBackground />
         <WelcomePage />
         <OnboardingWizard />
       </div>
