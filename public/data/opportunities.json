@@ -34,6 +34,22 @@
     "lastSeen": "2026-10-21"
   },
   {
+    "id": "scan-e33c3e2db343",
+    "type": "GRANT",
+    "title": "IndiaAI Fellowship 2026–2027",
+    "summary": "The IndiaAI Fellowship 2026–2027 offers financial support to eligible students pursuing AI-related research, with additional funding available for eligible international conference presentations.",
+    "location": "India",
+    "countries": [],
+    "organization": "IndiaAI",
+    "url": "https://www.facebook.com/100091911940560/posts/-indiaai-fellowship-20262027-funding-of-up-to-2-lakhare-you-an-undergraduate-or-/1064814929925562",
+    "deadline": "2026-11-30",
+    "deadlineEvidence": "Application deadline: 30 November 2026",
+    "eligibility": "check source",
+    "skills": [],
+    "firstSeen": "2026-10-25",
+    "lastSeen": "2026-10-25"
+  },
+  {
     "id": "scan-6585aef7bed6",
     "type": "GRANT",
     "title": "Summer Fellowship (US)",
@@ -44,9 +60,9 @@
     "url": "https://law-ai.org/summer-fellowship-us",
     "deadline": "2027-01-29",
     "deadlineEvidence": "Applications close on January 29, 2027.",
-    "eligibility": "check source",
+    "eligibility": "Ability to participate in-person is a factor in our selection criteria for law students.",
     "skills": [],
     "firstSeen": "2026-10-22",
-    "lastSeen": "2026-10-22"
+    "lastSeen": "2026-10-25"
   }
 ]
