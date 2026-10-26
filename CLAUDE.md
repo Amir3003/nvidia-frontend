@@ -21,7 +21,7 @@
 - Reply in Russian. Lead with the outcome, keep it short, then list only the steps the owner must do in a browser.
 - The owner is a former frontend developer and designer: UI must look polished, not "good enough".
 - Before claiming something works, say what was actually verified (build, tests, screenshots) and what was not.
-- Every video made for the owner ships with the voiceover mixed into the MP4, never silent. Pipeline: `marketing/tiktok-video` (`video.html` scenes, `render.mjs`, local Piper TTS). In TTS text write QADAM as "Kadam" so it is pronounced right.
+- Every video made for the owner ships with the voiceover mixed into the MP4, never silent. Pipeline: `marketing/tiktok-video` (`video.html` scenes, `render.mjs`, local Piper TTS). In TTS text write QADAM as "Kadam" so it is pronounced right. Use only Piper voices whose training data allows commercial use (current voice `en_US-ljspeech-medium`, LJ Speech is public domain); `hfc_female` and `hfc_male` are trained on CC BY-NC-SA data and must not be used in marketing.
 
 ## Project State (update this section when it changes)
 - Hosting: Vercel project `nvidia` (team `amir3003`), production domain `www.qadamhub.com` (bought on Cloudflare, DNS only records pointing to Vercel; `qadamhub.com` redirects to www; the old `nvidia-pathfinder.vercel.app` still works), deploys from `main`. Work on a feature branch, then PR and merge to `main`.

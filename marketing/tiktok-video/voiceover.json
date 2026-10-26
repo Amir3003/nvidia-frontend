@@ -1,5 +1,5 @@
 {
-  "voice": "en_US-hfc_female-medium",
+  "voice": "en_US-ljspeech-medium",
   "lengthScale": 0.92,
   "lines": [
     { "start": 0.25, "end": 2.9, "text": "Still checking ten sites for one hackathon?" },
