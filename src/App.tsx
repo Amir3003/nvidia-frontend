@@ -13,6 +13,8 @@ import { JoinPage } from './pages/JoinPage';
 import { AccountPortalPage } from './pages/AccountPortalPage';
 import { WelcomePage } from './pages/WelcomePage';
 import { PrivacyPage } from './pages/PrivacyPage';
+import { TermsPage } from './pages/TermsPage';
+import { RefundPage } from './pages/RefundPage';
 import { StudentAccessPage } from './pages/StudentAccessPage';
 import { StaffPage } from './pages/StaffPage';
 import { LearnerSync } from './components/LearnerSync';
@@ -42,13 +44,15 @@ export const App: React.FC = () => {
     );
   }
 
-  // Public privacy page, readable with or without an account
-  if (location.pathname === '/privacy') {
+  // Public legal pages, readable with or without an account
+  const legalPage = { '/privacy': PrivacyPage, '/terms': TermsPage, '/refund': RefundPage }[location.pathname];
+  if (legalPage) {
+    const LegalPage = legalPage;
     return (
       <div className="min-h-[100dvh] flex flex-col bg-transparent text-slate-100 antialiased font-sans relative">
         <ScrollToTop />
         <AmbientBackground />
-        <PrivacyPage />
+        <LegalPage />
       </div>
     );
   }
