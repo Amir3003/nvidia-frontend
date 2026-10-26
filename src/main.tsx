@@ -6,6 +6,7 @@ import App from './App';
 import './index.css';
 import { initErrorTracking, ErrorBoundary } from './lib/sentry';
 import { ErrorFallback } from './components/ErrorFallback';
+import { AnalyticsGate, ConsentBanner } from './components/legal/Consent';
 
 initErrorTracking();
 
@@ -16,6 +17,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <ErrorBoundary fallback={<ErrorFallback />}>
           <App />
         </ErrorBoundary>
+        <ConsentBanner />
+        <AnalyticsGate />
       </AppProvider>
     </BrowserRouter>
   </React.StrictMode>

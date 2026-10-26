@@ -2,6 +2,10 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { PilotRequestModal } from '../components/PilotRequestModal';
 import { CONTACT_EMAIL } from '../lib/pilotRequests';
+import { CookieSettingsButton } from '../components/legal/Consent';
+import { usePageMeta } from '../lib/seo';
+
+const WELCOME_TITLE = 'Career support for training centers in Kazakhstan | QADAM Hub';
 import {
   BarChartIcon,
   CheckIcon,
@@ -403,6 +407,7 @@ const StopTitle: React.FC<{ index: string; label: string; title: string; align: 
 );
 
 export const WelcomePage: React.FC = () => {
+  usePageMeta(WELCOME_TITLE, '/welcome');
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -992,8 +997,18 @@ export const WelcomePage: React.FC = () => {
               Staff login
             </button>
             <Link to="/privacy" className="h-10 inline-flex items-center hover:text-white transition-colors">
-              Privacy and your data
+              Privacy
             </Link>
+            <Link to="/terms" className="h-10 inline-flex items-center hover:text-white transition-colors">
+              Terms
+            </Link>
+            <Link to="/refund" className="h-10 inline-flex items-center hover:text-white transition-colors">
+              Refunds
+            </Link>
+            <Link to="/privacy#data-request" className="h-10 inline-flex items-center hover:text-white transition-colors">
+              Data request
+            </Link>
+            <CookieSettingsButton className="h-10 hover:text-white transition-colors" />
             <a href={`mailto:${CONTACT_EMAIL}`} className="h-10 inline-flex items-center hover:text-white transition-colors">
               {CONTACT_EMAIL}
             </a>
