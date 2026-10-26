@@ -3,7 +3,7 @@ import { LegalSection, LegalShell, OperatorBlock } from '../components/legal/Leg
 import { legal } from '../lib/legal';
 
 export const RefundPage: React.FC = () => (
-  <LegalShell title="Refunds" intro="How payments and refunds work at QADAM Hub.">
+  <LegalShell path="/refund" title="Refunds" intro="How payments and refunds work at QADAM Hub.">
     <OperatorBlock />
 
     <LegalSection title="No payments on this site">

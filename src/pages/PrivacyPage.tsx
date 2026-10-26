@@ -58,7 +58,7 @@ export const PrivacyPage: React.FC = () => {
   }, [hash]);
 
   return (
-    <LegalShell
+    <LegalShell path="/privacy"
       title="Privacy & Your Data"
       intro="What QADAM Hub saves, what leaves your device, who processes it and how to get it deleted."
     >

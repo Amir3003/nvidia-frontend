@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { isProfileValid } from '../../db/userProfile';
 import { legal } from '../../lib/legal';
+import { usePageMeta } from '../../lib/seo';
 import { CookieSettingsButton } from './Consent';
 
 export const legalCard =
@@ -43,7 +44,8 @@ export const OperatorBlock: React.FC = () => (
   </div>
 );
 
-export const LegalShell: React.FC<{ title: string; intro?: string; children: React.ReactNode }> = ({ title, intro, children }) => {
+export const LegalShell: React.FC<{ title: string; path: string; intro?: string; children: React.ReactNode }> = ({ title, path, intro, children }) => {
+  usePageMeta(`${title} | QADAM Hub`, path);
   const navigate = useNavigate();
   const { userProfile } = useApp();
   const signedIn = isProfileValid(userProfile);

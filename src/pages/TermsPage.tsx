@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { LegalSection, LegalShell, OperatorBlock } from '../components/legal/LegalShell';
 
 export const TermsPage: React.FC = () => (
-  <LegalShell title="Terms of Service" intro="The rules for using QADAM Hub. By using the site you agree to them.">
+  <LegalShell path="/terms" title="Terms of Service" intro="The rules for using QADAM Hub. By using the site you agree to them.">
     <OperatorBlock />
 
     <LegalSection title="The service">

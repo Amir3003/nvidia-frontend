@@ -3,6 +3,9 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { PilotRequestModal } from '../components/PilotRequestModal';
 import { CONTACT_EMAIL } from '../lib/pilotRequests';
 import { CookieSettingsButton } from '../components/legal/Consent';
+import { usePageMeta } from '../lib/seo';
+
+const WELCOME_TITLE = 'Career support for training centers in Kazakhstan | QADAM Hub';
 import {
   BarChartIcon,
   CheckIcon,
@@ -404,6 +407,7 @@ const StopTitle: React.FC<{ index: string; label: string; title: string; align: 
 );
 
 export const WelcomePage: React.FC = () => {
+  usePageMeta(WELCOME_TITLE, '/welcome');
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const sectionRef = useRef<HTMLDivElement>(null);
