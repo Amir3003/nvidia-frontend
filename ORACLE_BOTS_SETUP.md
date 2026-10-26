@@ -65,4 +65,20 @@ The website radar remains on Vercel + GitHub Actions. This VM runs only the two 
 
 ## Updating code
 
-After a code change is merged to `main`, run `sudo git -C /opt/qadam pull --ff-only` and `sudo systemctl restart qadam-telegram qadam-discord`. The bots fetch the public radar JSON when someone uses `/radar` or `!radar`. Other bot features in this repository still contain example content; do not present CV scores or application drafts as verified personalized results.
+After a code change is merged to `main`, run `sudo git -C /opt/qadam pull --ff-only` and `sudo systemctl restart qadam-telegram qadam-discord`. The bots fetch the radar JSON from `https://www.qadamhub.com/data/opportunities.json` when someone uses `/radar` or `!radar` (override with `RADAR_DATA_URL`). Other bot features in this repository still contain example content; do not present CV scores or application drafts as verified personalized results.
+
+## If the repository is private
+
+A private repository needs a credential on the VM before `git pull` works. Use a read-only deploy key:
+
+1. On the VM: `sudo ssh-keygen -t ed25519 -N "" -f /root/.ssh/qadam_deploy` and `sudo cat /root/.ssh/qadam_deploy.pub`.
+2. On GitHub: repository, Settings, Deploy keys, Add deploy key. Paste the public key, leave "Allow write access" off.
+3. On the VM, point the clone at SSH with that key:
+
+   ```bash
+   sudo git -C /opt/qadam remote set-url origin git@github.com:Amir3003/nvidia-frontend.git
+   sudo git -C /opt/qadam config core.sshCommand "ssh -i /root/.ssh/qadam_deploy -o IdentitiesOnly=yes"
+   sudo git -C /opt/qadam pull --ff-only
+   ```
+
+If the repository is renamed, use the new name in `set-url`. Pull the radar change (bots reading the feed from the site) before the repository goes private; otherwise `/radar` fails until the next pull.
