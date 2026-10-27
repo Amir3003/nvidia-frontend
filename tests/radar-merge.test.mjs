@@ -17,6 +17,12 @@ test('removes expired and undated listings, including old undated records', () =
   assert.deepEqual(merged.map((x) => x.url), ['https://example.org/live', 'https://example.org/new']);
 });
 
+test('empty scan keeps future previous items and prunes expired ones', () => {
+  const previous = [item('https://example.org/future', '2026-12-01'), item('https://example.org/expired', '2026-10-01')];
+  const merged = mergeOpportunities(previous, [], '2026-10-21');
+  assert.deepEqual(merged.map((x) => x.url), ['https://example.org/future']);
+});
+
 test('rejects unknown organization and directory pages', () => {
   const merged = mergeOpportunities([], [item('https://devpost.com/c/artificial-intelligence'),
     item('https://example.org/hackathon', '2026-12-01', { organization: 'Unknown' }),
