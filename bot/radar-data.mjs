@@ -1,4 +1,6 @@
-const DEFAULT_RADAR_URL = 'https://raw.githubusercontent.com/Amir3003/nvidia-frontend/main/public/data/opportunities.json';
+// The site serves the same file the daily radar Action publishes. Reading it from the site (not
+// raw GitHub) keeps the bots and the Kakao skill working when the repository is private.
+const DEFAULT_RADAR_URL = 'https://www.qadamhub.com/data/opportunities.json';
 
 export async function loadRadar(limit = 5) {
   const response = await fetch(process.env.RADAR_DATA_URL || DEFAULT_RADAR_URL, {

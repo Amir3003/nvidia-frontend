@@ -140,15 +140,19 @@ export async function scan() {
   // Several smaller model calls instead of one: each page keeps its full text.
   const entries = [...sources];
   const results = [];
+  let failed = 0;
+  const batches = Math.ceil(entries.length / SOURCES_PER_CALL);
   for (let i = 0; i < entries.length; i += SOURCES_PER_CALL) {
     const batch = new Map(entries.slice(i, i + SOURCES_PER_CALL));
     try {
       results.push(...await extractBatch(batch, nebius, model));
     } catch (error) {
+      failed += 1;
       console.error(`Extraction batch ${i / SOURCES_PER_CALL + 1} failed: ${error.message}`);
     }
   }
-  if (!results.length) throw new Error('No opportunities extracted; the extracted Tavily pages were saved for retry');
+  if (failed === batches) throw new Error('Every extraction batch failed; the extracted Tavily pages were saved for retry');
+  if (!results.length) console.log('No new opportunities passed validation today; the previous feed is kept');
   await fs.mkdir(path.dirname(dataFile), { recursive: true });
   const temp = `${dataFile}.${process.pid}.tmp`;
   await fs.writeFile(temp, JSON.stringify(results, null, 2), { mode: 0o600 });
