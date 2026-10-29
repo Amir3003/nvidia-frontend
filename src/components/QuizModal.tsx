@@ -190,7 +190,7 @@ export const QuizModal: React.FC = () => {
         {/* Header Bar */}
         <div className="px-5 sm:px-7 py-4 border-b border-teal-200/60 flex items-center justify-between gap-3 bg-teal-50/70 flex-shrink-0">
           <div className="min-w-0">
-            <div className="text-[15px] font-bold text-indigo-950 truncate">{activeQuizSkill.name} Verification</div>
+            <div id="quiz-modal-title" className="text-[15px] font-bold text-indigo-950 truncate">{activeQuizSkill.name} Verification</div>
             <div className="text-mini font-mono uppercase tracking-wider text-teal-800 mt-0.5">
               {isCompleted ? 'Results' : `Question ${currentQuestionIndex + 1} of ${totalQuestions}`} · pass at {neededToPass}/{totalQuestions}
             </div>

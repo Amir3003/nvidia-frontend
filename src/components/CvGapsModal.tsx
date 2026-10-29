@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { CloseIcon, CheckIcon, FlaskIcon } from './Icons';
+import { findQuizSkill } from '../db/quizCatalog';
 
 export const CvGapsModal: React.FC = () => {
   const navigate = useNavigate();
@@ -22,14 +23,8 @@ export const CvGapsModal: React.FC = () => {
   const unverifiedSkills: { name: string; skillItem?: (typeof skills)[0] }[] = [];
   const missingSkills: { name: string; skillItem?: (typeof skills)[0] }[] = [];
 
-  // "Node.js", "node js" and the quiz id "nodejs" all compare equal; + and # keep C++ and C# apart from C.
-  const normalize = (value: string) => value.toLowerCase().replace(/[^a-z0-9+#]/g, '');
-
   opp.skills.forEach((reqSkill) => {
-    const key = normalize(reqSkill);
-    const knownSkillItem = skills.find(
-      (s) => normalize(s.name) === key || normalize(s.id) === key
-    );
+    const knownSkillItem = findQuizSkill(skills, reqSkill);
 
     if (knownSkillItem?.status === 'VERIFIED') {
       matchedSkills.push(reqSkill);
@@ -201,17 +196,18 @@ export const CvGapsModal: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-3.5 border-t border-teal-200/60 bg-teal-50/70 flex items-center justify-between">
+        <div className="px-5 py-3.5 border-t border-teal-200/60 bg-teal-50/70 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <span className="text-mini font-mono text-slate-600 font-medium">
             Verification directly upgrades radar match %
           </span>
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 w-full sm:w-auto">
             <button
               type="button"
               onClick={() => setSelectedOpportunityForGaps(null)}
-              className="h-10 px-4 bg-white/90 hover:bg-white border border-teal-300/80 text-teal-900 rounded-btn text-[13px] font-semibold transition-colors shadow-2xs cursor-pointer"
+              className="flex-1 sm:flex-none whitespace-nowrap h-10 px-4 bg-white/90 hover:bg-white border border-teal-300/80 text-teal-900 rounded-btn text-[13px] font-semibold transition-colors shadow-2xs cursor-pointer"
             >
-              Close Gap Analysis
+              <span className="sm:hidden">Close</span>
+              <span className="hidden sm:inline">Close Gap Analysis</span>
             </button>
             <button
               type="button"
@@ -220,7 +216,7 @@ export const CvGapsModal: React.FC = () => {
                 setSelectedOpportunityForGaps(null);
                 navigate(`/application-studio?id=${oppId}`);
               }}
-              className="h-10 px-5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white rounded-btn text-[13px] font-bold transition-all shadow-xs cursor-pointer"
+              className="flex-1 sm:flex-none whitespace-nowrap h-10 px-5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white rounded-btn text-[13px] font-bold transition-all shadow-xs cursor-pointer"
             >
               Prepare &amp; Apply
             </button>
