@@ -22,9 +22,13 @@ export const CvGapsModal: React.FC = () => {
   const unverifiedSkills: { name: string; skillItem?: (typeof skills)[0] }[] = [];
   const missingSkills: { name: string; skillItem?: (typeof skills)[0] }[] = [];
 
+  // "Node.js", "node js" and the quiz id "nodejs" all compare equal; + and # keep C++ and C# apart from C.
+  const normalize = (value: string) => value.toLowerCase().replace(/[^a-z0-9+#]/g, '');
+
   opp.skills.forEach((reqSkill) => {
+    const key = normalize(reqSkill);
     const knownSkillItem = skills.find(
-      (s) => s.name.toLowerCase() === reqSkill.toLowerCase()
+      (s) => normalize(s.name) === key || normalize(s.id) === key
     );
 
     if (knownSkillItem?.status === 'VERIFIED') {
@@ -39,16 +43,9 @@ export const CvGapsModal: React.FC = () => {
     }
   });
 
-  const handleLaunchQuiz = (skillName: string, knownItem?: (typeof skills)[0]) => {
-    if (knownItem) {
-      setSelectedOpportunityForGaps(null);
-      openSkillQuiz(knownItem);
-    } else {
-      // Find generic or closest match in skills, or create temporary skill
-      const fallback = skills.find((s) => s.id === 'docker') || skills[0];
-      setSelectedOpportunityForGaps(null);
-      openSkillQuiz(fallback);
-    }
+  const handleLaunchQuiz = (skillItem: (typeof skills)[0]) => {
+    setSelectedOpportunityForGaps(null);
+    openSkillQuiz(skillItem);
   };
 
   return (
@@ -141,14 +138,20 @@ export const CvGapsModal: React.FC = () => {
                         Present on resume, needs benchmark score &gt;70%
                       </div>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => handleLaunchQuiz(sName, skillItem)}
-                      className="h-9 px-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white rounded-btn text-mini font-mono font-bold flex items-center gap-1.5 flex-shrink-0 transition-all shadow-xs cursor-pointer"
-                    >
-                      <FlaskIcon size={13} className="text-white" />
-                      <span>Take Quiz</span>
-                    </button>
+                    {skillItem ? (
+                      <button
+                        type="button"
+                        onClick={() => handleLaunchQuiz(skillItem)}
+                        className="h-9 px-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white rounded-btn text-mini font-mono font-bold flex items-center gap-1.5 flex-shrink-0 transition-all shadow-xs cursor-pointer"
+                      >
+                        <FlaskIcon size={13} className="text-white" />
+                        <span>Take Quiz</span>
+                      </button>
+                    ) : (
+                      <span className="text-mini font-mono text-slate-600 px-2 py-1 bg-teal-50 rounded border border-teal-200 flex-shrink-0">
+                        No quiz yet
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>
@@ -179,7 +182,7 @@ export const CvGapsModal: React.FC = () => {
                     {skillItem ? (
                       <button
                         type="button"
-                        onClick={() => handleLaunchQuiz(sName, skillItem)}
+                        onClick={() => handleLaunchQuiz(skillItem)}
                         className="h-9 px-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-mini font-mono font-bold rounded-btn flex items-center gap-1.5 flex-shrink-0 transition-all shadow-xs cursor-pointer"
                       >
                         <FlaskIcon size={13} className="text-white" />
