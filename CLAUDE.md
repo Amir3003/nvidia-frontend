@@ -10,7 +10,15 @@
    - Never use em dashes (`—`).
    - Never use emojis (`🚀`, `✨`, etc.) in UI code or documentation.
    - Keep design clean, modern, and professional (no toxic neon glows, no pure black `#000` backgrounds).
-3. **BUILD INTEGRITY:** Every code change must compile cleanly. Always verify with `npm run build` (`tsc && vite build`) to ensure 0 TypeScript errors.
+3. **BUILD INTEGRITY:** Every code change must compile cleanly. Always verify with `npm run verify` to ensure 0 TypeScript errors.
+
+## Agentic Workflow and Hard Constraints
+Compiler and build output come first; written rules come second.
+- **No blind coding:** before changing any component, read the related files and types. Never guess an API, a prop or a function signature.
+- **Self-healing loop:** no task is done until `npm run verify` (`tsc --noEmit`, then `tsc && vite build`) has run after the last file change and exited 0. If it fails, read the trace, fix the code, and run it again until it passes. Never report "done" without that run.
+- **Architecture limits:** never silence checks with `any`, `@ts-ignore`, `@ts-expect-error` or `eslint-disable`, and never loosen `tsconfig.json` (`strict`, `noUnusedLocals`, `noFallthroughCasesInSwitch` stay on). Never break global scrolling (no `overflow-hidden` or `h-screen` on root layouts). Add no npm package unless there is no reasonable alternative.
+- **Text and UI style:** no emojis, no em dashes, no filler. In academic and AI contexts say "AI & Machine Learning", not "Computer Science".
+- **Commands:** `/plan <task>` (read-only plan), `/ship <task>` (implement and loop on verify), `/audit` (review the git diff and fix). Files in `.claude/commands/`.
 
 ## Core UI/UX Requirements
 - **Global Page Scrolling:** Ensure natural browser-level scrolling (`html, body, #root { overflow-y: auto; height: auto; }`). Never trap viewports in fixed `h-screen overflow-hidden` containers that break scrolling.

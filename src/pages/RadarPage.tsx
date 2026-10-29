@@ -27,7 +27,6 @@ export const RadarPage: React.FC = () => {
     setSelectedOpportunityForDetails,
     setSelectedOpportunityForGaps,
     userProfile,
-    setIsOnboardingOpen,
   } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');

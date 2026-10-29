@@ -4,10 +4,8 @@ import { useApp } from '../context/AppContext';
 import { USER_ROLES, CAREER_OBJECTIVES } from '../db/userProfile';
 import { SkillAutocomplete } from './SkillAutocomplete';
 import {
-  CheckIcon,
   ShieldIcon,
   ChevronRightIcon,
-  LockIcon,
   RadarIcon,
   EyeIcon,
   EyeOffIcon,

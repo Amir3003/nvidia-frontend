@@ -4,7 +4,6 @@ import { PageHeader } from '../components/PageHeader';
 import {
   EditIcon,
   TrashIcon,
-  CheckIcon,
   PlusIcon,
   CloseIcon,
   EyeIcon,

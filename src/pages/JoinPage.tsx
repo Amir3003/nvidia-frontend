@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { NetworkAccess } from "../components/NetworkAccess";
 import { AmbientBackground } from "../components/AmbientBackground";
 import { NetworkWorkspace } from "./NetworkPage";
