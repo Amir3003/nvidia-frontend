@@ -16,8 +16,6 @@ import {
   ChevronRightIcon,
   CheckIcon,
   ShieldIcon,
-  AlertTriangleIcon,
-  TerminalIcon,
   CopyIcon,
   EyeIcon,
   EyeOffIcon,

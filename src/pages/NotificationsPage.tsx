@@ -4,7 +4,6 @@ import { PageHeader } from '../components/PageHeader';
 import {
   BellIcon,
   CheckIcon,
-  SendIcon,
   ShieldIcon,
   ExternalLinkIcon,
   TelegramIcon,
@@ -31,11 +30,11 @@ export const NotificationsPage: React.FC = () => {
   const [isTelegramModal, setIsTelegramModal] = useState(false);
 
   const [kakaoActive, setKakaoActive] = useState(initialNotifications.kakao);
-  const [kakaoHandle, setKakaoHandle] = useState(initialNotifications.kakaoHandle || '');
+  const [kakaoHandle] = useState(initialNotifications.kakaoHandle || '');
   const [kakaoNotice, setKakaoNotice] = useState('');
 
   const [discordActive, setDiscordActive] = useState(false);
-  const [discordWebhook, setDiscordWebhook] = useState('');
+  const [, setDiscordWebhook] = useState('');
   const [isDiscordModal, setIsDiscordModal] = useState(false);
 
   const [testAlertSent, setTestAlertSent] = useState<string | null>(null);

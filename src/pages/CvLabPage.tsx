@@ -8,15 +8,12 @@ import { QUIZ_BANK } from '../db/quizBank';
 import { QUIZ_CATEGORIES, getCatalogTopic, getSkillCategory } from '../db/quizCatalog';
 import { TARGET_TRACKS, radarTargets } from '../db/targetTracks';
 import {
-  ExternalLinkIcon,
   CheckIcon,
-  FlaskIcon,
   FileTextIcon,
   UserIcon,
   CompanyBadgeIcon,
   ChevronDownIcon,
   ShieldIcon,
-  TechIcon,
   SearchIcon,
   CloseIcon,
 } from '../components/Icons';

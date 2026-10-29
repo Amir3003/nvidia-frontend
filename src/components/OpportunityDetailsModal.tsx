@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { CloseIcon, ExternalLinkIcon, CheckIcon } from './Icons';
+import { CloseIcon, ExternalLinkIcon } from './Icons';
 import { ActivityStatus, loadLocalStatuses, loadMembership, setOpportunityStatus } from '../lib/cohorts';
 
 const STATUS_OPTIONS: { value: ActivityStatus; label: string }[] = [

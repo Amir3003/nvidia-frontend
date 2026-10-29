@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { CloseIcon, CheckIcon, AlertTriangleIcon, FlaskIcon } from './Icons';
+import { CloseIcon, CheckIcon, FlaskIcon } from './Icons';
 
 export const CvGapsModal: React.FC = () => {
   const navigate = useNavigate();
