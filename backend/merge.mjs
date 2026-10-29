@@ -27,7 +27,18 @@ export function mergeOpportunities(previous, fresh, today) {
       lastSeen: today,
     });
   }
-  return [...byUrl.values()]
+  // The same program is often found twice, on its official page and in a news post.
+  // Keep one entry per organizer, title and deadline: the one with a summary, then the one seen first.
+  const byProgram = new Map();
+  for (const item of byUrl.values()) {
+    const key = [item.organization, item.title, item.deadline].map((v) => String(v || '').trim().toLowerCase()).join('|');
+    const kept = byProgram.get(key);
+    const better = !kept
+      || (!kept.summary && item.summary)
+      || (Boolean(kept.summary) === Boolean(item.summary) && (item.firstSeen || '') < (kept.firstSeen || ''));
+    if (better) byProgram.set(key, item);
+  }
+  return [...byProgram.values()]
     .sort((a, b) => a.deadline.localeCompare(b.deadline))
     .slice(0, MAX_PUBLISHED);
 }
