@@ -123,3 +123,24 @@ test("learner opens CV gaps from the Radar and starts the matching quiz", async 
 
   expect(errors).toEqual([]);
 });
+
+test("learner without skills sees a readable welcome banner on the Radar", async ({ page }, info) => {
+  const errors = await watch(page);
+  await page.addInitScript(
+    ([profile, membership]) => {
+      if (sessionStorage.getItem("smoke-seeded")) return;
+      sessionStorage.setItem("smoke-seeded", "1");
+      localStorage.setItem("qadam_user", JSON.stringify(profile));
+      localStorage.setItem("qadam_cohort_membership", JSON.stringify(membership));
+      localStorage.setItem("qadam_consent_analytics_v1", "denied");
+    },
+    [{ ...PROFILE, skills: [] }, MEMBERSHIP] as const,
+  );
+
+  await page.goto("/");
+  const title = page.getByText("Welcome to QADAM Opportunity Radar");
+  await expect(title).toBeVisible();
+  await expect(page.getByRole("link", { name: "Configure Stack" })).toBeVisible();
+  await page.screenshot({ path: path.join(SHOTS, `${info.project.name}-radar-banner.png`) });
+  expect(errors).toEqual([]);
+});

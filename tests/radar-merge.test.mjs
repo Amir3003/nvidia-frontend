@@ -12,8 +12,8 @@ const item = (url, deadline = '2026-12-01', extra = {}) => ({
 
 test('removes expired and undated listings, including old undated records', () => {
   const old = [item('https://example.org/old', '2026-10-01'),
-    item('https://example.org/undated', null), item('https://example.org/live')];
-  const merged = mergeOpportunities(old, [item('https://example.org/new')], '2026-10-21');
+    item('https://example.org/undated', null), item('https://example.org/live', '2026-12-01', { title: 'Live Challenge' })];
+  const merged = mergeOpportunities(old, [item('https://example.org/new', '2026-12-01', { title: 'New Challenge' })], '2026-10-21');
   assert.deepEqual(merged.map((x) => x.url), ['https://example.org/live', 'https://example.org/new']);
 });
 
@@ -70,4 +70,12 @@ test('bot does not show incomplete or expired feed records', async (t) => {
   ] });
   t.after(() => { globalThis.fetch = originalFetch; });
   assert.deepEqual((await loadRadar()).map((entry) => entry.url), ['https://example.org/current']);
+});
+
+test('keeps one entry when the same program is listed under two URLs', () => {
+  const official = item('https://example.org/fellowship', '2026-12-01', { title: 'Fellowship', summary: 'Funds PhD research.', firstSeen: '2026-10-21' });
+  const news = item('https://news.example.org/fellowship-open', '2026-12-01', { title: 'Fellowship', summary: '' });
+  const other = item('https://example.org/fellowship-2', '2027-03-01', { title: 'Fellowship' });
+  const merged = mergeOpportunities([official], [news, other], '2026-10-29');
+  assert.deepEqual(merged.map((x) => x.url), ['https://example.org/fellowship', 'https://example.org/fellowship-2']);
 });
