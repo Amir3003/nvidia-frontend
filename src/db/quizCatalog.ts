@@ -90,3 +90,35 @@ export async function loadCatalogQuestions(id: string): Promise<QuizQuestion[]> 
   const bank = await load();
   return tuplesToQuestions(bank[id] || []);
 }
+
+// Short or generic skill names in opportunity listings, mapped to the closest quiz id.
+const SKILL_ALIASES: Record<string, string> = {
+  ai: 'machine-learning',
+  ml: 'machine-learning',
+  artificialintelligence: 'machine-learning',
+  aimachinelearning: 'machine-learning',
+  deeplearning: 'pytorch',
+  llm: 'llms',
+  genai: 'llms',
+  generativeai: 'llms',
+  js: 'javascript',
+  ts: 'typescript',
+  node: 'nodejs',
+  postgres: 'postgresql',
+  k8s: 'kubernetes',
+  cv: 'computer-vision',
+};
+
+// "Node.js", "node js" and the quiz id "nodejs" all compare equal; + and # keep C++ and C# apart from C.
+function normalizeSkill(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9+#]/g, '');
+}
+
+/* Finds the quiz for a skill name from a listing: exact name or id first, then a known alias. */
+export function findQuizSkill(skills: SkillItem[], name: string): SkillItem | undefined {
+  const key = normalizeSkill(name);
+  const direct = skills.find((s) => normalizeSkill(s.name) === key || normalizeSkill(s.id) === key);
+  if (direct) return direct;
+  const aliasId = SKILL_ALIASES[key];
+  return aliasId ? skills.find((s) => s.id === aliasId) : undefined;
+}
