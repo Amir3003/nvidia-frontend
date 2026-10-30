@@ -34,22 +34,6 @@
     "lastSeen": "2026-10-21"
   },
   {
-    "id": "scan-9c3e64cf7253",
-    "type": "GRANT",
-    "title": "NVIDIA Graduate Fellowship",
-    "summary": "",
-    "location": "Worldwide",
-    "countries": [],
-    "organization": "NVIDIA",
-    "url": "https://blogs.nvidia.com/blog/applications-open-graduate-fellowship-awards-2026",
-    "deadline": "2026-10-30",
-    "deadlineEvidence": "The application deadline for the 2027-2028 academic year is October 30, 2026.",
-    "eligibility": "check source",
-    "skills": [],
-    "firstSeen": "2026-10-28",
-    "lastSeen": "2026-10-28"
-  },
-  {
     "id": "scan-cace011bd6d9",
     "type": "GRANT",
     "title": "Generative AI & Data Science Fellowship",
@@ -88,13 +72,13 @@
     "summary": "The Institute for Law & AI’s Summer Fellowship (US) is a paid program that offers law students, professionals, and academics the opportunity to participate at the leading edge of AI law and policy, with a particular focus on United States Law and Policy.",
     "location": "Washington, DC",
     "countries": [],
-    "organization": "Institute for Law & AI",
+    "organization": "Institute for Law & AI (LawAI)",
     "url": "https://law-ai.org/summer-fellowship-us",
     "deadline": "2027-01-29",
     "deadlineEvidence": "Applications close on January 29, 2027.",
-    "eligibility": "Ability to participate in-person is a factor in our selection criteria for law students.",
+    "eligibility": "check source",
     "skills": [],
     "firstSeen": "2026-10-22",
-    "lastSeen": "2026-10-25"
+    "lastSeen": "2026-10-30"
   }
 ]
