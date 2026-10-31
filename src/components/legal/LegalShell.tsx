@@ -55,7 +55,7 @@ export const LegalShell: React.FC<{ title: string; path: string; intro?: string;
       <div className="flex items-center justify-between gap-3">
         <button
           type="button"
-          onClick={() => navigate(signedIn ? '/' : '/welcome')}
+          onClick={() => navigate(signedIn ? '/' : '/students')}
           className="h-9 px-3 rounded-btn bg-slate-800/80 hover:bg-slate-700/80 text-teal-100 hover:text-white text-mini font-mono flex items-center gap-1.5 transition-colors cursor-pointer border border-teal-500/30"
         >
           ← Back
