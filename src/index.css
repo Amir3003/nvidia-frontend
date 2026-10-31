@@ -104,3 +104,27 @@ div[tabindex="0"]:focus-visible {
   outline: 2px solid #0D9488;
   outline-offset: 2px;
 }
+
+/*
+ * Button press feedback: a small scale-down that eases back. Uses the individual `scale`
+ * property, so it never fights Tailwind transform utilities. Buttons that already scale
+ * themselves (active:scale-*) are left alone.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  :where(button, [role="button"]):not(:disabled, [aria-disabled="true"], [class*="active:scale"]):active {
+    scale: 0.98;
+  }
+  :where(button, [role="button"]):not([class*="transition"]) {
+    transition: scale 160ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-overlay-in,
+  .animate-modal-in,
+  .animate-pop-in,
+  .animate-rise-in,
+  .animate-fadeIn {
+    animation: none;
+  }
+}

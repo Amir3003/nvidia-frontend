@@ -146,9 +146,9 @@ export const QuizModal: React.FC = () => {
         role="dialog"
         aria-modal="true"
         aria-label={`${activeQuizSkill.name} quiz`}
-        className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
+        className="animate-overlay-in fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
       >
-        <div className="w-full max-w-md bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-6 text-center space-y-3 text-slate-900">
+        <div className="animate-modal-in w-full max-w-md bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-6 text-center space-y-3 text-slate-900">
           <div className="text-[15px] font-bold text-indigo-950">{activeQuizSkill.name} Verification</div>
           <p className="text-[13px] text-slate-600">
             {failed ? 'Questions for this quiz are not available yet. Please try again later.' : 'Loading questions...'}
@@ -184,9 +184,9 @@ export const QuizModal: React.FC = () => {
       role="dialog"
       aria-modal="true"
       aria-labelledby="quiz-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
+      className="animate-overlay-in fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
     >
-      <div className="w-full max-w-3xl max-h-[92vh] sm:min-h-[560px] my-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl flex flex-col overflow-hidden text-slate-900">
+      <div className="animate-modal-in w-full max-w-3xl max-h-[92vh] sm:min-h-[560px] my-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl flex flex-col overflow-hidden text-slate-900">
         {/* Header Bar */}
         <div className="px-5 sm:px-7 py-4 border-b border-teal-200/60 flex items-center justify-between gap-3 bg-teal-50/70 flex-shrink-0">
           <div className="min-w-0">

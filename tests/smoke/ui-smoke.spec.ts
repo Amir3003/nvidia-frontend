@@ -69,7 +69,7 @@ async function expectRendered(page: Page) {
   expect(text.trim().length).toBeGreaterThan(40);
 }
 
-const PUBLIC_ROUTES = ["/welcome", "/student", "/staff", "/privacy", "/terms", "/refund"];
+const PUBLIC_ROUTES = ["/welcome", "/students", "/start", "/student", "/staff", "/privacy", "/terms", "/refund"];
 
 for (const route of PUBLIC_ROUTES) {
   test(`public route ${route} renders without errors`, async ({ page }, info) => {
@@ -143,4 +143,121 @@ test("learner without skills sees a readable welcome banner on the Radar", async
   await expect(page.getByRole("link", { name: "Configure Stack" })).toBeVisible();
   await page.screenshot({ path: path.join(SHOTS, `${info.project.name}-radar-banner.png`) });
   expect(errors).toEqual([]);
+});
+
+test("the audience switch moves between the schools and students landings", async ({ page }, info) => {
+  const errors = await watch(page);
+  await page.goto("/welcome");
+  const audience = page.getByRole("navigation", { name: "Choose your audience" });
+  await expect(audience).toBeVisible();
+  await audience.getByRole("link", { name: "For Students" }).click();
+  await expect(page).toHaveURL(/\/students$/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Find grants, hackathons and scholarships");
+  await page.screenshot({ path: path.join(SHOTS, `${info.project.name}-students-landing.png`) });
+  await page.getByRole("navigation", { name: "Choose your audience" }).getByRole("link", { name: "For Schools" }).click();
+  await expect(page).toHaveURL(/\/welcome$/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Opportunity and career support for your cohort");
+  expect(errors).toEqual([]);
+});
+
+test("a student signs up for free without an invite code and lands on the Radar", async ({ page }, info) => {
+  const errors = await watch(page);
+  await page.addInitScript(() => localStorage.setItem("qadam_consent_analytics_v1", "denied"));
+  await page.goto("/students");
+  await page.getByRole("button", { name: "Start free" }).first().click();
+  await expect(page).toHaveURL(/\/start$/);
+  const wizard = page.getByRole("dialog", { name: "Create Your QADAM Account" });
+  await expect(wizard).toBeVisible();
+  // Modals close only through their visible button.
+  await page.keyboard.press("Escape");
+  await expect(wizard).toBeVisible();
+
+  await wizard.getByPlaceholder("First name").fill("Aigerim");
+  await wizard.getByPlaceholder("Last name").fill("Student");
+  await wizard.getByRole("button", { name: "Continue" }).click();
+  await wizard.getByPlaceholder("student@university.edu").fill("aigerim@example.com");
+  await wizard.getByPlaceholder("University Name").fill("Test University");
+  await wizard.getByPlaceholder("AI & Machine Learning").fill("AI & Machine Learning");
+  await wizard.getByPlaceholder("e.g. Almaty, Kazakhstan").fill("Almaty, Kazakhstan");
+  await wizard.getByRole("button", { name: "Continue" }).click();
+  await wizard.getByPlaceholder("••••••••••••").nth(0).fill("Secure#Pass1");
+  await wizard.getByPlaceholder("••••••••••••").nth(1).fill("Secure#Pass1");
+  await wizard.getByRole("button", { name: "Continue" }).click();
+  await wizard.getByPlaceholder(/Start typing a skill/).fill("Python");
+  await wizard.getByRole("option", { name: /Python/ }).first().click();
+  // Escape closes only the suggestion list, not the dialog.
+  await wizard.getByPlaceholder(/Start typing a skill/).press("Escape");
+  await expect(wizard).toBeVisible();
+  await wizard.getByRole("button", { name: "MEXT Scholarship (Japan)" }).click();
+  await wizard.getByRole("button", { name: "University Admissions Abroad" }).click();
+  await page.screenshot({ path: path.join(SHOTS, `${info.project.name}-start-goals.png`) });
+  await wizard.getByRole("button", { name: "Launch QADAM Dashboard" }).click();
+
+  await expect(page).toHaveURL(/\/dashboard$/);
+  await expect(page.getByRole("heading", { name: "Opportunity Radar" })).toBeVisible();
+  const membership = await page.evaluate(() => localStorage.getItem("qadam_cohort_membership"));
+  expect(membership).toBeNull();
+  expect(errors).toEqual([]);
+});
+
+test("the feedback widget sends a report and closes only with its button", async ({ page }, info) => {
+  const errors = await watch(page);
+  let sent: Record<string, unknown> | null = null;
+  await page.route("**/api/feedback", async (route) => {
+    sent = route.request().postDataJSON();
+    await route.fulfill({ json: { status: "ok" } });
+  });
+  await page.addInitScript(
+    (profile) => {
+      if (sessionStorage.getItem("smoke-seeded")) return;
+      sessionStorage.setItem("smoke-seeded", "1");
+      localStorage.setItem("qadam_user", JSON.stringify(profile));
+      localStorage.setItem("qadam_consent_analytics_v1", "denied");
+    },
+    PROFILE,
+  );
+
+  // A profile without a cohort is enough to use the app.
+  await page.goto("/cv");
+  await expect(page).toHaveURL(/\/cv$/);
+  await page.getByRole("button", { name: "Send feedback" }).click();
+  const dialog = page.getByRole("dialog", { name: "Send feedback" });
+  await expect(dialog).toBeVisible();
+  await page.screenshot({ path: path.join(SHOTS, `${info.project.name}-feedback-open.png`) });
+
+  await page.keyboard.press("Escape");
+  await page.mouse.click(4, 4);
+  await expect(dialog).toBeVisible();
+
+  const submit = dialog.getByRole("button", { name: "Send feedback" });
+  await expect(submit).toBeDisabled();
+  await dialog.getByRole("radio", { name: "Bug" }).click();
+  await dialog.getByRole("textbox").fill("The quiz button does nothing on my phone.");
+  await expect(submit).toBeEnabled();
+  await submit.click();
+
+  await expect(dialog.getByText("Thank you. We read every report.")).toBeVisible();
+  expect(sent).toMatchObject({ type: "bug", description: "The quiz button does nothing on my phone.", pageUrl: "/cv", website: "" });
+  await page.screenshot({ path: path.join(SHOTS, `${info.project.name}-feedback-sent.png`) });
+  await dialog.getByRole("button", { name: "Close", exact: true }).first().click();
+  await expect(dialog).toBeHidden();
+  expect(errors).toEqual([]);
+});
+
+test("the feedback widget offers email when the service is unavailable", async ({ page }) => {
+  await watch(page);
+  await page.route("**/api/feedback", (route) => route.fulfill({ status: 503, json: { status: "error" } }));
+  await page.addInitScript(
+    (profile) => {
+      localStorage.setItem("qadam_user", JSON.stringify(profile));
+      localStorage.setItem("qadam_consent_analytics_v1", "denied");
+    },
+    PROFILE,
+  );
+  await page.goto("/cv");
+  await page.getByRole("button", { name: "Send feedback" }).click();
+  const dialog = page.getByRole("dialog", { name: "Send feedback" });
+  await dialog.getByRole("textbox").fill("Please add a dark mode toggle.");
+  await dialog.getByRole("button", { name: "Send feedback" }).click();
+  await expect(dialog.getByRole("link", { name: "Send it by email instead" })).toBeVisible();
 });

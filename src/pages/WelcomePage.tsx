@@ -4,6 +4,8 @@ import { PilotRequestModal } from '../components/PilotRequestModal';
 import { CONTACT_EMAIL } from '../lib/pilotRequests';
 import { CookieSettingsButton } from '../components/legal/Consent';
 import { usePageMeta } from '../lib/seo';
+import { AudienceSwitch } from '../components/landing/AudienceSwitch';
+import { container, eyebrowDark, ghostButton, glassCard, primaryButton } from '../components/landing/landingStyles';
 
 const WELCOME_TITLE = 'Career support for training centers in Kazakhstan | QADAM Hub';
 import {
@@ -39,15 +41,6 @@ const STATUS_CLASS: Record<Status, string> = {
   early: 'bg-indigo-100 text-indigo-800 border-indigo-300',
   pilot: 'bg-amber-100 text-amber-800 border-amber-300',
 };
-
-const glassCard =
-  'rounded-2xl bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_20px_50px_-20px_rgba(6,182,212,0.25)] text-slate-900';
-const primaryButton =
-  'min-h-[48px] px-7 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-semibold text-[15px] shadow-lg shadow-emerald-900/30 active:scale-[0.99] transition-all cursor-pointer inline-flex items-center justify-center gap-2.5';
-const ghostButton =
-  'min-h-[48px] px-7 rounded-xl border border-teal-400/40 bg-slate-900/40 hover:bg-slate-800/60 text-teal-100 hover:text-white font-semibold text-[15px] backdrop-blur-md transition-all cursor-pointer inline-flex items-center justify-center gap-2.5';
-const eyebrowDark = 'text-[12px] font-mono uppercase tracking-[0.16em] text-teal-300';
-const container = 'max-w-6xl mx-auto px-4 sm:px-6';
 
 const NAV_LINKS = [
   { id: 'how-it-works', label: 'How it works' },
@@ -525,7 +518,9 @@ export const WelcomePage: React.FC = () => {
             </span>
           </button>
 
-          <nav className="hidden lg:flex items-center gap-1" aria-label="Sections">
+          <AudienceSwitch active="schools" className="hidden md:inline-grid" />
+
+          <nav className="hidden xl:flex items-center gap-1" aria-label="Sections">
             {NAV_LINKS.map((link) => (
               <button
                 key={link.id}
@@ -566,7 +561,7 @@ export const WelcomePage: React.FC = () => {
               onClick={() => setMenuOpen((open) => !open)}
               aria-label={menuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={menuOpen}
-              className="lg:hidden w-11 h-11 -mr-2 flex items-center justify-center rounded-btn text-teal-100 hover:bg-teal-500/10 transition-colors cursor-pointer"
+              className="xl:hidden w-11 h-11 -mr-2 flex items-center justify-center rounded-btn text-teal-100 hover:bg-teal-500/10 transition-colors cursor-pointer"
             >
               {menuOpen ? <CloseIcon size={22} /> : <MenuIcon size={22} />}
             </button>
@@ -574,8 +569,8 @@ export const WelcomePage: React.FC = () => {
         </div>
         {menuOpen && (
           <>
-            <div className="lg:hidden fixed inset-0 top-16 z-40 bg-slate-950/40" onClick={() => setMenuOpen(false)} />
-            <div className="lg:hidden absolute left-0 right-0 top-16 z-50 bg-slate-900/95 backdrop-blur-md border-b border-teal-500/20 max-h-[calc(100dvh-4rem)] overflow-y-auto">
+            <div className="xl:hidden fixed inset-0 top-16 z-40 bg-slate-950/40" onClick={() => setMenuOpen(false)} />
+            <div className="animate-pop-in origin-top xl:hidden absolute left-0 right-0 top-16 z-50 bg-slate-900/95 backdrop-blur-md border-b border-teal-500/20 max-h-[calc(100dvh-4rem)] overflow-y-auto">
               <nav className="px-4 py-2 flex flex-col" aria-label="Sections">
                 {NAV_LINKS.map((link) => (
                   <button
@@ -602,6 +597,7 @@ export const WelcomePage: React.FC = () => {
       {/* Hero */}
       <section className="min-h-[100dvh] flex flex-col items-center justify-center text-center px-4 sm:px-6 pt-28 pb-20 relative z-10 max-w-5xl mx-auto">
         <div className="space-y-6 sm:space-y-8 flex flex-col items-center">
+          <AudienceSwitch active="schools" className="md:hidden" />
           <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-teal-500/10 border border-teal-400/30 text-teal-200 text-[13px] font-mono tracking-wide backdrop-blur-md">
             <span className="w-2 h-2 rounded-full bg-emerald-400" />
             <span>QADAM Hub · For training centers in Kazakhstan</span>

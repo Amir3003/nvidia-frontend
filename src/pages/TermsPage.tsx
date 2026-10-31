@@ -10,7 +10,8 @@ export const TermsPage: React.FC = () => (
       <p>
         QADAM Hub helps learners find internships, hackathons and grants, prepare applications and track them, and
         gives their institution staff a view of cohort progress. Learners join through an invite code from their
-        institution. Some features are early versions and may change.
+        institution, and individual students can also create a free profile without an institution during the beta.
+        Some features are early versions and may change.
       </p>
     </LegalSection>
 

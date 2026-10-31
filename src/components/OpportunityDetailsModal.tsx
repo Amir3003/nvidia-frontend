@@ -59,9 +59,9 @@ export const OpportunityDetailsModal: React.FC = () => {
       role="dialog"
       aria-modal="true"
       aria-labelledby="details-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
+      className="animate-overlay-in fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
     >
-      <div className="w-full max-w-xl max-h-[85vh] my-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl flex flex-col overflow-hidden text-slate-900">
+      <div className="animate-modal-in w-full max-w-xl max-h-[85vh] my-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl flex flex-col overflow-hidden text-slate-900">
         {/* Header */}
         <div className="px-5 py-4 border-b border-teal-200/60 flex items-center justify-between bg-teal-50/70 flex-shrink-0">
           <div className="flex items-center gap-2.5">
