@@ -87,9 +87,31 @@ export default async function handler(request, response) {
       body: JSON.stringify(row),
       signal: AbortSignal.timeout(8000),
     });
-    if (!res.ok) return sendJson(response, 502, { status: 'error', message: UNAVAILABLE });
-  } catch {
-    return sendJson(response, 502, { status: 'error', message: UNAVAILABLE });
+    if (!res.ok) {
+      // Diagnostics: only the HTTP status and the PostgREST/Postgres error code are returned.
+      // Never the key, the URL or the request body.
+      let code = null;
+      try {
+        const detail = await res.json();
+        if (detail && typeof detail.code === 'string' && /^[A-Za-z0-9_]{1,16}$/.test(detail.code)) code = detail.code;
+      } catch {
+        // The error body is optional.
+      }
+      return sendJson(response, 502, {
+        status: 'error',
+        message: UNAVAILABLE,
+        reason: `Supabase responded with HTTP ${res.status}`,
+        dbCode: code || String(res.status),
+      });
+    }
+  } catch (error) {
+    const timedOut = error && (error.name === 'TimeoutError' || error.name === 'AbortError');
+    return sendJson(response, 502, {
+      status: 'error',
+      message: UNAVAILABLE,
+      reason: timedOut ? 'Supabase request timed out' : 'Supabase request failed',
+      dbCode: null,
+    });
   }
 
   return sendJson(response, 200, { status: 'ok' });
