@@ -189,9 +189,9 @@ export const OnboardingWizard: React.FC = () => {
       role="dialog"
       aria-modal="true"
       aria-labelledby="registration-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
+      className="animate-overlay-in fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
     >
-      <div className="w-full max-w-2xl max-h-[85vh] my-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-[0_24px_60px_-15px_rgba(6,182,212,0.3)] flex flex-col overflow-hidden text-slate-900">
+      <div className="animate-modal-in w-full max-w-2xl max-h-[85vh] my-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-[0_24px_60px_-15px_rgba(6,182,212,0.3)] flex flex-col overflow-hidden text-slate-900">
         
         {/* Wizard Header with Visible Close Button */}
         <div className="px-6 py-4 border-b border-teal-200/80 bg-white/75 backdrop-blur-md flex items-center justify-between flex-shrink-0">
@@ -414,7 +414,7 @@ export const OnboardingWizard: React.FC = () => {
                     type="text"
                     value={major}
                     onChange={(e) => setMajor(e.target.value)}
-                    placeholder="Computer Science"
+                    placeholder="AI & Machine Learning"
                     autoCapitalize="words"
                     autoCorrect="off"
                     inputMode="text"

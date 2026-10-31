@@ -1,6 +1,6 @@
 # QADAM Hub: IP register
 
-What the product is built from, who owns each part and under which terms. Keep it current: a buyer or investor will ask for exactly this during due diligence. Last reviewed: 26 October 2026. This is an inventory, not legal advice.
+What the product is built from, who owns each part and under which terms. Keep it current: a buyer or investor will ask for exactly this during due diligence. Last reviewed: 31 October 2026. This is an inventory, not legal advice.
 
 ## 1. Own code and content
 
@@ -16,7 +16,7 @@ What the product is built from, who owns each part and under which terms. Keep i
 | Marketing sources | `marketing/` | team, AI-assisted | same as code |
 | Project skills | `.claude/skills/claude-mem`, `superpowers`, `frontend-design`, `handoff` | written for this repo | Original content (names borrowed from public projects, text is ours) |
 
-AI assistance: a large share of commits were produced with Claude (Anthropic) and Codex (OpenAI). Both providers' terms assign the output to the user. Whether purely AI-generated code is protected by copyright is unsettled in many countries, so the defensible value sits in the product, the data pipeline, customer contracts and the brand, not only in the code. Commits keep a `Co-Authored-By` line naming the assistant.
+AI assistance: a large share of commits were produced with Claude (Anthropic) and Codex (OpenAI). Both providers' terms assign the output to the user. Whether purely AI-generated code is protected by copyright is unsettled in many countries, so the defensible value sits in the product, the data pipeline, customer contracts and the brand, not only in the code. Commits made before 31 October 2026 carry a `Co-Authored-By` line naming the assistant; later commits are authored as the owner without one, so this register is the record of AI assistance.
 
 ## 2. Third-party models and APIs
 
@@ -38,6 +38,7 @@ We train no model of our own and hold no training dataset.
 | Data | Source | Rights position |
 |---|---|---|
 | Opportunity listings (`public/data/opportunities.json`) | public organizer pages found by the radar scan | We publish facts (title, organizer, deadline), a short summary in our words, a short deadline quote and a link. Facts are not protected by copyright; keep quotes short and respect site terms |
+| Launch channel list (`docs/beta-launch-channels.md`) | open list mmccaff/PlacesToPostYourStartup, snapshot of 29 August 2026 | CC0 public domain dedication. Tiers and notes are ours |
 | User data | users and institutions | Covered by the Privacy Policy (`/privacy`) |
 
 ## 4. Open source dependencies

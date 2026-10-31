@@ -175,7 +175,7 @@ export const Sidebar: React.FC = () => {
               ref={popoverRef}
               role="menu"
               aria-orientation="vertical"
-              className="absolute bottom-[calc(100%+8px)] left-3 right-3 bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] rounded-card shadow-2xl p-1.5 z-50 animate-fadeIn space-y-0.5 border border-teal-200/90"
+              className="absolute bottom-[calc(100%+8px)] left-3 right-3 bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] rounded-card shadow-2xl p-1.5 z-50 animate-pop-in origin-bottom space-y-0.5 border border-teal-200/90"
             >
               <div className="px-3 py-2 border-b border-teal-200/60 text-[11px] font-mono text-teal-800 font-semibold">
                 ACCOUNT & PREFERENCES

@@ -13,5 +13,5 @@ export const legal = {
   registrationId: clean(import.meta.env.VITE_LEGAL_REGISTRATION_ID),
   contactEmail: clean(import.meta.env.VITE_CONTACT_EMAIL) ?? CONTACT_EMAIL,
   siteUrl: 'https://www.qadamhub.com',
-  lastUpdated: '26 October 2026',
+  lastUpdated: '31 October 2026',
 };

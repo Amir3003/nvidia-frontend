@@ -142,9 +142,9 @@ function Modal({
       role="dialog"
       aria-modal="true"
       aria-label={title}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm overflow-y-auto"
+      className="animate-overlay-in fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm overflow-y-auto"
     >
-      <div className="w-full max-w-md max-h-[85vh] my-auto overflow-y-auto rounded-card bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 shadow-2xl text-slate-900">
+      <div className="animate-modal-in w-full max-w-md max-h-[85vh] my-auto overflow-y-auto rounded-card bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 shadow-2xl text-slate-900">
         <div className="sticky top-0 z-10 px-5 py-3 border-b border-teal-200/80 bg-white/85 backdrop-blur flex items-center justify-between">
           <h2 className="text-[15px] font-bold text-indigo-950">{title}</h2>
           <button
