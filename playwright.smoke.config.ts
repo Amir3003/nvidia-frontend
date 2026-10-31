@@ -20,6 +20,6 @@ export default defineConfig({
     url: "http://127.0.0.1:5179",
     reuseExistingServer: false,
     // Empty Supabase settings keep the app local: no session checks, no sync.
-    env: { VITE_SUPABASE_URL: "", VITE_SUPABASE_ANON_KEY: "", VITE_SENTRY_DSN: "" },
+    env: { VITE_SUPABASE_URL: "", VITE_SUPABASE_ANON_KEY: "", VITE_SENTRY_DSN: "", VITE_REVIEW_URL: "https://example.com/review" },
   },
 });

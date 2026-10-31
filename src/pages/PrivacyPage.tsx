@@ -34,7 +34,7 @@ const SENT = [
   ['Test notification', 'Only if a QADAM server is configured: the channel name and your first name are sent so the bot can message you.'],
   ['Pilot request form', 'If an institution requests a pilot, the details typed into the form (institution, name, email, phone, city, cohort size, message) are stored so we can reply. They are used for nothing else.'],
   ['Opportunity suggestions', 'If you suggest an opportunity, its title, link, type, deadline and your note are stored so we can review it. If you are signed in, your account id is attached.'],
-  ['Feedback form', 'If you send feedback from the Feedback button, your message, the type you chose, the page path (without any query or code), your browser type and, if you are signed in to the network, your account id are stored so we can fix and improve the product. No profile fields or CV text are sent.'],
+  ['Feedback and ratings', 'If you send feedback or a star rating from the Feedback button, your message or comment, the type you chose, the page path (without any query or code), your browser type and, if you are signed in to the network, your account id are stored so we can fix and improve the product. No profile fields or CV text are sent.'],
   ['Data requests and support', 'A data request from this page goes to our team chat; a support ticket opens your own email app. We use them only to answer you.'],
   ['Official site links', 'Opening an organizer site is a normal visit to that site. Its own privacy policy applies.'],
 ];
