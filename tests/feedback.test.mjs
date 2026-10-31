@@ -114,6 +114,31 @@ test("answers 503 without the service key and 502 when the database fails", asyn
   })();
 });
 
+test("502 reports the Supabase status and error code, never the key", withSupabase(async () => {
+  globalThis.fetch = async () => ({
+    ok: false,
+    status: 404,
+    json: async () => ({ code: "PGRST205", message: "Could not find the table", hint: "service-key" }),
+  });
+  const missing = await call({ body: valid });
+  assert.equal(missing.status, 502);
+  assert.equal(missing.json.reason, "Supabase responded with HTTP 404");
+  assert.equal(missing.json.dbCode, "PGRST205");
+  assert.ok(!JSON.stringify(missing.json).includes("service-key"));
+  assert.ok(!JSON.stringify(missing.json).includes("example.supabase.co"));
+
+  globalThis.fetch = async () => ({ ok: false, status: 401, json: async () => { throw new Error("not json"); } });
+  const denied = await call({ body: valid });
+  assert.equal(denied.json.reason, "Supabase responded with HTTP 401");
+  assert.equal(denied.json.dbCode, "401");
+
+  globalThis.fetch = async () => { throw new Error("connect failed to https://example.supabase.co with service-key"); };
+  const down = await call({ body: valid });
+  assert.equal(down.status, 502);
+  assert.equal(down.json.reason, "Supabase request failed");
+  assert.ok(!JSON.stringify(down.json).includes("service-key"));
+}));
+
 test("limits reports per client", withSupabase(async () => {
   const ip = "10.9.9.9";
   for (let i = 0; i < 8; i++) assert.equal((await call({ body: valid, ip })).status, 200);
