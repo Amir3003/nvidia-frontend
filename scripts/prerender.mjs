@@ -71,16 +71,19 @@ const PAGES = [
 
 const esc = (value) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-// Each replacement must match exactly once, so a change in index.html fails the build instead of
-// silently shipping a page without its meta tags.
-function replaceOnce(html, pattern, replacement, label) {
-  const matches = html.match(new RegExp(pattern, 'g'));
-  if (!matches || matches.length !== 1) throw new Error(`prerender: expected one ${label} in dist/index.html, found ${matches ? matches.length : 0}`);
-  return html.replace(new RegExp(pattern), () => replacement);
+// Replaces the text between `before` and `after`. `before` must occur exactly once in the HTML, so a
+// change in index.html fails the build instead of silently shipping a page without its meta tags.
+// Plain string search on purpose: no patterns built from variables.
+function replaceBetween(html, before, after, replacement, label) {
+  const start = html.indexOf(before);
+  if (start === -1 || html.indexOf(before, start + 1) !== -1) throw new Error(`prerender: expected exactly one ${label} in dist/index.html`);
+  const valueStart = start + before.length;
+  const end = html.indexOf(after, valueStart);
+  if (end === -1) throw new Error(`prerender: ${label} is not closed in dist/index.html`);
+  return html.slice(0, valueStart) + replacement + html.slice(end);
 }
 
-const meta = (html, attr, key, value) =>
-  replaceOnce(html, `<meta ${attr}="${key}" content="[^"]*" ?/>`, `<meta ${attr}="${key}" content="${esc(value)}" />`, `meta ${key}`);
+const meta = (html, attr, key, value) => replaceBetween(html, `<meta ${attr}="${key}" content="`, '"', esc(value), `meta ${key}`);
 
 function shell(page) {
   const sections = page.sections
@@ -107,17 +110,18 @@ await mkdir(new URL('../dist/prerender/', import.meta.url), { recursive: true })
 for (const page of PAGES) {
   const url = `${SITE}${page.path}`;
   let html = base;
-  html = replaceOnce(html, '<title>[^<]*</title>', `<title>${esc(page.title)}</title>`, 'title');
+  html = replaceBetween(html, '<title>', '</title>', esc(page.title), 'title');
   html = meta(html, 'name', 'title', page.title);
   html = meta(html, 'name', 'description', page.description);
-  html = replaceOnce(html, '<link rel="canonical" href="[^"]*" ?/>', `<link rel="canonical" href="${url}" />`, 'canonical');
+  html = replaceBetween(html, '<link rel="canonical" href="', '"', url, 'canonical');
   html = meta(html, 'property', 'og:url', url);
   html = meta(html, 'property', 'og:title', page.title);
   html = meta(html, 'property', 'og:description', page.description);
   html = meta(html, 'name', 'twitter:url', url);
   html = meta(html, 'name', 'twitter:title', page.title);
   html = meta(html, 'name', 'twitter:description', page.description);
-  html = replaceOnce(html, '<div id="root"([^>]*)></div>', `<div id="root" class="min-h-[100dvh] flex flex-col">${shell(page)}</div>`, 'root element');
+  // The root element is empty in dist/index.html; its content is the static copy.
+  html = replaceBetween(html, '<div id="root" class="min-h-[100dvh] flex flex-col">', '</div>', shell(page), 'root element');
   await writeFile(new URL(`../dist/prerender/${page.file}.html`, import.meta.url), html);
   console.log(`prerender: dist/prerender/${page.file}.html`);
 }
