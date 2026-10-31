@@ -7,6 +7,7 @@ import { clientIp, isSameOrigin, rateLimit, readJsonObject, sendJson } from './_
 
 const MAX_BODY_BYTES = 8 * 1024;
 const TYPES = ['bug', 'feature', 'general', 'rating'];
+const JWT = /^eyJ[\w-]+\.[\w-]+\.[\w-]+$/;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const PATH = /^\/[A-Za-z0-9\-._~/]{0,198}$/;
 const UNAVAILABLE = 'Feedback is not available right now.';
@@ -81,7 +82,9 @@ export default async function handler(request, response) {
       headers: {
         'Content-Type': 'application/json',
         apikey: target.key,
-        Authorization: `Bearer ${target.key}`,
+        // Legacy service_role keys are JWTs and go in both headers. New sb_secret_ keys are not
+        // JWTs and must only be sent as the apikey header.
+        ...(JWT.test(target.key) ? { Authorization: `Bearer ${target.key}` } : {}),
         Prefer: 'return=minimal',
       },
       body: JSON.stringify(row),

@@ -44,7 +44,7 @@ function withSupabase(fn) {
     };
     const saved = { ...process.env };
     process.env.SUPABASE_URL = "https://example.supabase.co";
-    process.env.SUPABASE_SERVICE_ROLE_KEY = "service-key";
+    process.env.SUPABASE_SERVICE_ROLE_KEY = process.env.TEST_KEY || "eyJhbGciOi.service-role.signature";
     try {
       await fn(calls);
     } finally {
@@ -80,8 +80,8 @@ test("stores a clean row with the service role key", withSupabase(async (calls) 
   assert.equal(out.status, 200);
   assert.equal(calls.length, 1);
   assert.equal(calls[0].url, "https://example.supabase.co/rest/v1/feedback");
-  assert.equal(calls[0].init.headers.apikey, "service-key");
-  assert.equal(calls[0].init.headers.Authorization, "Bearer service-key");
+  assert.equal(calls[0].init.headers.apikey, "eyJhbGciOi.service-role.signature");
+  assert.equal(calls[0].init.headers.Authorization, "Bearer eyJhbGciOi.service-role.signature");
   const row = JSON.parse(calls[0].init.body);
   assert.deepEqual(row, {
     type: "bug",
@@ -91,6 +91,13 @@ test("stores a clean row with the service role key", withSupabase(async (calls) 
     page_path: "/student",
     user_agent: "node-test",
   });
+}));
+
+test("a new-format secret key goes only in the apikey header", withSupabase(async (calls) => {
+  process.env.SUPABASE_SERVICE_ROLE_KEY = "sb_secret_abc123";
+  assert.equal((await call({ body: valid })).status, 200);
+  assert.equal(calls[0].init.headers.apikey, "sb_secret_abc123");
+  assert.equal(calls[0].init.headers.Authorization, undefined);
 }));
 
 test("drops a malformed user id and an unsafe page path", withSupabase(async (calls) => {
