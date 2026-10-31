@@ -5,7 +5,7 @@ import {
   USER_ROLES,
   CAREER_OBJECTIVES,
 } from '../db/userProfile';
-import { VALID_CITIES } from '../components/OnboardingWizard';
+import { VALID_CITIES } from '../db/cities';
 import { SkillAutocomplete } from '../components/SkillAutocomplete';
 import { anonymize } from '../utils/anonymizer';
 import {
@@ -411,9 +411,6 @@ export const AccountPortalPage: React.FC = () => {
           <div className="flex items-center gap-2 pl-2">
             <img src="/brand/qadam-icon.png" alt="QADAM Logo" className="w-5 h-5 object-contain rounded-md drop-shadow-xs" />
             <span className="text-[14px] font-bold tracking-tight text-white font-mono">QADAM</span>
-            <span className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-teal-500/10 text-teal-300 border border-teal-500/30 font-medium">
-              «Қадам»
-            </span>
           </div>
         </div>
 
@@ -485,11 +482,11 @@ export const AccountPortalPage: React.FC = () => {
         {/* ========================================================= */}
         {activeTab === 'profile' && (
           <div className="space-y-8 animate-fadeIn">
-            {/* Slogan & Kazakh Backstory Banner */}
+            {/* Slogan banner */}
             <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-indigo-500/15 border border-teal-300/40 text-mini text-teal-100 flex items-center gap-3 shadow-xs">
               <img src="/brand/qadam-icon.png" alt="QADAM" className="w-7 h-7 object-contain flex-shrink-0" />
               <p className="leading-relaxed">
-                <strong className="text-emerald-300">QADAM («Қадам»)</strong> means "step" in Kazakh. Your direct platform for global academic grants, internships, and AI opportunities.
+                <strong className="text-emerald-300">QADAM</strong> means "step". Your direct platform for global academic grants, internships, and AI opportunities.
               </p>
             </div>
 
@@ -710,7 +707,7 @@ export const AccountPortalPage: React.FC = () => {
                     list="qadam-cities-portal"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    placeholder="e.g. Almaty, Kazakhstan"
+                    placeholder="e.g. Tokyo, Japan"
                     autoCapitalize="words"
                     autoCorrect="off"
                     className="w-full h-11 px-3.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 rounded-xl text-base md:text-[13px] text-slate-900 placeholder:text-slate-400 outline-none font-sans transition-colors"

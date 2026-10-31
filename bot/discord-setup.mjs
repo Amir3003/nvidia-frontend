@@ -8,7 +8,7 @@ const TOKEN = process.env.DISCORD_BOT_TOKEN;
 const API = 'https://discord.com/api/v10';
 const SITE = 'https://www.qadamhub.com';
 const LOGO_URL = `${SITE}/brand/qadam-avatar.png`;
-const FOOTER = { text: 'QADAM (Қадам) · www.qadamhub.com', icon_url: LOGO_URL };
+const FOOTER = { text: 'QADAM · www.qadamhub.com', icon_url: LOGO_URL };
 const EMERALD = 0x10b981;
 const INDIGO = 0x4f46e5;
 const CYAN = 0x06b6d4;
@@ -21,7 +21,7 @@ const MESSAGES = [
     color: EMERALD,
     title: 'Welcome to QADAM',
     description:
-      'QADAM («Қадам») means "step" in Kazakh. This is where students find hackathons, grants and internships, build teams, and get honest feedback on what they are building.',
+      'QADAM means "step". This is where students find hackathons, grants and internships, build teams, and get honest feedback on what they are building.',
     fields: [
       {
         name: 'Start in three steps',
@@ -173,7 +173,7 @@ const MESSAGES = [
     channel: 'international-chat',
     color: CYAN,
     title: 'Language exchange',
-    description: 'Practice English, Kazakh, Russian, Korean or any other language. Start your message with a tag such as `[EN]` or `[KZ]`. Correct others only when they ask for it.',
+    description: 'Practice English or any language you are learning. Start your message with a tag such as `[EN]` or `[JP]`. Correct others only when they ask for it.',
   },
 ];
 

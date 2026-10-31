@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { BarChartIcon, ChevronRightIcon, CloseIcon, FileTextIcon, FlaskIcon } from './Icons';
+import { BarChartIcon, BellIcon, ChevronRightIcon, CloseIcon, FlaskIcon } from './Icons';
 
 // First-run welcome for individual students: what the app does, then a first name and goals.
 // Two steps and one short field, so a new student reaches the Radar in seconds. Everything else
@@ -21,10 +21,10 @@ const GOAL_CHOICES = [
 const VALUE_POINTS = [
   { icon: FlaskIcon, title: 'AI skill quizzes', text: '236 topics, 10 questions each. Pass at 7 to earn a Verified badge.', soon: false },
   { icon: BarChartIcon, title: 'Gap analysis', text: 'See what each grant or hackathon asks for and which skills you are still missing.', soon: false },
-  { icon: FileTextIcon, title: 'Portfolio', text: 'One place for your verified achievements.', soon: true },
+  { icon: BellIcon, title: 'Deadline alerts', text: 'Reminders in Telegram or Discord, so a deadline never surprises you.', soon: false },
 ];
 
-// Letters from any alphabet, so Kazakh, Russian, Korean and Latin names all pass.
+// Letters from any alphabet, so Latin, Cyrillic, Korean, Japanese and other names all pass.
 const NAME_PATTERN = /^[\p{L}][\p{L}\s'-]*$/u;
 
 export const WelcomeFlow: React.FC<{ onClose: () => void }> = ({ onClose }) => {

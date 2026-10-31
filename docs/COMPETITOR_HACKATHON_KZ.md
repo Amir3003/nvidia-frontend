@@ -1,6 +1,6 @@
 # Competitor teardown: hackathon.kz, and what QADAM Hub builds in response
 
-Written 31 October 2026. Everything in section 1 comes from the public pages and the public client script of `https://hackathon.kz` read on that day. Where I could not see a thing, it says so. Section 2 onward is our plan; nothing in it is built yet unless it says "exists".
+Written 31 October 2026. Scope update the same day: the owner cut KakaoTalk, school ranking, employer cases, one-click apply and the personal roadmap, and rated the verified portfolio as undecided (50-50); see `docs/PRODUCT_SCOPE.md`. Read section 2 as a plan we may or may not build. Everything in section 1 comes from the public pages and the public client script of `https://hackathon.kz` read on that day. Where I could not see a thing, it says so. Section 2 onward is our plan; nothing in it is built yet unless it says "exists".
 
 ## 1. What hackathon.kz actually is
 
@@ -30,7 +30,7 @@ Written 31 October 2026. Everything in section 1 comes from the public pages and
 
 What they do well and we should respect: free listing for organizers (supply), a day counter on every card, Telegram as the main channel, three languages, and a portfolio that already exists and works.
 
-## 2. What to take and how to beat it: the Verified Lifelong Portfolio
+## 2. What to take and how to beat it: the Verified Portfolio (undecided)
 
 "10x faster" is not a number we can promise. Define targets we can measure instead:
 
@@ -129,7 +129,7 @@ Everything in the box is inside the first 360 px of the card on a phone.
 |---|---|
 | Deadline pill | Text always ("12 days left", "Last day", "Closed"), never color alone. 15 or more days: neutral. 4 to 14: amber. 3 or fewer: rose. Use `<time datetime>`. Deadlines are dates without a time zone, so show the date too and treat "last day" as the whole day. |
 | Prize or funding | One pill with the amount and currency, quoted from the source. Hidden when the source gives none; never guess. |
-| Primary action | "Apply on official site", opens the organizer page in a new tab. This is honest: we cannot submit an application for the user. A real one-click apply needs partner integrations and stays on the roadmap. Secondary: Prepare (the checklist) and Details. |
+| Primary action | "Apply on official site", opens the organizer page in a new tab. This is honest: we cannot submit an application for the user. One-click apply is out of scope: applications are submitted on the organizer's site. Secondary: Prepare (the checklist) and Details. |
 | Where | "Remote", "Onsite", or "Hybrid", plus the place or "Open worldwide". |
 | Skills | Up to three chips and a "+N". |
 

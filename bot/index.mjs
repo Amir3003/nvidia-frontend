@@ -5,8 +5,8 @@ if (!TOKEN) { console.error('Missing TELEGRAM_BOT_TOKEN in .env'); process.exit(
 const BOT_USERNAME = process.env.BOT_USERNAME || 'QadamAgentBot';
 const FALLBACK_PUBLIC_WEB_APP_URL = 'https://www.qadamhub.com';
 const AVATAR_FILE = 'public/brand/qadam-avatar.png';
-const OFFICIAL_SLOGAN = 'QADAM («Қадам») means "step" in Kazakh. Your next step toward global opportunities, grants, and technologies.';
-const BRAND_FOOTER = 'QADAM (Қадам) · www.qadamhub.com';
+const OFFICIAL_SLOGAN = 'QADAM means "step". Your next step toward global opportunities, grants, and technologies.';
+const BRAND_FOOTER = 'QADAM · www.qadamhub.com';
 
 // Helper: Ensure all Telegram inline keyboard buttons strictly receive a valid public HTTPS URL
 function getWebUrl(subpath = '') {
@@ -84,7 +84,7 @@ async function loadRadarSafe() {
 
 function renderMainMenu(userName = 'Student') {
   return {
-    text: `<b>QADAM («Қадам») | AI Opportunity Hub</b>
+    text: `<b>QADAM | AI Opportunity Hub</b>
 <i>${escapeHtml(OFFICIAL_SLOGAN)}</i>
 
 Hello, <b>${escapeHtml(userName)}</b>.

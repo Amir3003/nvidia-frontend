@@ -29,7 +29,7 @@ AI assistance: a large share of commits were produced with Claude (Anthropic) an
 | Sentry | crash reports | Sentry terms, DPA | No PII by configuration |
 | Google | Gmail SMTP for sign-in codes, Google Fonts | Google terms | |
 | Oracle Cloud | bot server | Oracle terms | |
-| Telegram, Discord, Kakao | bot messaging | platform developer terms | |
+| Telegram, Discord | bot messaging | platform developer terms | |
 
 We train no model of our own and hold no training dataset.
 

@@ -9,7 +9,7 @@ import { isProfileValid } from '../db/userProfile';
 import { usePageMeta } from '../lib/seo';
 
 // Public landing for individual students (B2C). Same look as the schools landing.
-// Every claim must be true today or carry a "Coming soon" chip: see docs/STRATEGY.md.
+// Every claim must be true today or carry a "Coming soon" chip: see docs/PRODUCT_SCOPE.md.
 
 type Status = 'live' | 'soon';
 
@@ -48,9 +48,9 @@ const FEATURES: { title: string; text: string; status: Status }[] = [
     status: 'live',
   },
   {
-    title: 'Portfolio and roadmap',
-    text: 'A portfolio of verified achievements and a step-by-step plan toward your goal.',
-    status: 'soon',
+    title: 'Private by default',
+    text: 'Your profile stays on your device. You choose whether to join the shared network.',
+    status: 'live',
   },
 ];
 

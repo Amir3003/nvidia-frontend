@@ -6,7 +6,7 @@ Link to use everywhere: `https://www.qadamhub.com/students`. Replace `[name]` wi
 
 - **Age and background come from your brief.** The posts say you are 17 and an AI student. Remove or change that if it is not exact. They do not combine the age with the "2022" story from the strategy notes.
 - **Only what is live is claimed.** Live: the feed with deadlines quoted from the organizer page, 236 skill quizzes (10 random questions, pass at 7, Verified badge), the CV gap check, application prep checklist, Telegram and Discord alerts, teammates network, the Feedback button, free start with no school or invite, profile kept on the device.
-- **Not live, so never stated as done:** certificate and GitHub verification, the portfolio, the roadmap, one-click apply. The posts call them "next". Your brief asked for "verifies your GitHub and certificates" in the r/SideProject post; I turned it into a plain "I'm building this next", because a Reddit or Hacker News reader can open the app, find nothing, and the post is dead.
+- **Not built, so never stated as done:** certificate and GitHub verification and the portfolio. That idea is undecided (see `docs/PRODUCT_SCOPE.md`), so the posts present it as a question for readers, not a promise. Your brief asked for "verifies your GitHub and certificates" in the r/SideProject post; I turned it into an honest "I'm thinking about it", because a Reddit or Hacker News reader can open the app, find nothing, and the post is dead.
 - **The feed is small today** (5 listings when I checked). The posts say it is small and that only confirmed listings are published. That is honest and reads better than hype.
 - **Personal lines in the value posts** ("I've lost time on...", "things that helped me", "I've done a lot of reading") are written for you. Keep only the ones that are true for you.
 - One place per day. Reread each community's rules the day you post. Never ask for upvotes on Product Hunt, Hacker News or Reddit. Answer every comment within a few hours, and answer bad news calmly.
@@ -39,7 +39,7 @@ So I built QADAM Hub. What works today:
 
 Built with React, TypeScript, Supabase and Vercel.
 
-What it is not yet: the feed is small, because I only publish a listing when I can confirm its deadline on the source. The verified portfolio (checking GitHub projects and course certificates) is what I'm building next, and I'm not claiming it today.
+What it is not yet: the feed is small, because I only publish a listing when I can confirm its deadline on the source. I'm also thinking about a verified portfolio (checking GitHub projects and course certificates). I haven't decided to build it, so it is not in the app.
 
 I'd like blunt feedback: what is confusing, what is missing, would you actually use it? There is a Feedback button inside the app and it goes straight to me.
 
@@ -73,7 +73,7 @@ What I'd like you to try (10 minutes):
 3. Take one skill quiz.
 4. Press the Feedback button and send me the first thing that annoyed you. You can also just rate the app with stars.
 
-Known limits: the feed is small, the profile lives on your device (no cross-device sync yet), and the verified portfolio is not built. Everything else, tell me.
+Known limits: the feed is small and the profile lives on your device (no cross-device sync yet). Everything else, tell me.
 
 I read and answer every report. Free during the beta.
 
@@ -209,7 +209,7 @@ Hi, I'm [name], 17, and I made QADAM Hub because I kept missing hackathon deadli
 
 Today it does four things: shows grants, hackathons and internships where each deadline is quoted from the organizer's page, runs 236 skill quizzes, shows the gap between a listing and your skills, and sends deadline alerts to Telegram and Discord. You can start in two steps, free, with no school or invite.
 
-What it does not do yet: the feed is small, and the verified portfolio (GitHub projects and course certificates) is what I'm building next.
+What it does not do yet: the feed is small. I'm weighing a verified portfolio (GitHub projects and course certificates) but haven't decided to build it.
 
 I'd love to know what would make you trust a listing, and what you would want first. The Feedback button in the app goes straight to me.
 ```
@@ -226,7 +226,7 @@ QADAM Hub helps students worldwide find hackathons, grants and scholarships they
 - Maker comment:
 
 ```
-I'm [name], a 17 year old AI student. I built this after missing hackathon deadlines that only lived in chat links. It is early: the feed is small on purpose, because I only publish listings whose deadline I can confirm on the source, and the verified portfolio is not built yet. I'm looking for testers who will tell me what is confusing. Every report through the in-app Feedback button reaches me directly.
+I'm [name], a 17 year old AI student. I built this after missing hackathon deadlines that only lived in chat links. It is early: the feed is small on purpose, because I only publish listings whose deadline I can confirm on the source. I'm looking for testers who will tell me what is confusing. Every report through the in-app Feedback button reaches me directly.
 ```
 
 ## Indie Hackers
@@ -235,7 +235,7 @@ I'm [name], a 17 year old AI student. I built this after missing hackathon deadl
 - 60-word description:
 
 ```
-I built QADAM Hub because hackathon and scholarship deadlines kept slipping past me in chat links. It is a free beta radar where each listing shows a deadline quoted from the organizer's own page, plus 236 skill quizzes, a CV gap check, and Telegram or Discord alerts. The verified portfolio is next. I want blunt feedback from other students, please.
+I built QADAM Hub because hackathon and scholarship deadlines kept slipping past me in chat links. It is a free beta radar where each listing shows a deadline quoted from the organizer's own page, plus 236 skill quizzes, a CV gap check, and Telegram or Discord alerts. A verified portfolio is only an idea. I want blunt feedback from students.
 ```
 
 - Maker comment (post on the product page, and as a short milestone post):
@@ -267,7 +267,7 @@ How it works: a daily job searches the web, reads each candidate page, and extra
 
 On top of that: 236 skill quizzes with a pass mark, a CV gap check that compares a listing's required skills with yours, and Telegram and Discord alerts. The profile is kept in the browser, there is no account needed to start, and the stack is React, TypeScript, Supabase and Vercel.
 
-Not built yet: verifying GitHub projects and course certificates for a portfolio, and any one-click applying. Those are next, and I would rather say so than imply it.
+Not built: a portfolio that verifies GitHub projects and course certificates. I'm still deciding whether it is worth building, so I won't imply it exists.
 
 Things I'd value feedback on: whether the quoted-deadline approach is enough to trust a listing, and what you would check before trusting a certificate link. The Feedback button inside the app reaches me directly.
 ```

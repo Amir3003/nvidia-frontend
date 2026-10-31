@@ -6,7 +6,7 @@ export function NetworkAccess({
   children,
   title = "Sign in to the shared network",
   intro = "Verify your email to connect with real teammates on any device. Your existing local workspace stays on this device.",
-  brandLine = "QADAM «Қадам» network",
+  brandLine = "QADAM network",
 }: {
   children: (user: User) => React.ReactNode;
   title?: string;
@@ -171,7 +171,7 @@ const inputClass =
 export function AccessCard({
   title,
   step,
-  brandLine = "QADAM «Қадам» network",
+  brandLine = "QADAM network",
   children,
 }: {
   title: string;

@@ -15,14 +15,14 @@ Source: the open list [mmccaff/PlacesToPostYourStartup](https://github.com/mmcca
 
 Only claim what is live today (the exact list is in `docs/launch-posts.md`).
 
-| Live | Not live yet, say "coming soon" or do not mention |
+| Live | Not built (do not claim) |
 |---|---|
-| Opportunity Radar with a deadline confirmed by a quote on the organizer page | Verified student profile and portfolio |
-| 236 skill quizzes and the CV gap check | Personal roadmap |
-| Application prep checklist | School ranking, employer cases |
-| Telegram and Discord alerts | KakaoTalk channel |
-| Teammates and Network | One-click applications |
-| Free student profile, no invite needed | Essay generation |
+| Opportunity Radar with a deadline confirmed by a quote on the organizer page | Verified student profile and portfolio (undecided) |
+| 236 skill quizzes and the CV gap check | Essay helper (optional, student-initiated, not built) |
+| Application prep checklist | |
+| Telegram and Discord alerts | |
+| Teammates and Network | |
+| Free student profile, no invite needed | |
 
 Do not state user numbers, pilots or letters of intent until they are real and written down. The beta is free; say so only while that stays true.
 

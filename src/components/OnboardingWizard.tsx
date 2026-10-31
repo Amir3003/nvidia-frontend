@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { USER_ROLES, CAREER_OBJECTIVES } from '../db/userProfile';
 import { SkillAutocomplete } from './SkillAutocomplete';
+import { VALID_CITIES } from '../db/cities';
 import {
   ShieldIcon,
   ChevronRightIcon,
@@ -14,41 +15,7 @@ import {
   RefreshIcon,
 } from './Icons';
 
-export const VALID_CITIES = [
-  'Astana, Kazakhstan',
-  'Almaty, Kazakhstan',
-  'Shymkent, Kazakhstan',
-  'Karaganda, Kazakhstan',
-  'Aktobe, Kazakhstan',
-  'Taraz, Kazakhstan',
-  'Pavlodar, Kazakhstan',
-  'Oskemen, Kazakhstan',
-  'Semey, Kazakhstan',
-  'Atyrau, Kazakhstan',
-  'Kostanay, Kazakhstan',
-  'Kyzylorda, Kazakhstan',
-  'Oral, Kazakhstan',
-  'Petropavl, Kazakhstan',
-  'Aktau, Kazakhstan',
-  'Turkistan, Kazakhstan',
-  'Temirtau, Kazakhstan',
-  'Kokshetau, Kazakhstan',
-  'Ekibastuz, Kazakhstan',
-  'San Francisco, USA',
-  'New York, USA',
-  'Boston, USA',
-  'London, UK',
-  'Berlin, Germany',
-  'Munich, Germany',
-  'Zurich, Switzerland',
-  'Tokyo, Japan',
-  'Seoul, South Korea',
-  'Singapore',
-  'Toronto, Canada',
-  'Paris, France',
-  'Amsterdam, Netherlands',
-  'Dubai, UAE',
-] as const;
+export { VALID_CITIES };
 
 export const OnboardingWizard: React.FC = () => {
   const navigate = useNavigate();
@@ -202,8 +169,7 @@ export const OnboardingWizard: React.FC = () => {
                 <h2 id="registration-title" className="text-subheading text-indigo-950 font-bold">
                   Create Your QADAM Account
                 </h2>
-                <span className="text-[11px] font-mono text-teal-800">«Қадам»</span>
-              </div>
+                              </div>
               <div className="text-mini font-mono text-teal-800 font-medium">
                 Step {step} of 4:{' '}
                 {step === 1
@@ -282,7 +248,7 @@ export const OnboardingWizard: React.FC = () => {
               <div className="p-3.5 rounded-xl bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-indigo-500/10 border border-teal-300/40 text-mini text-teal-950 leading-relaxed flex items-center gap-3 shadow-xs">
                 <img src="/brand/qadam-icon.png" alt="QADAM Step" className="w-6 h-6 object-contain flex-shrink-0" />
                 <p>
-                  <strong>QADAM («Қадам»)</strong> means "step" in Kazakh. Your direct platform for global academic grants, internships, and AI opportunities.
+                  <strong>QADAM</strong> means "step". Your direct platform for global academic grants, internships, and AI opportunities.
                 </p>
               </div>
 
@@ -432,7 +398,7 @@ export const OnboardingWizard: React.FC = () => {
                   list="qadam-cities"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  placeholder="e.g. Almaty, Kazakhstan"
+                  placeholder="e.g. Tokyo, Japan"
                   autoCapitalize="words"
                   autoCorrect="off"
                   inputMode="text"
@@ -445,7 +411,7 @@ export const OnboardingWizard: React.FC = () => {
                 </datalist>
                 {!isLocationValid && location.length > 0 && (
                   <div className="text-[11px] font-mono text-rose-600 mt-1">
-                    Please select a valid city (e.g. Astana, Almaty, or major hub). Real letters only.
+                    Please enter a real city, for example Tokyo or Toronto. Letters only.
                   </div>
                 )}
               </div>

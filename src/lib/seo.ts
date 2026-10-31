@@ -25,10 +25,10 @@ function apply(title: string, url: string) {
   setMeta('name', 'twitter:title', title);
 }
 
-// The values in index.html (the schools landing), restored when a page with its own meta unmounts.
+// The values in index.html (the student landing), restored when a page with its own meta unmounts.
 // Fixed here because the prerendered /students page starts with its own head.
-const DEFAULT_TITLE = 'Career support for training centers in Kazakhstan | QADAM Hub';
-const DEFAULT_URL = `${SITE}/welcome`;
+const DEFAULT_TITLE = 'Grants, scholarships and hackathons for students | QADAM Hub';
+const DEFAULT_URL = `${SITE}/students`;
 
 // Per-page title and canonical URL for public pages. Titles follow "what it is | QADAM Hub".
 export function usePageMeta(title: string, path: string) {

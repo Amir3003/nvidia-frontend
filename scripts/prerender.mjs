@@ -11,12 +11,12 @@ const PAGES = [
   {
     file: 'welcome',
     path: '/welcome',
-    title: 'Career support for training centers in Kazakhstan | QADAM Hub',
+    title: 'Career support for schools, universities and training centers | QADAM Hub',
     description:
-      'QADAM Hub helps coding schools, AI training centers and bootcamps in Kazakhstan guide learners to internships, hackathons and grants, and shows staff who is applying. Free 4 to 6 week pilot.',
+      'QADAM Hub helps schools, universities and training centers guide students to international hackathons, grants, scholarships and internships, and shows staff who is preparing and who applied. Free 4 to 6 week pilot.',
     h1: 'Opportunity and career support for your cohort',
     intro:
-      'Learners find internships, hackathons and grants that fit their skills. Your staff see who is applying, without chasing links in chats. Built for coding schools, AI training centers and career bootcamps in Kazakhstan.',
+      'Learners find internships, hackathons and grants that fit their skills. Your staff see who is applying, without chasing links in chats. Built for schools, universities and training centers.',
     sections: [
       {
         h2: 'How it works',
@@ -57,7 +57,7 @@ const PAGES = [
           ['Application prep', 'A checklist before you apply on the organizer site, with the gaps in your profile called out.'],
           ['Alerts in Telegram and Discord', 'New listings that match your goals, in the messenger you already use.'],
           ['Teammates and Network', 'Find people for a hackathon team and message them. Joining is your choice.'],
-          ['Portfolio and roadmap (coming soon)', 'A portfolio of verified achievements and a step-by-step plan toward your goal.'],
+          ['Private by default', 'Your profile stays on your device. You choose whether to join the shared network.'],
         ],
       },
     ],

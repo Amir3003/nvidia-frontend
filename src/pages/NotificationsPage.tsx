@@ -8,10 +8,8 @@ import {
   ExternalLinkIcon,
   TelegramIcon,
   DiscordIcon,
-  KakaoTalkIcon,
   CloseIcon,
 } from '../components/Icons';
-import { isKakaoChannelConfigured, kakaoChannelUrl } from '../lib/kakao';
 
 export const NotificationsPage: React.FC = () => {
   const { userProfile, updateUserProfile, addLog } = useApp();
@@ -19,8 +17,6 @@ export const NotificationsPage: React.FC = () => {
   const initialNotifications = userProfile.notifications || {
     telegram: false,
     telegramHandle: '',
-    kakao: false,
-    kakaoHandle: '',
     discord: false,
     discordWebhook: '',
   };
@@ -28,10 +24,6 @@ export const NotificationsPage: React.FC = () => {
   const [telegramActive, setTelegramActive] = useState(false);
   const [telegramHandle, setTelegramHandle] = useState(initialNotifications.telegramHandle || '@');
   const [isTelegramModal, setIsTelegramModal] = useState(false);
-
-  const [kakaoActive, setKakaoActive] = useState(initialNotifications.kakao);
-  const [kakaoHandle] = useState(initialNotifications.kakaoHandle || '');
-  const [kakaoNotice, setKakaoNotice] = useState('');
 
   const [discordActive, setDiscordActive] = useState(false);
   const [, setDiscordWebhook] = useState('');
@@ -43,8 +35,6 @@ export const NotificationsPage: React.FC = () => {
     const updated = {
       telegram: telegramActive,
       telegramHandle,
-      kakao: kakaoActive,
-      kakaoHandle,
       discord: discordActive,
       ...updates,
       discordWebhook: '',
@@ -82,26 +72,6 @@ export const NotificationsPage: React.FC = () => {
     setTelegramActive(false);
     saveNotifications({ telegram: false });
     addLog('SYSTEM', 'Telegram Bot integration disconnected');
-  };
-
-  // The bot lives in the QADAM KakaoTalk Channel: connecting opens its 1:1 chat, where the
-  // student sends commands such as 구독 (subscribe) and 레이더 (radar).
-  const handleConnectKakao = () => {
-    if (!isKakaoChannelConfigured()) {
-      setKakaoNotice('The QADAM KakaoTalk channel is not configured yet.');
-      return;
-    }
-    window.open(kakaoChannelUrl('/chat'), '_blank', 'noopener,noreferrer');
-    setKakaoNotice('');
-    setKakaoActive(true);
-    saveNotifications({ kakao: true, kakaoHandle: 'QADAM KakaoTalk bot' });
-    addLog('SYSTEM', 'Opened the QADAM KakaoTalk bot chat');
-  };
-
-  const handleDisconnectKakao = () => {
-    setKakaoActive(false);
-    saveNotifications({ kakao: false });
-    addLog('SYSTEM', 'KakaoTalk bot card reset on this device');
   };
 
   const DISCORD_INVITE_URL = 'https://discord.gg/A4rxRGx4Vt';
@@ -177,8 +147,8 @@ export const NotificationsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* 3 Channel Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* 2 Channel Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Column 1: Telegram Bot */}
           <div className="p-6 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] flex flex-col justify-between space-y-6 hover:border-sky-400/80 transition-all">
             <div className="space-y-4">
@@ -279,97 +249,7 @@ export const NotificationsPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Column 2: KakaoTalk Channel */}
-          <div className="p-6 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] flex flex-col justify-between space-y-6 hover:border-amber-400/80 transition-all">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="w-11 h-11 rounded-btn bg-[#fee500]/25 border border-[#fee500]/60 flex items-center justify-center text-amber-900 shadow-xs">
-                  <KakaoTalkIcon size={24} />
-                </div>
-                <span
-                  className={`text-mini font-mono px-2.5 py-1 rounded border flex items-center gap-1.5 font-bold ${kakaoActive
-                      ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
-                      : 'bg-white/80 text-teal-800 border-teal-200'
-                    }`}
-                >
-                  <span
-                    className={`w-1.5 h-1.5 rounded-full ${kakaoActive ? 'bg-emerald-600 animate-pulse' : 'bg-slate-400'
-                      }`}
-                  />
-                  <span>{kakaoActive ? 'CONNECTED' : 'DISCONNECTED'}</span>
-                </span>
-              </div>
-
-              <div>
-                <h3 className="text-[17px] font-bold text-indigo-950">KakaoTalk Bot</h3>
-                <div className="text-mini font-mono text-amber-700 font-bold mt-0.5">카카오톡 알림 · QADAM 봇</div>
-                <p className="text-[13px] text-teal-950 mt-2 leading-relaxed">
-                  QADAM 카카오톡 채널의 봇과 1:1로 대화하세요. 명령어로 최신 장학금, 해커톤, 마감 일정을 확인하세요. Chat with the QADAM bot in KakaoTalk and ask for the latest opportunities.
-                </p>
-              </div>
-
-              <div className="space-y-2 pt-2 border-t border-teal-200/60 text-mini font-mono text-teal-900">
-                <div className="flex items-center gap-2">
-                  <CheckIcon size={12} className="text-emerald-600 flex-shrink-0" />
-                  <span>Latest opportunities on request</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckIcon size={12} className="text-emerald-600 flex-shrink-0" />
-                  <span>Commands: 레이더, 마감, 사이트, 도움말</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckIcon size={12} className="text-emerald-600 flex-shrink-0" />
-                  <span>Korean / English bilingual cards</span>
-                </div>
-              </div>
-
-              {kakaoActive && (
-                <div className="p-2.5 rounded bg-gradient-to-br from-amber-50 to-orange-100/80 border border-amber-300/60 text-mini font-mono text-amber-950">
-                  In the chat send <span className="text-indigo-950 font-bold">레이더</span> for opportunities and <span className="text-indigo-950 font-bold">도움말</span> for all commands.
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-2 pt-4 border-t border-teal-200/60">
-              {kakaoNotice && (
-                <div role="alert" className="p-2.5 rounded bg-rose-50 border border-rose-200 text-mini font-mono text-rose-700">
-                  {kakaoNotice}
-                </div>
-              )}
-              {kakaoActive ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={handleConnectKakao}
-                    className="w-full h-10 rounded-btn bg-[#fee500] hover:bg-[#ebd400] text-amber-950 text-mini font-mono font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
-                  >
-                    <KakaoTalkIcon size={16} />
-                    <span>Open QADAM Bot Chat</span>
-                    <ExternalLinkIcon size={14} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleDisconnectKakao}
-                    className="w-full h-9 rounded-btn border border-rose-200 bg-white hover:bg-rose-50 text-rose-600 text-mini font-mono transition-colors cursor-pointer"
-                  >
-                    Disconnect KakaoTalk
-                  </button>
-                </>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleConnectKakao}
-                  className="w-full h-11 rounded-btn bg-[#fee500] hover:bg-[#ebd400] text-amber-950 font-bold text-[13px] font-mono transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-amber-900/15"
-                >
-                  <KakaoTalkIcon size={16} />
-                  <span>Connect KakaoTalk</span>
-                  <ExternalLinkIcon size={14} />
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Column 3: Discord Bot */}
+          {/* Column 2: Discord Bot */}
           <div className="p-6 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 backdrop-blur-xl border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] flex flex-col justify-between space-y-6 hover:border-indigo-400/80 transition-all">
             <div className="space-y-4">
               <div className="flex items-center justify-between">

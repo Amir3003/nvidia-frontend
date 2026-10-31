@@ -1,5 +1,5 @@
 import type { Opportunity } from './opportunities';
-import { VALID_CITIES } from '../components/OnboardingWizard';
+import { VALID_CITIES } from './cities';
 
 // Profile location is "City, Country". Returns the country, or '' if unknown.
 export function profileCountry(location: string): string {

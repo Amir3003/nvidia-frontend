@@ -197,7 +197,7 @@ export const INITIAL_OPPORTUNITIES: Opportunity[] = [
     match: 68,
     description: 'High-throughput microservices architecture, gRPC pipelines, distributed caching, and container orchestration with Docker.',
     skills: ['Go', 'Docker', 'gRPC', 'PostgreSQL'],
-    location: 'Astana / Hybrid',
+    location: 'Singapore / Hybrid',
     award: 'Paid Internship',
   },
   {

@@ -3,8 +3,6 @@ import { QUIZ_CATALOG } from './quizCatalog.data';
 export interface NotificationSettings {
   telegram: boolean;
   telegramHandle: string;
-  kakao: boolean;
-  kakaoHandle: string;
   discord: boolean;
   discordWebhook: string;
 }
@@ -163,8 +161,6 @@ export const EMPTY_USER_PROFILE: UserProfile = {
   notifications: {
     telegram: false,
     telegramHandle: '',
-    kakao: false,
-    kakaoHandle: '',
     discord: false,
     discordWebhook: '',
   },

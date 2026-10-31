@@ -1,14 +1,14 @@
 # QADAM Hub: B2B rebuild plan
 
 Source of truth for the B2B direction: the deck "QADAM Hub, 149 USD, Team, Updated" (October 2026).
-QADAM Hub sells an institutional subscription to technology training centers in Kazakhstan.
+QADAM Hub sells an institutional subscription to schools, universities and training centers worldwide.
 The institution pays, the cohort gets access, staff see progress.
 
 ## 1. Positioning
 
 | Item | Decision |
 |---|---|
-| Buyer | Director or program lead of a coding school, AI training center or career bootcamp (Tech Orda schools first, about 75 to 80 accredited) |
+| Buyer | Director or program lead of a school, university or training center (international high schools and universities first) |
 | Users | Learners in the cohort, and career or program staff |
 | Promise | Learners find internships, hackathons and grants that fit their skills. Staff see who is applying without chasing links in chats |
 | Offer | Free pilot, 4 to 6 weeks, one cohort of 30 to 50 learners, one staff lead. Then 149 USD per month per institution, up to 100 active learners |
@@ -39,7 +39,7 @@ The owner rejected a light ivory and navy version. The public site keeps the ori
 ## 4. Landing page, section by section
 
 1. **Header** (fixed, dark glass): QADAM Hub logo, anchor links (How it works, Pilot, Team, FAQ), "Student login", "Request a pilot". Mobile menu panel.
-2. **Hero** (full screen, centered): pill "For training centers in Kazakhstan", huge "QADAM Hub", one-line promise, "Request a free pilot" and "See how it works", audience tags.
+2. **Hero** (full screen, centered): pill "For schools, universities and training centers", huge "QADAM Hub", one-line promise, "Request a free pilot" and "See how it works", audience tags.
 3. **How it works** (3D showcase): 01 Discover (available now), 02 Prepare (early version), 03 Track (coming in pilot), 04 Alerts (available now). Left card shows the product with sample data, right card explains it.
 4. **Stop 1, The gap** (title left): the problem for learners and for staff.
 5. **Stop 2, Your cohort** (title right): staff workspace preview, coming in pilot.
@@ -51,7 +51,7 @@ The owner rejected a light ivory and navy version. The public site keeps the ori
 ## 5. Pilot request form
 
 - Modal over the landing, `z-50`, bounded height with scroll, closes on backdrop click and Escape, focus moves to the first field.
-- Fields: institution (required), your name (required), role (director, program lead, career staff, other), work email (required, validated), phone or Telegram (optional), city (free text with suggestions for Kazakhstan and Central Asia), learners per cohort (under 30, 30 to 50, 50 to 100, over 100), message (optional, 1000 characters).
+- Fields: institution (required), your name (required), role (director, program lead, career staff, other), work email (required, validated), phone or Telegram (optional), city (free text with suggestions for cities worldwide), learners per cohort (under 30, 30 to 50, 50 to 100, over 100), message (optional, 1000 characters).
 - All fields except phone and message are required. Validation (`src/lib/pilotValidation.ts`): real names (letters, no keyboard mashing), proper email, phone with 10 to 15 digits or a Telegram @username, any city in letters, a role and cohort size from the lists, message of at least one short sentence if given. The same rules are enforced in the database by `202610240001_pilot_requests_validation.sql`.
 - Hidden honeypot field to stop simple bots.
 - Submit stores the request in Supabase table `pilot_requests` (insert-only for the public, read only from the Supabase dashboard). Migration: `supabase/migrations/202610230001_pilot_requests.sql`.
@@ -89,7 +89,7 @@ Screens:
 
 How to onboard a new institution:
 1. The staff member opens `/staff` and signs in once with their email (it says "No institution linked yet").
-2. In the Supabase SQL editor run `select create_institution('TUMA', 'Astana', 'staff@example.kz');` (more staff: `select add_institution_staff('<institution id>', 'second@example.kz');`).
+2. In the Supabase SQL editor run `select create_institution('Example School', 'Tokyo', 'staff@example.com');` (more staff: `select add_institution_staff('<institution id>', 'second@example.com');`).
 3. The staff member reloads `/staff`, creates a cohort and sends the invite link to learners.
 
 Not yet: staff roles beyond owner and staff, renaming the four steps in the learner navigation.
