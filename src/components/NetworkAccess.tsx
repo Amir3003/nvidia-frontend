@@ -202,7 +202,7 @@ export function AccessCard({
         <div className="p-6 space-y-5">{children}</div>
         <div className="px-6 py-3 border-t border-teal-200/80 bg-white/50 text-center">
           <a
-            href="/welcome"
+            href="/students"
             className="text-mini font-mono text-teal-800 hover:text-emerald-700"
           >
             Back to QADAM

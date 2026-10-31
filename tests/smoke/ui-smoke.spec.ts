@@ -288,3 +288,16 @@ test("the feedback widget offers email when the service is unavailable", async (
   await dialog.getByRole("button", { name: "Send feedback" }).click();
   await expect(dialog.getByRole("link", { name: "Send it by email instead" })).toBeVisible();
 });
+
+test("a visitor without a profile lands on the student page, and /welcome stays the schools link", async ({ page }) => {
+  const errors = await watch(page);
+  for (const route of ["/", "/cv", "/dashboard"]) {
+    await page.goto(route);
+    await expect(page).toHaveURL(/\/students$/);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Find grants, hackathons and scholarships");
+  }
+  await page.goto("/welcome");
+  await expect(page).toHaveURL(/\/welcome$/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Opportunity and career support for your cohort");
+  expect(errors).toEqual([]);
+});
