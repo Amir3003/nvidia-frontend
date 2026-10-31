@@ -5,7 +5,7 @@
 - State: React Context + localStorage.
 
 ## Strict Engineering Rules (Never Break)
-1. **NO README MODIFICATIONS:** Never modify, rewrite, or touch `README.md` under any circumstances unless explicitly requested.
+1. **README FILTER:** `README.md` may be edited whenever it is out of date (owner's permission, 31 October 2026), but it is public-facing, so filter every line. Never put in tokens, API or service keys, webhook URLs, passwords, real `.env` values, private emails or phone numbers, personal paths, internal links to strategy, pricing or competitor documents, or anything that was ever leaked. Environment variables appear by name only, with a placeholder or a description, never a value. Keep the install and run steps correct (commands from `package.json`, the real repository name, `.env.example`), state which variables are public and which are server only, and keep the "secrets and security" section. Re-read the diff for secrets before every commit.
 2. **NO AI CLICHÉS / FORMATTING ERRORS:** 
    - Never use em dashes (`—`).
    - Never use emojis (`🚀`, `✨`, etc.) in UI code or documentation.
