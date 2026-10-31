@@ -13,7 +13,7 @@ Source: the open list [mmccaff/PlacesToPostYourStartup](https://github.com/mmcca
 
 ## What we can say
 
-Only claim what is live today (see `docs/STRATEGY.md`, section "Honesty guardrails").
+Only claim what is live today (the exact list is in `docs/launch-posts.md`).
 
 | Live | Not live yet, say "coming soon" or do not mention |
 |---|---|
