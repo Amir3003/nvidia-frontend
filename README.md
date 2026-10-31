@@ -1,13 +1,15 @@
-> Scheduled website radar: [GITHUB_RADAR_SETUP.md](GITHUB_RADAR_SETUP.md). Oracle VM setup for Telegram and Discord: [ORACLE_BOTS_SETUP.md](ORACLE_BOTS_SETUP.md). Local setup: [LOCAL_SETUP.md](LOCAL_SETUP.md). The bots' radar commands read the published JSON; CV scores and draft messages are still static examples. Rotate any bot token or webhook previously committed to this public repository.
-
 <p align="center">
-  <img src="public/logo.png" width="100" alt="QADAM Logo" />
+  <img src="public/logo.png" width="100" alt="QADAM Hub logo" />
 </p>
 
-<h1 align="center">QADAM («Қадам»)</h1>
+<h1 align="center">QADAM Hub</h1>
 
 <p align="center">
-  <strong>AI Opportunity Hub, CV Benchmark & Multi-Channel Career Agent</strong>
+  <strong>Hackathons, grants and scholarships with deadlines quoted from the source.<br />Free for students worldwide, a workspace for schools.</strong>
+</p>
+
+<p align="center">
+  <a href="https://www.qadamhub.com">www.qadamhub.com</a>
 </p>
 
 <p align="center">
@@ -19,250 +21,113 @@
 
 ---
 
-## Overview
+## What it is
 
-**QADAM** (from Kazakh *«Қадам»* - "step") is a unified platform built for university students, researchers, and engineering teams to discover and apply for global academic grants, fellowships, internships, and tech hackathons.
+QADAM means "step". Students find grants, hackathons, scholarships and internships in one place, and every listing is published only when its deadline is confirmed by a quote on the organizer's own page. Students use it for free, with no school or invite needed. Schools, universities and training centers get a workspace that shows who is preparing and who applied.
 
-Instead of browsing dozens of scattered portals, students get a personalized feed matched to their actual technical stack, automated CV gap diagnostics, and instant notifications via Telegram and Discord.
+## Features
 
----
+- **Opportunity Radar:** a daily scan publishes listings with a confirmed future deadline, a quoted source and a skill match for each student. Expired listings drop out.
+- **CV and Skill Lab:** 235 skill quizzes (10 random questions, pass at 7, Verified badge) and a CV gap check against each listing.
+- **Application Prep:** a checklist before applying on the organizer's site.
+- **Teammates and Network:** profiles, friend requests, teams and chat, with email code sign-in.
+- **Alerts:** Telegram and Discord bots.
+- **Feedback button:** star rating and bug or idea reports from inside the app.
+- **Schools workspace:** cohorts, invite links, a roster with application statuses and a CSV export.
 
-## Key Features
+A student profile is created in two steps and stays on the device until the student chooses to join the shared network.
 
-- **Opportunity Radar (`/dashboard`):** Curated database of global grants, research fellowships (e.g., MEXT, CERN, DAAD), and AI hackathons with real-time skill-match scoring.
-- **CV & Skill Benchmark Lab (`/cv`):** Evaluates resumes against target requirements, highlights missing technical skills, and provides short verification quizzes (PyTorch, Docker, Linux, LLM Engineering) to validate competencies.
-- **Client-Side Privacy Filter (`/account`):** Masks personal identifiers (full name, email, phone, student ID) on the client before sending resume text or application drafts to external LLM APIs.
-- **Squad & Teammate Finder (`/network`):** Connects students looking for co-builders (ML engineers, backend developers, designers) for upcoming competitions.
-- **Application Studio (`/application-studio`):** Workspace for drafting motivation letters and research proposals tailored to specific grant criteria.
+## Messenger bots
 
----
+- **Telegram (`@QadamAgentBot`):** `/start`, `/radar`, `/gaps`, `/privacy`, `/help`.
+- **Discord:** `!radar`, `!gaps`, `!privacy`, `!broadcast`, `!help`, `!draft` (the draft text is a static example for now).
 
-## Messenger Bots
+The bots read the published radar feed from the website. Server setup: [ORACLE_BOTS_SETUP.md](ORACLE_BOTS_SETUP.md).
 
-QADAM integrates directly with Telegram and Discord so students can track deadlines and generate drafts without leaving their messenger.
+## Tech stack
 
-### Telegram (`@QadamAgentBot`)
-- Account linking via deep-link: `https://t.me/QadamAgentBot?start=connect_<username>`
-- Commands:
-  - `/radar` - Top matched opportunities and upcoming deadlines
-  - `/gaps` - Missing skills based on current profile
-  - `/privacy` - Status of PII masking
-  - `/help` - Command reference
+React 19, TypeScript, Vite, Tailwind CSS and React Router v7 on the front end. Supabase (Postgres with row level security and email code sign-in) for the shared network, the schools workspace and feedback. Vercel for hosting and serverless functions in `api/`. A Node.js radar scan run by a GitHub Action, Node.js bots with no dependencies, and optional Sentry error reports.
 
-### Discord (`bot/discord.mjs`)
-- Server commands: `!radar`, `!gaps`, `!privacy`, `!broadcast`, `!help`
-- Direct Message drafting (`!draft <id>`): Sends application outlines directly to private DMs.
+## Getting started
 
----
+You need Node.js 22 or newer.
 
-## Tech Stack
-
-- **Frontend:** React 19, TypeScript, Vite, React Router v7, Tailwind CSS
-- **State & Storage:** React Context API with local persistence
-- **Bots:** Node.js (native WebSocket Gateway v10 & REST APIs for Telegram and Discord)
-
----
-
-## Getting Started
-
-### Prerequisites
-- Node.js 20+ and npm
-
-### 1. Installation
 ```bash
-git clone https://github.com/Amir3003/qadam.git
-cd qadam
+git clone https://github.com/Amir3003/qadamhub.git
+cd qadamhub
 npm install
+cp .env.example .env        # on Windows: copy .env.example .env
+npm run dev                 # http://localhost:5173
 ```
 
-### 2. Environment Setup
-Create a `.env` file in the root directory (never commit this file):
-```env
-# Production Domain
-WEB_APP_URL=https://nvidia-pathfinder.vercel.app
+The app runs without any variables. Without the Supabase variables the shared network, the schools workspace and feedback storage are off and everything else works. Fill only the names you need in your own `.env`.
 
-# Telegram Bot Credentials
-TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
-BOT_USERNAME=QadamAgentBot
+Build and full check, the same the CI expects:
 
-# Discord Bot Credentials
-DISCORD_BOT_TOKEN=your_discord_bot_token_here
-DISCORD_INVITE_URL=https://discord.gg/A4rxRGx4Vt
-DISCORD_WEBHOOK_URL=your_discord_webhook_url_here
-```
-
-### 3. Run Locally
 ```bash
-# Start Vite development server
-npm run dev
-
-# Start Telegram Bot (optional)
-npm run bot
-
-# Start Discord Bot (optional)
-npm run bot:discord
-
-# Run both bots concurrently
-npm run bot:all
+npm run verify              # type check, then the production build
 ```
-Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-### 4. Build for Production
+## Environment variables
+
+Names only. Values live in your private `.env`, in Vercel, in GitHub Actions secrets or on the bot server, never in the repository. `.env.example` lists every name without values.
+
+| Name | Where | Purpose |
+|---|---|---|
+| `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | build time, public | Client connection to Supabase. The key is public by design; row level security protects the data |
+| `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_URL` | server only | Used by `api/beta-feedback.js`. Never give it a `VITE_` prefix, it would reach the browser |
+| `VITE_SENTRY_DSN` | build time, optional | Error reports |
+| `VITE_REVIEW_URL` | build time, optional | A public review page shown after a 4 or 5 star rating |
+| `VITE_LEGAL_NAME`, `VITE_LEGAL_ADDRESS`, `VITE_LEGAL_REGISTRATION_ID`, `VITE_CONTACT_EMAIL` | build time, optional | Operator details shown on the legal pages |
+| `DATA_REQUEST_WEBHOOK_URL` | server only | Receives data requests from the Privacy page |
+| `NEBIUS_API_KEY`, `TAVILY_API_KEY`, `NEBIUS_MODEL` | radar scan | Model and search access for the daily scan |
+| `TELEGRAM_BOT_TOKEN`, `BOT_USERNAME`, `DISCORD_BOT_TOKEN`, `DISCORD_WEBHOOK_URL`, `DISCORD_INVITE_URL`, `WEB_APP_URL`, `RADAR_DATA_URL` | bot server | The bots |
+| `VITE_QADAM_API_URL` | local development only | Reads the radar from a local API instead of the published file |
+
+## Checks and tests
+
 ```bash
-npm run build
-npm run preview
+npm run test:network        # database rules, run in embedded Postgres
+npm run test:feedback       # feedback API and its table
+npm run check:quizzes       # quiz banks
+node --test tests/radar-merge.test.mjs
+
+npx playwright install chromium
+npm run test:ui             # headless browser smoke test, desktop and mobile, starts its own server
+npm run test:network-ui
+npm run test:live           # checks the deployed site, LIVE_URL overrides the address
 ```
 
----
+Semgrep also scans every pull request.
 
-## Project Structure
+## Database and deployment
+
+- SQL migrations are in `supabase/migrations/`. They are run by hand in the Supabase SQL editor, in file order. Setup notes: [NETWORK_SETUP.md](NETWORK_SETUP.md).
+- Deploys go from `main` to Vercel. Work on a branch and open a pull request.
+- The radar feed is published daily by a GitHub Action: [GITHUB_RADAR_SETUP.md](GITHUB_RADAR_SETUP.md).
+
+## Project structure
 
 ```
-qadam/
-├── bot/
-│   ├── index.mjs             # Zero-dependency Telegram bot (Long polling & API)
-│   └── discord.mjs           # Zero-dependency Discord bot (Gateway v10 & Webhook)
-├── public/
-│   ├── logo.png              # Official QADAM brand logo
-│   ├── favicon.svg           # Vector favicon
-│   └── assets/
-│       └── logo.png          # High-resolution asset clone
-├── src/
-│   ├── components/
-│   │   ├── AmbientBackground.tsx    # Interactive constellation canvas
-│   │   ├── OnboardingWizard.tsx     # Student registration & identity modal
-│   │   ├── OpportunityDetailsModal.tsx # Opportunity briefing & application modal
-│   │   ├── CvGapsModal.tsx          # ATS gap analysis & quiz launch modal
-│   │   ├── QuizModal.tsx            # Technical skill verification quiz
-│   │   ├── Sidebar.tsx              # Navigation sidebar & mobile bottom bar
-│   │   └── ScrollToTop.tsx          # Route & auth scroll reset utility
-│   ├── context/
-│   │   └── AppContext.tsx           # Global state (profile, memory, opportunities)
-│   ├── db/
-│   │   ├── opportunities.ts         # Verified opportunities database
-│   │   ├── userProfile.ts           # Student profile, skills, and roles
-│   │   └── teammates.ts             # Teammate matchmaking network
-│   ├── pages/
-│   │   ├── WelcomePage.tsx          # Landing & onboarding portal
-│   │   ├── RadarPage.tsx            # Opportunity radar feed & match filters
-│   │   ├── CvLabPage.tsx            # ATS CV analyzer & skill lab
-│   │   ├── MemoryPage.tsx           # MEMORY.md context flow matrix
-│   │   ├── NetworkPage.tsx          # Teammates & squad network hub
-│   │   ├── NotificationsPage.tsx    # Multi-channel messenger notifications
-│   │   ├── ApplicationStudioPage.tsx# PII-masked proposal drafting studio
-│   │   └── AccountPortalPage.tsx    # Settings, terminal logs, and tech support
-│   ├── utils/
-│   │   └── anonymizer.ts            # Client-side PII tokenization regex engine
-│   ├── App.tsx                      # Root application & routing
-│   ├── index.css                    # Tailwind CSS configuration & custom utilities
-│   └── main.tsx                     # React root mount
-├── .env                             # Environment variables (gitignored)
-├── .gitignore                       # Git exclusion rules
-├── index.html                       # SEO metadata, OpenGraph, and favicon tags
-├── package.json                     # Project manifest & scripts
-├── vercel.json                      # Single-page app routing rewrites for Vercel
-└── README.md                        # Documentation
+api/        Vercel serverless functions (data request, beta feedback)
+backend/    Radar scan: search, extraction, quality rules and merge
+bot/        Telegram and Discord bots, Discord server setup script
+deploy/     Helper scripts for the bot server
+public/     Static files, brand assets and the published radar feed
+scripts/    Build scripts (prerender) and the quiz check
+src/        The React app: pages, components, context, lib, db (quizzes, opportunities)
+supabase/   SQL migrations
+tests/      Node tests (database, API, radar) and Playwright specs
 ```
 
----
+## Secrets and security
+
+- `.env` and `.env.*` are ignored by git; only `.env.example`, which has no values, is committed.
+- Server keys, bot tokens, webhooks and model keys belong only in Vercel, GitHub Actions secrets or the bot server.
+- If a token, key or webhook was ever committed, treat it as leaked and rotate it. Deleting it from the file is not enough.
+- Do not put personal data, private contact details or credentials into this file, the docs or an issue.
+- To report a vulnerability, use GitHub's private vulnerability reporting for this repository, or contact the maintainers privately.
 
 ## License
 
-MIT
-```
-
-### 2. Environment Setup
-Create a `.env` file in the root directory (never commit this file):
-```env
-# Production Domain
-WEB_APP_URL=https://nvidia-pathfinder.vercel.app
-
-# Telegram Bot Credentials
-TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
-BOT_USERNAME=QadamAgentBot
-
-# Discord Bot Credentials
-DISCORD_BOT_TOKEN=your_discord_bot_token_here
-DISCORD_INVITE_URL=https://discord.gg/A4rxRGx4Vt
-DISCORD_WEBHOOK_URL=your_discord_webhook_url_here
-```
-
-### 3. Run Locally
-```bash
-# Start Vite development server
-npm run dev
-
-# Start Telegram Bot (optional)
-npm run bot
-
-# Start Discord Bot (optional)
-npm run bot:discord
-
-# Run both bots concurrently
-npm run bot:all
-```
-Open [http://localhost:5173](http://localhost:5173) in your browser.
-
-### 4. Build for Production
-```bash
-npm run build
-npm run preview
-```
-
----
-
-## Project Structure
-
-```
-qadam/
-├── bot/
-│   ├── index.mjs             # Zero-dependency Telegram bot (Long polling & API)
-│   └── discord.mjs           # Zero-dependency Discord bot (Gateway v10 & Webhook)
-├── public/
-│   ├── logo.png              # Official QADAM brand logo
-│   ├── favicon.svg           # Vector favicon
-│   └── assets/
-│       └── logo.png          # High-resolution asset clone
-├── src/
-│   ├── components/
-│   │   ├── AmbientBackground.tsx    # Interactive constellation canvas
-│   │   ├── OnboardingWizard.tsx     # Student registration & identity modal
-│   │   ├── OpportunityDetailsModal.tsx # Opportunity briefing & application modal
-│   │   ├── CvGapsModal.tsx          # ATS gap analysis & quiz launch modal
-│   │   ├── QuizModal.tsx            # Technical skill verification quiz
-│   │   ├── Sidebar.tsx              # Navigation sidebar & mobile bottom bar
-│   │   └── ScrollToTop.tsx          # Route & auth scroll reset utility
-│   ├── context/
-│   │   └── AppContext.tsx           # Global state (profile, memory, opportunities)
-│   ├── db/
-│   │   ├── opportunities.ts         # Verified opportunities database
-│   │   ├── userProfile.ts           # Student profile, skills, and roles
-│   │   └── teammates.ts             # Teammate matchmaking network
-│   ├── pages/
-│   │   ├── WelcomePage.tsx          # Landing & onboarding portal
-│   │   ├── RadarPage.tsx            # Opportunity radar feed & match filters
-│   │   ├── CvLabPage.tsx            # ATS CV analyzer & skill lab
-│   │   ├── MemoryPage.tsx           # MEMORY.md context flow matrix
-│   │   ├── NetworkPage.tsx          # Teammates & squad network hub
-│   │   ├── NotificationsPage.tsx    # Multi-channel messenger notifications
-│   │   ├── ApplicationStudioPage.tsx# PII-masked proposal drafting studio
-│   │   └── AccountPortalPage.tsx    # Settings, terminal logs, and tech support
-│   ├── utils/
-│   │   └── anonymizer.ts            # Client-side PII tokenization regex engine
-│   ├── App.tsx                      # Root application & routing
-│   ├── index.css                    # Tailwind CSS configuration & custom utilities
-│   └── main.tsx                     # React root mount
-├── .env                             # Environment variables (gitignored)
-├── .gitignore                       # Git exclusion rules
-├── index.html                       # SEO metadata, OpenGraph, and favicon tags
-├── package.json                     # Project manifest & scripts
-├── vercel.json                      # Single-page app routing rewrites for Vercel
-└── README.md                        # Documentation
-```
-
----
-
-## License
-
-MIT
-npm install
+MIT. See [LICENSE](LICENSE).

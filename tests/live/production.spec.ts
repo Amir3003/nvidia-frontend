@@ -15,7 +15,7 @@ const PROFILE = {
   email: "live-check@example.com",
   university: "Test University",
   major: "AI & Machine Learning",
-  location: "Almaty, Kazakhstan",
+  location: "Tokyo, Japan",
   role: "Student",
   skills: [],
   goals: [],

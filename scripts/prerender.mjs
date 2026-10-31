@@ -2,7 +2,7 @@
 // page's own title, description, canonical URL and readable text already in the HTML. Crawlers that
 // do not run JavaScript (or run it late) then see real content; in a browser React replaces the
 // text on load. vercel.json rewrites /welcome, / and /students to these files.
-// The copy below must stay true to the pages in src/pages (see docs/STRATEGY.md for what is live).
+// The copy below must stay true to the pages in src/pages.
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 
 const SITE = 'https://www.qadamhub.com';
@@ -11,18 +11,18 @@ const PAGES = [
   {
     file: 'welcome',
     path: '/welcome',
-    title: 'Career support for training centers in Kazakhstan | QADAM Hub',
+    title: 'Career support for schools, universities and training centers | QADAM Hub',
     description:
-      'QADAM Hub helps coding schools, AI training centers and bootcamps in Kazakhstan guide learners to internships, hackathons and grants, and shows staff who is applying. Free 4 to 6 week pilot.',
+      'QADAM Hub helps schools, universities and training centers guide students to international hackathons, grants, scholarships and internships, and shows staff who is preparing and who applied. Free 4 to 6 week pilot.',
     h1: 'Opportunity and career support for your cohort',
     intro:
-      'Learners find internships, hackathons and grants that fit their skills. Your staff see who is applying, without chasing links in chats. Built for coding schools, AI training centers and career bootcamps in Kazakhstan.',
+      'Learners find internships, hackathons and grants that fit their skills. Your staff see who is applying, without chasing links in chats. Built for schools, universities and training centers.',
     sections: [
       {
         h2: 'How it works',
         items: [
           ['Discover: relevant opportunities, with sources', "Internships, hackathons and grants that fit each learner's skills and goals. Every listing links to the official page, and its deadline is confirmed on the source page."],
-          ['Prepare: ready before the deadline', 'Learners see which skills a listing asks for, what their CV is missing and what to do before they apply. Skill quizzes cover 236 topics.'],
+          ['Prepare: ready before the deadline', 'Learners see which skills a listing asks for, what their CV is missing and what to do before they apply. Skill quizzes cover 235 topics.'],
           ['Track: one view of your cohort', 'Staff see who has a complete profile, who is preparing and who already applied. Invite a cohort with one link and export the roster as CSV.'],
           ['Alerts: reminders where learners already are', 'New matches and deadline reminders arrive in Telegram and Discord.'],
         ],
@@ -53,11 +53,11 @@ const PAGES = [
         h2: 'What you get',
         items: [
           ['Opportunity Radar', 'Grants, internships and hackathons. Every listing has a deadline confirmed on the organizer page.'],
-          ['CV and Skill Lab', '236 skill quizzes and a CV gap check against each opportunity, so you know what to learn first.'],
+          ['CV and Skill Lab', '235 skill quizzes and a CV gap check against each opportunity, so you know what to learn first.'],
           ['Application prep', 'A checklist before you apply on the organizer site, with the gaps in your profile called out.'],
           ['Alerts in Telegram and Discord', 'New listings that match your goals, in the messenger you already use.'],
           ['Teammates and Network', 'Find people for a hackathon team and message them. Joining is your choice.'],
-          ['Portfolio and roadmap (coming soon)', 'A portfolio of verified achievements and a step-by-step plan toward your goal.'],
+          ['Private by default', 'Your profile stays on your device. You choose whether to join the shared network.'],
         ],
       },
     ],

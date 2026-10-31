@@ -3156,20 +3156,6 @@ export const QUIZ_CATALOG: CatalogTopic[] = [
     ]
   },
   {
-    "id": "kazakh",
-    "name": "Kazakh",
-    "category": "Languages & Language Exams",
-    "group": "human-languages",
-    "topics": [
-      "Vowel harmony rules",
-      "agglutinative morphology & suffixes",
-      "verb conjugations",
-      "case endings (септік)",
-      "sentence order (SOV)",
-      "formal vs informal address"
-    ]
-  },
-  {
     "id": "russian",
     "name": "Russian",
     "category": "Languages & Language Exams",

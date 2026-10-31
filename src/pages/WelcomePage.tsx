@@ -7,7 +7,7 @@ import { usePageMeta } from '../lib/seo';
 import { AudienceSwitch } from '../components/landing/AudienceSwitch';
 import { container, eyebrowDark, ghostButton, glassCard, primaryButton } from '../components/landing/landingStyles';
 
-const WELCOME_TITLE = 'Career support for training centers in Kazakhstan | QADAM Hub';
+const WELCOME_TITLE = 'Career support for schools, universities and training centers | QADAM Hub';
 import {
   BarChartIcon,
   CheckIcon,
@@ -22,7 +22,7 @@ import {
   UsersIcon,
 } from '../components/Icons';
 
-// Public B2B landing for training centers. Plan and copy rules: docs/B2B_PLAN.md.
+// Public B2B landing for schools, universities and training centers.
 // Original QADAM look: dark ambient ground, light glass cards, emerald to teal actions,
 // the scroll-locked 3D card showcase, then alternating left and right "stops".
 // Every claim must be true today or carry a status chip.
@@ -130,7 +130,7 @@ const STAGES: {
     title: '02 / PREPARE',
     heading: 'Ready before the deadline',
     text: 'Learners see which skills a listing asks for, what their CV is missing and what to do before they apply.',
-    points: ['CV gap check against a target role', 'Skill quizzes on 236 topics'],
+    points: ['CV gap check against a target role', 'Skill quizzes on 235 topics'],
     status: 'early',
     accent: 'text-indigo-700',
   },
@@ -365,7 +365,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: 'Which languages and regions do you support?',
-    a: 'The interface is in English. The first pilots are with training centers in Kazakhstan; listings cover opportunities open to learners from Kazakhstan, local and international.',
+    a: 'The interface is in English. QADAM Hub is international: every listing says where it is open from, and a student can filter the feed to what they can apply to from their own country.',
   },
 ];
 
@@ -600,7 +600,7 @@ export const WelcomePage: React.FC = () => {
           <AudienceSwitch active="schools" className="md:hidden" />
           <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-teal-500/10 border border-teal-400/30 text-teal-200 text-[13px] font-mono tracking-wide backdrop-blur-md">
             <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            <span>QADAM Hub · For training centers in Kazakhstan</span>
+            <span>QADAM Hub · For schools, universities and training centers</span>
           </div>
 
           <h1 className="text-[40px] sm:text-6xl lg:text-[72px] font-semibold tracking-[-0.025em] text-white leading-[1.05] max-w-4xl">
@@ -623,7 +623,7 @@ export const WelcomePage: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap justify-center gap-2 pt-2">
-            {['Coding schools', 'AI training centers', 'Career bootcamps'].map((tag) => (
+            {['High schools', 'Universities', 'Training centers'].map((tag) => (
               <span key={tag} className="px-3 py-1.5 rounded-full bg-slate-900/50 border border-teal-500/25 text-[12px] font-mono text-teal-200 backdrop-blur-md">
                 {tag}
               </span>

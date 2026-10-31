@@ -15,7 +15,7 @@ const STORED_LOCALLY = [
   ['Agent Memory', 'The directives you write, saved as MEMORY.md.'],
   ['Teammates and teams', 'People you add manually, teams you create and local chat messages.'],
   ['Progress', 'Verified skills, quiz scores, application checklists and the status you set on opportunities.'],
-  ['Notification settings', 'Your Telegram, KakaoTalk handle or Discord webhook, if you add them.'],
+  ['Notification settings', 'Your Telegram handle or Discord webhook, if you add them.'],
   ['Sign-in session', 'After you sign in with an email code, a session token keeps you signed in on this device until you log out.'],
   ['Your analytics choice', 'Whether you accepted or declined analytics, so the banner does not reappear.'],
 ];
@@ -30,7 +30,7 @@ const SENT = [
   ['Fonts', 'The site loads its fonts from Google Fonts, so your browser sends your IP address to Google when the page opens.'],
   ['Analytics, only if you accept', 'Vercel Web Analytics counts page views. It sets no cookies and is not used for advertising. If you decline, it is never loaded.'],
   ['Error reports', 'If the app crashes, a technical error report (error message, page address, browser type) is sent to Sentry so we can fix it. It does not include your name, email, IP address, CV or profile fields.'],
-  ['Telegram, Discord and KakaoTalk bots', 'If you message our bots, the messenger delivers your messages under its own privacy policy. If you link your profile, the Telegram bot keeps your chat id, name and username in memory to personalize replies; it is cleared when the bot restarts. Bot replies use only the public opportunity list.'],
+  ['Telegram and Discord bots', 'If you message our bots, the messenger delivers your messages under its own privacy policy. If you link your profile, the Telegram bot keeps your chat id, name and username in memory to personalize replies; it is cleared when the bot restarts. Bot replies use only the public opportunity list.'],
   ['Test notification', 'Only if a QADAM server is configured: the channel name and your first name are sent so the bot can message you.'],
   ['Pilot request form', 'If an institution requests a pilot, the details typed into the form (institution, name, email, phone, city, cohort size, message) are stored so we can reply. They are used for nothing else.'],
   ['Opportunity suggestions', 'If you suggest an opportunity, its title, link, type, deadline and your note are stored so we can review it. If you are signed in, your account id is attached.'],
@@ -45,7 +45,7 @@ const PROVIDERS = [
   ['Google', 'sending sign-in emails (Gmail) and serving fonts (Google Fonts)'],
   ['Sentry', 'crash reports'],
   ['Oracle Cloud', 'the server that runs our Telegram and Discord bots'],
-  ['Telegram, Discord, Kakao', 'delivering bot messages, only if you use the bots'],
+  ['Telegram, Discord', 'delivering bot messages, only if you use the bots'],
 ];
 
 export const PrivacyPage: React.FC = () => {
@@ -137,7 +137,7 @@ export const PrivacyPage: React.FC = () => {
           ))}
         </ul>
         <p>
-          Their servers may be outside Kazakhstan and the European Economic Area. We do not sell or rent personal data
+          Their servers may be outside the country where you live. We do not sell or rent personal data
           to anyone.
         </p>
       </LegalSection>
@@ -154,9 +154,9 @@ export const PrivacyPage: React.FC = () => {
       <LegalSection title="Your rights">
         <p>
           You can ask for a copy of your personal data, have it corrected or deleted, withdraw consent and object to
-          processing, under the personal data law that applies to you, including the Law of the Republic of Kazakhstan
-          "On Personal Data and Their Protection" and, where it applies, the GDPR. You can also complain to your data
-          protection authority.
+          processing, under the personal data law that applies to you, for example the GDPR in the European Union and
+          the United Kingdom, the CCPA and CPRA in California, PIPEDA in Canada, the APPI in Japan or the PIPA in South
+          Korea. You can also complain to your data protection authority.
         </p>
       </LegalSection>
 

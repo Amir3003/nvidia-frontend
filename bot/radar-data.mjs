@@ -1,5 +1,5 @@
 // The site serves the same file the daily radar Action publishes. Reading it from the site (not
-// raw GitHub) keeps the bots and the Kakao skill working when the repository is private.
+// raw GitHub) keeps the bots working when the repository is private.
 const DEFAULT_RADAR_URL = 'https://www.qadamhub.com/data/opportunities.json';
 
 export async function loadRadar(limit = 5) {

@@ -72,8 +72,8 @@ export const TermsPage: React.FC = () => (
 
     <LegalSection title="Governing law">
       <p>
-        These terms are governed by the laws of the Republic of Kazakhstan, without limiting mandatory consumer rights
-        where you live.
+        These terms are governed by the laws of the country where the operator named on this page is established,
+        without limiting the mandatory consumer rights you have where you live.
       </p>
     </LegalSection>
 

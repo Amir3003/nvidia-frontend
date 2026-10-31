@@ -8,8 +8,8 @@ const DISCORD_APP_ID = process.env.DISCORD_APP_ID || '1560162295445979197';
 const FALLBACK_PUBLIC_WEB_APP_URL = 'https://www.qadamhub.com';
 const LOGO_URL = `${FALLBACK_PUBLIC_WEB_APP_URL}/brand/qadam-avatar.png`;
 const AVATAR_FILE = 'public/brand/qadam-avatar.png';
-const OFFICIAL_SLOGAN = 'QADAM («Қадам») means "step" in Kazakh. Your next step toward global opportunities, grants, and technologies.';
-const BRAND_FOOTER = 'QADAM (Қадам) · www.qadamhub.com';
+const OFFICIAL_SLOGAN = 'QADAM means "step". Your next step toward global opportunities, grants, and technologies.';
+const BRAND_FOOTER = 'QADAM · www.qadamhub.com';
 
 // Helper: Ensure all Discord URLs point to a valid public HTTPS target
 function getWebUrl(subpath = '') {

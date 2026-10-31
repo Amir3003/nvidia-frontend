@@ -6,6 +6,7 @@ import {
   pilotRequestMailto,
   submitPilotRequest,
 } from '../lib/pilotRequests';
+import { VALID_CITIES } from '../db/cities';
 import { PILOT_COHORT_SIZES, PILOT_ROLES, PilotErrors, validatePilotRequest } from '../lib/pilotValidation';
 
 interface PilotRequestModalProps {
@@ -14,11 +15,7 @@ interface PilotRequestModalProps {
 }
 
 // Suggestions only: the city field accepts any text.
-const CITY_SUGGESTIONS = [
-  'Almaty', 'Astana', 'Shymkent', 'Karaganda', 'Aktobe', 'Taraz', 'Pavlodar', 'Ust-Kamenogorsk', 'Semey',
-  'Atyrau', 'Kostanay', 'Kyzylorda', 'Aktau', 'Uralsk', 'Petropavl', 'Turkestan', 'Kokshetau', 'Taldykorgan',
-  'Ekibastuz', 'Zhezkazgan', 'Bishkek', 'Tashkent', 'Samarkand', 'Dushanbe', 'Baku', 'Online only',
-];
+const CITY_SUGGESTIONS = [...VALID_CITIES.map((city) => city.split(',')[0]), 'Online only'];
 
 const emptyRequest: PilotRequest = {
   institution: '',
@@ -247,7 +244,7 @@ export const PilotRequestModal: React.FC<PilotRequestModalProps> = ({ open, onCl
                   onChange={update('city')}
                   maxLength={60}
                   autoComplete="address-level2"
-                  placeholder="Start typing, e.g. Karaganda"
+                  placeholder="Start typing, e.g. Tokyo"
                   aria-invalid={Boolean(errors.city)}
                 />
                 {errorText('city')}

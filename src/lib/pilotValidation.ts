@@ -55,7 +55,7 @@ export function validatePilotRequest(request: PilotRequest): PilotErrors {
     const digits = phone.replace(/\D/g, '');
     const validPhone = PHONE_CHARS.test(phone) && digits.length >= 10 && digits.length <= 15 && !/^(\d)\1+$/.test(digits);
     if (!TELEGRAM.test(phone) && !validPhone) {
-      errors.phone = 'Enter a phone number with country code or a Telegram username like @school_kz.';
+      errors.phone = 'Enter a phone number with country code or a Telegram username like @your_school.';
     }
   }
 

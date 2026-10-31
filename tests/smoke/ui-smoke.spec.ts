@@ -27,7 +27,7 @@ const PROFILE = {
   email: "smoke@example.com",
   university: "Test University",
   major: "AI & Machine Learning",
-  location: "Almaty, Kazakhstan",
+  location: "Tokyo, Japan",
   role: "Student",
   skills: ["SQL", "Underwater Basket Weaving"],
   goals: [],
@@ -170,7 +170,7 @@ test("a student starts in two steps without an invite code and lands on the Rada
   await expect(welcome).toBeVisible();
   await expect(welcome.getByText("AI skill quizzes")).toBeVisible();
   await expect(welcome.getByText("Gap analysis")).toBeVisible();
-  await expect(welcome.getByText("Portfolio")).toBeVisible();
+  await expect(welcome.getByText("Deadline alerts")).toBeVisible();
   await page.screenshot({ path: path.join(SHOTS, `${info.project.name}-welcome-1.png`) });
   // Modals close only through their visible button.
   await page.keyboard.press("Escape");
