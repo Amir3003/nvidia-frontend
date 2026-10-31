@@ -1,39 +1,5 @@
 [
   {
-    "id": "scan-151473c93357",
-    "type": "GRANT",
-    "title": "NVIDIA Graduate Fellowship",
-    "summary": "The NVIDIA Graduate Fellowship Program provides up to $60,000 per award for PhD research that advances accelerated computing. Fellows work with NVIDIA researchers and complete a required in-person summer internship before the award year.",
-    "location": "United States, Canada, Germany, Sweden, Finland, Switzerland, Israel, Taiwan, an",
-    "countries": [],
-    "organization": "NVIDIA",
-    "url": "https://research.nvidia.com/graduate-fellowships",
-    "deadline": "2026-10-30",
-    "deadlineEvidence": "2027–2028 applications open September 30, 2026. Apply by October 30, 2026.",
-    "eligibility": "check source",
-    "skills": [],
-    "firstSeen": "2026-10-21",
-    "lastSeen": "2026-10-21"
-  },
-  {
-    "type": "HACKATHON",
-    "title": "Nebius x NVIDIA Global AI Hackathon",
-    "organization": "Nebius & NVIDIA",
-    "url": "https://nebiusglobalaihackathon.devpost.com/rules",
-    "deadline": "2026-10-30",
-    "deadlineEvidence": "Submission Period: Wednesday, August 26, 2026 (9:00 am Pacific Time) – Friday, October 30, 2026 (10:00 am Pacific Time)",
-    "summary": "Build an AI project using Nebius infrastructure and NVIDIA technology. Read the official rules for eligibility and submission requirements.",
-    "eligibility": "check source",
-    "skills": [
-      "AI"
-    ],
-    "location": "Online",
-    "countries": [],
-    "id": "scan-3f5d55639402",
-    "firstSeen": "2026-10-21",
-    "lastSeen": "2026-10-21"
-  },
-  {
     "id": "scan-cace011bd6d9",
     "type": "GRANT",
     "title": "Generative AI & Data Science Fellowship",
