@@ -1,4 +1,4 @@
-// POST /api/feedback: beta feedback from the in-app Feedback button.
+// POST /api/beta-feedback: beta feedback and star ratings from the in-app Feedback button.
 // The report is validated and stored in the Supabase table `feedback` with the service role
 // key (server-only env SUPABASE_SERVICE_ROLE_KEY). The table has no policies, so browsers can
 // never read or write it directly. Without the key the endpoint answers 503 and the widget
@@ -6,7 +6,7 @@
 import { clientIp, isSameOrigin, rateLimit, readJsonObject, sendJson } from './_lib/security.js';
 
 const MAX_BODY_BYTES = 8 * 1024;
-const TYPES = ['bug', 'feature', 'general'];
+const TYPES = ['bug', 'feature', 'general', 'rating'];
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const PATH = /^\/[A-Za-z0-9\-._~/]{0,198}$/;
 const UNAVAILABLE = 'Feedback is not available right now.';
@@ -43,7 +43,7 @@ export default async function handler(request, response) {
   if (request.method !== 'POST') return sendJson(response, 405, { status: 'error', message: 'Method not allowed.' }, { Allow: 'POST' });
   if (!isSameOrigin(request)) return sendJson(response, 403, { status: 'error', message: 'Cross-origin requests are not allowed.' });
 
-  const limit = rateLimit(`feedback:${clientIp(request)}`, 8, 60 * 60_000);
+  const limit = rateLimit(`beta-feedback:${clientIp(request)}`, 8, 60 * 60_000);
   if (!limit.ok) {
     return sendJson(response, 429, { status: 'error', message: 'Too many reports. Please try again later.' }, { 'Retry-After': String(limit.retryAfter) });
   }
@@ -55,8 +55,12 @@ export default async function handler(request, response) {
   if (typeof body.website === 'string' && body.website.length > 0) return sendJson(response, 200, { status: 'ok' });
 
   if (!TYPES.includes(body.type)) return sendJson(response, 422, { status: 'error', message: 'Choose a feedback type.' });
+  const isRating = body.type === 'rating';
+  const rating = Number.isInteger(body.rating) && body.rating >= 1 && body.rating <= 5 ? body.rating : null;
+  if (isRating && rating === null) return sendJson(response, 422, { status: 'error', message: 'Choose 1 to 5 stars.' });
   const description = typeof body.description === 'string' ? cleanDescription(body.description) : '';
-  if (description.length < 10) return sendJson(response, 422, { status: 'error', message: 'Please describe it in at least 10 characters.' });
+  // A rating may come without a comment; every other report needs a real description.
+  if (!isRating && description.length < 10) return sendJson(response, 422, { status: 'error', message: 'Please describe it in at least 10 characters.' });
   if (description.length > 2000) return sendJson(response, 422, { status: 'error', message: 'Please keep it under 2000 characters.' });
 
   const target = supabase();
@@ -65,6 +69,7 @@ export default async function handler(request, response) {
   const row = {
     type: body.type,
     description,
+    rating: isRating ? rating : null,
     user_id: typeof body.userId === 'string' && UUID.test(body.userId) ? body.userId.toLowerCase() : null,
     page_path: cleanPath(body.pageUrl),
     user_agent: String(request.headers['user-agent'] || '').slice(0, 300) || null,

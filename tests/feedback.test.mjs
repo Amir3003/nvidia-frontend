@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import { PGlite } from "@electric-sql/pglite";
-import handler from "../api/feedback.js";
+import handler from "../api/beta-feedback.js";
 
 let ipCounter = 0;
 const uuid = "00000000-0000-0000-0000-0000000000aa";
@@ -86,6 +86,7 @@ test("stores a clean row with the service role key", withSupabase(async (calls) 
   assert.deepEqual(row, {
     type: "bug",
     description: "Line one\n\nLine two with control",
+    rating: null,
     user_id: uuid,
     page_path: "/student",
     user_agent: "node-test",
@@ -121,18 +122,45 @@ test("limits reports per client", withSupabase(async () => {
   assert.ok(blocked.headers["Retry-After"]);
 }));
 
+test("stores a star rating with an optional comment", withSupabase(async (calls) => {
+  const bare = await call({ body: { type: "rating", rating: 5, pageUrl: "/" } });
+  assert.equal(bare.status, 200);
+  assert.deepEqual(JSON.parse(calls[0].init.body), {
+    type: "rating", description: "", rating: 5, user_id: null, page_path: "/", user_agent: "node-test",
+  });
+  await call({ body: { type: "rating", rating: 2, description: "Quizzes load slowly", pageUrl: "/cv" } });
+  assert.equal(JSON.parse(calls[1].init.body).description, "Quizzes load slowly");
+  // The stars are ignored on other types.
+  await call({ body: { ...valid, rating: 5 } });
+  assert.equal(JSON.parse(calls[2].init.body).rating, null);
+}));
+
+test("rejects a rating without valid stars", async () => {
+  for (const rating of [undefined, 0, 6, 3.5, "5"]) {
+    assert.equal((await call({ body: { type: "rating", rating } })).status, 422);
+  }
+});
+
 test("feedback table: browsers cannot touch it and bad rows are refused", async () => {
   const db = new PGlite();
   await db.exec("create role anon; create role authenticated; grant usage on schema public to anon, authenticated;");
-  await db.exec(await fs.readFile(new URL("../supabase/migrations/202610310001_feedback.sql", import.meta.url), "utf8"));
-  const insert = (type, description, path = "/cv") =>
-    db.query("insert into public.feedback (type, description, page_path) values ($1, $2, $3)", [type, description, path]);
+  for (const file of ["202610310001_feedback.sql", "202610310002_feedback_rating.sql"]) {
+    await db.exec(await fs.readFile(new URL(`../supabase/migrations/${file}`, import.meta.url), "utf8"));
+  }
+  const insert = (type, description, path = "/cv", rating = null) =>
+    db.query("insert into public.feedback (type, description, page_path, rating) values ($1, $2, $3, $4)", [type, description, path, rating]);
 
   await insert("bug", "A valid report with enough text.");
   await assert.rejects(insert("rant", "A valid report with enough text."));
   await assert.rejects(insert("bug", "too short"));
   await assert.rejects(insert("bug", "x".repeat(2001)));
   await assert.rejects(insert("bug", "A valid report with enough text.", "cv"));
+  // Ratings: stars required, 1 to 5, comment optional; stars only on ratings.
+  await insert("rating", "", "/", 5);
+  await insert("rating", "Nice quizzes", "/cv", 3);
+  await assert.rejects(insert("rating", "", "/", null));
+  await assert.rejects(insert("rating", "", "/", 6));
+  await assert.rejects(insert("bug", "A valid report with enough text.", "/", 4));
 
   for (const role of ["anon", "authenticated"]) {
     await db.exec(`set role ${role}`);
@@ -141,6 +169,7 @@ test("feedback table: browsers cannot touch it and bad rows are refused", async 
     await db.exec("reset role");
   }
   const { rows } = await db.query("select status from public.feedback");
-  assert.deepEqual(rows, [{ status: "new" }]);
+  assert.equal(rows.length, 3);
+  assert.ok(rows.every((row) => row.status === "new"));
   await db.close();
 });

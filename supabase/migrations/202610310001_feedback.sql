@@ -1,4 +1,4 @@
--- In-app beta feedback (Feedback button). Written only by POST /api/feedback with the
+-- In-app beta feedback (Feedback button). Written only by POST /api/beta-feedback with the
 -- service role key, so the table has row level security and no policies: browsers cannot
 -- read or write it. Read the reports in the Supabase Table Editor and set `status`.
 -- Run by hand in the SQL editor, after the earlier migrations.
