@@ -80,14 +80,14 @@ export const Sidebar: React.FC = () => {
     setIsPopoverOpen(false);
     setIsMobileMenuOpen(false);
     resetToDefaultProfile();
-    navigate('/welcome');
+    navigate('/students');
   };
 
   return (
     <>
       {/* Mobile Top Header */}
       <div className="lg:hidden flex items-center justify-between px-4 py-3 bg-slate-900/80 backdrop-blur-md border-b border-teal-500/20 sticky top-0 z-30 shadow-md">
-        <Link to="/welcome" className="flex items-center gap-2">
+        <Link to="/students" className="flex items-center gap-2">
           <img src="/brand/qadam-icon.png" alt="QADAM Logo" className="w-6 h-6 object-contain rounded-md" />
           <span className="font-semibold text-white tracking-tight text-[15px] font-mono">QADAM</span>
           <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-500/10 text-teal-300 border border-teal-500/30 font-medium">
@@ -114,7 +114,7 @@ export const Sidebar: React.FC = () => {
         {/* Top Brand Header */}
         <div className="p-4 border-b border-teal-200/80 flex items-center justify-between bg-white/50">
           <Link
-            to="/welcome"
+            to="/students"
             title="QADAM: Return to Welcome Page"
             className="flex items-center gap-2.5 hover:opacity-85 transition-opacity"
           >

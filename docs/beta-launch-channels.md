@@ -28,6 +28,19 @@ Do not state user numbers, pilots or letters of intent until they are real and w
 
 Link for posts: `https://www.qadamhub.com/students`. No emojis and no long dashes in post text.
 
+## Link check, 31 October 2026
+
+All 102 links were opened by a script with a browser user agent. 75 answered normally (this only means the page loaded, not that it is the right place to post). The rest:
+
+| Result | Places | What to do |
+|---|---|---|
+| No response | All Startups, Launched, Loop, Simple Lister | Marked Skip |
+| Server error 500 | Appoid, Apps Listo, Web App Rater | Marked Skip, try again later |
+| Submit page gone (404) | Capterra | Marked Skip |
+| Site changed owner or purpose | Tech Map (now techmap.me), Vator (now a Substack newsletter), Appvita (now onk.io), Software Advice (now a "survey has moved" page), State of Tech (now howiusethis.com) | Marked Skip |
+| Moved, same service | AngelList is now `https://wellfound.com/`, G2 Crowd is now `https://www.g2.com/products/new`, CrozDesk now redirects to `https://vendor.revleads.com/user/signup` | Use the new link |
+| Blocked the script (403 or 429), probably alive | Product Hunt, Indie Hackers, Alternative To, BuiltInChicago, Geek Wire, Gust, Land-book, SaaSHub, Slant, SnapMunk, Startup Buffer, Startup Ranking, StartupBlink, The Changelog, eBool, Stack Share | Open in a browser before posting |
+
 ## Post templates
 
 Light drafts, to be edited by hand for each place. Replace `[link]` with `https://www.qadamhub.com/students`. Facts only from the table above; no numbers of users until they exist.
@@ -134,21 +147,21 @@ Not built yet: portfolio, roadmap, one-click applications. It is a free beta and
 | 10words | https://10words.io | Todo | | | |
 | AI Collection | https://www.thataicollection.com/ | Todo | | | |
 | All My Faves | https://www.allmyfaves.com/ | Todo | | | |
-| All Startups | https://www.allstartups.info/Startups/Submit | Todo | | | |
+| All Startups | https://www.allstartups.info/Startups/Submit | Skip (no response) | | | |
 | All Top Startups | https://alltopstartups.com/submit-startup/ | Todo | | | |
 | Alternative.me | https://alternative.me/ | Todo | | | |
 | AngelList | https://angel.co/ | Todo | | | |
 | App Rater | https://apprater.net/add/ | Todo | | | |
-| Appoid | https://appiod.com/submit-app-for-review/ | Todo | | | |
+| Appoid | https://appiod.com/submit-app-for-review/ | Skip (server error 500) | | | |
 | appPicker | https://www.apppicker.com/ | Todo | | | |
-| Apps Listo | https://appslisto.com/submit-your-app/ | Todo | | | |
+| Apps Listo | https://appslisto.com/submit-your-app/ | Skip (server error 500) | | | |
 | Apps Mamma | https://appsmamma.com/submit-your-app/ | Todo | | | |
 | AppsThunder | https://appsthunder.com/submit-your-app/ | Todo | | | |
-| Appvita | https://www.appvita.com/ | Todo | | | |
+| Appvita | https://www.appvita.com/ | Skip (site changed) | | | |
 | Arctic Startup | https://arcticstartup.com/ | Todo | | | |
 | Awesome Indie | https://awesomeindie.com | Todo | | | |
 | BuiltInChicago | https://www.builtinchicago.org/send-us-tip | Todo | | | |
-| Capterra | https://www.capterra.com/vendors/sign-up | Todo | | | |
+| Capterra | https://www.capterra.com/vendors/sign-up | Skip (page gone, 404) | | | |
 | Collaborizm | https://www.collaborizm.com | Todo | | | |
 | CrozDesk | https://vendor.crozdesk.com/user/signup | Todo | | | |
 | Crunch Base | https://www.crunchbase.com/#/home/index | Todo | | | |
@@ -162,9 +175,9 @@ Not built yet: portfolio, roadmap, one-click applications. It is a free beta and
 | Gust | https://www.gust.com | Todo | | | |
 | Inc 42 | https://inc42.com/startup-submission/ | Todo | | | |
 | Killer Startups | https://killerstartups.com/submit-startup/ | Todo | | | |
-| Launched | https://launched.io/SubmitStartup | Todo | | | |
+| Launched | https://launched.io/SubmitStartup | Skip (no response) | | | |
 | LaunchIgniter | https://launchigniter.com/submit | Todo | | | |
-| Loop | https://app.loopinput.com/ | Todo | | | |
+| Loop | https://app.loopinput.com/ | Skip (no response) | | | |
 | MakeUseOf | https://www.makeuseof.com/about/ | Todo | | | |
 | Micro SaaS Examples | https://www.microsaasexamples.com/ | Todo | | | |
 | Netted | https://www.netted.net/contact-us/ | Todo | | | |
@@ -173,11 +186,11 @@ Not built yet: portfolio, roadmap, one-click applications. It is a free beta and
 | Postmake | https://postmake.io/submit | Todo | | | |
 | SaasRow | https://saasrow.com/ | Todo | | | |
 | Saijo's Tools List | https://saijogeorge.com/best-marketing-tools/ | Todo | | | |
-| Simple Lister | https://simplelister.com/ | Todo | | | |
+| Simple Lister | https://simplelister.com/ | Skip (no response) | | | |
 | SimilarSiteSearch | https://www.similarsitesearch.com/tips.html | Todo | | | |
 | Slant | https://www.slant.co/ | Todo | | | |
 | SnapMunk | https://www.snapmunk.com/submit-your-startup/ | Todo | | | |
-| Software Advice | https://softwareadvice-markets.questionpro.com/ | Todo | | | |
+| Software Advice | https://softwareadvice-markets.questionpro.com/ | Skip (site changed) | | | |
 | Stack Share | https://stackshare.io/ | Todo | | | |
 | Starter Story | https://starterstory.com/ | Todo | | | |
 | Startup 88 | https://startup88.com/ | Todo | | | |
@@ -191,11 +204,11 @@ Not built yet: portfolio, roadmap, one-click applications. It is a free beta and
 | Startup Tracker | https://startuptracker.io/ | Todo | | | |
 | StartupBlink | https://www.startupblink.com/ | Todo | | | |
 | Startups Gallery | https://startups.gallery/ | Todo | | | |
-| State of Tech | https://stateoftech.net/advertise?submit-an-app-for-review | Todo | | | |
+| State of Tech | https://stateoftech.net/advertise?submit-an-app-for-review | Skip (site changed) | | | |
 | Tapscape | https://www.tapscape.com/ | Todo | | | |
-| Tech Map | https://thetechmap.com/ | Todo | | | |
+| Tech Map | https://thetechmap.com/ | Skip (site changed) | | | |
 | Tech Pluto | https://www.techpluto.com/submit-a-startup/ | Todo | | | |
 | The Changelog | https://github.com/thechangelog/ping | Todo | | | |
-| Vator | https://www.vator.tv/ | Todo | | | |
-| Web App Rater | https://webapprater.com/submit-your-web-application-for-review-html | Todo | | | |
+| Vator | https://www.vator.tv/ | Skip (site changed) | | | |
+| Web App Rater | https://webapprater.com/submit-your-web-application-for-review-html | Skip (server error 500) | | | |
 | Ycombinator | https://news.ycombinator.com/ | Todo | | | |

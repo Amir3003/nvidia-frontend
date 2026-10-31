@@ -81,9 +81,9 @@ export const App: React.FC = () => {
     );
   }
 
-  // Without a profile and a cohort, every app route goes back to the public landing.
+  // Without a profile every app route goes back to the public student landing.
   if (!hasAccess && location.pathname !== '/welcome') {
-    return <Navigate to="/welcome" replace />;
+    return <Navigate to="/students" replace />;
   }
 
   // Public B2B landing for training centers, on the live ambient background

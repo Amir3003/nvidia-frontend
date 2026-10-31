@@ -389,7 +389,7 @@ export const AccountPortalPage: React.FC = () => {
 
   const handleConfirmLogout = () => {
     resetToDefaultProfile();
-    navigate('/welcome');
+    navigate('/students');
   };
 
   const initials = [name?.[0], surname?.[0]].filter(Boolean).join('').toUpperCase() || 'Q';
@@ -1401,7 +1401,7 @@ export const AccountPortalPage: React.FC = () => {
                 onClick={() => {
                   setIsResetConfirmOpen(false);
                   resetToDefaultProfile();
-                  navigate('/welcome');
+                  navigate('/students');
                 }}
                 className="h-10 px-5 rounded-btn bg-rose-600 hover:bg-rose-500 text-white font-mono text-mini font-semibold cursor-pointer shadow-sm"
               >
