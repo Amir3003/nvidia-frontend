@@ -104,7 +104,7 @@ Semgrep also scans every pull request.
 
 - SQL migrations are in `supabase/migrations/`. They are run by hand in the Supabase SQL editor, in file order. Setup notes: [NETWORK_SETUP.md](NETWORK_SETUP.md).
 - Deploys go from `main` to Vercel. Work on a branch and open a pull request.
-- The radar feed is published daily by a GitHub Action: [GITHUB_RADAR_SETUP.md](GITHUB_RADAR_SETUP.md). A local run on Windows: [LOCAL_SETUP.md](LOCAL_SETUP.md).
+- The radar feed is published daily by a GitHub Action: [GITHUB_RADAR_SETUP.md](GITHUB_RADAR_SETUP.md).
 
 ## Project structure
 
@@ -113,7 +113,6 @@ api/        Vercel serverless functions (data request, beta feedback)
 backend/    Radar scan: search, extraction, quality rules and merge
 bot/        Telegram and Discord bots, Discord server setup script
 deploy/     Helper scripts for the bot server
-docs/       Plans, setup notes and internal documents
 public/     Static files, brand assets and the published radar feed
 scripts/    Build scripts (prerender) and the quiz check
 src/        The React app: pages, components, context, lib, db (quizzes, opportunities)

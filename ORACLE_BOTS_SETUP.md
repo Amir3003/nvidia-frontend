@@ -30,7 +30,7 @@ The website radar remains on Vercel + GitHub Actions. This VM runs only the two 
 3. Clone the repository and create the root-only environment file:
 
    ```bash
-   sudo git clone https://github.com/Amir3003/nvidia-frontend.git /opt/qadam
+   sudo git clone https://github.com/Amir3003/qadamhub.git /opt/qadam
    sudo install -d -m 700 /etc/qadam
    sudo nano /etc/qadam/bots.env
    ```
@@ -76,7 +76,7 @@ A private repository needs a credential on the VM before `git pull` works. Use a
 3. On the VM, point the clone at SSH with that key:
 
    ```bash
-   sudo git -C /opt/qadam remote set-url origin git@github.com:Amir3003/nvidia-frontend.git
+   sudo git -C /opt/qadam remote set-url origin git@github.com:Amir3003/qadamhub.git
    sudo git -C /opt/qadam config core.sshCommand "ssh -i /root/.ssh/qadam_deploy -o IdentitiesOnly=yes"
    sudo git -C /opt/qadam pull --ff-only
    ```

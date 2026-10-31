@@ -3,7 +3,7 @@
 The public Vercel site reads `public/data/opportunities.json`. It starts as an
 empty list, not the sample opportunities from `src/db/opportunities.ts`.
 GitHub Actions runs the existing Tavily/Nebius scanner daily at 06:17 UTC
-(11:17 in Kazakhstan UTC+5) and commits only validated public results.
+and commits only validated public results.
 Vercel's Git integration should deploy the new commit on the production branch.
 The Refresh Results button reloads the published file; it does not run a scan
 or use API credits.

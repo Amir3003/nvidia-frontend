@@ -22,7 +22,7 @@ import {
   UsersIcon,
 } from '../components/Icons';
 
-// Public B2B landing for training centers. Plan and copy rules: docs/B2B_PLAN.md.
+// Public B2B landing for schools, universities and training centers.
 // Original QADAM look: dark ambient ground, light glass cards, emerald to teal actions,
 // the scroll-locked 3D card showcase, then alternating left and right "stops".
 // Every claim must be true today or carry a status chip.

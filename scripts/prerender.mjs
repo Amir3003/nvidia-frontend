@@ -2,7 +2,7 @@
 // page's own title, description, canonical URL and readable text already in the HTML. Crawlers that
 // do not run JavaScript (or run it late) then see real content; in a browser React replaces the
 // text on load. vercel.json rewrites /welcome, / and /students to these files.
-// The copy below must stay true to the pages in src/pages (see docs/STRATEGY.md for what is live).
+// The copy below must stay true to the pages in src/pages.
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 
 const SITE = 'https://www.qadamhub.com';

@@ -9,7 +9,7 @@ import { isProfileValid } from '../db/userProfile';
 import { usePageMeta } from '../lib/seo';
 
 // Public landing for individual students (B2C). Same look as the schools landing.
-// Every claim must be true today or carry a "Coming soon" chip: see docs/PRODUCT_SCOPE.md.
+// Every claim must be true today or carry a "Coming soon" chip.
 
 type Status = 'live' | 'soon';
 
