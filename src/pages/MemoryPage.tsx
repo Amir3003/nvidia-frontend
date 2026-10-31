@@ -4,7 +4,6 @@ import { PageHeader } from '../components/PageHeader';
 import {
   EditIcon,
   TrashIcon,
-  CheckIcon,
   PlusIcon,
   CloseIcon,
   EyeIcon,
@@ -330,9 +329,9 @@ export const MemoryPage: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="add-memory-title"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto"
+          className="animate-overlay-in fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto"
         >
-          <div className="w-full max-w-md max-h-[85vh] my-auto overflow-y-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-5 space-y-4 text-slate-900">
+          <div className="animate-modal-in w-full max-w-md max-h-[85vh] my-auto overflow-y-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-5 space-y-4 text-slate-900">
             <div className="flex items-center justify-between pb-3 border-b border-teal-200/60 flex-shrink-0">
               <h3 id="add-memory-title" className="text-subheading text-indigo-950 font-bold">
                 Add Entry to MEMORY.md
@@ -441,9 +440,9 @@ export const MemoryPage: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="raw-md-title"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto"
+          className="animate-overlay-in fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto"
         >
-          <div className="w-full max-w-xl max-h-[85vh] my-auto overflow-y-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-5 space-y-4 text-slate-900">
+          <div className="animate-modal-in w-full max-w-xl max-h-[85vh] my-auto overflow-y-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-5 space-y-4 text-slate-900">
             <div className="flex items-center justify-between pb-3 border-b border-teal-200/60 flex-shrink-0">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-sm bg-emerald-600 rotate-45 inline-block" />

@@ -16,8 +16,6 @@ import {
   ChevronRightIcon,
   CheckIcon,
   ShieldIcon,
-  AlertTriangleIcon,
-  TerminalIcon,
   CopyIcon,
   EyeIcon,
   EyeOffIcon,
@@ -391,7 +389,7 @@ export const AccountPortalPage: React.FC = () => {
 
   const handleConfirmLogout = () => {
     resetToDefaultProfile();
-    navigate('/welcome');
+    navigate('/students');
   };
 
   const initials = [name?.[0], surname?.[0]].filter(Boolean).join('').toUpperCase() || 'Q';
@@ -557,7 +555,7 @@ export const AccountPortalPage: React.FC = () => {
                   </h3>
                   <div className="text-mini font-mono text-emerald-600 font-semibold mt-0.5">{role}</div>
                   <div className="text-[13px] text-slate-500 mt-1">
-                    {university ? `${university} · ${major || 'Computer Science'}` : 'Institution not configured'}
+                    {university ? `${university} · ${major || 'AI & Machine Learning'}` : 'Institution not configured'}
                   </div>
                 </div>
               </div>
@@ -655,7 +653,7 @@ export const AccountPortalPage: React.FC = () => {
                     type="text"
                     value={major}
                     onChange={(e) => setMajor(e.target.value)}
-                    placeholder="Computer Science"
+                    placeholder="AI & Machine Learning"
                     className="w-full h-11 px-3.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 rounded-btn text-[13px] text-slate-900 placeholder:text-slate-400 outline-none font-sans transition-colors"
                   />
                 </div>
@@ -685,7 +683,7 @@ export const AccountPortalPage: React.FC = () => {
                     type="text"
                     value={degree}
                     onChange={(e) => setDegree(e.target.value)}
-                    placeholder="B.S. in Computer Science"
+                    placeholder="B.S. in AI & Machine Learning"
                     className="w-full h-11 px-3.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 rounded-btn text-[13px] text-slate-900 placeholder:text-slate-400 outline-none font-sans transition-colors"
                   />
                 </div>
@@ -1383,9 +1381,9 @@ export const AccountPortalPage: React.FC = () => {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
+          className="animate-overlay-in fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
         >
-          <div className="w-full max-w-md max-h-[85vh] my-auto overflow-y-auto bg-white p-6 rounded-card space-y-4 shadow-2xl border border-rose-200">
+          <div className="animate-modal-in w-full max-w-md max-h-[85vh] my-auto overflow-y-auto bg-white p-6 rounded-card space-y-4 shadow-2xl border border-rose-200">
             <h3 className="text-lg font-bold text-rose-800">Wipe Local Storage Data?</h3>
             <p className="text-[13px] text-slate-600 leading-relaxed">
               This action will permanently delete your local candidate profile, agent memory, verified quiz credentials, and reset the platform to an initial state.
@@ -1403,7 +1401,7 @@ export const AccountPortalPage: React.FC = () => {
                 onClick={() => {
                   setIsResetConfirmOpen(false);
                   resetToDefaultProfile();
-                  navigate('/welcome');
+                  navigate('/students');
                 }}
                 className="h-10 px-5 rounded-btn bg-rose-600 hover:bg-rose-500 text-white font-mono text-mini font-semibold cursor-pointer shadow-sm"
               >
@@ -1419,9 +1417,9 @@ export const AccountPortalPage: React.FC = () => {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
+          className="animate-overlay-in fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md overflow-y-auto"
         >
-          <div className="w-full max-w-md max-h-[85vh] my-auto overflow-y-auto bg-white p-6 rounded-card space-y-4 shadow-2xl border border-slate-200/80">
+          <div className="animate-modal-in w-full max-w-md max-h-[85vh] my-auto overflow-y-auto bg-white p-6 rounded-card space-y-4 shadow-2xl border border-slate-200/80">
             <h3 className="text-lg font-bold text-slate-900">Log Out of QADAM?</h3>
             <p className="text-[13px] text-slate-600 leading-relaxed">
               Your active workspace session will be closed and you will be redirected to the Welcome page. Your local profile settings will remain saved for your next session.

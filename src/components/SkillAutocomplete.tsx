@@ -113,7 +113,7 @@ export const SkillAutocomplete: React.FC<SkillAutocompleteProps> = ({
         {isOpen && optionCount > 0 && (
           <div
             role="listbox"
-            className="absolute left-0 right-0 top-full mt-1.5 z-50 max-h-60 overflow-y-auto overscroll-contain rounded-xl bg-white border border-teal-200 shadow-xl py-1"
+            className="animate-pop-in origin-top absolute left-0 right-0 top-full mt-1.5 z-50 max-h-60 overflow-y-auto overscroll-contain rounded-xl bg-white border border-teal-200 shadow-xl py-1"
           >
             {!trimmed && (
               <div className="px-3.5 pt-1.5 pb-1 text-[10px] font-mono uppercase tracking-wider text-teal-800">

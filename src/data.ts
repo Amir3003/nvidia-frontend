@@ -686,7 +686,6 @@ export function calculateOpportunityMatch(
   let matchedWeight = 0;
 
   opportunitySkills.forEach((skill) => {
-    const isRequired = true;
     const weight = 1.0;
     totalWeight += weight;
 

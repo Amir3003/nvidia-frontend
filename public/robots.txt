@@ -2,6 +2,9 @@ User-agent: *
 Allow: /
 Disallow: /staff
 Disallow: /student
+Allow: /students
+Disallow: /prerender/
+Disallow: /start
 Disallow: /account
 Disallow: /dashboard
 Disallow: /cv

@@ -8,7 +8,6 @@ import {
   loadUserProfile,
   saveUserProfile,
   clearUserProfile,
-  isProfileValid,
   EMPTY_USER_PROFILE,
 } from '../db/userProfile';
 import {
@@ -16,7 +15,6 @@ import {
   SkillItem,
   LogEntry,
   INITIAL_SKILLS,
-  INITIAL_MEMORY,
 } from '../data';
 import { CATALOG_SKILLS } from '../db/quizCatalog';
 import { clearMembership } from '../lib/cohorts';

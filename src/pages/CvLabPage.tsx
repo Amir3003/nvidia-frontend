@@ -8,15 +8,12 @@ import { QUIZ_BANK } from '../db/quizBank';
 import { QUIZ_CATEGORIES, getCatalogTopic, getSkillCategory } from '../db/quizCatalog';
 import { TARGET_TRACKS, radarTargets } from '../db/targetTracks';
 import {
-  ExternalLinkIcon,
   CheckIcon,
-  FlaskIcon,
   FileTextIcon,
   UserIcon,
   CompanyBadgeIcon,
   ChevronDownIcon,
   ShieldIcon,
-  TechIcon,
   SearchIcon,
   CloseIcon,
 } from '../components/Icons';
@@ -268,7 +265,7 @@ export const CvLabPage: React.FC = () => {
               createPortal(
                 <>
                   <div
-                    className="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-sm sm:bg-transparent sm:backdrop-blur-none"
+                    className="animate-overlay-in fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-sm sm:bg-transparent sm:backdrop-blur-none"
                     onClick={() => setIsDropdownOpen(false)}
                     aria-hidden="true"
                   />
@@ -276,7 +273,7 @@ export const CvLabPage: React.FC = () => {
                     role="listbox"
                     aria-label="Select Benchmark Target Opportunity"
                     style={menuStyle}
-                    className="fixed z-50 w-auto sm:w-96 rounded-card bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300 shadow-2xl pb-1 overflow-y-auto overscroll-contain text-slate-900"
+                    className="animate-pop-in origin-top fixed z-50 w-auto sm:w-96 rounded-card bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300 shadow-2xl pb-1 overflow-y-auto overscroll-contain text-slate-900"
                   >
                     <div className="px-3 py-2 border-b border-teal-200/60 text-[11px] font-mono uppercase text-teal-800 font-semibold sticky top-0 z-10 bg-[#EDF7F6] flex items-center justify-between">
                       <span>Select a target</span>

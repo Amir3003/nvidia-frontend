@@ -16,9 +16,11 @@ import { PrivacyPage } from './pages/PrivacyPage';
 import { TermsPage } from './pages/TermsPage';
 import { RefundPage } from './pages/RefundPage';
 import { StudentAccessPage } from './pages/StudentAccessPage';
+import { StudentsLandingPage } from './pages/StudentsLandingPage';
+import { StartPage } from './pages/StartPage';
+import { FeedbackWidget } from './components/FeedbackWidget';
 import { StaffPage } from './pages/StaffPage';
 import { LearnerSync } from './components/LearnerSync';
-import { loadMembership } from './lib/cohorts';
 import { OnboardingWizard } from './components/OnboardingWizard';
 import { CvGapsModal } from './components/CvGapsModal';
 import { QuizModal } from './components/QuizModal';
@@ -29,9 +31,9 @@ import { isProfileValid } from './db/userProfile';
 export const App: React.FC = () => {
   const { userProfile } = useApp();
   const location = useLocation();
-  const hasValidProfile = isProfileValid(userProfile);
-  // B2B: the app is open only to learners who joined a cohort with an invite code.
-  const hasAccess = hasValidProfile && Boolean(loadMembership());
+  // Two ways in: a free student profile on this device (B2C, /start), or an institution
+  // invite code (B2B, /student). Cohort data is protected by the database, not by this gate.
+  const hasAccess = isProfileValid(userProfile);
 
   // Staff workspace and student sign-in work without a local profile.
   if (location.pathname === '/staff' || location.pathname === '/student') {
@@ -40,6 +42,17 @@ export const App: React.FC = () => {
         <ScrollToTop />
         <AmbientBackground />
         {location.pathname === '/staff' ? <StaffPage /> : <StudentAccessPage />}
+      </div>
+    );
+  }
+
+  // Public landing and free sign-up for individual students
+  if (location.pathname === '/students' || location.pathname === '/start') {
+    return (
+      <div className="min-h-[100dvh] flex flex-col bg-transparent text-slate-100 antialiased font-sans relative">
+        <ScrollToTop />
+        <AmbientBackground />
+        {location.pathname === '/students' ? <StudentsLandingPage /> : <StartPage />}
       </div>
     );
   }
@@ -59,7 +72,7 @@ export const App: React.FC = () => {
 
   // Shared network has verified email identity and must work on a fresh device.
   if (location.pathname === '/join') return <JoinPage />;
-  if (location.pathname === '/network' && !hasValidProfile) {
+  if (location.pathname === '/network' && !hasAccess) {
     return (
       <div className="min-h-[100dvh] bg-transparent text-slate-100 relative">
         <AmbientBackground />
@@ -68,9 +81,9 @@ export const App: React.FC = () => {
     );
   }
 
-  // Without a profile and a cohort, every app route goes back to the public landing.
+  // Without a profile every app route goes back to the public student landing.
   if (!hasAccess && location.pathname !== '/welcome') {
-    return <Navigate to="/welcome" replace />;
+    return <Navigate to="/students" replace />;
   }
 
   // Public B2B landing for training centers, on the live ambient background
@@ -97,6 +110,7 @@ export const App: React.FC = () => {
         <AmbientBackground />
         <AccountPortalPage />
         <OnboardingWizard />
+        <FeedbackWidget />
       </div>
     );
   }
@@ -130,6 +144,7 @@ export const App: React.FC = () => {
       <CvGapsModal />
       <QuizModal />
       <OpportunityDetailsModal />
+      <FeedbackWidget />
     </div>
   );
 };

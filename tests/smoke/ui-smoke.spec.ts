@@ -1,0 +1,303 @@
+import { test, expect, type Page } from "@playwright/test";
+import { mkdirSync } from "node:fs";
+import path from "node:path";
+
+// Screenshots go here so an agent can open them and look at the rendered UI.
+const SHOTS = process.env.UI_SHOTS_DIR || "/tmp/ui-check";
+mkdirSync(SHOTS, { recursive: true });
+
+// A fixed Radar feed for the test, so the check never depends on the live scan.
+const FEED = [
+  {
+    id: "smoke-ml-grant",
+    type: "GRANT",
+    title: "Smoke Test AI Research Grant",
+    organization: "QADAM Smoke Test",
+    deadline: "2099-01-01",
+    url: "https://example.com/grant",
+    eligibility: "check source",
+    summary: "Fixture listing used only by the UI smoke test.",
+    skills: ["PyTorch", "SQL", "AI", "Underwater Basket Weaving"],
+  },
+];
+
+const PROFILE = {
+  name: "Smoke",
+  surname: "Tester",
+  email: "smoke@example.com",
+  university: "Test University",
+  major: "AI & Machine Learning",
+  location: "Almaty, Kazakhstan",
+  role: "Student",
+  skills: ["SQL", "Underwater Basket Weaving"],
+  goals: [],
+  isPublic: false,
+  isOnboarded: true,
+};
+
+const MEMBERSHIP = {
+  userId: "00000000-0000-0000-0000-000000000001",
+  cohortId: "00000000-0000-0000-0000-000000000002",
+  cohortName: "Smoke cohort",
+  institutionName: "Smoke institution",
+};
+
+/* Collects uncaught exceptions and console errors, and serves every external host locally. */
+async function watch(page: Page) {
+  const errors: string[] = [];
+  page.on("pageerror", (err) => errors.push(`pageerror: ${err.message}`));
+  page.on("console", (msg) => {
+    if (msg.type() === "error") errors.push(`console.error: ${msg.text()}`);
+  });
+  await page.route("**/*", async (route) => {
+    const url = new URL(route.request().url());
+    if (url.hostname === "127.0.0.1") {
+      if (url.pathname === "/data/opportunities.json") {
+        return route.fulfill({ json: FEED });
+      }
+      return route.continue();
+    }
+    return route.fulfill({ status: 200, body: "" });
+  });
+  return errors;
+}
+
+async function expectRendered(page: Page) {
+  // A white screen leaves #root empty; a rendered page has visible text.
+  await expect(page.locator("#root")).not.toBeEmpty();
+  const text = await page.locator("#root").innerText();
+  expect(text.trim().length).toBeGreaterThan(40);
+}
+
+const PUBLIC_ROUTES = ["/welcome", "/students", "/start", "/student", "/staff", "/privacy", "/terms", "/refund"];
+
+for (const route of PUBLIC_ROUTES) {
+  test(`public route ${route} renders without errors`, async ({ page }, info) => {
+    const errors = await watch(page);
+    await page.goto(route);
+    await page.waitForLoadState("networkidle");
+    await expectRendered(page);
+    const name = `${info.project.name}${route.replace(/\//g, "-")}.png`;
+    await page.screenshot({ path: path.join(SHOTS, name), fullPage: false });
+    expect(errors).toEqual([]);
+  });
+}
+
+test("learner opens CV gaps from the Radar and starts the matching quiz", async ({ page }, info) => {
+  const errors = await watch(page);
+  await page.addInitScript(
+    ([profile, membership]) => {
+      if (sessionStorage.getItem("smoke-seeded")) return;
+      sessionStorage.setItem("smoke-seeded", "1");
+      localStorage.setItem("qadam_user", JSON.stringify(profile));
+      localStorage.setItem("qadam_cohort_membership", JSON.stringify(membership));
+      localStorage.setItem("qadam_consent_analytics_v1", "denied");
+    },
+    [PROFILE, MEMBERSHIP] as const,
+  );
+
+  await page.goto("/");
+  await expect(page.getByText("Smoke Test AI Research Grant").first()).toBeVisible();
+  await expectRendered(page);
+  await page.screenshot({ path: path.join(SHOTS, `${info.project.name}-radar.png`) });
+
+  await page.getByRole("button", { name: "Analyze CV Gaps" }).first().click();
+  const gaps = page.getByRole("dialog", { name: "Smoke Test AI Research Grant" });
+  await expect(gaps).toBeVisible();
+  // Every skill with a quiz gets a button; the one without a quiz says so.
+  await expect(gaps.getByText("No quiz yet")).toHaveCount(1);
+  await expect(gaps.getByRole("button", { name: /Take Quiz|Verify & Add/ })).toHaveCount(3);
+  await page.screenshot({ path: path.join(SHOTS, `${info.project.name}-cv-gaps.png`) });
+
+  // The innermost block that holds both the skill name and its button is that skill's row.
+  const pytorchRow = gaps
+    .locator("div")
+    .filter({ has: page.getByText("PyTorch", { exact: true }) })
+    .filter({ has: page.getByRole("button") })
+    .last();
+  await pytorchRow.getByRole("button").click();
+  const quiz = page.getByRole("dialog", { name: /PyTorch/ });
+  await expect(quiz).toBeVisible();
+  await expect(quiz.getByText("PyTorch Verification").first()).toBeVisible();
+  await page.screenshot({ path: path.join(SHOTS, `${info.project.name}-quiz.png`) });
+
+  expect(errors).toEqual([]);
+});
+
+test("learner without skills sees a readable welcome banner on the Radar", async ({ page }, info) => {
+  const errors = await watch(page);
+  await page.addInitScript(
+    ([profile, membership]) => {
+      if (sessionStorage.getItem("smoke-seeded")) return;
+      sessionStorage.setItem("smoke-seeded", "1");
+      localStorage.setItem("qadam_user", JSON.stringify(profile));
+      localStorage.setItem("qadam_cohort_membership", JSON.stringify(membership));
+      localStorage.setItem("qadam_consent_analytics_v1", "denied");
+    },
+    [{ ...PROFILE, skills: [] }, MEMBERSHIP] as const,
+  );
+
+  await page.goto("/");
+  const title = page.getByText("Welcome to QADAM Opportunity Radar");
+  await expect(title).toBeVisible();
+  await expect(page.getByRole("link", { name: "Configure Stack" })).toBeVisible();
+  await page.screenshot({ path: path.join(SHOTS, `${info.project.name}-radar-banner.png`) });
+  expect(errors).toEqual([]);
+});
+
+test("the audience switch moves between the schools and students landings", async ({ page }, info) => {
+  const errors = await watch(page);
+  await page.goto("/welcome");
+  const audience = page.getByRole("navigation", { name: "Choose your audience" });
+  await expect(audience).toBeVisible();
+  await audience.getByRole("link", { name: "For Students" }).click();
+  await expect(page).toHaveURL(/\/students$/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Find grants, hackathons and scholarships");
+  await page.screenshot({ path: path.join(SHOTS, `${info.project.name}-students-landing.png`) });
+  await page.getByRole("navigation", { name: "Choose your audience" }).getByRole("link", { name: "For Schools" }).click();
+  await expect(page).toHaveURL(/\/welcome$/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Opportunity and career support for your cohort");
+  expect(errors).toEqual([]);
+});
+
+test("a student starts in two steps without an invite code and lands on the Radar", async ({ page }, info) => {
+  const errors = await watch(page);
+  await page.addInitScript(() => localStorage.setItem("qadam_consent_analytics_v1", "denied"));
+  await page.goto("/students");
+  await page.getByRole("button", { name: "Start free" }).first().click();
+  await expect(page).toHaveURL(/\/start$/);
+  const welcome = page.getByRole("dialog", { name: "Welcome to QADAM Hub" });
+  await expect(welcome).toBeVisible();
+  await expect(welcome.getByText("AI skill quizzes")).toBeVisible();
+  await expect(welcome.getByText("Gap analysis")).toBeVisible();
+  await expect(welcome.getByText("Portfolio")).toBeVisible();
+  await page.screenshot({ path: path.join(SHOTS, `${info.project.name}-welcome-1.png`) });
+  // Modals close only through their visible button.
+  await page.keyboard.press("Escape");
+  await page.mouse.click(4, 4);
+  await expect(welcome).toBeVisible();
+
+  await welcome.getByRole("button", { name: "Continue" }).click();
+  const start = welcome.getByRole("button", { name: "Start exploring" });
+  await expect(start).toBeDisabled();
+  await welcome.getByPlaceholder("What should we call you?").fill("Aigerim");
+  await expect(start).toBeDisabled();
+  await welcome.getByRole("button", { name: "MEXT Scholarship (Japan)" }).click();
+  await welcome.getByRole("button", { name: "University Admissions Abroad" }).click();
+  await expect(welcome.getByRole("button", { name: "MEXT Scholarship (Japan)" })).toHaveAttribute("aria-pressed", "true");
+  await page.screenshot({ path: path.join(SHOTS, `${info.project.name}-welcome-2.png`) });
+  await start.click();
+
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole("heading", { name: "Opportunity Radar" })).toBeVisible();
+  const stored = await page.evaluate(() => ({
+    profile: JSON.parse(localStorage.getItem("qadam_user") || "{}"),
+    membership: localStorage.getItem("qadam_cohort_membership"),
+  }));
+  expect(stored.profile).toMatchObject({ name: "Aigerim", isOnboarded: true, goals: ["MEXT Scholarship (Japan)", "University Admissions Abroad"] });
+  expect(stored.membership).toBeNull();
+  expect(errors).toEqual([]);
+});
+
+async function openFeedback(page: Page) {
+  await page.addInitScript(
+    (profile) => {
+      if (sessionStorage.getItem("smoke-seeded")) return;
+      sessionStorage.setItem("smoke-seeded", "1");
+      localStorage.setItem("qadam_user", JSON.stringify(profile));
+      localStorage.setItem("qadam_consent_analytics_v1", "denied");
+    },
+    PROFILE,
+  );
+  // A profile without a cohort is enough to use the app.
+  await page.goto("/cv");
+  await expect(page).toHaveURL(/\/cv$/);
+  await page.getByRole("button", { name: "Rate the app or send feedback" }).click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog.getByRole("heading", { name: "Help us improve" })).toBeVisible();
+  return dialog;
+}
+
+test("the feedback widget sends a bug report and closes only with its button", async ({ page }, info) => {
+  const errors = await watch(page);
+  let sent: Record<string, unknown> | null = null;
+  await page.route("**/api/beta-feedback", async (route) => {
+    sent = route.request().postDataJSON();
+    await route.fulfill({ json: { status: "ok" } });
+  });
+  const dialog = await openFeedback(page);
+  await page.screenshot({ path: path.join(SHOTS, `${info.project.name}-feedback-menu.png`) });
+
+  await page.keyboard.press("Escape");
+  await page.mouse.click(4, 4);
+  await expect(dialog).toBeVisible();
+
+  await dialog.getByRole("button", { name: /Send feedback or report a bug/ }).click();
+  const submit = dialog.getByRole("button", { name: "Send feedback" });
+  await expect(submit).toBeDisabled();
+  await dialog.getByRole("radio", { name: "Bug" }).click();
+  await dialog.getByRole("textbox").fill("The quiz button does nothing on my phone.");
+  await expect(submit).toBeEnabled();
+  await submit.click();
+
+  await expect(dialog.getByText("Thank you. We read every report.")).toBeVisible();
+  expect(sent).toMatchObject({ type: "bug", description: "The quiz button does nothing on my phone.", pageUrl: "/cv", website: "" });
+  await page.screenshot({ path: path.join(SHOTS, `${info.project.name}-feedback-sent.png`) });
+  await dialog.getByRole("button", { name: "Close", exact: true }).click();
+  await expect(dialog).toBeHidden();
+  expect(errors).toEqual([]);
+});
+
+test("a happy rating offers the public review link, a low one does not", async ({ page }, info) => {
+  const errors = await watch(page);
+  const sent: Record<string, unknown>[] = [];
+  await page.route("**/api/beta-feedback", async (route) => {
+    sent.push(route.request().postDataJSON());
+    await route.fulfill({ json: { status: "ok" } });
+  });
+  const dialog = await openFeedback(page);
+
+  await dialog.getByRole("button", { name: /Rate the app/ }).click();
+  const submit = dialog.getByRole("button", { name: "Send rating" });
+  await expect(submit).toBeDisabled();
+  await dialog.getByRole("radio", { name: "5 of 5, Great" }).click();
+  await page.screenshot({ path: path.join(SHOTS, `${info.project.name}-rating.png`) });
+  await submit.click();
+  await expect(dialog.getByRole("link", { name: "Leave a public review" })).toHaveAttribute("href", "https://example.com/review");
+  expect(sent[0]).toMatchObject({ type: "rating", rating: 5, description: "", pageUrl: "/cv" });
+  await dialog.getByRole("button", { name: "Close", exact: true }).click();
+  await expect(dialog).toBeHidden();
+
+  await page.getByRole("button", { name: "Rate the app or send feedback" }).click();
+  await dialog.getByRole("button", { name: /Rate the app/ }).click();
+  await dialog.getByRole("radio", { name: "2 of 5, Fair" }).click();
+  await dialog.getByRole("textbox").fill("Quizzes load slowly");
+  await dialog.getByRole("button", { name: "Send rating" }).click();
+  await expect(dialog.getByText("Thank you. We read every rating.")).toBeVisible();
+  await expect(dialog.getByRole("link", { name: "Leave a public review" })).toHaveCount(0);
+  expect(sent[1]).toMatchObject({ type: "rating", rating: 2, description: "Quizzes load slowly" });
+  expect(errors).toEqual([]);
+});
+
+test("the feedback widget offers email when the service is unavailable", async ({ page }) => {
+  await watch(page);
+  await page.route("**/api/beta-feedback", (route) => route.fulfill({ status: 503, json: { status: "error" } }));
+  const dialog = await openFeedback(page);
+  await dialog.getByRole("button", { name: /Send feedback or report a bug/ }).click();
+  await dialog.getByRole("textbox").fill("Please add a dark mode toggle.");
+  await dialog.getByRole("button", { name: "Send feedback" }).click();
+  await expect(dialog.getByRole("link", { name: "Send it by email instead" })).toBeVisible();
+});
+
+test("a visitor without a profile lands on the student page, and /welcome stays the schools link", async ({ page }) => {
+  const errors = await watch(page);
+  for (const route of ["/", "/cv", "/dashboard"]) {
+    await page.goto(route);
+    await expect(page).toHaveURL(/\/students$/);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Find grants, hackathons and scholarships");
+  }
+  await page.goto("/welcome");
+  await expect(page).toHaveURL(/\/welcome$/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Opportunity and career support for your cohort");
+  expect(errors).toEqual([]);
+});

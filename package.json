@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && node scripts/prerender.mjs",
+    "typecheck": "tsc --noEmit",
+    "verify": "npm run typecheck && npm run build",
     "preview": "vite preview",
     "api": "node --env-file=.env backend/server.mjs serve",
     "scan": "node --env-file=.env backend/server.mjs scan",
@@ -15,8 +17,11 @@
     "discord:setup": "node --env-file=.env bot/discord-setup.mjs",
     "bot:all": "concurrently \"npm run bot\" \"npm run bot:discord\"",
     "test:network": "node --test tests/network-db.test.mjs tests/network-social.test.mjs",
+    "test:feedback": "node --test tests/feedback.test.mjs",
     "test:network-ui": "playwright test --config playwright.network.config.ts",
-    "check:quizzes": "node scripts/check-quizzes.mjs"
+    "check:quizzes": "node scripts/check-quizzes.mjs",
+    "test:ui": "playwright test --config playwright.smoke.config.ts",
+    "test:live": "playwright test --config playwright.live.config.ts"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.10",

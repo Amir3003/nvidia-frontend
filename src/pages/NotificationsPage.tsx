@@ -4,7 +4,6 @@ import { PageHeader } from '../components/PageHeader';
 import {
   BellIcon,
   CheckIcon,
-  SendIcon,
   ShieldIcon,
   ExternalLinkIcon,
   TelegramIcon,
@@ -31,11 +30,11 @@ export const NotificationsPage: React.FC = () => {
   const [isTelegramModal, setIsTelegramModal] = useState(false);
 
   const [kakaoActive, setKakaoActive] = useState(initialNotifications.kakao);
-  const [kakaoHandle, setKakaoHandle] = useState(initialNotifications.kakaoHandle || '');
+  const [kakaoHandle] = useState(initialNotifications.kakaoHandle || '');
   const [kakaoNotice, setKakaoNotice] = useState('');
 
   const [discordActive, setDiscordActive] = useState(false);
-  const [discordWebhook, setDiscordWebhook] = useState('');
+  const [, setDiscordWebhook] = useState('');
   const [isDiscordModal, setIsDiscordModal] = useState(false);
 
   const [testAlertSent, setTestAlertSent] = useState<string | null>(null);
@@ -477,9 +476,9 @@ export const NotificationsPage: React.FC = () => {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto"
+          className="animate-overlay-in fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto"
         >
-          <div className="w-full max-w-md max-h-[85vh] my-auto overflow-y-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-6 space-y-4 text-slate-900">
+          <div className="animate-modal-in w-full max-w-md max-h-[85vh] my-auto overflow-y-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-6 space-y-4 text-slate-900">
             <div className="flex items-start justify-between gap-3">
               <h3 className="text-[17px] font-bold text-indigo-950">Link Telegram Account</h3>
               <button
@@ -544,9 +543,9 @@ export const NotificationsPage: React.FC = () => {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto"
+          className="animate-overlay-in fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto"
         >
-          <div className="w-full max-w-md max-h-[85vh] my-auto overflow-y-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-6 space-y-4 text-slate-900">
+          <div className="animate-modal-in w-full max-w-md max-h-[85vh] my-auto overflow-y-auto bg-gradient-to-br from-[#EDF7F6] via-[#F3F6FF] to-[#E8F4F8] border border-teal-300/60 rounded-card shadow-2xl p-6 space-y-4 text-slate-900">
             <div className="flex items-start justify-between gap-3">
               <h3 className="text-[17px] font-bold text-indigo-950">Discord Server</h3>
               <button

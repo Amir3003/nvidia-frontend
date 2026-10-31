@@ -1,6 +1,18 @@
 {
     "rewrites": [
         {
+            "source": "/",
+            "destination": "/prerender/welcome.html"
+        },
+        {
+            "source": "/welcome",
+            "destination": "/prerender/welcome.html"
+        },
+        {
+            "source": "/students",
+            "destination": "/prerender/students.html"
+        },
+        {
             "source": "/((?!api/).*)",
             "destination": "/index.html"
         }

@@ -82,7 +82,7 @@ Migration `supabase/migrations/202610240002_cohorts.sql`, all tables under row l
 RPCs: `cohort_invite_info(code)` (public, shows cohort and institution name), `join_cohort(code)` (signed-in learner), `cohort_roster(cohort)` (staff, includes learner email and counts). Admin only, in the SQL editor: `create_institution(name, city, staff_email)` and `add_institution_staff(institution_id, email)`.
 
 Screens:
-- `/student`: email code sign-in, then the invite code (prefilled from `/student?code=...`), then the profile wizard. Without a cohort the app is closed: every app route redirects to the landing.
+- `/student`: email code sign-in, then the invite code (prefilled from `/student?code=...`), then the profile wizard. Since 31 October 2026 a free student profile created at `/start` (no invite code) also opens the app; institution data stays protected by the database, not by this gate. Without any profile every app route redirects to the landing.
 - `/staff`: email code sign-in, cohort list, new cohort form, invite code and link, stats, roster with filters, CSV export, remove learner.
 - Opportunity details: "My status" (saved, preparing, applied) for learners in a cohort.
 - `LearnerSync` revokes access if staff removed the learner and keeps the progress summary current.

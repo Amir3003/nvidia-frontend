@@ -27,7 +27,6 @@ export const RadarPage: React.FC = () => {
     setSelectedOpportunityForDetails,
     setSelectedOpportunityForGaps,
     userProfile,
-    setIsOnboardingOpen,
   } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -114,8 +113,8 @@ export const RadarPage: React.FC = () => {
       <div className="p-4 sm:p-6 pb-28 lg:pb-8 space-y-6">
         {/* Subtle, non-blocking onboarding notification banner if profile has no verified skills yet */}
         {!isProfileReady && (
-          <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-indigo-500/15 border border-teal-300/40 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-slate-900 shadow-sm">
-            <div className="flex items-center gap-3">
+          <div className="p-4 sm:p-5 rounded-card bg-gradient-to-br from-[#EDF7F6]/95 via-[#F3F6FF]/95 to-[#E8F4F8]/95 border border-teal-300/40 shadow-[0_16px_40px_-12px_rgba(6,182,212,0.18)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-slate-900">
+            <div className="flex items-center gap-3 min-w-0">
               <div className="w-9 h-9 rounded-lg bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-700 flex-shrink-0">
                 <RadarIcon size={18} />
               </div>
@@ -172,7 +171,7 @@ export const RadarPage: React.FC = () => {
               </button>
             </div>
             {(showMoreFilters || secondaryActive) && (
-              <div className="flex flex-wrap items-center gap-2 mt-2">
+              <div className="animate-fadeIn flex flex-wrap items-center gap-2 mt-2">
                 {secondaryFilters.map((filter) => renderChip(filter))}
               </div>
             )}

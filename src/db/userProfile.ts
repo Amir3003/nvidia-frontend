@@ -119,6 +119,9 @@ export const SKILLS_DATABASE: string[] = Array.from(
 );
 
 export const CAREER_OBJECTIVES = [
+  'MEXT Scholarship (Japan)',
+  'University Admissions Abroad',
+  'Top GPA (4.0 Track)',
   'Global Hackathons & Bounties',
   'Graduate Research Scholarships Abroad',
   'ML Engineering & Systems Internships',
