@@ -28,6 +28,54 @@ Do not state user numbers, pilots or letters of intent until they are real and w
 
 Link for posts: `https://www.qadamhub.com/students`. No emojis and no long dashes in post text.
 
+## Post templates
+
+Light drafts, to be edited by hand for each place. Replace `[link]` with `https://www.qadamhub.com/students`. Facts only from the table above; no numbers of users until they exist.
+
+### Short (Reddit and other communities)
+
+Title: `I missed 20+ hackathons because the links got lost in chats, so I built a radar for them (free beta)`
+
+```
+In 2022 I missed more than 20 hackathons. The links were buried in chats and the deadlines passed.
+
+QADAM Hub is my fix, and it is in free beta. What works today:
+- a feed of grants, internships and hackathons where every deadline is quoted from the organizer page
+- 236 skill quizzes and a CV gap check against each listing
+- alerts in Telegram and Discord
+- a free student profile, no invite or school needed
+
+What it does not do yet: portfolio, roadmap and one-click applications.
+
+I would like to hear what would make you actually use it, and what is broken. There is a Feedback button inside the app.
+
+[link]
+```
+
+### Medium (Product Hunt, Indie Hackers, Show HN)
+
+- Tagline (60 characters or less): `Grants, hackathons and scholarships with real deadlines`
+- Description (260 characters or less): `A free beta radar for students. Every listing shows a deadline quoted from the organizer page. Check your skills with 236 quizzes, see the gaps in your CV, and get alerts in Telegram or Discord.`
+- Show HN title: `Show HN: QADAM Hub, a radar for grants and hackathons with deadlines quoted from the source`
+- First comment from the maker:
+
+```
+Hi, I am [name], the maker. In 2022 I missed more than 20 hackathons because the links got lost in chats and deadlines passed. I built QADAM Hub so that students have one place that shows what is open, when it closes, and what they still need to learn to apply.
+
+Today: the radar (a listing is published only if its deadline is confirmed by a quote on the organizer page), 236 skill quizzes, a CV gap check per listing, application prep checklists, Telegram and Discord alerts, and a free student profile that stays on your device.
+
+Not built yet: portfolio, roadmap, one-click applications. It is a free beta and I am looking for blunt feedback: what is confusing, what is missing, and what you would pay attention to first. The Feedback button inside the app goes straight to me.
+
+[link]
+```
+
+### Notes per place
+
+- Reddit: read the subreddit rules first, one subreddit per day, and answer every comment. r/AlphaandBetausers: ask for testers and say what you want tested. r/Design_Critiques: post screenshots of the landing and the app and ask for design critique, not signups.
+- Product Hunt: prepare 3 to 5 screenshots and the maker comment before the launch day.
+- Show HN: read the Show HN rules, including the guidance that people must be able to try it easily; our sign-up may count against us. Keep the title plain and honest.
+- Directories (Tier 2 and 3): reuse the medium description. Most ask for a name, link, description and a logo (`public/brand/`).
+
 ## Tier 1: launch week
 
 | Channel | Link | Status | Posted on | Post link | Result |
