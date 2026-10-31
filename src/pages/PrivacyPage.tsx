@@ -137,7 +137,7 @@ export const PrivacyPage: React.FC = () => {
           ))}
         </ul>
         <p>
-          Their servers may be outside Kazakhstan and the European Economic Area. We do not sell or rent personal data
+          Their servers may be outside the country where you live. We do not sell or rent personal data
           to anyone.
         </p>
       </LegalSection>
@@ -154,9 +154,9 @@ export const PrivacyPage: React.FC = () => {
       <LegalSection title="Your rights">
         <p>
           You can ask for a copy of your personal data, have it corrected or deleted, withdraw consent and object to
-          processing, under the personal data law that applies to you, including the Law of the Republic of Kazakhstan
-          "On Personal Data and Their Protection" and, where it applies, the GDPR. You can also complain to your data
-          protection authority.
+          processing, under the personal data law that applies to you, for example the GDPR in the European Union and
+          the United Kingdom, the CCPA and CPRA in California, PIPEDA in Canada, the APPI in Japan or the PIPA in South
+          Korea. You can also complain to your data protection authority.
         </p>
       </LegalSection>
 

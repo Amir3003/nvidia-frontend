@@ -18,7 +18,7 @@ Only claim what is live today (the exact list is in `docs/launch-posts.md`).
 | Live | Not built (do not claim) |
 |---|---|
 | Opportunity Radar with a deadline confirmed by a quote on the organizer page | Verified student profile and portfolio (undecided) |
-| 236 skill quizzes and the CV gap check | Essay helper (optional, student-initiated, not built) |
+| 235 skill quizzes and the CV gap check | Essay helper (optional, student-initiated, not built) |
 | Application prep checklist | |
 | Telegram and Discord alerts | |
 | Teammates and Network | |
@@ -54,7 +54,7 @@ In 2022 I missed more than 20 hackathons. The links were buried in chats and the
 
 QADAM Hub is my fix, and it is in free beta. What works today:
 - a feed of grants, internships and hackathons where every deadline is quoted from the organizer page
-- 236 skill quizzes and a CV gap check against each listing
+- 235 skill quizzes and a CV gap check against each listing
 - alerts in Telegram and Discord
 - a free student profile, no invite or school needed
 
@@ -68,14 +68,14 @@ I would like to hear what would make you actually use it, and what is broken. Th
 ### Medium (Product Hunt, Indie Hackers, Show HN)
 
 - Tagline (60 characters or less): `Grants, hackathons and scholarships with real deadlines`
-- Description (260 characters or less): `A free beta radar for students. Every listing shows a deadline quoted from the organizer page. Check your skills with 236 quizzes, see the gaps in your CV, and get alerts in Telegram or Discord.`
+- Description (260 characters or less): `A free beta radar for students. Every listing shows a deadline quoted from the organizer page. Check your skills with 235 quizzes, see the gaps in your CV, and get alerts in Telegram or Discord.`
 - Show HN title: `Show HN: QADAM Hub, a radar for grants and hackathons with deadlines quoted from the source`
 - First comment from the maker:
 
 ```
 Hi, I am [name], the maker. In 2022 I missed more than 20 hackathons because the links got lost in chats and deadlines passed. I built QADAM Hub so that students have one place that shows what is open, when it closes, and what they still need to learn to apply.
 
-Today: the radar (a listing is published only if its deadline is confirmed by a quote on the organizer page), 236 skill quizzes, a CV gap check per listing, application prep checklists, Telegram and Discord alerts, and a free student profile that stays on your device.
+Today: the radar (a listing is published only if its deadline is confirmed by a quote on the organizer page), 235 skill quizzes, a CV gap check per listing, application prep checklists, Telegram and Discord alerts, and a free student profile that stays on your device.
 
 Not built yet: portfolio, roadmap, one-click applications. It is a free beta and I am looking for blunt feedback: what is confusing, what is missing, and what you would pay attention to first. The Feedback button inside the app goes straight to me.
 

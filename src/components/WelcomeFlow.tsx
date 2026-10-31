@@ -19,7 +19,7 @@ const GOAL_CHOICES = [
 ];
 
 const VALUE_POINTS = [
-  { icon: FlaskIcon, title: 'AI skill quizzes', text: '236 topics, 10 questions each. Pass at 7 to earn a Verified badge.', soon: false },
+  { icon: FlaskIcon, title: 'AI skill quizzes', text: '235 topics, 10 questions each. Pass at 7 to earn a Verified badge.', soon: false },
   { icon: BarChartIcon, title: 'Gap analysis', text: 'See what each grant or hackathon asks for and which skills you are still missing.', soon: false },
   { icon: BellIcon, title: 'Deadline alerts', text: 'Reminders in Telegram or Discord, so a deadline never surprises you.', soon: false },
 ];

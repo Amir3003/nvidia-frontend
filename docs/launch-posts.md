@@ -5,7 +5,7 @@ Link to use everywhere: `https://www.qadamhub.com/students`. Replace `[name]` wi
 ## Read this before posting
 
 - **Age and background come from your brief.** The posts say you are 17 and an AI student. Remove or change that if it is not exact. They do not combine the age with the "2022" story from the strategy notes.
-- **Only what is live is claimed.** Live: the feed with deadlines quoted from the organizer page, 236 skill quizzes (10 random questions, pass at 7, Verified badge), the CV gap check, application prep checklist, Telegram and Discord alerts, teammates network, the Feedback button, free start with no school or invite, profile kept on the device.
+- **Only what is live is claimed.** Live: the feed with deadlines quoted from the organizer page, 235 skill quizzes (10 random questions, pass at 7, Verified badge), the CV gap check, application prep checklist, Telegram and Discord alerts, teammates network, the Feedback button, free start with no school or invite, profile kept on the device.
 - **Not built, so never stated as done:** certificate and GitHub verification and the portfolio. That idea is undecided (see `docs/PRODUCT_SCOPE.md`), so the posts present it as a question for readers, not a promise. Your brief asked for "verifies your GitHub and certificates" in the r/SideProject post; I turned it into an honest "I'm thinking about it", because a Reddit or Hacker News reader can open the app, find nothing, and the post is dead.
 - **The feed is small today** (5 listings when I checked). The posts say it is small and that only confirmed listings are published. That is honest and reads better than hype.
 - **Personal lines in the value posts** ("I've lost time on...", "things that helped me", "I've done a lot of reading") are written for you. Keep only the ones that are true for you.
@@ -32,7 +32,7 @@ Hi r/SideProject. I'm a 17 year old AI student. I used to find hackathons and sc
 So I built QADAM Hub. What works today:
 
 - a feed of grants, hackathons and internships where every deadline is quoted from the organizer's own page, and expired listings disappear
-- 236 skill quizzes (10 random questions, pass at 7) that put a Verified badge on your profile
+- 235 skill quizzes (10 random questions, pass at 7) that put a Verified badge on your profile
 - a CV gap check: what a listing asks for versus what you have
 - deadline alerts in Telegram and Discord
 - free, no school or invite needed, and your profile stays on your device
@@ -207,7 +207,7 @@ QADAM Hub is a free beta radar for students. Every grant, hackathon and internsh
 ```
 Hi, I'm [name], 17, and I made QADAM Hub because I kept missing hackathon deadlines that were buried in chat links.
 
-Today it does four things: shows grants, hackathons and internships where each deadline is quoted from the organizer's page, runs 236 skill quizzes, shows the gap between a listing and your skills, and sends deadline alerts to Telegram and Discord. You can start in two steps, free, with no school or invite.
+Today it does four things: shows grants, hackathons and internships where each deadline is quoted from the organizer's page, runs 235 skill quizzes, shows the gap between a listing and your skills, and sends deadline alerts to Telegram and Discord. You can start in two steps, free, with no school or invite.
 
 What it does not do yet: the feed is small. I'm weighing a verified portfolio (GitHub projects and course certificates) but haven't decided to build it.
 
@@ -220,7 +220,7 @@ I'd love to know what would make you trust a listing, and what you would want fi
 - 60-word description:
 
 ```
-QADAM Hub helps students worldwide find hackathons, grants and scholarships they can still apply to. Each listing is published only when its deadline is confirmed on the organizer's own page. It adds 236 skill quizzes, a CV gap check against each listing, and deadline alerts in Telegram or Discord. Free during the beta, with no school, paywall or invite needed.
+QADAM Hub helps students worldwide find hackathons, grants and scholarships they can still apply to. Each listing is published only when its deadline is confirmed on the organizer's own page. It adds 235 skill quizzes, a CV gap check against each listing, and deadline alerts in Telegram or Discord. Free during the beta, with no school, paywall or invite needed.
 ```
 
 - Maker comment:
@@ -235,7 +235,7 @@ I'm [name], a 17 year old AI student. I built this after missing hackathon deadl
 - 60-word description:
 
 ```
-I built QADAM Hub because hackathon and scholarship deadlines kept slipping past me in chat links. It is a free beta radar where each listing shows a deadline quoted from the organizer's own page, plus 236 skill quizzes, a CV gap check, and Telegram or Discord alerts. A verified portfolio is only an idea. I want blunt feedback from students.
+I built QADAM Hub because hackathon and scholarship deadlines kept slipping past me in chat links. It is a free beta radar where each listing shows a deadline quoted from the organizer's own page, plus 235 skill quizzes, a CV gap check, and Telegram or Discord alerts. A verified portfolio is only an idea. I want blunt feedback from students.
 ```
 
 - Maker comment (post on the product page, and as a short milestone post):
@@ -265,7 +265,7 @@ Hi HN, I'm [name], a 17 year old student. I built this because I kept missing ha
 
 How it works: a daily job searches the web, reads each candidate page, and extracts the listing. It is published only if the page itself contains the deadline, and the quote is stored with it; undated, expired or aggregator pages are dropped. That keeps the feed small (about a handful of listings today) but each one links to the source.
 
-On top of that: 236 skill quizzes with a pass mark, a CV gap check that compares a listing's required skills with yours, and Telegram and Discord alerts. The profile is kept in the browser, there is no account needed to start, and the stack is React, TypeScript, Supabase and Vercel.
+On top of that: 235 skill quizzes with a pass mark, a CV gap check that compares a listing's required skills with yours, and Telegram and Discord alerts. The profile is kept in the browser, there is no account needed to start, and the stack is React, TypeScript, Supabase and Vercel.
 
 Not built: a portfolio that verifies GitHub projects and course certificates. I'm still deciding whether it is worth building, so I won't imply it exists.
 

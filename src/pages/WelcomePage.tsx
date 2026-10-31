@@ -130,7 +130,7 @@ const STAGES: {
     title: '02 / PREPARE',
     heading: 'Ready before the deadline',
     text: 'Learners see which skills a listing asks for, what their CV is missing and what to do before they apply.',
-    points: ['CV gap check against a target role', 'Skill quizzes on 236 topics'],
+    points: ['CV gap check against a target role', 'Skill quizzes on 235 topics'],
     status: 'early',
     accent: 'text-indigo-700',
   },

@@ -29,7 +29,7 @@ const FEATURES: { title: string; text: string; status: Status }[] = [
   },
   {
     title: 'CV and Skill Lab',
-    text: '236 skill quizzes and a CV gap check against each opportunity, so you know what to learn first.',
+    text: '235 skill quizzes and a CV gap check against each opportunity, so you know what to learn first.',
     status: 'live',
   },
   {

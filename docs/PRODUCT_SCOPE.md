@@ -4,7 +4,7 @@ QADAM Hub is an international product: free for students worldwide, a paid plan 
 
 ## Cut (do not build, do not promise)
 
-- **KakaoTalk bot.** The channel was never created and is removed from the code, the Notifications page, the docs and the env example. Delete `KAKAO_REST_API_KEY` in Vercel if it is still there.
+- **KakaoTalk bot.** The channel was never created and is removed from the code, the Notifications page, the docs and the env example. The leftover `KAKAO_REST_API_KEY` in Vercel is unused and can be deleted whenever convenient.
 - **School ranking.** A national or public ranking of schools does not belong to this product.
 - **Employer cases.** Companies publishing R&D cases and hiring through portfolios does not belong to this product.
 - **One-click apply.** Applications are submitted on the organizer's own site, so we cannot do it. The card links to the official page and the Prepare checklist helps before that.
@@ -20,4 +20,4 @@ QADAM Hub is an international product: free for students worldwide, a paid plan 
 
 ## Live today
 
-Radar with deadlines quoted from the organizer page, 236 skill quizzes, the CV gap check, application prep checklists, Telegram and Discord alerts, the teammates network, the Feedback and rating button, a free student profile with no invite, and the schools workspace (cohorts, invite links, roster, CSV).
+Radar with deadlines quoted from the organizer page, 235 skill quizzes, the CV gap check, application prep checklists, Telegram and Discord alerts, the teammates network, the Feedback and rating button, a free student profile with no invite, and the schools workspace (cohorts, invite links, roster, CSV).

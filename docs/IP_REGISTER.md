@@ -11,7 +11,7 @@ What the product is built from, who owns each part and under which terms. Keep i
 | Telegram and Discord bots | `bot/` | same; deployed on an Oracle VM by a team member | same |
 | Radar pipeline | `backend/`, `.github/workflows/publish-radar.yml` | same | same |
 | Database schema and policies | `supabase/migrations/` | same | same |
-| Skill quizzes (236 topics) | `src/db/quizBase.json`, `src/db/quizzes/` | written with AI assistants, reviewed by the team | same |
+| Skill quizzes (235 topics) | `src/db/quizBase.json`, `src/db/quizzes/` | written with AI assistants, reviewed by the team | same |
 | Brand: name "QADAM Hub", Q logo | `public/brand/qadam-mark*.svg` and generated PNGs | team, AI-assisted | Trademark not registered yet |
 | Marketing sources | `marketing/` | team, AI-assisted | same as code |
 | Project skills | `.claude/skills/claude-mem`, `superpowers`, `frontend-design`, `handoff` | written for this repo | Original content (names borrowed from public projects, text is ours) |
@@ -62,7 +62,7 @@ Vendored assistant skills in `.claude/skills/` (development tooling, not shipped
 1. Choose the code license. The repository is MIT and was public, so anyone may reuse versions published so far. Decide whether future code stays open.
 2. Make the repository private if the code should stay confidential (see `ORACLE_BOTS_SETUP.md` for what the bot server needs afterwards).
 3. Once a company exists, every person who wrote code, content or design (the four founders and any contributor, including the team member who runs the bot server) signs an IP assignment to the company. Template: `docs/IP_ASSIGNMENT_TEMPLATE.md`, to be checked by a lawyer.
-4. File a trademark application for "QADAM Hub" and the logo in Kazakhstan (and other target markets).
+4. File a trademark application for "QADAM Hub" and the logo in the operator's country and in the main target markets (for example the US, the EU and Japan).
 5. Rename the repository and the Vercel project so they no longer carry the third-party name "nvidia", and redirect the old `nvidia-pathfinder.vercel.app` address to `www.qadamhub.com`.
 6. Save dated copies of the terms listed in section 2.
-7. Confirm with a lawyer how Kazakhstan's personal data localization rules apply to Supabase and Vercel hosting.
+7. Confirm with a lawyer how personal data transfer and localization rules apply to Supabase and Vercel hosting, in the operator's country and in the main student countries.

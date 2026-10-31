@@ -22,7 +22,7 @@ const PAGES = [
         h2: 'How it works',
         items: [
           ['Discover: relevant opportunities, with sources', "Internships, hackathons and grants that fit each learner's skills and goals. Every listing links to the official page, and its deadline is confirmed on the source page."],
-          ['Prepare: ready before the deadline', 'Learners see which skills a listing asks for, what their CV is missing and what to do before they apply. Skill quizzes cover 236 topics.'],
+          ['Prepare: ready before the deadline', 'Learners see which skills a listing asks for, what their CV is missing and what to do before they apply. Skill quizzes cover 235 topics.'],
           ['Track: one view of your cohort', 'Staff see who has a complete profile, who is preparing and who already applied. Invite a cohort with one link and export the roster as CSV.'],
           ['Alerts: reminders where learners already are', 'New matches and deadline reminders arrive in Telegram and Discord.'],
         ],
@@ -53,7 +53,7 @@ const PAGES = [
         h2: 'What you get',
         items: [
           ['Opportunity Radar', 'Grants, internships and hackathons. Every listing has a deadline confirmed on the organizer page.'],
-          ['CV and Skill Lab', '236 skill quizzes and a CV gap check against each opportunity, so you know what to learn first.'],
+          ['CV and Skill Lab', '235 skill quizzes and a CV gap check against each opportunity, so you know what to learn first.'],
           ['Application prep', 'A checklist before you apply on the organizer site, with the gaps in your profile called out.'],
           ['Alerts in Telegram and Discord', 'New listings that match your goals, in the messenger you already use.'],
           ['Teammates and Network', 'Find people for a hackathon team and message them. Joining is your choice.'],
